@@ -10,21 +10,22 @@
               <div class="tip-error"><img v-if="tipLogin" :src="tipError" alt="" />{{ tipLogin }}</div>
               <div class="input-text" style="margin-top: 28px">
                 <a-input @change="tipLogin = ''" placeholder="请输入账号" v-model="userName">
-                  <img slot="addonBefore" src="./img/user.png" alt="">
+                  <img slot="addonBefore" src="./img/user.png" alt="" />
                 </a-input>
               </div>
               <div class="input-text">
                 <a-input type="password" @change="tipLogin = ''" placeholder="请输入密码" v-model="userPass">
-                  <img slot="addonBefore" src="./img/pwd.png" alt="">
+                  <img slot="addonBefore" src="./img/pwd.png" alt="" />
                 </a-input>
               </div>
-              <a-button class="login-btn" type="primary" @click="accountLogin" :loading="loadingOne">{{ loginText }}</a-button>
+              <a-button class="login-btn" type="primary" @click="accountLogin" :loading="loadingOne">{{
+                loginText
+              }}</a-button>
               <a-row style="margin-top: 30px">
                 <a-col :span="12" style="text-align: left">
                   <a-checkbox :checked="isCheck" @change="onChange">记住账号</a-checkbox>
                 </a-col>
-                <a-col :span="12" style="text-align: right">
-                </a-col>
+                <a-col :span="12" style="text-align: right"> </a-col>
               </a-row>
             </div>
           </a-tab-pane>
@@ -33,22 +34,26 @@
               <div class="tip-error"><img v-if="tipMsg" :src="tipError" alt="" />{{ tipMsg }}</div>
               <div class="input-text" style="margin-top: 28px">
                 <a-input @change="tipMsg = ''" placeholder="请输入手机号" v-model="phoneNum">
-                  <img slot="addonBefore" src="./img/phone.png" style="width: 16px; height: 16px" alt="">
+                  <img slot="addonBefore" src="./img/phone.png" style="width: 16px; height: 16px" alt="" />
                 </a-input>
               </div>
               <div class="input-text">
                 <a-row>
                   <a-col :span="16">
                     <a-input @change="tipMsg = ''" placeholder="请输入验证码" v-model="phoneCode">
-                      <img slot="addonBefore" src="./img/pwd.png" alt="">
+                      <img slot="addonBefore" src="./img/pwd.png" alt="" />
                     </a-input>
                   </a-col>
                   <a-col :span="8">
-                    <a-button class="yzm-btn" :disabled="yzmTag" :loading="yzmLoad" @click="getYzm">{{ yzmText }}</a-button>
+                    <a-button class="yzm-btn" :disabled="yzmTag" :loading="yzmLoad" @click="getYzm">{{
+                      yzmText
+                    }}</a-button>
                   </a-col>
                 </a-row>
               </div>
-              <a-button class="login-btn" type="primary" @click="msgLogin" :loading="loadingTwo">{{ loginText }}</a-button>
+              <a-button class="login-btn" type="primary" @click="msgLogin" :loading="loadingTwo">{{
+                loginText
+              }}</a-button>
             </div>
           </a-tab-pane>
         </a-tabs>
@@ -62,9 +67,8 @@ import tipError from './img/tip.png'
 import hostEnv from '@config/host-env'
 export default {
   name: 'App',
-  components: {
-  },
-  data () {
+  components: {},
+  data() {
     return {
       tipError,
       tipLogin: '',
@@ -83,7 +87,7 @@ export default {
       isCheck: false
     }
   },
-  created () {
+  created() {
     document.onkeydown = () => {
       const key = window.event.keyCode
       if (key === 13) {
@@ -95,7 +99,7 @@ export default {
       }
     }
   },
-  mounted () {
+  mounted() {
     this.ConfigEnv = process.env.VUE_APP_URL
     const rememberInfo = window.localStorage.getItem('isRemember')
     if (rememberInfo) {
@@ -106,44 +110,50 @@ export default {
     }
   },
   methods: {
-    changePass (event) {
+    changePass(event) {
       this.tipLogin = ''
     },
-    getYzm () {
-      if (this.phoneNum === '' || !(/^(?:(?:\+|00)86)?1[3-9]\d{9}$/.test(this.phoneNum))) {
+    getYzm() {
+      if (this.phoneNum === '' || !/^(?:(?:\+|00)86)?1[3-9]\d{9}$/.test(this.phoneNum)) {
         this.tipMsg = '请输入正确手机号'
         return
       }
       this.yzmTag = true
       this.yzmLoad = true
       this.yzmText = '发送中...'
-      $ajax.get({
-        url: `${hostEnv.lvzhuo}/userinfo/user/login/mobile`,
-        params: {
-          mobile: this.phoneNum
-        }
-      }, false).then(res => {
-        this.yzmLoad = false
-        this.$message.success('验证码发送成功')
-        let total = 90
-        this.yzmText = `已发送 (${total}s)`
-        this.timer = setInterval(() => {
-          if (total <= 1) {
-            this.yzmTag = false
-            clearInterval(this.timer)
-            this.yzmText = '获取验证码'
-            return
-          }
-          this.yzmText = `已发送 (${total--}s)`
-        }, 1000)
-      }).catch(res => {
-        this.yzmLoad = false
-        this.yzmTag = false
-        this.yzmText = '获取验证码'
-      })
+      $ajax
+        .get(
+          {
+            url: `${hostEnv.lvzhuo}/userinfo/user/login/mobile`,
+            params: {
+              mobile: this.phoneNum
+            }
+          },
+          false
+        )
+        .then(res => {
+          this.yzmLoad = false
+          this.$message.success('验证码发送成功')
+          let total = 90
+          this.yzmText = `已发送 (${total}s)`
+          this.timer = setInterval(() => {
+            if (total <= 1) {
+              this.yzmTag = false
+              clearInterval(this.timer)
+              this.yzmText = '获取验证码'
+              return
+            }
+            this.yzmText = `已发送 (${total--}s)`
+          }, 1000)
+        })
+        .catch(res => {
+          this.yzmLoad = false
+          this.yzmTag = false
+          this.yzmText = '获取验证码'
+        })
     },
-    msgLogin () {
-      if (this.phoneNum === '' || !(/^(?:(?:\+|00)86)?1[3-9]\d{9}$/.test(this.phoneNum))) {
+    msgLogin() {
+      if (this.phoneNum === '' || !/^(?:(?:\+|00)86)?1[3-9]\d{9}$/.test(this.phoneNum)) {
         this.tipMsg = '请输入正确手机号'
         return
       }
@@ -153,30 +163,36 @@ export default {
       }
       this.loadingTwo = true
       this.loginText = '登录中...'
-      $ajax.postQuery({
-        url: `${hostEnv.lvzhuo}/userinfo/user/login/mobile`,
-        params: {
-          mobile: this.phoneNum,
-          captchaCode: this.phoneCode
-        }
-      }, false).then(res => {
-        this.loadingTwo = false
-        this.loginText = '登录成功'
-        window.sessionStorage.removeItem('protal-entry')
-        window.sessionStorage.setItem('loginInfo', JSON.stringify(res.data))
-        setTimeout(() => {
-          if (this.ConfigEnv === 'prod') {
-            window.location.href = '/home'
-          } else {
-            window.location.href = './protal-entry.html'
-          }
-        }, 300)
-      }).catch(res => {
-        this.loadingTwo = false
-        this.loginText = '登录'
-      })
+      $ajax
+        .postQuery(
+          {
+            url: `${hostEnv.lvzhuo}/userinfo/user/login/mobile`,
+            params: {
+              mobile: this.phoneNum,
+              captchaCode: this.phoneCode
+            }
+          },
+          false
+        )
+        .then(res => {
+          this.loadingTwo = false
+          this.loginText = '登录成功'
+          window.sessionStorage.removeItem('protal-entry')
+          window.sessionStorage.setItem('loginInfo', JSON.stringify(res.data))
+          setTimeout(() => {
+            if (this.ConfigEnv === 'prod') {
+              window.location.href = '/home'
+            } else {
+              window.location.href = './protal-entry.html'
+            }
+          }, 300)
+        })
+        .catch(res => {
+          this.loadingTwo = false
+          this.loginText = '登录'
+        })
     },
-    accountLogin () {
+    accountLogin() {
       if (this.userName === '') {
         this.tipLogin = '请输入账号'
         return
@@ -187,35 +203,41 @@ export default {
       }
       this.loginText = '登录中...'
       this.loadingOne = true
-      $ajax.postQuery({
-        url: `${hostEnv.lvzhuo}/userinfo/user/login/password`,
-        params: {
-          userName: this.userName,
-          password: this.userPass
-        }
-      }, false).then(res => {
-        this.loadingOne = false
-        this.loginText = '登录成功'
-        if (this.isCheck) {
-          window.localStorage.setItem('isRemember', JSON.stringify({ userName: this.userName }))
-        } else {
-          window.localStorage.removeItem('isRemember')
-        }
-        window.sessionStorage.removeItem('protal-entry')
-        window.sessionStorage.setItem('loginInfo', JSON.stringify(res.data))
-        setTimeout(() => {
-          if (this.ConfigEnv === 'prod') {
-            window.location.href = '/home'
+      $ajax
+        .postQuery(
+          {
+            url: `${hostEnv.lvzhuo}/userinfo/user/login/password`,
+            params: {
+              userName: this.userName,
+              password: this.userPass
+            }
+          },
+          false
+        )
+        .then(res => {
+          this.loadingOne = false
+          this.loginText = '登录成功'
+          if (this.isCheck) {
+            window.localStorage.setItem('isRemember', JSON.stringify({ userName: this.userName }))
           } else {
-            window.location.href = './protal-entry.html'
+            window.localStorage.removeItem('isRemember')
           }
-        }, 300)
-      }).catch(e => {
-        this.loadingOne = false
-        this.loginText = '登录'
-      })
+          window.sessionStorage.removeItem('protal-entry')
+          window.sessionStorage.setItem('loginInfo', JSON.stringify(res.data))
+          setTimeout(() => {
+            if (this.ConfigEnv === 'prod') {
+              window.location.href = '/home'
+            } else {
+              window.location.href = './protal-entry.html'
+            }
+          }, 300)
+        })
+        .catch(e => {
+          this.loadingOne = false
+          this.loginText = '登录'
+        })
     },
-    onChange (event) {
+    onChange(event) {
       this.isCheck = event.target.checked
     }
   }
@@ -228,15 +250,15 @@ export default {
     right: -30%;
   }
   100% {
-    right: 15%
+    right: 15%;
   }
 }
 @keyframes big {
   0% {
-    transform: scale(0)
+    transform: scale(0);
   }
   100% {
-    transform: scale(1)
+    transform: scale(1);
   }
 }
 .protal-login {
@@ -261,7 +283,7 @@ export default {
     font-size: 16px !important;
   }
   /deep/ .ant-input {
-    height: 38px !important
+    height: 38px !important;
   }
   .protal-dialog {
     animation: move 1s ease;
@@ -274,7 +296,7 @@ export default {
     text-align: center;
     .title {
       height: 50px;
-      color:#fff;
+      color: #fff;
       font-size: 32px;
       font-weight: 600;
       letter-spacing: 6px;
@@ -291,7 +313,7 @@ export default {
       border-radius: 10px;
       margin-top: 30px;
       height: 380px;
-      background-color:#fff;
+      background-color: #fff;
     }
   }
   .tip-error {
@@ -313,10 +335,12 @@ export default {
     border-radius: 20px;
     line-height: 45px;
     width: 100%;
-    margin-top: 40px
+    margin-top: 40px;
   }
   .yzm-btn {
-    background-color:#4d4cac;color:#fff; height: 36px;
+    background-color: #4d4cac;
+    color: #fff;
+    height: 36px;
   }
 }
 </style>

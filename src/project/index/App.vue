@@ -19,6 +19,7 @@ export default {
       autoImg,
       appList: [
         {
+          id: 0,
           name: '登录',
           url: 'protal-login'
         },
