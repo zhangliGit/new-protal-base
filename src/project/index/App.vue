@@ -24,6 +24,7 @@ export default {
           url: 'protal-login'
         },
         {
+          id: 1,
           name: '控制台',
           url: 'protal-entry'
         },
