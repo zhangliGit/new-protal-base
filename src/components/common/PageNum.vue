@@ -1,14 +1,22 @@
 <template>
-  <a-row class="pagination-com" :style="{marginTop: marTop + 'px', marginBottom: marBot + 'px'}" type="flex" justify="end" align="middle">
+  <a-row
+    class="pagination-com"
+    :style="{marginTop: marTop + 'px', marginBottom: marBot + 'px'}"
+    type="flex"
+    justify="end"
+    align="middle"
+  >
     <span class="page-total">一共{{ total }}条</span>
     <a-pagination
-      :pageSize.sync="pageList.size"
+      :pageSize.sync="value.size"
       :total="total"
+      :current="value.page"
       :size="size"
       showSizeChanger
       :showQuickJumper="jumper"
       @change="changePage"
-      @showSizeChange="changeSize" />
+      @showSizeChange="changeSize"
+    />
   </a-row>
 </template>
 
@@ -46,22 +54,21 @@ export default {
       }
     }
   },
-  data () {
+  data() {
     return {
       pageList: this.value
     }
   },
-  mounted () {
-  },
+  mounted() {},
   methods: {
-    changePage (page, size) {
+    changePage(page, size) {
       this.$emit('input', {
         page,
         size
       })
       this.$emit('change-page')
     },
-    changeSize (page, size) {
+    changeSize(page, size) {
       this.$emit('input', {
         page,
         size
@@ -73,10 +80,10 @@ export default {
 </script>
 
 <style lang="less" scoped>
-  .pagination-com {
-    padding-right: 10px;
-    .page-total {
-      margin-right: 10px;
-    }
+.pagination-com {
+  padding-right: 10px;
+  .page-total {
+    margin-right: 10px;
   }
+}
 </style>
