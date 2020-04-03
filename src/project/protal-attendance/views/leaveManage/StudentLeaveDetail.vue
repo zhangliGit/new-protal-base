@@ -12,13 +12,15 @@
         <span>{{ item.val }}</span>
       </p>
     </div>
-    <!--     <div class="pic qui-fx-wp">
+    <div class="info">
       <p>
         <span>图片</span>
         <span>:</span>
-        <span></span>
+        <span v-for="(elem, i) in photoList" :key="i">
+          <img class="img" :src="elem" alt="">
+        </span>
       </p>
-    </div> -->
+    </div>
     <a-menu :defaultSelectedKeys="['title']" mode="horizontal">
       <a-menu-item key="title">审批流程</a-menu-item>
     </a-menu>
@@ -38,15 +40,15 @@
     <div class="title">
       <p>抄送人</p>
     </div>
-    <div class="process qui-fx-jsb qui-fx-ac" v-for="item in leaveData" :key="item.id">
+    <div class="process qui-fx-jsb qui-fx-ac" v-for="item in copyList" :key="item.id">
       <div class="qui-fx-jsa qui-fx-ac">
-        <img :src="item.photoPic" alt="">
+        <img :src="item.photoUrl" alt="">
         <div class="qui-fx-ver">
-          <span>{{ item.name }}</span>
-          <span>{{ item.status | getStatus() }}</span>
+          <span>{{ item.userName }}</span>
+          <span>{{ item.state === '0' ? '未读' : '已读' }}</span>
         </div>
       </div>
-      <span>{{ item.dealTime }}</span>
+      <span>{{ item.state === '0' ? '--' : item.readTime }}</span>
     </div>
   </div>
 </template>
@@ -63,43 +65,44 @@ export default {
       detailInfo: [
         {
           key: '姓名',
-          val: '张三'
+          val: ''
         },
         {
           key: '年级',
-          val: '一年级'
+          val: ''
         },
         {
           key: '班级',
-          val: '1班'
+          val: ''
         },
         {
           key: '请假事由',
-          val: '事假'
+          val: ''
         },
         {
           key: '是否出校',
-          val: '是'
+          val: ''
         },
         {
           key: '审批单号',
-          val: '20191210113331957'
+          val: ''
         },
         {
           key: '请假时间',
-          val: '2019-12-10 11:31:00 ~ 2019-12-11 11:31:00'
+          val: ''
         },
         {
           key: '请假时长',
-          val: '24小时'
+          val: ''
         },
         {
           key: '审批状态',
-          val: '审批通过'
+          val: ''
         }
       ],
       title: '基本信息',
-      leaveData: [],
+      photoList: [],
+      copyList: [],
       approveName: '',
       approveState: 0,
       approveTime: '',
@@ -111,16 +114,25 @@ export default {
   },
   methods: {
     ...mapActions('home', [
-      'studentsLeaveProcess', 'getLeaveDetail'
+      'getStudentLeaveDetail'
     ]),
     async showData () {
-      const res = await this.getLeaveDetail(this.$route.query.id)
-      this.leaveData = res.data
-      console.log(this.leaveData)
-      this.approveName = this.leaveData[0].name
-      this.approveTime = this.leaveData[0].dealTime
-      this.approveImg = this.leaveData[0].photoPic
-      this.approveState = this.leaveData[0].status === 1 ? '待审批' : this.leaveData[0].status === 2 ? '审批通过' : '审批不通过'
+      const res = await this.getStudentLeaveDetail(this.$route.query.id)
+      this.detailInfo[0].val = res.data.userName
+      this.detailInfo[1].val = res.data.gradeName
+      this.detailInfo[2].val = res.data.className
+      this.detailInfo[3].val = res.data.reason
+      this.detailInfo[4].val = res.data.outSchool === 'Y' ? '是' : '否'
+      this.detailInfo[5].val = res.data.oddNumbers
+      this.detailInfo[6].val = new Date(res.data.startTime).toLocaleString() + ' ~ ' + new Date((res.data.endTime)).toLocaleString()
+      this.detailInfo[7].val = res.data.duration + '小时'
+      this.detailInfo[8].val = this.$tools.getState(res.data.state)
+      this.approveName = res.data.leaveApprovalAddDto.userName
+      this.approveTime = res.data.state === '0' ? '--' : new Date(res.data.initiationTime).toLocaleString()
+      this.approveImg = res.data.leaveApprovalAddDto.photoUrl
+      this.approveState = this.$tools.getState(res.data.state)
+      this.copyList = res.data.leaveCopyList
+      this.photoList = res.data.photoList
     }
   }
 }
@@ -158,6 +170,13 @@ export default {
       border-radius: 100%;
       margin-right: 10px;
     }
+  }
+  .img{
+    width: 60px;
+      height: 60px;
+      background: #ddd;
+      margin-right: 10px;
+      margin: 0 10px;
   }
 }
 </style>

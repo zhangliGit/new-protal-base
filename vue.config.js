@@ -123,78 +123,60 @@ module.exports = {
           '^/wangxuanzhang': ''
         }
       },
-<<<<<<< HEAD
       'zhuxu': {
-        // target: 'http://192.168.1.24:10060/', // zhuxu
-        target: 'http://39.97.164.4:10067/',
-=======
-      zhuxu: {
         target: 'http://39.97.164.4:8081/', // zhuxu
->>>>>>> c39dddea912dced1b370a8a66096adc53da4d5f6
         changeOrigin: true,
         pathRewrite: {
           '^/zhuxu': ''
         }
       },
-<<<<<<< HEAD
       'zhangkun': {
-        // target: 'http://192.168.1.23:10050/', // zhangkun
-        target: 'http://pugai.natapp1.cc/',
-=======
-      zhangkun: {
         target: 'http://39.97.164.4:8081/', // zhangkun
->>>>>>> c39dddea912dced1b370a8a66096adc53da4d5f6
         changeOrigin: true,
         pathRewrite: {
           '^/zhangkun': ''
         }
       },
-      gejunwei: {
+      'gejunwei': {
         target: 'http://39.97.164.4:8081/', // gejunwei
         changeOrigin: true,
         pathRewrite: {
           '^/gejunwei': ''
         }
       },
-<<<<<<< HEAD
       'lvzhuo': {
-        // target: 'http://192.168.1.46:1010/', // lvzhuo
-        target: 'http://39.97.164.4:10067/',
-=======
-      lvzhuo: {
         target: 'http://39.97.164.4:8081/', // lvzhuo
         changeOrigin: true,
         pathRewrite: {
           '^/lvzhuo': ''
         }
       },
-      wxz: {
+      'wxz': {
         target: 'http://39.97.164.4:8081/', // 王选章
         changeOrigin: true,
         pathRewrite: {
-          '^/lvzhuo': ''
+          '^/wxz': ''
         }
       },
-      lz: {
+      'lz': {
         target: 'http://39.97.164.4:10067/', // 吕卓
         changeOrigin: true,
         pathRewrite: {
-          '^/lvzhuo': ''
+          '^/lz': ''
         }
       },
-      zx: {
+      'zx': {
         target: 'http://39.97.164.4:10160/', // 朱旭
         changeOrigin: true,
         pathRewrite: {
-          '^/lvzhuo': ''
+          '^/zx': ''
         }
       },
-      zk: {
+      'zk': {
         target: 'http://pugai.natapp1.cc/', // 张坤
->>>>>>> c39dddea912dced1b370a8a66096adc53da4d5f6
         changeOrigin: true,
         pathRewrite: {
-          '^/lvzhuo': ''
+          '^/zk': ''
         }
       }
     }

@@ -12,13 +12,6 @@
         <span>{{ item.val }}</span>
       </p>
     </div>
-    <!--     <div class="pic qui-fx-wp">
-      <p>
-        <span>图片</span>
-        <span>:</span>
-        <span></span>
-      </p>
-    </div> -->
     <a-menu :defaultSelectedKeys="['title']" mode="horizontal">
       <a-menu-item key="title">审批流程</a-menu-item>
     </a-menu>
@@ -40,13 +33,13 @@
     </div>
     <div class="process qui-fx-jsb qui-fx-ac" v-for="item in copyList" :key="item.id">
       <div class="qui-fx-jsa qui-fx-ac">
-        <img :src="item.photoPic" alt="">
+        <img :src="item.photoUrl" alt="">
         <div class="qui-fx-ver">
           <span>{{ item.userName }}</span>
-          <span>{{ item.state | getStatus() }}</span>
+          <span>{{ item.state === '0' ? '未读' : '已读' }}</span>
         </div>
       </div>
-      <span>{{ item.dealTime }}</span>
+      <span>{{ item.state === '0' ? '--' : item.readTime }}</span>
     </div>
   </div>
 </template>
@@ -107,10 +100,10 @@ export default {
   },
   methods: {
     ...mapActions('home', [
-      'getLeaveDetail'
+      'getTeacherLeaveDetail'
     ]),
     async showData () {
-      const res = await this.getLeaveDetail(this.$route.query.id)
+      const res = await this.getTeacherLeaveDetail(this.$route.query.id)
       this.detailInfo[0].val = res.data.userName
       this.detailInfo[1].val = res.data.orgName
       this.detailInfo[2].val = res.data.reason

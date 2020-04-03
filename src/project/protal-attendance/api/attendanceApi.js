@@ -12,6 +12,6 @@ const homeApi = {
   getStudentsAccessSet: '/studentAccessSet#get' // 考勤组设置学生
 }
 for (const val in homeApi) {
-  homeApi[val] = `${hostEnv.lvzhuo}${homeApi[val]}`
+  homeApi[val] = `${hostEnv.lz}${homeApi[val]}`
 }
 export default homeApi

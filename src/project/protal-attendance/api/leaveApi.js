@@ -7,12 +7,11 @@ import hostEnv from '@config/host-env'
 
 const homeApi = {
   getTeachersLeave: '/teacher/leave/list#post', // 教职工请假列表
-  teachersLeaveProcess: '/leaveApprove#get', // 教职工请假审批流程
-  getStudentsLeave: '/teacherLeave#get', // 学生请假列表
-  studentsLeaveProcess: '/leaveApprove#get', // 学生请假审批流程
-  getLeaveDetail: '/teacher/leave/detailById#getUrl' // 请假详情
+  getStudentsLeave: '/student/leave/list#post', // 学生请假列表
+  getTeacherLeaveDetail: '/teacher/leave/detailById#getUrl', // 教职工请假详情
+  getStudentLeaveDetail: '/student/leave/detailById#getUrl' // 学生请假详情
 }
 for (const val in homeApi) {
-  homeApi[val] = `${hostEnv.zhangkun}${homeApi[val]}`
+  homeApi[val] = `${hostEnv.zk}${homeApi[val]}`
 }
 export default homeApi

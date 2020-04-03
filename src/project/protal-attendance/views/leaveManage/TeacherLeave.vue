@@ -24,13 +24,13 @@
           </div>
         </template>
       </table-list>
-      <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
+      <page-num v-model="pageList" :total="total" @change-page="showList(searchObj)"></page-num>
     </div>
   </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import SearchForm from '@c/SearchForm'
 import OrgTree from '@c/OrgTree'
@@ -203,12 +203,13 @@ export default {
     return {
       searchLabel,
       columns,
-      total: 100,
+      total: 1,
       pageList: {
         page: 1,
         size: 20
       },
       userList: [],
+      orgCode: '',
       searchObj: {
         startTime: '',
         endTime: '',
@@ -220,14 +221,16 @@ export default {
   async mounted() {
     this.showList()
   },
+  computed: {
+    ...mapState('home', ['userInfo'])
+  },
   methods: {
     ...mapActions('home', ['getTeachersLeave']),
     async showList(searchObj = this.searchObj) {
       const req = {
         ...this.pageList,
-        orgId: '',
-        outSchool: '',
-        schoolCode: '',
+        orgId: this.orgCode,
+        schoolCode: this.userInfo.schoolCode,
         ...searchObj
       }
       const res = await this.getTeachersLeave(req)
@@ -235,7 +238,8 @@ export default {
       this.total = res.data.total
     },
     select(item) {
-      console.log(item)
+      this.orgCode = item.code
+      this.showList(this.searchObj)
     },
     searchForm(values) {
       console.log(values)
