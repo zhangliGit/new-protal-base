@@ -9,6 +9,10 @@ let zhuxu = ''
 let lvzhuo = ''
 let zhangkun = ''
 let gejunwei = ''
+let wxz = ''
+let zk = ''
+let lz = ''
+let zx = ''
 
 if (ConfigEnv === 'test') {
   wangxuanzhang = '/wangxuanzhang' // 控制中心
@@ -16,18 +20,28 @@ if (ConfigEnv === 'test') {
   zhangkun = '/zhangkun'
   gejunwei = '/lvzhuo'
   lvzhuo = '/lvzhuo'
-} else if (ConfigEnv === 'prod') { // 线上接口
+} else if (ConfigEnv === 'prod') {
+  // 线上接口
   wangxuanzhang = '/web-protal/controlCenter'
   zhuxu = '/web-protal/application'
   zhangkun = '/web-protal/canpoint-school-view'
   gejunwei = '/web-protal/plateform-userinfo-view'
   lvzhuo = '/web-protal/plateform-userinfo-view'
 } else {
-  wangxuanzhang = '/wangxuanzhang' // 控制中心
-  zhuxu = '/zhuxu'
-  zhangkun = '/zhangkun'
-  gejunwei = '/lvzhuo'
-  lvzhuo = '/lvzhuo'
+  // wangxuanzhang = '/wangxuanzhang' // 控制中心
+  // zhuxu = '/zhuxu'
+  // zhangkun = '/zhangkun'
+  // gejunwei = '/lvzhuo'
+  // lvzhuo = '/lvzhuo'
+  wangxuanzhang = '/wangxuanzhang/web-protal/controlCenter'
+  zhuxu = '/zhuxu/web-protal/application'
+  zhangkun = '/zhangkun/web-protal/canpoint-school-view'
+  gejunwei = '/gejunwei/web-protal/plateform-userinfo-view'
+  lvzhuo = '/lvzhuo/web-protal/plateform-userinfo-view'
+  wxz = '/wxz'
+  zx = '/zx'
+  lz = '/lz'
+  zk = '/zk'
 }
 
 export default {
@@ -35,5 +49,9 @@ export default {
   zhuxu,
   zhangkun,
   gejunwei,
-  lvzhuo
+  lvzhuo,
+  wxz,
+  zx,
+  lz,
+  zk
 }
