@@ -54,6 +54,11 @@ export default {
     return {
       searchLabel,
       pageList: {
+        endDay: '',
+        orgCode: '',
+        schoolCode: '',
+        searchKey: '',
+        startDay: '',
         page: 1,
         size: 20
       },

@@ -8,7 +8,7 @@ const vm = new Vue({})
 
 const Tools = {
   // 根据时间戳获取日期
-  getDate (t) {
+  getDate(t) {
     const d = new Date(t)
     const time =
       d.getFullYear() +
@@ -29,31 +29,31 @@ const Tools = {
     return new Date(date.replace(/-/g, '/'))
   },
   // 设置table滚动高度
-  setScroll (id) {
+  setScroll(id) {
     if (document.getElementById(id)) {
       return document.getElementById(id).offsetHeight - 40
     }
   },
   // 延迟处理方法
-  goNext: (fn) => {
+  goNext: fn => {
     setTimeout(() => {
       fn()
     }, 1200)
   },
   // 删除提示
-  delTip (title = '确定删除吗?', fn) {
+  delTip(title = '确定删除吗?', fn) {
     vm.$Modal.confirm({
       title,
       okText: '确定',
       okType: 'danger',
       cancelText: '取消',
-      onOk () {
+      onOk() {
         fn()
       }
     })
   },
   // 表单回填
-  fillForm (autoForm, record) {
+  fillForm(autoForm, record) {
     return autoForm.map(item => {
       var initValue
       initValue = record[item.value] || ''
@@ -73,7 +73,7 @@ const Tools = {
     })
   },
   // 获取性别
-  getSex (text) {
+  getSex(text) {
     const sex = parseInt(text)
     if (sex === 1) {
       return '男'
@@ -96,26 +96,30 @@ const Tools = {
     }
   },
   // 加载图片错误处理
-  errorImg (event, img) {
+  errorImg(event, img) {
     event.target.src = img || autoImg
   },
   // 控制组类型
-  controlTypeName (type) {
+  controlTypeName(type) {
     let name
     switch (parseInt(type)) {
-      case 1: name = '进控制组'
+      case 1:
+        name = '进控制组'
         break
-      case 2: name = '出控制组'
+      case 2:
+        name = '出控制组'
         break
-      case 3: name = '数据采集控制组'
+      case 3:
+        name = '数据采集控制组'
         break
-      default: name = '暂无类型'
+      default:
+        name = '暂无类型'
         break
     }
     return name
   },
   // 设备组类型
-  deviceTypeName (type) {
+  deviceTypeName(type) {
     let name
     switch (parseInt(type)) {
       case 1:
@@ -134,7 +138,7 @@ const Tools = {
     return name
   },
   // 业务类型类型
-  busTypeName (type) {
+  busTypeName(type) {
     let name
     switch (parseInt(type)) {
       case 1:
