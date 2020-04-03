@@ -5,10 +5,7 @@
 
 import axios from 'axios'
 import qs from 'qs'
-import {
-  Modal,
-  message
-} from 'ant-design-vue'
+import { Modal, message } from 'ant-design-vue'
 import Vue from 'vue'
 let loading
 message.config({
@@ -23,33 +20,39 @@ axios.defaults.timeout = 15000
 axios.defaults.withCredentials = true // 让ajax携带cookie
 
 // 设置公用请求头
-const {
-  token = '', userCode = '', schoolCode = ''
-} = JSON.parse(window.sessionStorage.getItem('loginInfo') || JSON.stringify({}))
+const { token = '', userCode = '', schoolCode = '' } = JSON.parse(
+  window.sessionStorage.getItem('loginInfo') || JSON.stringify({})
+)
 axios.defaults.headers.common['token'] = token
 axios.defaults.headers.common['userCode'] = userCode
 axios.defaults.headers.common['schoolCode'] = schoolCode
 
 // 拦截请求
-axios.interceptors.request.use(function (config) {
-  return config
-}, function (error) {
-  return Promise.reject(error)
-})
+axios.interceptors.request.use(
+  function(config) {
+    return config
+  },
+  function(error) {
+    return Promise.reject(error)
+  }
+)
 
 // 拦截响应
-axios.interceptors.response.use(function (response) {
-  return response
-}, function (error) {
-  return Promise.reject(error)
-})
+axios.interceptors.response.use(
+  function(response) {
+    return response
+  },
+  function(error) {
+    return Promise.reject(error)
+  }
+)
 
 const showToast = (tip = '') => {
   loading = vm.$message.loading('处理中...', 0)
 }
 
 // 处理响应结果
-function responseRes (res) {
+function responseRes(res) {
   // 清除加载
   setTimeout(loading, 0)
   return new Promise((resolve, reject) => {
@@ -60,7 +63,7 @@ function responseRes (res) {
         title: '提示',
         okText: '确定',
         content: '认证过期，请重新登录',
-        onOk: function () {}
+        onOk: function() {}
       })
     } else {
       Modal.warning({
@@ -72,7 +75,7 @@ function responseRes (res) {
   })
 }
 const $ajax = {
-  async get (obj, tag = true) {
+  async get(obj, tag = true) {
     if (tag) showToast()
     try {
       let res = await axios.get(obj.url, {
@@ -84,7 +87,7 @@ const $ajax = {
       return responseRes(err.response.data)
     }
   },
-  async postForm (obj, tag = true) {
+  async postForm(obj, tag = true) {
     if (tag) showToast()
     try {
       let res = await axios.post(obj.url, qs.stringify(obj.params))
@@ -94,7 +97,7 @@ const $ajax = {
       return responseRes(err.response.data)
     }
   },
-  async post (obj, tag = true) {
+  async post(obj, tag = true) {
     if (tag) showToast()
     try {
       let res = await axios({
@@ -111,7 +114,7 @@ const $ajax = {
       return responseRes(err.response.data)
     }
   },
-  async postQuery (obj, tag = true) {
+  async postQuery(obj, tag = true) {
     if (tag) showToast()
     let url = obj.url + '?'
     for (const key in obj.params) {
@@ -125,7 +128,7 @@ const $ajax = {
       return responseRes(err.response.data)
     }
   },
-  async del (obj, tag = true) {
+  async del(obj, tag = true) {
     if (tag) showToast()
     try {
       let res = await axios.delete(obj.url, {})
@@ -135,7 +138,21 @@ const $ajax = {
       return responseRes(err.response.data)
     }
   },
-  async put (obj, tag = true) {
+  async delQuery(obj, tag = true) {
+    if (tag) showToast()
+    let url = obj.url + '?'
+    for (const key in obj.params) {
+      url += key + '=' + obj.params[key] + '&'
+    }
+    try {
+      let res = await axios.delete(url, {})
+      res = res.data
+      return responseRes(res)
+    } catch (err) {
+      return responseRes(err.response.data)
+    }
+  },
+  async put(obj, tag = true) {
     if (tag) showToast()
     try {
       let res = await axios.put(obj.url, qs.stringify(obj.params))
@@ -145,7 +162,7 @@ const $ajax = {
       return responseRes(err.response.data)
     }
   },
-  async getWithPara (obj, tag = true) {
+  async getWithPara(obj, tag = true) {
     if (tag) showToast()
     try {
       let res = await axios({

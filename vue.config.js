@@ -6,7 +6,7 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 const webpack = require('webpack')
 const uploadZip = require('./build/upload-zip')
 
-function resolve (dir) {
+function resolve(dir) {
   return path.join(__dirname, dir)
 }
 const isProduction = process.env.NODE_ENV === 'production'
@@ -77,9 +77,7 @@ module.exports = {
           analyzerPort: 8891
         })
       )
-      config.plugins.push(
-        new uploadZip()
-      )
+      config.plugins.push(new uploadZip())
       if (isCdn) {
         config.externals = {
           vue: 'Vue',
@@ -119,35 +117,63 @@ module.exports = {
     proxy: {
       // 控制中心接口代理
       '/wangxuanzhang': {
-        target: 'http://192.168.1.123:10090', // wangxuanzhang
+        target: 'http://39.97.164.4:8081/', // wangxuanzhang
         changeOrigin: true,
         pathRewrite: {
           '^/wangxuanzhang': ''
         }
       },
-      'zhuxu': {
-        target: 'http://192.168.1.24:10060/', // zhuxu
+      zhuxu: {
+        target: 'http://39.97.164.4:8081/', // zhuxu
         changeOrigin: true,
         pathRewrite: {
           '^/zhuxu': ''
         }
       },
-      'zhangkun': {
-        target: 'http://192.168.1.23:10050/', // zhangkun
+      zhangkun: {
+        target: 'http://39.97.164.4:8081/', // zhangkun
         changeOrigin: true,
         pathRewrite: {
           '^/zhangkun': ''
         }
       },
-      'gejunwei': {
-        target: 'http://192.168.1.46:1010/', // gejunwei
+      gejunwei: {
+        target: 'http://39.97.164.4:8081/', // gejunwei
         changeOrigin: true,
         pathRewrite: {
           '^/gejunwei': ''
         }
       },
-      'lvzhuo': {
-        target: 'http://192.168.1.46:1010/', // lvzhuo
+      lvzhuo: {
+        target: 'http://39.97.164.4:8081/', // lvzhuo
+        changeOrigin: true,
+        pathRewrite: {
+          '^/lvzhuo': ''
+        }
+      },
+      wxz: {
+        target: 'http://39.97.164.4:8081/', // 王选章
+        changeOrigin: true,
+        pathRewrite: {
+          '^/lvzhuo': ''
+        }
+      },
+      lz: {
+        target: 'http://39.97.164.4:10067/', // 吕卓
+        changeOrigin: true,
+        pathRewrite: {
+          '^/lvzhuo': ''
+        }
+      },
+      zx: {
+        target: 'http://39.97.164.4:10160/', // 朱旭
+        changeOrigin: true,
+        pathRewrite: {
+          '^/lvzhuo': ''
+        }
+      },
+      zk: {
+        target: 'http://pugai.natapp1.cc/', // 张坤
         changeOrigin: true,
         pathRewrite: {
           '^/lvzhuo': ''
@@ -160,12 +186,11 @@ module.exports = {
   transpileDependencies: []
 }
 
-function addStyleResource (rule) {
-  rule.use('style-resource')
+function addStyleResource(rule) {
+  rule
+    .use('style-resource')
     .loader('style-resources-loader')
     .options({
-      patterns: [
-        path.resolve(__dirname, 'src/assets/css/variables.less')
-      ]
+      patterns: [path.resolve(__dirname, 'src/assets/css/variables.less')]
     })
 }

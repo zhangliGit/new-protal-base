@@ -12,13 +12,13 @@
               <a-form-item v-if="item.type === 'selectInput'">
                 <a-input
                   :placeholder="item.placeholder"
+                  style="width: 220px"
                   v-decorator="[
                     item.value,
                     {
                       rules: [{ required: false, message: item.placeholder || '请输入' }],
                     },
                   ]"
-                  style="width: 120px"
                 >
                   <a-select
                     slot="addonBefore"
@@ -38,6 +38,7 @@
               <a-form-item :label="item.label" v-if="item.type === 'input'">
                 <a-input
                   :placeholder="item.placeholder"
+                  style="width: 120px"
                   v-decorator="[
                     item.value,
                     {rules: [
