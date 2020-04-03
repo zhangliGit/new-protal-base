@@ -3,21 +3,26 @@
  * @remak 接口路径后面加#{类型} 如 #post  #get #del
  */
 
-import hostEnv from '@config/host-env'
+// import hostEnv from '@config/host-env'
 
 const teacherApi = {
-  getTeacherRecord: '/teacher/record#get', // 老师考勤记录
+  getTeacherRecord: '/teacher/static/record/list#post', // 老师考勤记录
+  getTeacherStatistics: '/teacher/static/list#post', // 老师考勤统计
+  getStudentRecord: '/student/static/record/list#post', // 学生考勤记录
+  getStudentStatistics: '/student/static/list#get', // 学生考勤统计
+
+  studentAccess: '/msg/setting/access#post', // 学生出入通知
+  studentNoEnter: '/msg/setting/no/enter#post', // 学生未到校通知
+  studentRetention: '/msg/setting/retention#post', // 学生滞留通知
+
   getTeacherOperate: '/teacher/operate/record#get', // 老师考勤操作记录
-  getTeacherStatistics: '/teacher/statistics#get', // 老师考勤统计
   getTeacherDetail: '/teacher/statistics/detail#get', // 老师考勤统计详情
-  getStudentRecord: '/student/record#get', // 学生考勤记录
-  getStudentStatistics: '/student/statistics#get', // 学生考勤统计
   getTeacherInfo: '/teacher/record/info#get', // 教职工考勤记录基本信息
   getStudentInfo: '/student/record/info#get', // 学生考勤记录基本信息
   getStudentOperate: '/student/operate/record#get', // 学生考勤操作记录
   getStudentDetail: '/student/statistics/detail#get' // 学生考勤统计详情
 }
 for (const val in teacherApi) {
-  teacherApi[val] = `${hostEnv}${teacherApi[val]}`
+  teacherApi[val] = `lvzhuo${teacherApi[val]}`
 }
 export default teacherApi

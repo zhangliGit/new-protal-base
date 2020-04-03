@@ -106,6 +106,14 @@ export default {
     return {
       searchLabel,
       pageList: {
+        orgCode: '1',
+        searchKey: '1',
+        startDay: '2020-02-01',
+        endDay: '2020-04-01',
+        onStatue: '1',
+        offStatue: '1',
+        schoolCode: '1',
+        // teacherRecordListDto: [],
         page: 1,
         size: 20
       },
