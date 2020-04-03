@@ -24,6 +24,10 @@ const Tools = {
       (d.getSeconds() > 9 ? d.getSeconds() : '0' + d.getSeconds())
     return time
   },
+  // 根据日期获取时间撮
+  getDateTime (date) {
+    return new Date(date.replace(/-/g, '/'))
+  },
   // 设置table滚动高度
   setScroll (id) {
     if (document.getElementById(id)) {
@@ -77,6 +81,18 @@ const Tools = {
       return '女'
     } else {
       return '未知'
+    }
+  },
+  // 审批状态
+  getState (text) {
+    if (text === '0') {
+      return '待审批'
+    } else if (text === '1') {
+      return '审批通过'
+    } else if (text === '2') {
+      return '审批不通过'
+    } else if (text === '3') {
+      return '撤销'
     }
   },
   // 加载图片错误处理

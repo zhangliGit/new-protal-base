@@ -38,12 +38,12 @@
     <div class="title">
       <p>抄送人</p>
     </div>
-    <div class="process qui-fx-jsb qui-fx-ac" v-for="item in leaveData" :key="item.id">
+    <div class="process qui-fx-jsb qui-fx-ac" v-for="item in copyList" :key="item.id">
       <div class="qui-fx-jsa qui-fx-ac">
         <img :src="item.photoPic" alt="">
         <div class="qui-fx-ver">
-          <span>{{ item.name }}</span>
-          <span>{{ item.status | getStatus() }}</span>
+          <span>{{ item.userName }}</span>
+          <span>{{ item.state | getStatus() }}</span>
         </div>
       </div>
       <span>{{ item.dealTime }}</span>
@@ -63,39 +63,39 @@ export default {
       detailInfo: [
         {
           key: '姓名',
-          val: '张三'
+          val: ''
         },
         {
           key: '组织机构',
-          val: '教务处'
+          val: ''
         },
         {
           key: '请假事由',
-          val: '事假'
+          val: ''
         },
         {
           key: '是否出校',
-          val: '是'
+          val: ''
         },
         {
           key: '审批单号',
-          val: '20191210113331957'
+          val: ''
         },
         {
           key: '请假时间',
-          val: '2019-12-10 11:31:00 ~ 2019-12-11 11:31:00'
+          val: ''
         },
         {
           key: '请假时长',
-          val: '24小时'
+          val: ''
         },
         {
           key: '审批状态',
-          val: '审批通过'
+          val: ''
         }
       ],
       title: '基本信息',
-      leaveData: [],
+      copyList: [],
       approveName: '',
       approveState: 0,
       approveTime: '',
@@ -107,16 +107,23 @@ export default {
   },
   methods: {
     ...mapActions('home', [
-      'teachersLeaveProcess'
+      'getLeaveDetail'
     ]),
     async showData () {
-      const res = await this.teachersLeaveProcess()
-      this.leaveData = res.data
-      console.log(this.leaveData)
-      this.approveName = this.leaveData[0].name
-      this.approveTime = this.leaveData[0].dealTime
-      this.approveImg = this.leaveData[0].photoPic
-      this.approveState = this.leaveData[0].status === 1 ? '待审批' : this.leaveData[0].status === 2 ? '审批通过' : '审批不通过'
+      const res = await this.getLeaveDetail(this.$route.query.id)
+      this.detailInfo[0].val = res.data.userName
+      this.detailInfo[1].val = res.data.orgName
+      this.detailInfo[2].val = res.data.reason
+      this.detailInfo[3].val = res.data.outSchool === 'Y' ? '是' : '否'
+      this.detailInfo[4].val = res.data.oddNumbers
+      this.detailInfo[5].val = new Date(res.data.startTime).toLocaleString() + ' ~ ' + new Date((res.data.endTime)).toLocaleString()
+      this.detailInfo[6].val = res.data.duration + '小时'
+      this.detailInfo[7].val = this.$tools.getState(res.data.state)
+      this.approveName = res.data.leaveApprovalAddDto.userName
+      this.approveTime = res.data.state === '0' ? '--' : new Date(res.data.initiationTime).toLocaleString()
+      this.approveImg = res.data.leaveApprovalAddDto.photoUrl
+      this.approveState = this.$tools.getState(res.data.state)
+      this.copyList = res.data.leaveCopyList
     }
   }
 }

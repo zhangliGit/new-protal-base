@@ -111,10 +111,10 @@ export default {
   },
   methods: {
     ...mapActions('home', [
-      'studentsLeaveProcess'
+      'studentsLeaveProcess', 'getLeaveDetail'
     ]),
     async showData () {
-      const res = await this.studentsLeaveProcess()
+      const res = await this.getLeaveDetail(this.$route.query.id)
       this.leaveData = res.data
       console.log(this.leaveData)
       this.approveName = this.leaveData[0].name

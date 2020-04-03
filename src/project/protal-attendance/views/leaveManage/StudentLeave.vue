@@ -13,13 +13,8 @@
       <table-list :page-list="pageList" :columns="columns" :table-list="userList">
         <template v-slot:actions="action">
           <div>
-            <a-tooltip placement="topLeft" title="详情">
-              <a-button
-                size="small"
-                style="margin-right: 5px; background: #909399; color:#fff"
-                icon="ellipsis"
-                @click="detail(action.record)"
-              ></a-button>
+            <a-tooltip placement="topLeft" title="详情" @click="detail(action.record)">
+              <a-button size="small" class="detail-action-btn" icon="form"></a-button>
             </a-tooltip>
           </div>
         </template>

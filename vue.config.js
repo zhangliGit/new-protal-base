@@ -126,14 +126,16 @@ module.exports = {
         }
       },
       'zhuxu': {
-        target: 'http://192.168.1.24:10060/', // zhuxu
+        // target: 'http://192.168.1.24:10060/', // zhuxu
+        target: 'http://39.97.164.4:10067/',
         changeOrigin: true,
         pathRewrite: {
           '^/zhuxu': ''
         }
       },
       'zhangkun': {
-        target: 'http://192.168.1.23:10050/', // zhangkun
+        // target: 'http://192.168.1.23:10050/', // zhangkun
+        target: 'http://pugai.natapp1.cc/',
         changeOrigin: true,
         pathRewrite: {
           '^/zhangkun': ''
@@ -147,7 +149,8 @@ module.exports = {
         }
       },
       'lvzhuo': {
-        target: 'http://192.168.1.46:1010/', // lvzhuo
+        // target: 'http://192.168.1.46:1010/', // lvzhuo
+        target: 'http://39.97.164.4:10067/',
         changeOrigin: true,
         pathRewrite: {
           '^/lvzhuo': ''
