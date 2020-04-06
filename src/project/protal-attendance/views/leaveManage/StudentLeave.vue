@@ -13,31 +13,26 @@
       <table-list :page-list="pageList" :columns="columns" :table-list="userList">
         <template v-slot:actions="action">
           <div>
-            <a-tooltip placement="topLeft" title="详情">
-              <a-button
-                size="small"
-                style="margin-right: 5px; background: #909399; color:#fff"
-                icon="ellipsis"
-                @click="detail(action.record)"
-              ></a-button>
+            <a-tooltip placement="topLeft" title="详情" @click="detail(action.record)">
+              <a-button size="small" class="detail-action-btn" icon="form"></a-button>
             </a-tooltip>
           </div>
         </template>
       </table-list>
-      <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
+      <page-num v-model="pageList" :total="total" @change-page="showList(searchObj)"></page-num>
     </div>
   </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import SearchForm from '@c/SearchForm'
 import GradeTree from '@c/GradeTree'
 import PageNum from '@c/PageNum'
 const searchLabel = [
   {
-    value: 'name', // 表单属性
+    value: 'userName', // 表单属性
     type: 'input', // 表单类型
     label: '姓名', // 表单label值
     placeholder: '请输入姓名' // 表单默认值(非必选字段)
@@ -55,19 +50,23 @@ const searchLabel = [
         val: '全部'
       },
       {
-        key: 1,
+        key: '0',
         val: '待审批'
       },
       {
-        key: 2,
+        key: '1',
         val: '审批通过'
       },
       {
-        key: 3,
+        key: '2',
         val: '审批不通过'
+      },
+      {
+        key: '3',
+        val: '撤回'
       }
     ],
-    value: 'status',
+    value: 'state',
     type: 'select',
     label: '状态'
   },
@@ -78,15 +77,15 @@ const searchLabel = [
         val: '全部'
       },
       {
-        key: 1,
+        key: 'Y',
         val: '是'
       },
       {
-        key: 2,
+        key: 'N',
         val: '否'
       }
     ],
-    value: 'isOut',
+    value: 'outSchool',
     type: 'select',
     label: '是否出校'
   }
@@ -101,64 +100,73 @@ const columns = [
   },
   {
     title: '审批单号',
-    dataIndex: 'num',
+    dataIndex: 'oddNumbers',
     width: '7%'
   },
   {
     title: '请假人姓名',
-    dataIndex: 'name',
+    dataIndex: 'userName',
     width: '7%'
   },
   {
     title: '年级',
-    dataIndex: 'grade',
+    dataIndex: 'gradeName',
     width: '7%'
   },
   {
     title: '班级',
-    dataIndex: 'class',
+    dataIndex: 'className',
     width: '7%'
   },
   {
     title: '事由',
-    dataIndex: 'cause',
+    dataIndex: 'reason',
     width: '7%'
   },
   {
     title: '是否出校',
-    dataIndex: 'isOut',
+    dataIndex: 'outSchool',
     width: '7%',
     customRender: text => {
-      if (text === 1) {
+      if (text === 'Y') {
         return '是'
-      } else {
+      } else if (text === 'N') {
         return '否'
       }
     }
   },
   {
     title: '申请人姓名',
-    dataIndex: 'toName',
+    dataIndex: 'applyUserName',
     width: '7%'
   },
   {
     title: '发起时间',
-    dataIndex: 'startTime',
-    width: '7%'
+    dataIndex: 'initiationTime',
+    width: '7%',
+    customRender: text => {
+      return new Date(text).toLocaleString()
+    }
   },
   {
     title: '开始时间',
-    dataIndex: 'beginTime',
-    width: '7%'
+    dataIndex: 'startTime',
+    width: '7%',
+    customRender: text => {
+      return new Date(text).toLocaleString()
+    }
   },
   {
     title: '结束时间',
     dataIndex: 'endTime',
-    width: '7%'
+    width: '7%',
+    customRender: text => {
+      return new Date(text).toLocaleString()
+    }
   },
   {
     title: '时长',
-    dataIndex: 'durationTime',
+    dataIndex: 'duration',
     width: '7%',
     customRender: text => {
       return text + '小时'
@@ -166,15 +174,17 @@ const columns = [
   },
   {
     title: '状态',
-    dataIndex: 'status',
+    dataIndex: 'state',
     width: '7%',
     customRender: text => {
-      if (text === 1) {
+      if (text === '0') {
         return '待审批'
-      } else if (text === 2) {
+      } else if (text === '1') {
         return '审批通过'
-      } else if (text === 3) {
+      } else if (text === '2') {
         return '审批不通过'
+      } else if (text === '3') {
+        return '撤销'
       }
     }
   },
@@ -198,29 +208,58 @@ export default {
     return {
       searchLabel,
       columns,
-      total: 100,
+      total: 1,
       pageList: {
         page: 1,
         size: 20
       },
-      userList: []
+      userList: [],
+      searchObj: {
+        startTime: '',
+        endTime: '',
+        userName: '',
+        state: ''
+      },
+      schoolYearId: '',
+      gradeCode: '',
+      classCode: ''
     }
+  },
+  computed: {
+    ...mapState('home', ['userInfo'])
   },
   async mounted() {
     this.showList()
   },
   methods: {
     ...mapActions('home', ['getStudentsLeave']),
-    async showList() {
-      const res = await this.getStudentsLeave()
-      this.userList = res.data
-      this.total = res.total
+    async showList(searchObj = this.searchObj) {
+      const req = {
+        ...this.pageList,
+        schoolCode: this.userInfo.schoolCode,
+        classId: this.classCode,
+        gradeId: this.gradeCode,
+        ...searchObj
+      }
+      const res = await this.getStudentsLeave(req)
+      this.userList = res.data.list
+      this.total = res.data.total
     },
     select(item) {
       console.log(item)
+      this.schoolYearId = item.schoolYearId
+      this.gradeCode = item.gradeCode
+      this.classCode = item.classCode
+      this.showList()
     },
     searchForm(values) {
       console.log(values)
+      this.searchObj.userName = values.userName
+      this.searchObj.startTime = values.rangeTime ? this.$tools.getDateTime(values.rangeTime[0]) : ''
+      this.searchObj.endTime = values.rangeTime ? this.$tools.getDateTime(values.rangeTime[1]) : ''
+      this.searchObj.state = values.state
+      this.searchObj.outSchool = values.outSchool
+      this.showList(this.searchObj)
     },
     detail(record) {
       console.log(record.id)

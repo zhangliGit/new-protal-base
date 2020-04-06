@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import TableList from './TableList'
 import PageNum from '@c/PageNum'
 const columns = [
@@ -113,6 +113,9 @@ export default {
     TableList,
     PageNum
   },
+  computed: {
+    ...mapState('home', ['userInfo'])
+  },
   data() {
     return {
       columns,
@@ -128,11 +131,17 @@ export default {
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getTeachersAccessSet']),
+    ...mapActions('home', ['getAccessList']),
     async showList() {
-      const res = await this.getTeachersAccessSet()
+      const req = {
+        ...this.pageList,
+        // schoolCode: this.userInfo.schoolCode,
+        schoolCode: 'QPZX',
+        type: '1'
+      }
+      const res = await this.getAccessList(req)
       this.total = res.total
-      this.recordList = res.data
+      this.recordList = res.data.list
     },
     // 添加控制组
     addGroup(type, id) {

@@ -112,7 +112,7 @@ export default {
   },
   methods: {
     ...mapActions('home', [
-      'getTeacherDetail'
+      'getTeacherDetail', 'studentAccess', 'studentNoEnter', 'studentRetention'
     ]),
     modifyInOut () {
       this.noticeList.inOut = true
