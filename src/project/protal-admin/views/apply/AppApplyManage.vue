@@ -1,15 +1,15 @@
 <template>
   <div class="page-layout qui-fx-ver">
-    <menu-manage plateform-type="2"></menu-manage>
+    <apply-lib plateform-type="1"></apply-lib>
   </div>
 </template>
 
 <script>
-import MenuManage from '@c/MenuManage'
+import ApplyLib from '../../component/ApplyLib'
 export default {
-  name: 'MenuManagePage',
+  name: 'ApplyManage',
   components: {
-    MenuManage
+    ApplyLib
   },
   data() {
     return {}

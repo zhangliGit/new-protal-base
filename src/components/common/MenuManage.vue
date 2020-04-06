@@ -1,8 +1,18 @@
 <template>
   <div class="qui-fx-f1" id="tableList">
-    <submit-form ref="form" @submit-form="submitForm" :title="title" v-model="formStatus" :form-data="formData">
-    </submit-form>
-    <a-button style="margin-top: 10px; margin-left: 5px;" @click="addMenu(1, '新增菜单分类', {id: '', parentId: ''})" icon="plus" class="add-btn">新增菜单分类</a-button>
+    <submit-form
+      ref="form"
+      @submit-form="submitForm"
+      :title="title"
+      v-model="formStatus"
+      :form-data="formData"
+    ></submit-form>
+    <a-button
+      style="margin-top: 10px; margin-left: 5px;"
+      @click="addMenu(1, '新增菜单分类', {id: '', parentId: ''})"
+      icon="plus"
+      class="add-btn"
+    >新增菜单分类</a-button>
     <a-table
       style="background-color: #fff; margin-top: 20px; height: 400px;"
       :scroll="{y: this.$tools.setScroll('tableList') - 50}"
@@ -21,15 +31,28 @@
       </template>
       <template slot="actions" slot-scope="text, record, index">
         <a-tooltip placement="topLeft" title="新增菜单" v-if="!record.parentId">
-          <a-button size="small" class="add-action-btn" icon="plus" @click="addMenu(2, '新增菜单', record, index, false)"></a-button>
+          <a-button
+            size="small"
+            class="add-action-btn"
+            icon="plus"
+            @click="addMenu(2, '新增菜单', record, index, false)"
+          ></a-button>
         </a-tooltip>
         <a-tooltip placement="topLeft" title="编辑菜单">
-          <a-button size="small" class="edit-action-btn" icon="form" @click="addMenu(2, '编辑菜单', record, index, true)"></a-button>
+          <a-button
+            size="small"
+            class="edit-action-btn"
+            icon="form"
+            @click="addMenu(2, '编辑菜单', record, index, true)"
+          ></a-button>
         </a-tooltip>
-        <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="delMenu(record, index)">
-          <template slot="title">
-            您确定删除吗?
-          </template>
+        <a-popconfirm
+          placement="left"
+          okText="确定"
+          cancelText="取消"
+          @confirm="delMenu(record, index)"
+        >
+          <template slot="title">您确定删除吗?</template>
           <a-tooltip placement="topLeft" title="删除">
             <a-button size="small" class="del-action-btn" icon="delete"></a-button>
           </a-tooltip>
@@ -37,21 +60,14 @@
       </template>
     </a-table>
   </div>
-
 </template>
 <script>
 import $ajax from '@u/ajax-serve'
 import hostEnv from '@config/host-env'
 import SubmitForm from './SubmitForm'
 import { Switch, Tooltip } from 'ant-design-vue'
-export {
-  default as FormOutline
-}
-  from '@ant-design/icons/lib/outline/FormOutline'
-export {
-  default as DeleteOutline
-}
-  from '@ant-design/icons/lib/outline/DeleteOutline'
+export { default as FormOutline } from '@ant-design/icons/lib/outline/FormOutline'
+export { default as DeleteOutline } from '@ant-design/icons/lib/outline/DeleteOutline'
 const formData = [
   {
     value: 'menuName',
@@ -118,9 +134,15 @@ const columns = [
     title: '创建日期',
     dataIndex: 'createTime',
     width: '15%',
-    customRender: (text) => {
+    customRender: text => {
       const d = new Date(text)
-      return d.getFullYear() + '-' + ((d.getMonth() + 1) > 9 ? d.getMonth() + 1 : '0' + (d.getMonth() + 1)) + '-' + (d.getDate() > 9 ? d.getDate() : '0' + d.getDate())
+      return (
+        d.getFullYear() +
+        '-' +
+        (d.getMonth() + 1 > 9 ? d.getMonth() + 1 : '0' + (d.getMonth() + 1)) +
+        '-' +
+        (d.getDate() > 9 ? d.getDate() : '0' + d.getDate())
+      )
     }
   },
   {
@@ -136,7 +158,13 @@ export default {
     ATooltip: Tooltip,
     SubmitForm
   },
-  data () {
+  props: {
+    plateformType: {
+      type: String,
+      default: '2'
+    }
+  },
+  data() {
     return {
       title: '菜单',
       menuList: [],
@@ -145,7 +173,7 @@ export default {
       formStatus: false
     }
   },
-  async mounted () {
+  async mounted() {
     this.getMenuList(1, '')
   },
   methods: {
@@ -153,24 +181,26 @@ export default {
      * @description 菜单列表展示
      * @params { menuType: '类型' }, { parentId: '父级id' }
      */
-    async getMenuList (menuType, parentId) {
+    async getMenuList(menuType, parentId) {
       const res = await $ajax.post({
         url: `${hostEnv.zhuxu}/menu/manage/node/list`,
         params: {
           menuType,
           parentId,
-          plateformType: 2
+          plateformType: this.plateformType
         }
       })
       if (menuType === 1) {
-        this.menuList = res.data.map(item => {
-          return {
-            ...item,
-            children: []
-          }
-        }).sort((a, b) => {
-          return b.isPlatform - a.isPlatform
-        })
+        this.menuList = res.data
+          .map(item => {
+            return {
+              ...item,
+              children: []
+            }
+          })
+          .sort((a, b) => {
+            return b.isPlatform - a.isPlatform
+          })
       } else {
         this.menuList.find(item => {
           return item.id === parentId
@@ -180,14 +210,14 @@ export default {
     /**
      * @description 点击展开图标
      */
-    expandTree (expanded, record) {
+    expandTree(expanded, record) {
       if (expanded) this.getMenuList(2, record.id)
     },
     /**
      * @description 新增系统和菜单
      * @params { type: '菜单类型' },{ title: '弹出层标题' },{ record: '当前项列表' },{ index: '系统索引' }, { tag: '是否编辑'}
      */
-    addMenu (type, title, record, index, tag) {
+    addMenu(type, title, record, index, tag) {
       this.id = record.id // 存储当前菜单id
       this.parentId = record.parentId // 存储父级id
       this.menuType = type // 存储菜单类型
@@ -206,13 +236,16 @@ export default {
       } else {
         if (type === 1) {
           this.formData = [formData[0], formData[1], formData[3]]
+          if (this.plateformType === '1') {
+            this.formData[1].disabled = true
+          }
         } else {
           this.isPlatform = record.isPlatform
           this.formData = [formData[0], formData[2], formData[3]]
         }
       }
     },
-    async submitForm (values) {
+    async submitForm(values) {
       const { menuName, linkUrl, remark, isPlatform = 0 } = values
       try {
         // 编辑
@@ -223,7 +256,7 @@ export default {
             linkUrl,
             isPlatform,
             parentId: this.parentId,
-            plateformType: '2',
+            plateformType: this.plateformType,
             createTime: new Date().getTime(),
             remark
           }
@@ -248,7 +281,7 @@ export default {
               linkUrl,
               menuType: this.menuType,
               parentId: this.id,
-              plateformType: '2',
+              plateformType: this.plateformType,
               remark
             }
           })
@@ -272,14 +305,16 @@ export default {
         this.$message.warning('操作失败')
       }
     },
-    async delMenu (record, index) {
+    async delMenu(record, index) {
       await $ajax.get({
         url: `${hostEnv.zhuxu}/menu/manage/delete/${record.id}`
       })
       if (record.parentId) {
-        this.menuList.find(item => {
-          return item.id === record.parentId
-        }).children.splice(index, 1)
+        this.menuList
+          .find(item => {
+            return item.id === record.parentId
+          })
+          .children.splice(index, 1)
       } else {
         this.menuList.splice(index, 1)
       }
