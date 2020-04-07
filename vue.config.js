@@ -159,7 +159,7 @@ module.exports = {
         }
       },
       'lz': {
-        target: 'http://39.97.164.4:10067/', // 吕卓
+        target: 'http://39.97.164.4:10091/', // 吕卓
         changeOrigin: true,
         pathRewrite: {
           '^/lz': ''
