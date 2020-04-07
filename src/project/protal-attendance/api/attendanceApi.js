@@ -6,8 +6,9 @@
 import hostEnv from '@config/host-env'
 
 const homeApi = {
-  getTechnicalDate: '/technicalDate#get', // 考勤组设置特殊日期
   getAccessList: '/attendance/group/list#post', // 考勤组设置列表
+  addAccess: '/attendance/group/add#post', // 新增考勤组
+  delAccess: '/attendance/group/delete#delQuery', // 删除考勤组
   getTeachersAccessSet: '/teacherAccessSet#get', // 考勤组设置教师
   getStudentsAccessSet: '/studentAccessSet#get' // 考勤组设置学生
 }

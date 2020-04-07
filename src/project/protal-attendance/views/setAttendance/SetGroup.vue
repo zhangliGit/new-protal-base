@@ -1,5 +1,12 @@
 <template>
   <div class="set-group page-layout qui-fx-ver">
+    <choose-control
+      ref="chooseUser"
+      is-check
+      v-model="userTag"
+      @submit="chooseUser"
+      title="添加考勤设备控制组">
+    </choose-control>
     <a-form :form="form" :style="{ maxHeight: maxHeight }">
       <a-form-item label="考勤组名称" :label-col="{ span: 3 }" :wrapper-col="{ span: 15 }">
         <a-input
@@ -29,18 +36,18 @@
       </a-form-item>
       <a-form-item label="考勤设备" :label-col="{ span: 3 }" :wrapper-col="{ span: 18 }" :required="true">
         <div>
-          <a-button type="primary" @click="addGroup">
+          <a-button type="primary" @click="userTag = true">
             添加控制组
           </a-button>
           <div>
             <div v-for="(item, i) in groupList" :key="i" class="control-list">
-              <delete-tag @delTag="delControl" :tag-info="item"></delete-tag>
+              <delete-tag @delTag="delControl(i)" :tag-info="item"></delete-tag>
             </div>
           </div>
         </div>
       </a-form-item>
-      <a-form-item label="特殊日期" :label-col="{ span: 3 }" :wrapper-col="{ span: 18 }" :required="true">
-        <a-button type="primary" @click="addGroup" style="margin-bottom:10px">
+      <!-- <a-form-item label="特殊日期" :label-col="{ span: 3 }" :wrapper-col="{ span: 18 }" :required="true">
+        <a-button type="primary" style="margin-bottom:10px">
           从校历选择
         </a-button>
         <a-table
@@ -65,7 +72,7 @@
             </template>
           </template>
         </a-table>
-      </a-form-item>
+      </a-form-item> -->
       <a-form-item :wrapper-col="{ span: 15, offset: 3 }">
         <a-button style="margin-right:50px;" @click="cancle">
           取消
@@ -81,7 +88,8 @@
 <script>
 import moment from 'moment'
 import DeleteTag from '@c/DeleteTag'
-import { mapActions } from 'vuex'
+import { mapState, mapActions } from 'vuex'
+import ChooseControl from './ChooseControl'
 import addImg from '../../assets/img/add.png'
 import deleteImg from '../../assets//img/delete.png'
 import deleImg from '../../assets/img/dele.png'
@@ -151,11 +159,16 @@ const dateColumns = [
 export default {
   name: 'SetGroup',
   components: {
-    DeleteTag
+    DeleteTag,
+    ChooseControl
+  },
+  computed: {
+    ...mapState('home', ['userInfo'])
   },
   data() {
     return {
       moment,
+      userTag: false,
       maxHeight: 0,
       addImg,
       deleImg,
@@ -165,37 +178,37 @@ export default {
       dateData: [],
       data: [
         {
-          key: 0,
+          key: 2,
           weekDay: '星期一',
           accessTimeList: []
         },
         {
-          key: 1,
+          key: 3,
           weekDay: '星期二',
           accessTimeList: []
         },
         {
-          key: 2,
+          key: 4,
           weekDay: '星期三',
           accessTimeList: []
         },
         {
-          key: 3,
+          key: 5,
           weekDay: '星期四',
           accessTimeList: []
         },
         {
-          key: 4,
+          key: 6,
           weekDay: '星期五',
           accessTimeList: []
         },
         {
-          key: 5,
+          key: 7,
           weekDay: '星期六',
           accessTimeList: []
         },
         {
-          key: 6,
+          key: 1,
           weekDay: '星期日',
           accessTimeList: []
         }
@@ -207,10 +220,7 @@ export default {
         size: 20
       },
       form: this.$form.createForm(this),
-      groupList: [
-        { name: '一年级教师考勤', id: 1 },
-        { name: '二年级教师考勤', id: 2 }
-      ]
+      groupList: []
     }
   },
   created() {
@@ -233,10 +243,14 @@ export default {
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getTechnicalDate']),
+    ...mapActions('home', ['addAccess']),
     async showList() {
-      const res = await this.getTechnicalDate()
-      this.dateData = res.data
+      const req = {
+        systemCode: this.userInfo.schoolCode,
+        systemName: this.userInfo.schoolName
+      }
+      const res = await this.getSchoolDate(req)
+      this.dateData = res.data.list
     },
     // 提交权限组
     handleSubmit(e) {
@@ -248,11 +262,42 @@ export default {
           console.log(this.groupList)
           console.log(this.selectedRowKeys)
           // console.log(this.data[0].accessTimeList[0].startTime.format('YYYY-MM-DD HH:mm:ss'))
+          const rules = []
+          this.data.forEach(ele => {
+            rules.push({
+              dayName: ele.key,
+              startTime: ele.accessTimeList[0].startTime ? ele.accessTimeList[0].startTime.format('YYYY-MM-DD HH:mm:ss') : null,
+              endTime: ele.accessTimeList[0].endTime ? ele.accessTimeList[0].endTime.format('YYYY-MM-DD HH:mm:ss') : null
+            })
+          })
+          const req = {
+            controllerGroups: this.groupList,
+            groupName: values.name,
+            rules,
+            schoolCode: this.userInfo.schoolCode,
+            type: this.$route.query.type === 'teacher' ? 1 : 2
+          }
+          console.log(req)
+          this.addAccess(req).then(res => {
+            const path = this.$route.query.type === 'teacher' ? '/teacherAccessSet' : '/studentAttendanceSet'
+            this.$router.push({ path })
+          })
         }
       })
     },
     // 添加考勤设备
-    addGroup() {},
+    chooseUser (value) {
+      this.userTag = false
+      this.groupList = []
+      value.forEach(ele => {
+        this.groupList.push({
+          name: ele.controlGroupName,
+          id: ele.id,
+          code: ele.controlGroupCode
+        })
+      })
+      console.log(this.groupList)
+    },
     // 考勤日期选择
     onSelectChange(selectedRowKeys) {
       console.log('selectedRowKeys changed: ', selectedRowKeys)
@@ -260,16 +305,15 @@ export default {
     },
     // 移除考勤设备
     deleEq(index, name) {
-      this.$tools.delTip(`确定移除${name}吗?`, () => {
-        this.groupList.splice(index, 1)
-      })
     },
     // 添加考勤时间
     addAccessTime(index, key) {
       this.data[key].accessTimeList.push({ startTime: null, endTime: null })
     },
-    // 移除考勤时间
-    delControl() {},
+    // 移除考勤设备
+    delControl(index) {
+      this.groupList.splice(index, 1)
+    },
     // 选择考勤时间
     timeChange(time) {
       console.log(time)

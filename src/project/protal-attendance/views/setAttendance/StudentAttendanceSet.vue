@@ -9,22 +9,24 @@
     <table-list :page-list="pageList" :columns="columns" :table-list="recordList">
       <template v-slot:accessTimes="accessTime">
         <div class="qui-fx-ver">
-          <div class="qu-fx" v-for="item in accessTime.record.accessTime" :key="item.id">
-            <span style="margin-right:10px;">{{ item.week }}</span>
-            <span>{{ item.time.toString() }}</span>
+          <div class="qu-fx" v-for="(ele, i) in JSON.parse(accessTime.record.ruleTime)" :key="i">
+            <span style="margin-right:10px;" v-if="ele.startTime">{{ ele.dayName | getWeekDay }}</span>
+            <span v-if="ele.startTime">{{ ele.startTime | getDate(3) }}</span>
+            <span v-if="ele.startTime"> ~ </span>
+            <span v-if="ele.startTime">{{ ele.endTime | getDate(3) }}</span>
           </div>
         </div>
       </template>
       <template v-slot:accessEqs="accessEq">
         <div class="qui-fx-ver">
-          <div class="qu-fx" v-for="item in accessEq.record.accessEq" :key="item.id">
-            <span>{{ item.eq }}</span>
+          <div class="qu-fx" v-for="item in accessEq.record.controllerNames" :key="item.id">
+            <span>{{ item }}</span>
           </div>
         </div>
       </template>
       <template v-slot:crews="crew">
         <div class="qui-fx qui-fx-ac">
-          {{ crew.record.crew.toString() }}
+          {{ crew.record.userCount }}
           <a-button
             size="small"
             type="primary"
@@ -37,21 +39,16 @@
       <template v-slot:actions="action">
         <div>
           <a-tooltip placement="topLeft" title="编辑">
-            <a-button
-              size="small"
-              icon="form"
-              @click="addGroup(1,action.record.id)"
-              style="margin-right: 5px; background: #67BCDA; color:#fff"
-            ></a-button>
+            <a-button size="small" class="edit-action-btn" icon="form" @click.stop="addGroup(1,action.record.id)"></a-button>
           </a-tooltip>
-          <a-tooltip placement="topLeft" title="删除">
-            <a-button
-              size="small"
-              @click="delGroup(action.record.id)"
-              icon="delete"
-              style="margin-right: 5px; background: #ff4949; color:#fff"
-            ></a-button>
-          </a-tooltip>
+          <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm.stop="delGroup(action.record.id)">
+            <template slot="title">
+              您确定删除吗?
+            </template>
+            <a-tooltip placement="topLeft" title="删除">
+              <a-button size="small" class="del-action-btn" icon="delete"></a-button>
+            </a-tooltip>
+          </a-popconfirm>
         </div>
       </template>
     </table-list>
@@ -60,7 +57,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import TableList from './TableList'
 import PageNum from '@c/PageNum'
 const columns = [
@@ -78,7 +75,7 @@ const columns = [
   },
   {
     title: '考勤时间',
-    dataIndex: 'accessTime',
+    dataIndex: 'ruleTime',
     width: '20%',
     scopedSlots: {
       customRender: 'accessTime'
@@ -86,7 +83,7 @@ const columns = [
   },
   {
     title: '考勤设备',
-    dataIndex: 'accessEq',
+    dataIndex: 'controllerNames',
     width: '20%',
     scopedSlots: {
       customRender: 'accessEq'
@@ -94,6 +91,7 @@ const columns = [
   },
   {
     title: '考勤人员',
+    dataIndex: 'userCount',
     width: '20%',
     scopedSlots: {
       customRender: 'crew'
@@ -108,15 +106,18 @@ const columns = [
   }
 ]
 export default {
-  name: 'StudentAttendanceSet',
+  name: 'StudentAccessSet',
   components: {
     TableList,
     PageNum
   },
+  computed: {
+    ...mapState('home', ['userInfo'])
+  },
   data() {
     return {
       columns,
-      total: 0,
+      total: 1,
       pageList: {
         page: 1,
         size: 20
@@ -128,15 +129,20 @@ export default {
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getStudentsAccessSet']),
+    ...mapActions('home', ['getAccessList', 'delAccess']),
     async showList() {
-      const res = await this.getStudentsAccessSet()
-      this.total = res.total
-      this.recordList = res.data
+      const req = {
+        ...this.pageList,
+        schoolCode: this.userInfo.schoolCode,
+        type: '2'
+      }
+      const res = await this.getAccessList(req)
+      this.total = res.data.total
+      this.recordList = res.data.list
     },
     // 添加控制组
     addGroup(type, id) {
-      console.log(id)
+      console.log(123)
       const obj = {
         path: '/studentAttendanceSet/setGroup',
         query: type === 0 ? { type: 'student' } : { id, type: 'student' }
@@ -144,10 +150,9 @@ export default {
       this.$router.push(obj)
     },
     // 删除控制组
-    delGroup(id) {
-      this.$tools.delTip('确定删除吗?', () => {
-        console.log(id)
-      })
+    async delGroup(id) {
+      console.log(id)
+      await this.delAccess({ id })
     },
     // 适用人员管理
     addCrew(id) {

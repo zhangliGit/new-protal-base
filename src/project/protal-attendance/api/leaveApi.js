@@ -6,6 +6,8 @@
 import hostEnv from '@config/host-env'
 
 const homeApi = {
+  getSchoolDate: '/school/date/list#post', // 校历列表
+  getSpecialDate: '/special/date/list#post', // 特殊日期列表
   getTeachersLeave: '/teacher/leave/list#post', // 教职工请假列表
   getStudentsLeave: '/student/leave/list#post', // 学生请假列表
   getTeacherLeaveDetail: '/teacher/leave/detailById#getUrl', // 教职工请假详情

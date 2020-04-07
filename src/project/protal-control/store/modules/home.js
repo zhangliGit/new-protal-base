@@ -41,7 +41,7 @@ const getState = (state, val) => {
   return JSON.parse(localData)[state] || val
 }
 const autoData = JSON.stringify({
-  schoolCode: 'CANPOINT'
+  schoolCode: '123456'
 })
 const home = {
   namespaced: true,

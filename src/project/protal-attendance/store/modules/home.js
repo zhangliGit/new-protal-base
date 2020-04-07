@@ -42,7 +42,7 @@ const getState = (state, val) => {
 }
 const autoData = JSON.stringify({
   schoolCode: '123456',
-  schoolId: '12'
+  schoolName: '武汉中学'
 })
 const home = {
   namespaced: true,
@@ -50,7 +50,7 @@ const home = {
     schoolCode: JSON.parse(window.sessionStorage.getItem('loginInfo') || autoData).schoolCode,
     userInfo: getState('userInfo', {
       schoolCode: JSON.parse(window.sessionStorage.getItem('loginInfo') || autoData).schoolCode,
-      schoolId: JSON.parse(window.sessionStorage.getItem('loginInfo') || autoData).schoolId
+      schoolName: JSON.parse(window.sessionStorage.getItem('loginInfo') || autoData).schoolName
     })
   },
   actions: {
