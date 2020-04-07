@@ -1,10 +1,20 @@
 <template>
   <div class="page-layout qui-fx-ver">
+    <submit-form
+      ref="form"
+      @submit-form="submitForm"
+      :title="title"
+      v-model="formStatus"
+      :form-data="formData"
+    ></submit-form>
     <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
-      <div slot="left"></div>
+      <div slot="left">
+        <a-button type="primary" @click="addRecord(false, {}, '新增')" icon="plus">新增</a-button>
+      </div>
+      <div slot="right"></div>
     </search-form>
     <table-list :page-list="pageList" :columns="columns" :table-list="recordList"></table-list>
-    <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
+    <page-num v-model="pageList" :total="total" @change-page="showList(searchObj)"></page-num>
   </div>
 </template>
 
@@ -13,9 +23,10 @@ import { mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import SearchForm from '@c/SearchForm'
 import PageNum from '@c/PageNum'
+import SubmitForm from '@c/SubmitForm'
 const searchLabel = [
   {
-    value: 'name', // 表单属性
+    value: 'userName', // 表单属性
     type: 'selectInput', // 表单类型
     label: '姓名', // 表单label值
     selectType: [
@@ -50,7 +61,7 @@ const searchLabel = [
         val: '教职工'
       }
     ],
-    value: 'status',
+    value: 'userType',
     type: 'select',
     label: '人员类型'
   },
@@ -89,7 +100,7 @@ const searchLabel = [
         val: '入'
       }
     ],
-    value: 'inoutType',
+    value: 'accessType',
     type: 'select',
     label: '出入类型'
   },
@@ -97,6 +108,70 @@ const searchLabel = [
     value: 'rangeTime', // 日期区间
     type: 'rangeTime',
     label: '起始时间'
+  }
+]
+const formData = [
+  {
+    value: 'userName',
+    initValue: '',
+    type: 'input',
+    label: '姓名',
+    placeholder: '请输入人员姓名',
+    required: false
+  },
+  {
+    value: 'accessPlace',
+    initValue: '',
+    type: 'input',
+    label: '性别',
+    placeholder: '请输入性别',
+    required: false
+  },
+  {
+    value: 'accessTime',
+    initValue: '',
+    type: 'input',
+    label: '人员类型',
+    placeholder: '请输入人员类型',
+    required: false
+  },
+  {
+    value: 'remark',
+    initValue: '',
+    type: 'input',
+    label: '学号/工号',
+    placeholder: '请输入学号/工号',
+    required: false
+  },
+  {
+    value: 'remark',
+    initValue: '',
+    type: 'input',
+    label: '手机号',
+    placeholder: '请输入手机号',
+    required: false
+  },
+  {
+    value: 'remark',
+    initValue: '',
+    type: 'input',
+    label: '出入地点',
+    placeholder: '请输入出入地点',
+    required: false
+  },{
+    value: 'remark',
+    initValue: '',
+    type: 'input',
+    label: '出入类型',
+    placeholder: '请输入出入类型',
+    required: false
+  },{
+    value: 'remark',
+    initValue: '',
+    type: 'input',
+    label: '出入时间',
+    placeholder: '请输入出入时间',
+    required: false
   }
 ]
 const columns = [
@@ -109,47 +184,59 @@ const columns = [
   },
   {
     title: '姓名',
-    dataIndex: 'name',
+    dataIndex: 'userName',
     width: '8%'
   },
   {
     title: '性别',
-    dataIndex: 'sex',
-    width: '5%'
+    dataIndex: 'gender',
+    width: '5%',
+    customRender: text => {
+      return parseInt(text) === false ? '男' : '女'
+    }
   },
   {
     title: '人员类型',
     dataIndex: 'userType',
-    width: '10%'
+    width: '10%',
+    customRender: text => {
+      return parseInt(text) === false ? '学生' : '教职工'
+    }
   },
   {
     title: '学号/工号',
-    dataIndex: 'userCode',
+    dataIndex: 'userNo',
     width: '10%'
   },
   {
     title: '手机号',
-    dataIndex: 'phone',
+    dataIndex: 'mobile',
     width: '10%'
   },
   {
     title: '出入地点',
-    dataIndex: 'accessAddress',
+    dataIndex: 'accessPlace',
     width: '10%'
   },
   {
     title: '出入类型',
     dataIndex: 'accessType',
-    width: '10%'
+    width: '10%',
+    customRender: text => {
+      return parseInt(text) === false ? '进' : '出'
+    }
   },
   {
     title: '出入时间',
-    dataIndex: 'dateTime',
-    width: '12%'
+    dataIndex: 'accessTime',
+    width: '12%',
+    customRender: text => {
+      return new Date(text).toLocaleString()
+    }
   },
   {
     title: '底照',
-    dataIndex: 'photoPic',
+    dataIndex: 'userPhoto',
     width: '10%',
     scopedSlots: {
       customRender: 'photoPic'
@@ -157,7 +244,7 @@ const columns = [
   },
   {
     title: '抓拍照',
-    dataIndex: 'snapPic',
+    dataIndex: 'snapPhoto',
     width: '10%',
     scopedSlots: {
       customRender: 'snapPic'
@@ -169,7 +256,8 @@ export default {
   components: {
     TableList,
     SearchForm,
-    PageNum
+    PageNum,
+    SubmitForm
   },
   data() {
     return {
@@ -180,22 +268,60 @@ export default {
         page: 1,
         size: 20
       },
-      recordList: []
+      recordList: [],
+      searchObj: {
+        startTime: '',
+        endTime: '',
+        userName: '',
+        userType: '',
+        accessType: ''
+      },
+      formStatus: false,
+      title: '新增出入记录'
     }
   },
   mounted() {
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getAccessRecord']),
-    async showList() {
-      const res = await this.getAccessRecord()
-      this.total = res.total
-      this.recordList = res.data
+    ...mapActions('home', ['getrecordList','addrecordList']),
+    async showList(searchObj = this.searchObj) {
+      const req = {
+        ...this.pageList,
+        // schoolCode: this.userInfo.schoolCode,
+        schoolCode: 'QPZX'
+        // ...searchObj
+      }
+      const res = await this.getrecordList(req)
+      this.recordList = res.data.list
+      this.total = res.data.total
     },
     searchForm(values) {
       console.log(values)
-    }
+      this.searchObj.userName = values.userName
+      this.searchObj.startTime = values.rangeTime ? this.$tools.getDateTime(values.rangeTime[0]) : ''
+      this.searchObj.endTime = values.rangeTime ? this.$tools.getDateTime(values.rangeTime[1]) : ''
+      this.searchObj.userType = values.userType
+      this.searchObj.accessType = values.accessType
+      this.showList(this.searchObj)
+    },
+      async submitForm (values) {
+      try {
+        await this.addrecordList(values)
+        this.$message.success('操作成功')
+        this.$tools.goNext(() => {
+          this.$refs.form.reset()
+          this.showList()
+        })
+      } catch (err) {
+        this.$refs.form.error()
+      }
+    },
+    addRecord () {
+      this.formStatus = true
+        this.title = '新增出入记录'
+        this.formData = formData
+    },
   }
 }
 </script>

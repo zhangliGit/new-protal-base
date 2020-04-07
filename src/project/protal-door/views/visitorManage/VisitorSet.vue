@@ -4,7 +4,7 @@
       <a-tab-pane tab="来访事由" key="1" forceRender>
         <div>
           <a-input
-            v-model="reason"
+            v-model="causeName"
             style="width: 300px; margin-right: 10px;"
             placeholder="请输入来访事由进行录入"
           />
@@ -66,7 +66,7 @@ const columns = [
   },
   {
     title: '来访事由',
-    dataIndex: 'reason',
+    dataIndex: 'causeName',
     width: '50%'
   },
   {
@@ -89,7 +89,7 @@ export default {
     return {
       autoKey: '1',
       columns,
-      reason: '',
+      causeName: '',
       controlList: [],
       reasonList: [],
       chooseTag: false
@@ -100,29 +100,53 @@ export default {
     this.showControl()
   },
   methods: {
-    ...mapActions('home', ['getReasonList', 'getFkControl']),
-    async showControl() {
-      const res = await this.getFkControl()
-      this.controlList = res.data.map(item => {
-        return {
-          name: item.controlName,
-          ...item
-        }
-      })
-    },
+    ...mapActions('home', [
+      'addcause',
+      'delcause',
+      'getcauseList',
+      'addcontrolgroup',
+      'delcontrolgroup',
+      'getcontrolgroupList'
+    ]),
     async showReason() {
-      const res = await this.getReasonList()
-      this.reasonList = res.data
+      const req = {
+        ...this.pageList,
+        schoolCode: 'QPZX'
+      }
+      const res = await this.getcauseList(req)
+      this.reasonList = res.data.list
+      this.total = res.data.total
     },
-    addReason() {
-      if (!this.reason) {
+    async addReason() {
+      if (!this.causeName) {
         this.$message.warning('请输入来访事由')
         return
+      } else {
+        await this.addcause({
+          ...this.pageList,
+          schoolCode: 'QPZX',
+          causeName: this.causeName
+        })
       }
       this.showReason()
     },
-    del(record) {
-      this.showReason()
+    async del(record) {
+      await this.delcause({
+        id: record.id
+      })
+      this.$message.success('删除成功')
+      this.$tools.goNext(() => {
+        this.showReason()
+      })
+    },
+    async showControl() {
+      const res = await this.getcontrolgroupList()
+      this.controlList = res.data.list.map(item => {
+        return {
+          name: item.remark,
+          ...item
+        }
+      })
     },
     delControl(id) {
       this.controlList.splice(
