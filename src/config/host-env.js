@@ -13,7 +13,7 @@ let wxz = ''
 let zk = ''
 let lz = ''
 let zx = ''
-let zxmj = ''
+let mj = ''
 
 if (ConfigEnv === 'test') {
   wangxuanzhang = '/wangxuanzhang' // 控制中心
@@ -41,7 +41,7 @@ if (ConfigEnv === 'test') {
   lvzhuo = '/lvzhuo/web-protal/plateform-userinfo-view'
   wxz = '/wxz'
   zx = '/zx'
-  zxmj = '/zxmj'
+  mj = '/mj'
   lz = '/lz'
   zk = '/zk'
 }
@@ -56,5 +56,5 @@ export default {
   zx,
   lz,
   zk,
-  zxmj
+  mj
 }

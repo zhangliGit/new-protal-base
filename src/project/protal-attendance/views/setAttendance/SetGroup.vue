@@ -240,18 +240,18 @@ export default {
     }
   },
   async mounted() {
-    this.showList()
+    /* this.showList() */
   },
   methods: {
     ...mapActions('home', ['addAccess']),
-    async showList() {
+    /*     async showList() {
       const req = {
         systemCode: this.userInfo.schoolCode,
         systemName: this.userInfo.schoolName
       }
       const res = await this.getSchoolDate(req)
       this.dateData = res.data.list
-    },
+    }, */
     // 提交权限组
     handleSubmit(e) {
       e.preventDefault()

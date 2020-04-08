@@ -9,21 +9,21 @@
       @close="detailTag = false"
       :visible="detailTag"
     >
-      <p>访客姓名：{{ recordDetail.name }}</p>
-      <p>访客电话：{{ recordDetail.phone }}</p>
-      <p>来访事由：{{ recordDetail.reason }}</p>
-      <p>进入时间：{{ recordDetail.entryTime }}</p>
+      <p>访客姓名：{{ recordDetail.visitorName }}</p>
+      <p>访客电话：{{ recordDetail.visitorName }}</p>
+      <p>来访事由：{{ recordDetail.causeName }}</p>
+      <p>进入时间：{{ recordDetail.inTime }}</p>
       <p>预计离开时间：{{ recordDetail.entryTime }}</p>
       <p>签离时间：{{ recordDetail.entryTime }}</p>
       <p>来访时长：3小时</p>
-      <p>进入地点：{{ recordDetail.entryArea }}</p>
-      <p>签离地点：{{ recordDetail.entryArea }}</p>
-      <p>被访人姓名：{{ recordDetail.fwName }}</p>
-      <p>被访人类型：{{ recordDetail.fwType }}</p>
+      <p>进入地点：{{ recordDetail.inPlace }}</p>
+      <p>签离地点：{{ recordDetail.outPlace }}</p>
+      <p>被访人姓名：{{ recordDetail.respondentName }}</p>
+      <p>被访人类型：{{ recordDetail.respondentType }}</p>
       <p>被访人手机号：{{ recordDetail.phone }}</p>
       <p>组织机构：教务处</p>
-      <p>审批状态：{{ recordDetail.spStatus }}</p>
-      <p>访问状态：{{ recordDetail.fwStatus }}</p>
+      <p>审批状态：{{ recordDetail.state}}</p>
+      <p>访问状态：{{ recordDetail.visitState }}</p>
     </a-drawer>
     <table-list :page-list="pageList" :columns="columns" :table-list="recordList">
       <template v-slot:actions="action">
@@ -47,7 +47,7 @@ import SearchForm from '@c/SearchForm'
 import PageNum from '@c/PageNum'
 const searchLabel = [
   {
-    value: 'name',
+    value: 'visitorName',
     type: 'selectInput',
     label: '访客姓名',
     selectType: [
@@ -62,40 +62,6 @@ const searchLabel = [
     ],
     placeholder: '请输入'
   },
-  // {
-  //   value: 'name',
-  //   type: 'input',
-  //   label: '被访人姓名',
-  //   placeholder: '请输入'
-  // },
-  // {
-  //   list: [
-  //     // 选择列表项，select控件必传
-  //     {
-  //       key: '',
-  //       val: '全部'
-  //     },
-  //     {
-  //       key: 1,
-  //       val: '学术交流'
-  //     },
-  //     {
-  //       key: 2,
-  //       val: '探问孩子'
-  //     },
-  //     {
-  //       key: 3,
-  //       val: '家长会'
-  //     },
-  //     {
-  //       key: 4,
-  //       val: '其他'
-  //     }
-  //   ],
-  //   value: 'reason',
-  //   type: 'select',
-  //   label: '来访事由'
-  // },
   {
     list: [
       // 选择列表项，select控件必传
@@ -112,13 +78,12 @@ const searchLabel = [
         val: '拒绝'
       }
     ],
-    value: 'spStatus',
+    value: 'state',
     type: 'select',
     label: '审批状态'
   },
   {
     list: [
-      // 选择列表项，select控件必传
       {
         key: '',
         val: '全部'
@@ -132,38 +97,10 @@ const searchLabel = [
         val: '签离'
       }
     ],
-    value: 'fwStatus',
+    value: 'visitState',
     type: 'select',
     label: '访问状态'
   },
-  // {
-  //   list: [
-  //     // 选择列表项，select控件必传
-  //     {
-  //       key: '',
-  //       val: '全部'
-  //     },
-  //     {
-  //       key: 1,
-  //       val: '校大门'
-  //     },
-  //     {
-  //       key: 2,
-  //       val: '西小门'
-  //     },
-  //     {
-  //       key: 3,
-  //       val: '南一门'
-  //     },
-  //     {
-  //       key: 4,
-  //       val: '南二门'
-  //     }
-  //   ],
-  //   value: 'area',
-  //   type: 'select',
-  //   label: '进入地点'
-  // },
   {
     value: 'rangeTime',
     type: 'rangeTime',
@@ -180,17 +117,17 @@ const columns = [
   },
   {
     title: '访客姓名',
-    dataIndex: 'name',
+    dataIndex: 'visitorName',
     width: '8%'
   },
   {
     title: '访客电话',
-    dataIndex: 'phone',
+    dataIndex: 'visitorMobile',
     width: '10%'
   },
   {
     title: '底照',
-    dataIndex: 'pic',
+    dataIndex: 'registPhoto',
     width: '10%',
     scopedSlots: {
       customRender: 'photoPic'
@@ -198,38 +135,57 @@ const columns = [
   },
   {
     title: '来访事由',
-    dataIndex: 'reason',
+    dataIndex: 'causeName',
     width: '8%'
   },
   {
     title: '进入时间',
-    dataIndex: 'entryTime',
-    width: '8%'
+    dataIndex: 'inTime',
+    width: '8%',
+    customRender: text => {
+      return new Date(text).toLocaleString()
+    }
   },
   {
     title: '进入地点',
-    dataIndex: 'entryArea',
+    dataIndex: 'inPlace',
     width: '8%'
   },
   {
     title: '被访人姓名',
-    dataIndex: 'fwName',
+    dataIndex: 'respondentName',
     width: '10%'
   },
   {
     title: '被访人类型',
-    dataIndex: 'fwType',
+    dataIndex: 'respondentType',
     width: '10%'
   },
   {
     title: '审批状态',
-    dataIndex: 'spStatus',
-    width: '8%'
+    dataIndex: 'state',
+    width: '8%' ,
+   customRender: (text) => {
+      if (text === 0) {
+        return '待审批'
+      } else if (text === 1) {
+        return '同意'
+      } else if (text === 2) {
+        return '不同意'
+      }else if (text === 3) {
+        return '撤销'
+      }else {
+        return '失效'
+      }
+    }
   },
   {
     title: '访问状态',
-    dataIndex: 'fwStatus',
-    width: '8%'
+    dataIndex: 'visitState',
+    width: '8%',
+      customRender: text => {
+      return parseInt(text) === 1 ? '在访' : '签离'
+    }
   },
   {
     title: '详情',
@@ -258,24 +214,45 @@ export default {
         size: 20
       },
       recordList: [],
-      recordDetail: {}
+      recordDetail: {},
+      searchObj: {
+        inStartTime: '',
+        inEndTime: '',
+        visitorName: '',
+        visitorName: '',
+        state: '',
+        visitState:''
+      },
     }
   },
   mounted() {
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getFkRecord']),
-    async showList() {
-      const res = await this.getFkRecord()
-      this.recordList = res.data
-      this.total = res.total
+    ...mapActions('home', ['getappointList']),
+    async showList(searchObj = this.searchObj) {
+      const req = {
+        ...this.pageList,
+        // schoolCode: this.userInfo.schoolCode,
+        schoolCode: 'QPZX',
+        ...searchObj
+      }
+      const res = await this.getappointList(req)
+      this.recordList = res.data.list
+      this.total = res.data.total
     },
     goDetail(record) {
       this.recordDetail = record
       this.detailTag = true
     },
-    searchForm(values) {}
+    searchForm(values) {
+      this.searchObj.visitorName = values.visitorName
+      this.searchObj.inStartTime = values.rangeTime ? this.$tools.getDateTime(values.rangeTime[0]) : ''
+      this.searchObj.inEndTime = values.rangeTime ? this.$tools.getDateTime(values.rangeTime[1]) : ''
+      this.searchObj.state = values.state
+      this.searchObj.visitState = values.visitState
+      this.showList(this.searchObj)
+    }
   }
 }
 </script>

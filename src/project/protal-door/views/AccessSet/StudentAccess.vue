@@ -107,8 +107,8 @@ export default {
       columns,
       total: 0,
       pageList: {
-        page: 1,
-        size: 20
+        pageNum: 1,
+        pageSize: 20
       },
       recordList: []
     }
@@ -130,8 +130,8 @@ export default {
         ruleGroupType: '2'
       }
       const res = await this.getGroupList(req)
-      this.total = res.total
-      this.recordList = res.data
+      this.total = res.data.total
+      this.recordList = res.data.list
     },
     // 添加控制组
     addGroup (type, id) {
