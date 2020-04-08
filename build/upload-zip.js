@@ -11,27 +11,23 @@ const path = require('path')
 const fs = require('fs')
 const AdmZip = require('adm-zip')
 var zip = new AdmZip()
+const { logs } = require('./logs')
 const buildModule = process.argv[process.argv.length - 1]
+const envHost = {
+  prod: 'http://39.97.164.4:8090/upload-web',
+  test: 'http://39.97.164.4:8090/upload-web',
+  dev: 'http://39.97.164.4:8090/upload-web'
+}
 
 class uploadZip {
   apply (compiler) {
-    compiler.hooks.run.tap('done', compilation => {
-    })
     compiler.hooks.done.tap('done', compilation => {
-      console.log('\x1b[32m', '*************************************', '\n')
-      console.log('\x1b[32m', '打包完成...', '\n')
-      console.log('\x1b[32m', '*************************************', '\n')
-      let total = 1
-      const time = setInterval(() => {
-        console.log(total++)
-      }, 1000)
-      const msg = `正在上传${buildModule}模块，请耐心等候...`
-      const url = 'http://39.97.164.4:8090/upload-web'
+      logs(`${buildModule}模块打包完成`)
+      const url = envHost[process.env.VUE_APP_URL]
+      const msg = process.env.VUE_APP_URL === 'prod' ? '正式环境' : '测试环境'
+      logs(`正在上传${buildModule}模块到${msg}`)
       zip.addLocalFolder('dist')
       zip.writeZip(`${buildModule}.zip`)
-      console.log('\x1b[32m', '*************************************', '\n')
-      console.log('\x1b[32m', msg, '\n')
-      console.log('\x1b[32m', '*************************************', '\n')
       var formData = {
         file: fs.createReadStream(path.resolve(__dirname, `../${buildModule}.zip`))
       }
@@ -42,10 +38,7 @@ class uploadZip {
         if (!error && response.statusCode === 200) {
           // 删除压缩包
           fs.unlink(`${buildModule}.zip`, function () {})
-          console.log('\x1b[32m', '*************************************', '\n')
-          console.log('\x1b[32m', '上传成功', '\n')
-          console.log('\x1b[32m', '*************************************', '\n')
-          clearInterval(time)
+          logs('上传成功')
         }
       })
     })

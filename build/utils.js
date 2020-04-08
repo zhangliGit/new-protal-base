@@ -1,27 +1,22 @@
 'use strict'
 const path = require('path')
+const { logs } = require('./logs')
 const pagePath = path.resolve(__dirname, '../src/project')
 const glob = require('glob')
 const modulesDir = glob.sync(pagePath + '/*')
 const buildModule = process.argv[process.argv.length - 1]
-let projectList = []
+const projectList = []
+require('colors')
 modulesDir.forEach((file) => {
   projectList.push(file.split('/')[file.split('/').length - 1])
 })
-
-// 打包信息
-if (process.env.NODE_ENV === 'production') {
-  console.log('\x1b[32m', '*************************************', '\n')
-  if (projectList.indexOf(buildModule) > -1) {
-    console.info(' 正在打包project目录下 ' + buildModule + ' 应用模块', '\n')
-    projectList = [buildModule]
-  } else {
-    console.info('打包时，请单独打包项目模块', '\n')
-    return
-  }
-  console.log(' 打包环境：', process.env.VUE_APP_URL || 'dev', '\n')
-  console.log('\x1b[32m', '**************************************', '\n')
+if (projectList.indexOf(buildModule) === -1) {
+  console.log(`请您输入正确的打包模块: ${JSON.stringify(projectList)}`.red)
+  console.log(`例如: npm run build-prod ${projectList[1]}`.green)
+  process.exit()
 }
+const msg = process.env.VUE_APP_URL === 'prod' ? '正式环境' : '测试环境'
+logs(`您正在打包模块：${buildModule}，打包环境：${msg}`)
 
 // cdn配置
 const cdn = [
