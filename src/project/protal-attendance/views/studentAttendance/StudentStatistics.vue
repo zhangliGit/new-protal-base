@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import GradeTree from '@c/GradeTree'
 import SearchForm from '@c/SearchForm'
 import TableList from '@c/TableList'
@@ -31,7 +31,7 @@ import PageNum from '@c/PageNum'
 import columns from '../../assets/js/table/studentStatistics'
 const searchLabel = [
   {
-    value: 'name', // 表单属性
+    value: 'searchKey', // 表单属性
     type: 'input', // 表单类型
     label: '姓名', // 表单label值
     placeholder: '请输入姓名' // 表单默认值(非必选字段)
@@ -68,20 +68,32 @@ export default {
       recordList: []
     }
   },
+  computed: {
+    ...mapState('home', [
+      'userInfo'
+    ])
+  },
   async mounted() {
-    this.showList()
+    this.pageList.schoolCode = this.userInfo.schoolCode
+    // this.showList()
   },
   methods: {
     ...mapActions('home', ['getStudentStatistics']),
     async showList() {
       const res = await this.getStudentStatistics(this.pageList)
-      this.recordList = res.data
-      this.total = res.total
+      this.recordList = res.data.list
+      this.total = res.data.total
     },
     select(item) {
       console.log(item) // { name: '', code: ''}
+      this.pageList.schoolYearId = item.schoolYearId
+      this.pageList.gradeCode = item.gradeCode
+      this.pageList.classCode = item.classCode
+      this.showList()
     },
     searchForm(values) {
+      this.pageList.startDay = values.rangeTime[0]
+      this.pageList.endDay = values.rangeTime[1]
       this.pageList = Object.assign(values, this.pageList)
       this.showList()
     },
