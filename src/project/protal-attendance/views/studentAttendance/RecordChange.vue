@@ -17,7 +17,7 @@
               <a-checkbox :value="onWork"> 上学 </a-checkbox>
             </div>
             <div style="width:300px">
-              <a-select v-model="workState">
+              <a-select v-model="onState">
                 <a-select-option v-for="item in stateType" :key="item.key">{{ item.value }}</a-select-option>
               </a-select>
             </div>
@@ -27,7 +27,7 @@
               <a-checkbox :value="onRest"> 放学 </a-checkbox>
             </div>
             <div style="width:300px">
-              <a-select v-model="restState" >
+              <a-select v-model="offState" >
                 <a-select-option v-for="item in stateType" :key="item.key">{{ item.value }}</a-select-option>
               </a-select>
             </div>
@@ -48,7 +48,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 export default {
   name: 'RecordChange',
@@ -64,25 +64,29 @@ export default {
       },
       dialogTag: false,
       confirmLoading: false,
+      recordId: '',
       checkedList: [],
-      workState: '1',
-      restState: '1',
+      onState: '5',
+      offState: '5',
       onWork: '1',
       onRest: '2',
       stateType: [{
-        key: '1',
+        key: '5',
         value: '正常'
       }, {
-        key: '2',
+        key: '4',
         value: '请假'
       }],
       appForm: {}
     }
   },
-  async mounted () {
+  computed: {
+    ...mapState('home', [
+      'userInfo'
+    ])
   },
   methods: {
-    ...mapActions('home', ['']),
+    ...mapActions('home', ['recordUpdate']),
     submitOk (e) {
       e.preventDefault()
       this.form.validateFields((err, values) => {
@@ -93,27 +97,30 @@ export default {
           }
           if (this.checkedList.indexOf('1') > -1) {
             values.onWork = true
-            values.workState = this.workState
+            values.onState = this.onState
           } else {
-            values.workState = ''
+            values.onState = ''
           }
           if (this.checkedList.indexOf('2') > -1) {
             values.onRest = true
-            values.restState = this.restState
+            values.offState = this.offState
           } else {
-            values.restState = ''
+            values.offState = ''
           }
+          values.optName = this.userInfo.userName
+          values.userType = '2'
+          values.recordId = this.recordId
           this.dialogTag = false
-          // this.changeSubmit(values).then(res => {
-          //   this.confirmLoading = true
-          //   this.dialogTag = false
-          //   this.$message.success('操作成功')
-          //   this.$tools.goNext(() => {
-          //     this.$emit('update')
-          //   })
-          // }).catch(() => {
-          //   this.confirmLoading = false
-          // })
+          this.recordUpdate(values).then(res => {
+            this.confirmLoading = true
+            this.dialogTag = false
+            this.$message.success('操作成功')
+            this.$tools.goNext(() => {
+              this.$emit('update')
+            })
+          }).catch(() => {
+            this.confirmLoading = false
+          })
         }
       })
     }

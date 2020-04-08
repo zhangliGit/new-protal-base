@@ -5,7 +5,7 @@
       <search-form isReset @search-form="searchForm" :search-label="searchLabel"></search-form>
       <table-list :page-list="pageList" :columns="columns" :table-list="recordList">
         <template v-slot:actions="action">
-          <a-tag color="#ccc" @click.stop="changeDetial(action.record)">变更状态</a-tag>
+          <a-tag color="#ccc" @click.stop="changeDetail(action.record)">变更状态</a-tag>
           <a-tag @click.stop="checkDetial(action.record)">操作记录</a-tag>
         </template>
       </table-list>
@@ -44,19 +44,19 @@ const searchLabel = [
         val: '全部'
       },
       {
-        key: 1,
+        key: '5',
         val: '正常'
       },
       {
-        key: 2,
+        key: '1',
         val: '迟到'
       },
       {
-        key: 3,
+        key: '3',
         val: '缺卡'
       },
       {
-        key: 4,
+        key: '4',
         val: '请假'
       }
     ],
@@ -71,19 +71,19 @@ const searchLabel = [
         val: '全部'
       },
       {
-        key: 1,
+        key: '5',
         val: '正常'
       },
       {
-        key: 2,
+        key: '2',
         val: '早退'
       },
       {
-        key: 3,
+        key: '6',
         val: '缺卡'
       },
       {
-        key: 4,
+        key: '4',
         val: '请假'
       }
     ],
@@ -158,8 +158,9 @@ export default {
       this.$refs.recordDetail.showList()
       this.$refs.recordDetail.dialogTag = true
     },
-    changeDetial (record) {
-      console.log('changeDetial+++', record)
+    changeDetail (record) {
+      console.log('changeDetail+++', record)
+      this.$refs.recordChange.recordId = record.id
       this.$refs.recordChange.dialogTag = true
     }
   }
