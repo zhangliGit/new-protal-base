@@ -106,6 +106,34 @@ const filters = {
     } else if (val === 104 || '') {
       return '其他'
     }
+  },
+  getApprovalState: val => {
+    if (val === '0') {
+      return '待审批'
+    } else if (val === '1') {
+      return '审批通过'
+    } else if (val === '2') {
+      return '审批不通过'
+    } else if (val === '3') {
+      return '撤销'
+    }
+  },
+  getWeekDay: val => {
+    if (val === '2') {
+      return '周一'
+    } else if (val === '3') {
+      return '周二'
+    } else if (val === '4') {
+      return '周三'
+    } else if (val === '5') {
+      return '周四'
+    } else if (val === '6') {
+      return '周五'
+    } else if (val === '7') {
+      return '周六'
+    } else if (val === '1') {
+      return '周日'
+    }
   }
 }
 

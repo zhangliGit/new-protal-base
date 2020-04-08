@@ -1,7 +1,12 @@
 <template>
   <div class="page-layout qui-fx-ver">
-    <submit-form ref="form" @submit-form="submitForm" :title="title" v-model="formStatus" :form-data="formData">
-    </submit-form>
+    <submit-form
+      ref="form"
+      @submit-form="submitForm"
+      :title="title"
+      v-model="formStatus"
+      :form-data="formData"
+    ></submit-form>
     <div class="bg-fff padd-l10 padd-r10" style="height:185px">
       <detail-show :detail-info="detailInfo" :title="infoTitle"></detail-show>
     </div>
@@ -10,43 +15,54 @@
         <a-tab-pane tab="菜单配置" key="1">
           <div class="qui-fx">
             <div style="height: 500px; width: 400px" class="qui-fx">
-              <config-menu v-if="platTag" :plat-type="platType" v-model="chooseValue" ref="configMenu"></config-menu>
+              <config-menu
+                v-if="platTag"
+                :plat-type="platType"
+                v-model="chooseValue"
+                ref="configMenu"
+              ></config-menu>
             </div>
             <div>
               <div style="margin-left: 30px; margin-top: 8px">
-                <a-button type="primary" @click="iconClick"><a-icon type="right" /></a-button>
+                <a-button type="primary" @click="iconClick">
+                  <a-icon type="right" />
+                </a-button>
               </div>
             </div>
             <div style="margin-left: 30px; background-color:#fffbe6">
               <menu-tree @select="select" ref="menuTree"></menu-tree>
             </div>
             <div style="margin-left: 30px">
-              <a-alert message="请先勾选左侧的菜单项，然后添加到菜单配置中，" banner />
-              <a-alert message="如果需要配置二级目录，请点击右侧新增按钮添加一级菜单，在此菜单下新增二级菜单" banner />
+              <a-alert message="请先勾选左侧的菜单项，然后添加到菜单模块配置中，" banner />
+              <a-alert
+                v-if="plateformType == '2'"
+                message="如果需要配置二级目录，请点击右侧新增按钮添加一级菜单，在此菜单下新增二级菜单"
+                banner
+              />
               <a-alert message="配置完的菜单可以拖动排序（只限定同一级）" banner />
             </div>
           </div>
         </a-tab-pane>
         <a-tab-pane tab="关联学校" key="2" v-if="isPlat">
           <div>
-            <table-list
-              :page-list="pageList"
-              :columns="columns"
-              :table-list="userList">
-            </table-list>
+            <table-list :page-list="pageList" :columns="columns" :table-list="userList"></table-list>
             <page-num v-model="pageList" :total="total" @change-page="schoolApply"></page-num>
           </div>
         </a-tab-pane>
         <div slot="tabBarExtraContent" v-if="tabActive === '1'">
           <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="del">
-            <template slot="title">
-              您确定要删除菜单吗?
-            </template>
+            <template slot="title">您确定要删除菜单吗?</template>
             <a-tooltip placement="topLeft" title="删除">
               <a-button size="small" class="del-action-btn" icon="delete"></a-button>
             </a-tooltip>
           </a-popconfirm>
-          <a-tooltip placement="topLeft" title="新增一级菜单，此菜单可继续添加二级目录" slot="tabBarExtraContent" v-if="tabActive === '1'" @click="addClick">
+          <a-tooltip
+            placement="topLeft"
+            title="新增一级菜单，此菜单可继续添加二级目录"
+            slot="tabBarExtraContent"
+            v-if="tabActive === '1' && plateformType == '2'"
+            @click="addClick"
+          >
             <a-button size="small" class="add-action-btn" icon="plus"></a-button>
           </a-tooltip>
         </div>
@@ -108,7 +124,7 @@ export default {
     SubmitForm,
     DetailShow
   },
-  data () {
+  data() {
     return {
       detailInfo: [],
       infoTitle: '基础信息',
@@ -134,7 +150,7 @@ export default {
       platTag: false
     }
   },
-  mounted () {
+  mounted() {
     this.applyId = this.$route.query.id
     this.platType = this.$route.query.platform
     this.platTag = true
@@ -143,10 +159,14 @@ export default {
   },
   methods: {
     ...mapActions('home', [
-      'applyDetail', 'getApplySchool', 'addApplyMenu',
-      'delApplyMenu', 'addSysMenu', 'definitionApply'
+      'applyDetail',
+      'getApplySchool',
+      'addApplyMenu',
+      'delApplyMenu',
+      'addSysMenu',
+      'definitionApply'
     ]),
-    async showApply (id) {
+    async showApply(id) {
       const res = await this.applyDetail(id)
       this.applyInfo = res.data
       this.isPlat = this.applyInfo.platform === 0
@@ -166,22 +186,24 @@ export default {
         {
           key: '终端类型',
           val: res.data.plateformType === 1 ? '手机' : 'PC'
-        }, {
+        },
+        {
           key: '创建时间',
           val: this.getDateTime(res.data.createTime, 1)
-        }, {
+        },
+        {
           key: '备注',
           val: res.data.remark
         }
       ]
     },
-    async schoolApply () {
+    async schoolApply() {
       this.pageList.appId = this.applyId
       const res = await this.getApplySchool(this.pageList)
       this.userList = res.data.list
       this.total = res.data.total
     },
-    tabChange (key) {
+    tabChange(key) {
       this.tabActive = key
       if (this.tabActive === '2') {
         this.schoolApply()
@@ -189,10 +211,10 @@ export default {
         this.$refs.menuTree.initMenu()
       }
     },
-    select (item) {
+    select(item) {
       this.selectItem = item
     },
-    iconClick () {
+    iconClick() {
       if (this.chooseValue.length === 0) {
         this.$message.warning('请选择要添加的菜单')
         return false
@@ -221,7 +243,7 @@ export default {
         })
       }
     },
-    filterModule (data, type) {
+    filterModule(data, type) {
       if (type) {
         data.forEach((el, index) => {
           this.$set(el, 'appId', this.applyId)
@@ -236,8 +258,8 @@ export default {
       }
       return data
     },
-    del () {
-      if (JSON.stringify(this.selectItem) === '{}' || !this.selectItem.url && this.selectItem.length === 0) {
+    del() {
+      if (JSON.stringify(this.selectItem) === '{}' || (!this.selectItem.url && this.selectItem.length === 0)) {
         this.$message.warning('请选择要删除的菜单')
         return false
       }
@@ -262,10 +284,10 @@ export default {
         })
       })
     },
-    addClick () {
+    addClick() {
       this.formStatus = true
     },
-    submitForm (values) {
+    submitForm(values) {
       const req = {
         appId: this.applyId,
         menuType: '1',
@@ -274,16 +296,18 @@ export default {
       this.addSysMenu({
         ...values,
         ...req
-      }).then(res => {
-        this.$refs.form.error()
-        this.formStatus = false
-        this.$message.success('操作成功')
-        this.$tools.goNext(() => {
-          this.$refs.menuTree.initMenu()
-        })
-      }).catch(() => {
-        this.$refs.form.error()
       })
+        .then(res => {
+          this.$refs.form.error()
+          this.formStatus = false
+          this.$message.success('操作成功')
+          this.$tools.goNext(() => {
+            this.$refs.menuTree.initMenu()
+          })
+        })
+        .catch(() => {
+          this.$refs.form.error()
+        })
     }
   }
 }
@@ -296,6 +320,6 @@ export default {
   font-size: 22px;
   margin-left: 30px;
   margin-top: 50px;
-  cursor: pointer
+  cursor: pointer;
 }
 </style>

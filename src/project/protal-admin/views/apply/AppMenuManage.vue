@@ -1,13 +1,13 @@
 <template>
   <div class="page-layout qui-fx-ver">
-    <menu-manage plateform-type="2"></menu-manage>
+    <menu-manage plateform-type="1"></menu-manage>
   </div>
 </template>
 
 <script>
 import MenuManage from '@c/MenuManage'
 export default {
-  name: 'MenuManagePage',
+  name: 'AppMenuManage',
   components: {
     MenuManage
   },

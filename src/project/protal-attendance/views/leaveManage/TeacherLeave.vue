@@ -24,20 +24,20 @@
           </div>
         </template>
       </table-list>
-      <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
+      <page-num v-model="pageList" :total="total" @change-page="showList(searchObj)"></page-num>
     </div>
   </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import SearchForm from '@c/SearchForm'
 import OrgTree from '@c/OrgTree'
 import PageNum from '@c/PageNum'
 const searchLabel = [
   {
-    value: 'name', // 表单属性
+    value: 'userName', // 表单属性
     type: 'input', // 表单类型
     label: '姓名', // 表单label值
     placeholder: '请输入姓名' // 表单默认值(非必选字段)
@@ -55,19 +55,23 @@ const searchLabel = [
         val: '全部'
       },
       {
-        key: 1,
+        key: '0',
         val: '待审批'
       },
       {
-        key: 2,
+        key: '1',
         val: '审批通过'
       },
       {
-        key: 3,
+        key: '2',
         val: '审批不通过'
+      },
+      {
+        key: '3',
+        val: '撤回'
       }
     ],
-    value: 'status',
+    value: 'state',
     type: 'select',
     label: '状态'
   },
@@ -78,15 +82,15 @@ const searchLabel = [
         val: '全部'
       },
       {
-        key: 1,
+        key: 'Y',
         val: '是'
       },
       {
-        key: 2,
+        key: 'N',
         val: '否'
       }
     ],
-    value: 'isOut',
+    value: 'outSchool',
     type: 'select',
     label: '是否出校'
   }
@@ -101,54 +105,63 @@ const columns = [
   },
   {
     title: '审批单号',
-    dataIndex: 'num',
+    dataIndex: 'oddNumbers',
     width: '8%'
   },
   {
     title: '姓名',
-    dataIndex: 'name',
+    dataIndex: 'userName',
     width: '8%'
   },
   {
     title: '组织机构',
-    dataIndex: 'org',
+    dataIndex: 'orgName',
     width: '8%'
   },
   {
     title: '事由',
-    dataIndex: 'cause',
+    dataIndex: 'reason',
     width: '8%'
   },
   {
     title: '是否出校',
-    dataIndex: 'isOut',
+    dataIndex: 'outSchool',
     width: '8%',
     customRender: text => {
-      if (text === 1) {
+      if (text === 'Y') {
         return '是'
-      } else {
+      } else if (text === 'N') {
         return '否'
       }
     }
   },
   {
     title: '发起时间',
-    dataIndex: 'startTime',
-    width: '8%'
+    dataIndex: 'updateTime',
+    width: '8%',
+    customRender: text => {
+      return new Date(text).toLocaleString()
+    }
   },
   {
     title: '开始时间',
-    dataIndex: 'beginTime',
-    width: '8%'
+    dataIndex: 'startTime',
+    width: '8%',
+    customRender: text => {
+      return new Date(text).toLocaleString()
+    }
   },
   {
     title: '结束时间',
     dataIndex: 'endTime',
-    width: '8%'
+    width: '8%',
+    customRender: text => {
+      return new Date(text).toLocaleString()
+    }
   },
   {
     title: '时长',
-    dataIndex: 'durationTime',
+    dataIndex: 'duration',
     width: '8%',
     customRender: text => {
       return text + '小时'
@@ -156,15 +169,17 @@ const columns = [
   },
   {
     title: '状态',
-    dataIndex: 'status',
+    dataIndex: 'state',
     width: '8%',
     customRender: text => {
-      if (text === 1) {
+      if (text === '0') {
         return '待审批'
-      } else if (text === 2) {
+      } else if (text === '1') {
         return '审批通过'
-      } else if (text === 3) {
+      } else if (text === '2') {
         return '审批不通过'
+      } else if (text === '3') {
+        return '撤销'
       }
     }
   },
@@ -188,29 +203,52 @@ export default {
     return {
       searchLabel,
       columns,
-      total: 100,
+      total: 1,
       pageList: {
         page: 1,
         size: 20
       },
-      userList: []
+      userList: [],
+      orgCode: '',
+      searchObj: {
+        startTime: '',
+        endTime: '',
+        userName: '',
+        state: ''
+      }
     }
   },
   async mounted() {
     this.showList()
   },
+  computed: {
+    ...mapState('home', ['userInfo'])
+  },
   methods: {
     ...mapActions('home', ['getTeachersLeave']),
-    async showList() {
-      const res = await this.getTeachersLeave()
-      this.userList = res.data
-      this.total = res.total
+    async showList(searchObj = this.searchObj) {
+      const req = {
+        ...this.pageList,
+        orgId: this.orgCode,
+        schoolCode: this.userInfo.schoolCode,
+        ...searchObj
+      }
+      const res = await this.getTeachersLeave(req)
+      this.userList = res.data.list
+      this.total = res.data.total
     },
     select(item) {
-      console.log(item)
+      this.orgCode = item.code
+      this.showList(this.searchObj)
     },
     searchForm(values) {
       console.log(values)
+      this.searchObj.userName = values.userName
+      this.searchObj.startTime = values.rangeTime ? this.$tools.getDateTime(values.rangeTime[0]) : ''
+      this.searchObj.endTime = values.rangeTime ? this.$tools.getDateTime(values.rangeTime[1]) : ''
+      this.searchObj.state = values.state
+      this.searchObj.outSchool = values.outSchool
+      this.showList(this.searchObj)
     },
     detail(record) {
       console.log(record.id)
