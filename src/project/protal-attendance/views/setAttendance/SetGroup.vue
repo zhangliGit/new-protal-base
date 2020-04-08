@@ -279,6 +279,7 @@ export default {
           }
           console.log(req)
           this.addAccess(req).then(res => {
+            this.$message.success('添加成功')
             const path = this.$route.query.type === 'teacher' ? '/teacherAccessSet' : '/studentAttendanceSet'
             this.$router.push({ path })
           })
@@ -288,6 +289,7 @@ export default {
     // 添加考勤设备
     chooseUser (value) {
       this.userTag = false
+      this.$refs.chooseUser.reset()
       this.groupList = []
       value.forEach(ele => {
         this.groupList.push({

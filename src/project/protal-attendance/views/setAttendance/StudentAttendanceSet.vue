@@ -1,5 +1,12 @@
 <template>
   <div class="page-layout qui-fx-ver">
+    <choose-student
+      ref="chooseUser"
+      is-check
+      v-model="userTag"
+      @submit="chooseUser"
+      title="添加考勤设备控制组">
+    </choose-student>
     <div class="qui-fx-jsb qui-fx-ac">
       <div></div>
       <div class="top-btn-group">
@@ -60,6 +67,7 @@
 import { mapState, mapActions } from 'vuex'
 import TableList from './TableList'
 import PageNum from '@c/PageNum'
+import ChooseStudent from '@c/ChooseStudent'
 const columns = [
   {
     title: '序号',
@@ -109,7 +117,8 @@ export default {
   name: 'StudentAccessSet',
   components: {
     TableList,
-    PageNum
+    PageNum,
+    ChooseStudent
   },
   computed: {
     ...mapState('home', ['userInfo'])
@@ -117,6 +126,7 @@ export default {
   data() {
     return {
       columns,
+      userTag: false,
       total: 1,
       pageList: {
         page: 1,
@@ -129,7 +139,7 @@ export default {
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getAccessList', 'delAccess']),
+    ...mapActions('home', ['getAccessList', 'delAccess', 'bindAccessUser']),
     async showList() {
       const req = {
         ...this.pageList,
@@ -153,10 +163,29 @@ export default {
     async delGroup(id) {
       console.log(id)
       await this.delAccess({ id })
+      this.$message.success('删除成功')
     },
     // 适用人员管理
     addCrew(id) {
-      console.log(id)
+      this.id = id
+      this.userTag = true
+    },
+    async chooseUser(values) {
+      console.log(values)
+      this.userTag = false
+      this.$refs.chooseUser.reset()
+      const userCodes = []
+      values.forEach(ele => {
+        userCodes.push(ele.userCode)
+      })
+      const req = {
+        schoolCode: this.userInfo.schoolCode,
+        groupId: this.id,
+        userCodes
+      }
+      await this.bindAccessUser(req)
+      this.$message.success('添加成功')
+      this.showList()
     }
   }
 }

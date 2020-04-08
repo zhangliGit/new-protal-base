@@ -9,8 +9,7 @@ const homeApi = {
   getAccessList: '/attendance/group/list#post', // 考勤组设置列表
   addAccess: '/attendance/group/add#post', // 新增考勤组
   delAccess: '/attendance/group/delete#delQuery', // 删除考勤组
-  getTeachersAccessSet: '/teacherAccessSet#get', // 考勤组设置教师
-  getStudentsAccessSet: '/studentAccessSet#get' // 考勤组设置学生
+  bindAccessUser: '/attendance/group/bind/user#post' // 考勤组添加人员
 }
 for (const val in homeApi) {
   homeApi[val] = `${hostEnv.lz}${homeApi[val]}`
