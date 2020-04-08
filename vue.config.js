@@ -166,10 +166,17 @@ module.exports = {
         }
       },
       'zx': {
-        target: 'http://39.97.164.4:10160/', // 朱旭
+        target: 'http://39.97.164.4:10160/', // 朱旭访客
         changeOrigin: true,
         pathRewrite: {
           '^/zx': ''
+        }
+      },
+      'zxmj': {
+        target: 'http://39.97.164.4:10162/', // 朱旭门禁
+        changeOrigin: true,
+        pathRewrite: {
+          '^/zxmj': ''
         }
       },
       'zk': {
