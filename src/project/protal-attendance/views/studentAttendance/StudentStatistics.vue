@@ -65,7 +65,10 @@ export default {
       },
       total: 0,
       columns,
-      recordList: []
+      recordList: [{
+        id: '1',
+        name: '1'
+      }]
     }
   },
   computed: {
@@ -81,7 +84,7 @@ export default {
     ...mapActions('home', ['getStudentStatistics']),
     async showList() {
       const res = await this.getStudentStatistics(this.pageList)
-      this.recordList = res.data.list
+      // this.recordList = res.data.list
       this.total = res.data.total
     },
     select(item) {

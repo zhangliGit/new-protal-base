@@ -8,8 +8,13 @@ import hostEnv from '@config/host-env'
 const teacherApi = {
   getTeacherRecord: '/teacher/static/record/list#post', // 老师考勤记录
   getTeacherStatistics: '/teacher/static/list#post', // 老师考勤统计
+  teacherStatisticsDetail: '/teacher/static/detail#post', // 老师考勤统计详情
   getStudentRecord: '/student/static/record/list#post', // 学生考勤记录
   getStudentStatistics: '/student/static/list#post', // 学生考勤统计
+  studentStatisticsDetail: '/student/static/detail#post', // 学生考勤统计详情
+
+  getRecordList: '/opt/record/list#get', // 获取操作列表
+  recordUpdate: '/opt/record/update#post', // 修改操作结果
 
   studentAccess: '/msg/setting/access#post', // 学生出入通知
   studentNoEnter: '/msg/setting/no/enter#post', // 学生未到校通知

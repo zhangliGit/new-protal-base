@@ -1,6 +1,5 @@
 <template>
   <div class="page-layout qui-fx-ver">
-    <!-- <detail-show :detail-info="detailInfo" :title="title"></detail-show> -->
     <div style="height:130px;background:#fff;">
       <a-tabs defaultActiveKey="1">
         <a-tab-pane tab="基本信息" key="1">
@@ -13,13 +12,13 @@
       </a-tabs>
     </div>
     <div class="qui-fx-f1 qui-fx-ver">
-      <a-tabs defaultActiveKey="1" @change="callback" style="height:50px;">
-        <a-tab-pane tab="正常次数" key="1"></a-tab-pane>
-        <a-tab-pane tab="迟到次数" key="2"></a-tab-pane>
-        <a-tab-pane tab="早退次数" key="3"></a-tab-pane>
-        <a-tab-pane tab="上班缺卡次数" key="4"></a-tab-pane>
-        <a-tab-pane tab="下班缺卡次数" key="5"></a-tab-pane>
-        <a-tab-pane tab="请假次数" key="6"></a-tab-pane>
+      <a-tabs defaultActiveKey="5" @change="callback" style="height:50px;">
+        <a-tab-pane tab="正常次数" key="5"></a-tab-pane>
+        <a-tab-pane tab="迟到次数" key="1"></a-tab-pane>
+        <a-tab-pane tab="早退次数" key="2"></a-tab-pane>
+        <a-tab-pane tab="上班缺卡次数" key="3"></a-tab-pane>
+        <a-tab-pane tab="下班缺卡次数" key="6"></a-tab-pane>
+        <a-tab-pane tab="请假次数" key="4"></a-tab-pane>
         <a-tab-pane tab="缺勤次数" key="7"></a-tab-pane>
       </a-tabs>
       <table-list
@@ -35,7 +34,6 @@
 
 <script>
 import { mapActions } from 'vuex'
-// import DetailShow from '@c/DetailShow'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
 const columns = [
@@ -76,7 +74,6 @@ const columns = [
 export default {
   name: 'StatisticsDetail',
   components: {
-    // DetailShow,
     TableList,
     PageNum
   },
@@ -91,23 +88,29 @@ export default {
       columns,
       detailList: [],
       detailId: '',
-      baseInfo: {}
+      attendanceState: '5'
     }
   },
   async mounted () {
     this.detailId = this.$route.query.id
-    console.log('this.detailId', this.detailId)
     this.infoGet()
     this.showList()
   },
   methods: {
     ...mapActions('home', [
-      'getTeacherDetail', 'getTeacherInfo'
+      'getTeacherDetail', 'teacherStatisticsDetail'
     ]),
     async infoGet() {
-      const res = await this.getTeacherInfo({ id: this.detailId })
-      this.baseInfo = res.data
-      console.log('+++', res.data)
+      // const res = await this.getTeacherDetail({ id: this.detailId })
+      const res = {
+        data: {
+          name: '123',
+          num: '1',
+          grade: '1',
+          class: '1',
+          account: '1'
+        }
+      }
       this.baseList = [
         {
           key: '姓名',
@@ -128,13 +131,18 @@ export default {
       ]
     },
     async showList () {
-      const res = await this.getTeacherDetail(this.pageList)
-      this.detailList = res.data
+      this.pageList.userId = this.detailId
+      this.pageList.attendanceState = this.attendanceState
+      const res = await this.teacherStatisticsDetail(this.pageList)
+      this.detailList = res.data.list
       this.total = res.total
     },
     callback (key) {
       console.log(key)
       setTimeout(() => {
+        this.pageList.size = 20
+        this.pageList.page = 1
+        this.attendanceState = key
         this.showList()
       }, 300)
     }
