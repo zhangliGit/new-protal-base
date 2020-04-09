@@ -10,7 +10,7 @@ const doorApi = {
   addGroup: '/setting/rule/group/add#post', // 添加通行权限组
   getReasonList: '/reasonList#get', // 来访事由
   getFkControl: '/fkControl#get', // 获取访客控制组配置
-  getDoorSet: '/doorList#get', // 获取门卫列表
+  // getDoorSet: '/doorList#get', // 获取门卫列表
   getFkRecord: '/fkRecord#get', // 获取访客记录
   getStudentAccess: '/studentAccess#get', // 学生通行权限
   getTeacherAccess: '/teacherAccess#get', // 教师通行权限
