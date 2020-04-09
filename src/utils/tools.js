@@ -93,6 +93,8 @@ const Tools = {
       return '审批不通过'
     } else if (text === '3') {
       return '撤销'
+    }else if (text === '4') {
+      return '失效'
     }
   },
   // 加载图片错误处理
