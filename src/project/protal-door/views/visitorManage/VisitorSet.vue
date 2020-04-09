@@ -1,5 +1,13 @@
 <template>
   <div class="page-layout qui-fx-ver">
+    <choose-control
+      ref="chooseUser"
+      is-check
+      v-model="userTag"
+      :schoolCode="userInfo.schoolCode"
+      @submit="chooseUser"
+      title="添加控制组"
+    ></choose-control>
     <a-tabs v-model="autoKey">
       <a-tab-pane tab="来访事由" key="1" forceRender>
         <div>
@@ -35,8 +43,8 @@
           <a-col style="font-size: 14px; font-weight: bold; margin-bottom: 20px">可通行门禁：</a-col>
           <a-col>
             <no-data msg="暂未设置可通行门禁" v-if="controlList.length === 0"></no-data>
-            <div class="control-list" v-for="control in controlList" :key="control.id">
-              <delete-tag @delTag="delControl" :tag-info="control"></delete-tag>
+            <div v-for="(item, i) in controlList" :key="i" class="control-list">
+              <delete-tag @delTag="delControl(item)" :tag-info="item"></delete-tag>
             </div>
           </a-col>
         </a-row>
@@ -45,7 +53,7 @@
         v-if="autoKey === '2'"
         slot="tabBarExtraContent"
         type="primary"
-        @click="addControl"
+        @click="userTag = true"
       >添加控制组</a-button>
     </a-tabs>
   </div>
@@ -55,7 +63,8 @@
 import NoData from '@c/NoData'
 import DeleteTag from '@c/DeleteTag'
 import TableList from '@c/TableList'
-import { mapActions } from 'vuex'
+import ChooseControl from '@c/ChooseControl'
+import { mapState, mapActions } from 'vuex'
 const columns = [
   {
     title: '序号',
@@ -83,7 +92,11 @@ export default {
   components: {
     TableList,
     DeleteTag,
-    NoData
+    NoData,
+    ChooseControl
+  },
+  computed: {
+    ...mapState('home', ['userInfo'])
   },
   data() {
     return {
@@ -92,7 +105,8 @@ export default {
       causeName: '',
       controlList: [],
       reasonList: [],
-      chooseTag: false
+      chooseTag: false,
+      userTag: false
     }
   },
   mounted() {
@@ -127,11 +141,11 @@ export default {
           schoolCode: 'QPZX',
           causeName: this.causeName
         })
-      this.$message.success('添加成功')
-      this.$tools.goNext(() => {
-        this.causeName = ''
-        this.showReason()
-      })
+        this.$message.success('添加成功')
+        this.$tools.goNext(() => {
+          this.causeName = ''
+          this.showReason()
+        })
       }
     },
     async del(record) {
@@ -147,28 +161,45 @@ export default {
       const res = await this.getcontrolgroupList()
       this.controlList = res.data.list.map(item => {
         return {
-          name: item.remark,
+          name: item.controlGroupName,
           ...item
         }
       })
     },
-   async  delControl(id) {
-      this.controlList.splice(
-        this.controlList.findIndex(item => item.id === id),
-        1
-      ),
-        await this.delcontrolgroup({
-        id: id
+    async delControl(record) {
+      await this.delcontrolgroup({
+        id: record.id
       })
       this.$message.success('删除成功')
       this.$tools.goNext(() => {
-      this.showControl()
+        this.showControl()
       })
     },
-    addControl() {
-      this.controlList.push({
-        id: Math.random() * 100000,
-        name: '校门口控制组'
+    async chooseUser(value) {
+      console.log(value)
+      this.userTag = false
+      this.$refs.chooseUser.reset()
+      this.controlList = []
+      value.forEach(ele => {
+        this.controlList.push({
+          name: ele.controlGroupName,
+          id: ele.id,
+          code: ele.controlGroupCode,
+          type: ele.controlGroupType
+        })
+      })
+      await this.addcontrolgroup({
+        ...this.pageList,
+        schoolCode: 'QPZX',
+        controlGroupCode: this.controlList[0].code,
+        controlGroupType: this.controlList[0].type,
+        id: this.controlList[0].id,
+        createTime: new Date(),
+        userGroupCode: 1
+      })
+      this.$message.success('添加成功')
+      this.$tools.goNext(() => {
+        this.showControl()
       })
     }
   }
