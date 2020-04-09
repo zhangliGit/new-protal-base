@@ -48,7 +48,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 export default {
   name: 'RecordChange',
@@ -64,6 +64,7 @@ export default {
       },
       dialogTag: false,
       confirmLoading: false,
+      recordId: '',
       checkedList: [],
       workState: '1',
       restState: '1',
@@ -79,12 +80,13 @@ export default {
       appForm: {}
     }
   },
-  async mounted () {
+  computed: {
+    ...mapState('home', [
+      'userInfo'
+    ])
   },
   methods: {
-    ...mapActions('home', [
-      ''
-    ]),
+    ...mapActions('home', ['recordUpdate']),
     submitOk (e) {
       e.preventDefault()
       this.form.validateFields((err, values) => {
@@ -105,17 +107,20 @@ export default {
           } else {
             values.restState = ''
           }
+          values.optName = this.userInfo.userName
+          values.userType = '1'
+          values.recordId = this.recordId
           this.dialogTag = false
-          // this.changeSubmit(values).then(res => {
-          //   this.confirmLoading = true
-          //   this.dialogTag = false
-          //   this.$message.success('操作成功')
-          //   this.$tools.goNext(() => {
-          //     this.showList()
-          //   })
-          // }).catch(() => {
-          //   this.confirmLoading = false
-          // })
+          this.recordUpdate(values).then(res => {
+            this.confirmLoading = true
+            this.dialogTag = false
+            this.$message.success('操作成功')
+            this.$tools.goNext(() => {
+              this.showList()
+            })
+          }).catch(() => {
+            this.confirmLoading = false
+          })
         }
       })
     }

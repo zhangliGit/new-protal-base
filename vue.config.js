@@ -153,6 +153,13 @@ module.exports = {
           '^/zx': ''
         }
       },
+      'mj': {
+        target: 'http://39.97.164.4:10162/', // 朱旭门禁
+        changeOrigin: true,
+        pathRewrite: {
+          '^/mj': ''
+        }
+      },
       'zk': {
         target: 'http://pugai.natapp1.cc/', // 张坤
         changeOrigin: true,

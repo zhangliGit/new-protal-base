@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import TableList from './TableList'
 import PageNum from '@c/PageNum'
 const columns = [
@@ -107,23 +107,31 @@ export default {
       columns,
       total: 0,
       pageList: {
-        page: 1,
-        size: 20
+        pageNum: 1,
+        pageSize: 20
       },
       recordList: []
     }
+  },
+  computed: {
+    ...mapState('home', ['userInfo'])
   },
   mounted () {
     this.showList()
   },
   methods: {
     ...mapActions('home', [
-      'getStudentAccess'
+      'getGroupList'
     ]),
     async showList () {
-      const res = await this.getStudentAccess()
-      this.total = res.total
-      this.recordList = res.data
+      const req = {
+        ...this.pageList,
+        schoolCode: this.userInfo.schoolCode,
+        ruleGroupType: '2'
+      }
+      const res = await this.getGroupList(req)
+      this.total = res.data.total
+      this.recordList = res.data.list
     },
     // 添加控制组
     addGroup (type, id) {
