@@ -8,6 +8,8 @@ import hostEnv from '@config/host-env'
 const doorApi = {
   getGroupList: '/setting/rule/group/list#postForm', // 获取通行权限列表
   addGroup: '/setting/rule/group/add#post', // 添加通行权限组
+  delRuleGroup: '/setting/rule/group/delete#delQuery', // 删除通行权限组
+  bindAccessUser: '/setting/rule/group/user/add#post', // 权限组添加人员
   getReasonList: '/reasonList#get', // 来访事由
   getFkControl: '/fkControl#get', // 获取访客控制组配置
   getDoorSet: '/doorList#get', // 获取门卫列表

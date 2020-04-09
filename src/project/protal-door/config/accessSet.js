@@ -28,7 +28,16 @@ const visitor = {
       }
     },
     {
-      path: '/setGroup',
+      path: '/studentAccess/setGroup',
+      name: 'setGroup',
+      component: SetGroup,
+      meta: {
+        title: '权限组管理'
+      },
+      hidden: true
+    },
+    {
+      path: '/teacherAccess/setGroup',
       name: 'setGroup',
       component: SetGroup,
       meta: {
