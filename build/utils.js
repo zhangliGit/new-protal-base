@@ -5,7 +5,7 @@ const pagePath = path.resolve(__dirname, '../src/project')
 const glob = require('glob')
 const modulesDir = glob.sync(pagePath + '/*')
 const buildModule = process.argv[process.argv.length - 1]
-const projectList = []
+let projectList = []
 require('colors')
 modulesDir.forEach((file) => {
   projectList.push(file.split('/')[file.split('/').length - 1])
@@ -15,6 +15,7 @@ if (projectList.indexOf(buildModule) === -1) {
   console.log(`例如: npm run build-prod ${projectList[1]}`.green)
   process.exit()
 }
+projectList = [buildModule]
 const msg = process.env.VUE_APP_URL === 'prod' ? '正式环境' : '测试环境'
 logs(`您正在打包模块：${buildModule}，打包环境：${msg}`)
 
