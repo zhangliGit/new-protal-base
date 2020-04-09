@@ -153,7 +153,8 @@ export default {
       const data = changeRows.map(item => {
         return {
           id: item.id,
-          userName: item.userName
+          userName: item.userName,
+          ...item
         }
       })
       this.$emit('selectAll', data, type)
