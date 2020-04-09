@@ -5,7 +5,7 @@
       :scroll="{y: this.$tools.setScroll('tableList') - scrollH}"
       :customRow="customRow"
       :pagination="false"
-      :rowKey="(record) => record.id"
+      :rowKey="(record) => record.ruleGroupCode"
       :rowSelection="selectObj"
       :columns="columns"
       :dataSource="tableList"

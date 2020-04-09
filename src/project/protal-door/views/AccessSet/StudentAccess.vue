@@ -1,5 +1,12 @@
 <template>
   <div class="page-layout qui-fx-ver">
+    <choose-student
+      ref="chooseUser"
+      is-check
+      v-model="userTag"
+      @submit="chooseUser"
+      title="添加学生">
+    </choose-student>
     <div class="qui-fx-jsb qui-fx-ac">
       <div>
         <span style="font-size:12px;color:#999;">说明：未加入通行权限组的学校人员在任意时间不允许通行</span>
@@ -13,34 +20,47 @@
       :columns="columns"
       :table-list="recordList">
       <template v-slot:accessTimes="accessTime">
-        <div class="qui-fx-ver">
-          <div class="qu-fx" v-for="item in accessTime.record.accessTime" :key="item.id">
-            <span style="margin-right:10px;">{{ item.week }}</span>
-            <span>{{ item.time.toString() }}</span>
+        <div class="qui-fx-ver" v-if="accessTime.record.timeRuleList.leng>0">
+          <div class="qu-fx" v-for="(ele, i) in JSON.parse(accessTime.record.timeRuleList)" :key="i">
+            <span style="margin-right:10px;">{{ ele.weekCode | getWeekDay }}</span>
+            <span>{{ ele.accessStart }}</span>
+            <span> ~ </span>
+            <span>{{ ele.accessEnd }}</span>
           </div>
         </div>
       </template>
       <template v-slot:accessEqs="accessEq">
         <div class="qui-fx-ver">
-          <div class="qu-fx" v-for="item in accessEq.record.accessEq" :key="item.id">
-            <span>{{ item.eq }}</span>
+          <div class="qu-fx" v-for="item in accessEq.record.controlGroupList" :key="item.controlGroupCode">
+            <span>{{ item.controlGroupName }}</span>
           </div>
         </div>
       </template>
       <template v-slot:crews="crew">
         <div class="qui-fx qui-fx-ac">
-          {{ crew.record.crew.toString() }}
-          <a-button size="small" type="primary" icon="plus" style="margin-left:10px;" @click="addCrew(crew.record.id)"></a-button>
+          {{ crew.record.userCount }}
+          <a-button
+            size="small"
+            type="primary"
+            icon="plus"
+            style="margin-left:10px;"
+            @click="addCrew(crew.record.ruleGroupCode, crew.record.userGroupCode)"
+          ></a-button>
         </div>
       </template>
       <template v-slot:actions="action">
         <div>
           <a-tooltip placement="topLeft" title="编辑">
-            <a-button size="small" icon="form" @click="addGroup(1,action.record.id)" style="margin-right: 5px; background: #67BCDA; color:#fff"></a-button>
+            <a-button size="small" class="edit-action-btn" icon="form" @click.stop="addGroup(1,action.record.ruleGroupCode)"></a-button>
           </a-tooltip>
-          <a-tooltip placement="topLeft" title="删除">
-            <a-button size="small" @click="delGroup(action.record.id)" icon="delete" style="margin-right: 5px; background: #ff4949; color:#fff"></a-button>
-          </a-tooltip>
+          <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm.stop="delGroup(action.record.ruleGroupCode)">
+            <template slot="title">
+              您确定删除吗?
+            </template>
+            <a-tooltip placement="topLeft" title="删除">
+              <a-button size="small" class="del-action-btn" icon="delete"></a-button>
+            </a-tooltip>
+          </a-popconfirm>
         </div>
       </template>
     </table-list>
@@ -52,6 +72,7 @@
 import { mapState, mapActions } from 'vuex'
 import TableList from './TableList'
 import PageNum from '@c/PageNum'
+import ChooseStudent from '@c/ChooseStudent'
 const columns = [
   {
     title: '序号',
@@ -62,12 +83,12 @@ const columns = [
   },
   {
     title: '权限组名称',
-    dataIndex: 'name',
+    dataIndex: 'ruleGroupName',
     width: '10%'
   },
   {
     title: '通行时间',
-    dataIndex: 'accessTime',
+    dataIndex: 'timeRuleList',
     width: '30%',
     scopedSlots: {
       customRender: 'accessTime'
@@ -75,7 +96,7 @@ const columns = [
   },
   {
     title: '通行设备',
-    dataIndex: 'accessEq',
+    dataIndex: 'controlGroupList',
     width: '20%',
     scopedSlots: {
       customRender: 'accessEq'
@@ -83,6 +104,7 @@ const columns = [
   },
   {
     title: '适用人员',
+    dataIndex: 'userCount',
     width: '20%',
     scopedSlots: {
       customRender: 'crew'
@@ -100,15 +122,20 @@ export default {
   name: 'StudentAccess',
   components: {
     TableList,
-    PageNum
+    PageNum,
+    ChooseStudent
   },
   data () {
     return {
       columns,
+      userTag: false,
       total: 0,
+      id: '',
+      userGroupCode: '',
+      ruleGroupCode: '',
       pageList: {
-        pageNum: 1,
-        pageSize: 20
+        page: 1,
+        size: 20
       },
       recordList: []
     }
@@ -121,11 +148,12 @@ export default {
   },
   methods: {
     ...mapActions('home', [
-      'getGroupList'
+      'getGroupList', 'delRuleGroup', 'bindAccessUser'
     ]),
     async showList () {
       const req = {
-        ...this.pageList,
+        pageNum: this.pageList.page,
+        pageSize: this.pageList.size,
         schoolCode: this.userInfo.schoolCode,
         ruleGroupType: '2'
       }
@@ -136,20 +164,45 @@ export default {
     // 添加控制组
     addGroup (type, id) {
       const obj = {
-        path: '/setGroup',
+        path: '/studentAccess/setGroup',
         query: type === 0 ? { type: 'student' } : { id, type: 'student' }
       }
       this.$router.push(obj)
     },
     // 删除控制组
-    delGroup (id) {
-      this.$tools.delTip('确定删除吗?', () => {
-        console.log(id)
-      })
+    async delGroup(ruleGroupCode) {
+      await this.delRuleGroup({ ruleGroupCode, schoolCode: this.userInfo.schoolCode })
+      this.$message.success('删除成功')
+      this.showList()
     },
     // 适用人员管理
-    addCrew (id) {
-      console.log(id)
+    addCrew (ruleGroupCode, userGroupCode) {
+      this.ruleGroupCode = ruleGroupCode
+      this.userGroupCode = userGroupCode
+      this.userTag = true
+    },
+    async chooseUser(values) {
+      console.log(values)
+      this.userTag = false
+      this.$refs.chooseUser.reset()
+      const userInfoList = []
+      values.forEach(ele => {
+        userInfoList.push({
+          userCode: ele.userCode,
+          userName: ele.userName,
+          userType: '2'
+        })
+      })
+      const req = {
+        schoolCode: this.userInfo.schoolCode,
+        ruleGroupCode: this.ruleGroupCode,
+        userGroupCode: this.userGroupCode,
+        userInfoList,
+        userType: '2'
+      }
+      await this.bindAccessUser(req)
+      this.$message.success('添加成功')
+      this.showList()
     }
   }
 }

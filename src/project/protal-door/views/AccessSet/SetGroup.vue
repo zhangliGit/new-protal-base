@@ -29,7 +29,7 @@
               <div class="action qui-fx-jsb qui-fx-ac" v-for="(item, i) in record.accessTimeList" :key="i">
                 <div class="left">
                   <template>
-                    <a-time-picker format="HH:mm" :defaultValue="moment(item.startTime, 'HH:mm')" @change="(val,dateStrings)=>changeTime(val,dateStrings,'startTime',record.id, i)" />
+                    <a-time-picker format="HH:mm" :defaultValue="moment(item.startTime, 'HH:mm')" @change="(val,dateStrings)=>changeTime(val,dateStrings,'startTime',record.id, i)" :disabledMinutes="(val)=>getStartMinutes(val,record.id, i)" :disabledHours="(val)=>getStartHours(val,record.id, i)"/>
                     <span>至</span>
                     <a-time-picker format="HH:mm" :disabledHours="(val)=>getDisabledHours(val,record.id, i)" :disabledMinutes="(val)=>getDisabledMinutes(val,record.id, i)" :defaultValue="moment(item.endTime, 'HH:mm')" @change="(val,dateStrings)=>changeTime(val,dateStrings,'endTime',record.id, i)" />
                   </template>
@@ -159,16 +159,24 @@ export default {
       formLayout: 'horizontal',
       selectedRowKeys: [],
       form: this.$form.createForm(this),
-      groupList: []
+      groupList: [],
+      ruleGroupCode: ''
     }
   },
   created() {
+    this.ruleGroupCode = this.$route.query.id
+    if (this.ruleGroupCode) {
+      this.showData()
+    }
     this.data.forEach(ele => {
-      ele.accessTimeList = [{ startTime: '00:00', endTime: '23:59', canAdd: true }]
+      ele.accessTimeList = [{ startTime: '00:00', endTime: '00:00', canAdd: true }]
     })
   },
   methods: {
     ...mapActions('home', ['addGroup']),
+    showData() {
+      console.log(this.ruleGroupCode)
+    },
     // 提交权限组
     handleSubmit(e) {
       e.preventDefault()
@@ -178,12 +186,24 @@ export default {
           console.log(this.data)
           console.log(this.groupList)
           console.log(this.selectedRowKeys)
-          const timeRuleList = []
-          this.data.forEach(ele => {
-            timeRuleList.push({
-              dayName: ele.key,
-              startTime: ele.accessTimeList[0].startTime ? ele.accessTimeList[0].startTime : null,
-              endTime: ele.accessTimeList[0].endTime ? ele.accessTimeList[0].endTime : null
+          const rules = []
+          const weeks = []
+          this.selectedRowKeys.forEach(item => {
+            var id = 1
+            if (item === 1) {
+              id = 6
+            } else {
+              id = item - 2
+            }
+            weeks.push(this.data[id])
+          })
+          weeks.forEach(ele => {
+            ele.accessTimeList.forEach(item => {
+              rules.push({
+                weekCode: ele.key,
+                accessStart: item.startTime ? item.startTime : '00:00',
+                accessEnd: item.endTime ? item.endTime : '00:00'
+              })
             })
           })
           const controlGroupList = []
@@ -197,14 +217,14 @@ export default {
           const req = {
             controlGroupList,
             ruleGroupName: values.name,
-            timeRuleList,
+            timeRuleList: rules,
             schoolCode: this.userInfo.schoolCode,
             ruleGroupType: this.$route.query.type === 'teacher' ? 1 : 2
           }
           console.log(req)
           this.addGroup(req).then(res => {
             this.$message.success('添加成功')
-            const path = this.$route.query.type === 'teacher' ? '/teacherAccessSet' : '/studentAttendanceSet'
+            const path = this.$route.query.type === 'teacher' ? '/teacherAccess' : '/studentAccess'
             this.$router.push({ path })
           })
         }
@@ -219,8 +239,24 @@ export default {
       if (type === 'startTime') {
         this.data[id].accessTimeList[index].startTime = dateStrings
       } else {
+        console.log(dateStrings)
+        if (parseInt(dateStrings.split(':')[0]) < this.data[id].accessTimeList[index].startTime.split(':')[0]) {
+          this.$message.warning('开始时间不能大于结束时间')
+        }
         this.data[id].accessTimeList[index].endTime = dateStrings
       }
+    },
+    getStartHours (val, id, index) {
+      if (index === 0) {
+        return
+      }
+      const hours = []
+      const time = this.data[id].accessTimeList[index - 1].endTime
+      const timeArr = time.split(':')
+      for (var i = 0; i < parseInt(timeArr[0]); i++) {
+        hours.push(i)
+      }
+      return hours
     },
     getDisabledHours (val, id, index) {
       const hours = []
@@ -230,6 +266,20 @@ export default {
         hours.push(i)
       }
       return hours
+    },
+    getStartMinutes (selectedHour, id, index) {
+      if (index === 0) {
+        return
+      }
+      const time = this.data[id].accessTimeList[index - 1].endTime
+      const timeArr = time.split(':')
+      const minutes = []
+      if (selectedHour === parseInt(timeArr[0])) {
+        for (var i = 0; i < parseInt(timeArr[1]); i++) {
+          minutes.push(i)
+        }
+      }
+      return minutes
     },
     getDisabledMinutes (selectedHour, id, index) {
       const time = this.data[id].accessTimeList[index].startTime
@@ -263,10 +313,11 @@ export default {
     },
     // 添加通行时间
     addAccessTime(index, id) {
+      console.log(this.data[id].accessTimeList[index].endTime)
       this.data[id].accessTimeList.forEach(ele => {
         ele.canAdd = false
       })
-      this.data[id].accessTimeList.push({ startTime: '00:00', endTime: '23:59', canAdd: true })
+      this.data[id].accessTimeList.push({ startTime: this.data[id].accessTimeList[index].endTime, endTime: '00:00', canAdd: true })
     },
     // 移除通行时间
     deleteAccessTime(index, id) {

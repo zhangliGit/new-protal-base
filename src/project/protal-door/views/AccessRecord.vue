@@ -1,17 +1,6 @@
 <template>
   <div class="page-layout qui-fx-ver">
-    <submit-form
-      ref="form"
-      @submit-form="submitForm"
-      :title="title"
-      v-model="formStatus"
-      :form-data="formData"
-    ></submit-form>
     <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
-      <div slot="left">
-        <a-button type="primary" @click="addRecord(false, {}, '新增')" icon="plus">新增</a-button>
-      </div>
-      <div slot="right"></div>
     </search-form>
     <table-list :page-list="pageList" :columns="columns" :table-list="recordList"></table-list>
     <page-num v-model="pageList" :total="total" @change-page="showList(searchObj)"></page-num>
@@ -23,7 +12,6 @@ import { mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import SearchForm from '@c/SearchForm'
 import PageNum from '@c/PageNum'
-import SubmitForm from '@c/SubmitForm'
 const searchLabel = [
   {
     value: 'userName', // 表单属性
@@ -65,25 +53,6 @@ const searchLabel = [
     type: 'select',
     label: '人员类型'
   },
-  // {
-  //   list: [ // 选择列表项，select控件必传
-  //     {
-  //       key: '',
-  //       val: '全部'
-  //     },
-  //     {
-  //       key: 1,
-  //       val: '校大门'
-  //     },
-  //     {
-  //       key: 2,
-  //       val: '后门'
-  //     }
-  //   ],
-  //   value: 'inoutArea',
-  //   type: 'select',
-  //   label: '出入地点'
-  // },
   {
     list: [
       // 选择列表项，select控件必传
@@ -108,70 +77,6 @@ const searchLabel = [
     value: 'rangeTime', // 日期区间
     type: 'rangeTime',
     label: '起始时间'
-  }
-]
-const formData = [
-  {
-    value: 'userName',
-    initValue: '',
-    type: 'input',
-    label: '姓名',
-    placeholder: '请输入人员姓名',
-    required: false
-  },
-  {
-    value: 'accessPlace',
-    initValue: '',
-    type: 'input',
-    label: '性别',
-    placeholder: '请输入性别',
-    required: false
-  },
-  {
-    value: 'accessTime',
-    initValue: '',
-    type: 'input',
-    label: '人员类型',
-    placeholder: '请输入人员类型',
-    required: false
-  },
-  {
-    value: 'remark',
-    initValue: '',
-    type: 'input',
-    label: '学号/工号',
-    placeholder: '请输入学号/工号',
-    required: false
-  },
-  {
-    value: 'remark',
-    initValue: '',
-    type: 'input',
-    label: '手机号',
-    placeholder: '请输入手机号',
-    required: false
-  },
-  {
-    value: 'remark',
-    initValue: '',
-    type: 'input',
-    label: '出入地点',
-    placeholder: '请输入出入地点',
-    required: false
-  },{
-    value: 'remark',
-    initValue: '',
-    type: 'input',
-    label: '出入类型',
-    placeholder: '请输入出入类型',
-    required: false
-  },{
-    value: 'remark',
-    initValue: '',
-    type: 'input',
-    label: '出入时间',
-    placeholder: '请输入出入时间',
-    required: false
   }
 ]
 const columns = [
@@ -257,7 +162,6 @@ export default {
     TableList,
     SearchForm,
     PageNum,
-    SubmitForm
   },
   data() {
     return {
@@ -270,27 +174,25 @@ export default {
       },
       recordList: [],
       searchObj: {
-        startTime: '',
-        endTime: '',
+        startTime: null,
+        endTime: null,
         userName: '',
         userType: '',
         accessType: ''
       },
-      formStatus: false,
-      title: '新增出入记录'
     }
   },
   mounted() {
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getrecordList','addrecordList']),
+    ...mapActions('home', ['getrecordList']),
     async showList(searchObj = this.searchObj) {
       const req = {
         ...this.pageList,
         // schoolCode: this.userInfo.schoolCode,
-        schoolCode: 'QPZX'
-        // ...searchObj
+        schoolCode: 'QPZX',
+        ...this.searchObj
       }
       const res = await this.getrecordList(req)
       this.recordList = res.data.list
@@ -299,28 +201,11 @@ export default {
     searchForm(values) {
       console.log(values)
       this.searchObj.userName = values.userName
-      this.searchObj.startTime = values.rangeTime ? this.$tools.getDateTime(values.rangeTime[0]) : ''
-      this.searchObj.endTime = values.rangeTime ? this.$tools.getDateTime(values.rangeTime[1]) : ''
+      this.searchObj.startTime = values.rangeTime ? this.$tools.getDateTime(values.rangeTime[0]) :null
+      this.searchObj.endTime = values.rangeTime ? this.$tools.getDateTime(values.rangeTime[1]) : null
       this.searchObj.userType = values.userType
       this.searchObj.accessType = values.accessType
       this.showList(this.searchObj)
-    },
-      async submitForm (values) {
-      try {
-        await this.addrecordList(values)
-        this.$message.success('操作成功')
-        this.$tools.goNext(() => {
-          this.$refs.form.reset()
-          this.showList()
-        })
-      } catch (err) {
-        this.$refs.form.error()
-      }
-    },
-    addRecord () {
-      this.formStatus = true
-        this.title = '新增出入记录'
-        this.formData = formData
     },
   }
 }

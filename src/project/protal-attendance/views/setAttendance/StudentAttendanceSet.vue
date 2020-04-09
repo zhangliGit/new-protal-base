@@ -5,7 +5,7 @@
       is-check
       v-model="userTag"
       @submit="chooseUser"
-      title="添加考勤设备控制组">
+      title="添加学生">
     </choose-student>
     <div class="qui-fx-jsb qui-fx-ac">
       <div></div>
@@ -18,9 +18,9 @@
         <div class="qui-fx-ver">
           <div class="qu-fx" v-for="(ele, i) in JSON.parse(accessTime.record.ruleTime)" :key="i">
             <span style="margin-right:10px;" v-if="ele.startTime">{{ ele.dayName | getWeekDay }}</span>
-            <span v-if="ele.startTime">{{ ele.startTime | getDate(3) }}</span>
+            <span v-if="ele.startTime">{{ ele.startTime }}</span>
             <span v-if="ele.startTime"> ~ </span>
-            <span v-if="ele.startTime">{{ ele.endTime | getDate(3) }}</span>
+            <span v-if="ele.startTime">{{ ele.endTime }}</span>
           </div>
         </div>
       </template>
@@ -132,6 +132,7 @@ export default {
         page: 1,
         size: 20
       },
+      id: '',
       recordList: []
     }
   },
@@ -164,6 +165,7 @@ export default {
       console.log(id)
       await this.delAccess({ id })
       this.$message.success('删除成功')
+      this.showList()
     },
     // 适用人员管理
     addCrew(id) {

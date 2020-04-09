@@ -8,8 +8,10 @@ import hostEnv from '@config/host-env'
 const homeApi = {
   getAccessList: '/attendance/group/list#post', // 考勤组设置列表
   addAccess: '/attendance/group/add#post', // 新增考勤组
+  updateAccess: '/attendance/group/update#post', // 修改考勤组
   delAccess: '/attendance/group/delete#delQuery', // 删除考勤组
-  bindAccessUser: '/attendance/group/bind/user#post' // 考勤组添加人员
+  bindAccessUser: '/attendance/group/bind/user#post', // 考勤组添加人员
+  getAccessDetail: '/attendance/group/detail#get' // 考勤组详情
 }
 for (const val in homeApi) {
   homeApi[val] = `${hostEnv.lz}${homeApi[val]}`
