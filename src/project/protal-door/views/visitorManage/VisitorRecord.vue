@@ -10,7 +10,7 @@
       :visible="detailTag"
     >
       <p>访客姓名：{{ recordDetail.visitorName }}</p>
-      <p>访客电话：{{ recordDetail.visitorName }}</p>
+      <p>访客电话：{{ recordDetail.visitorMobile }}</p>
       <p>来访事由：{{ recordDetail.causeName }}</p>
       <p>进入时间：{{ recordDetail.inTime }}</p>
       <p>预计离开时间：{{ recordDetail.entryTime }}</p>

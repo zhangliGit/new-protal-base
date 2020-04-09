@@ -127,8 +127,12 @@ export default {
           schoolCode: 'QPZX',
           causeName: this.causeName
         })
+      this.$message.success('添加成功')
+      this.$tools.goNext(() => {
+        this.causeName = ''
+        this.showReason()
+      })
       }
-      this.showReason()
     },
     async del(record) {
       await this.delcause({
@@ -148,11 +152,18 @@ export default {
         }
       })
     },
-    delControl(id) {
+   async  delControl(id) {
       this.controlList.splice(
         this.controlList.findIndex(item => item.id === id),
         1
-      )
+      ),
+        await this.delcontrolgroup({
+        id: id
+      })
+      this.$message.success('删除成功')
+      this.$tools.goNext(() => {
+      this.showControl()
+      })
     },
     addControl() {
       this.controlList.push({
