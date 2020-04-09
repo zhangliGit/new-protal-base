@@ -31,14 +31,10 @@ export default {
       recordId: ''
     }
   },
-  async mounted () {
-  },
   methods: {
-    ...mapActions('home', [
-      'getStudentOperate'
-    ]),
+    ...mapActions('home', ['getRecordList']),
     async showList () {
-      const res = await this.getStudentOperate({ id: this.recordId })
+      const res = await this.getRecordList({ recordId: this.recordId, userType: '2' })
       this.recordList = res.data
     }
   }

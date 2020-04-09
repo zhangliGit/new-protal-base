@@ -6,17 +6,16 @@
 import hostEnv from '@config/host-env'
 
 const doorApi = {
-  getrecordList: '/record/access/list#post' ,// 出入记录
-  addrecordList: '/record/access/add#post', // 添加出入记录
-  getappointList: '/invite/appoint/list#post' ,// 访客记录
-  addcause: '/cause/info/add#post' ,// 事由添加
-  delcause: '/cause/info/delete#get' ,// 事由删除
-  getcauseList: '/cause/info/list#post' ,// 事由查询列表
-  addcontrolgroup: '/visitor/controlgroup/add#post' ,// 添加访客控制组
-  delcontrolgroup: '/visitor/controlgroup/delete#get' ,// 访客控制组删除
-  getcontrolgroupList: '/visitor/controlgroup/list#post' // 控制组列表
+  getGroupList: '/setting/rule/group/list#postForm', // 获取通行权限列表
+  addGroup: '/setting/rule/group/add#post', // 添加通行权限组
+  getReasonList: '/reasonList#get', // 来访事由
+  getFkControl: '/fkControl#get', // 获取访客控制组配置
+  getDoorSet: '/doorList#get', // 获取门卫列表
+  getFkRecord: '/fkRecord#get', // 获取访客记录
+  getStudentAccess: '/studentAccess#get', // 学生通行权限
+  getTeacherAccess: '/teacherAccess#get' // 教师通行权限
 }
 for (const val in doorApi) {
-  doorApi[val] = `${hostEnv.zx}${doorApi[val]}`
+  doorApi[val] = `${hostEnv.mj}${doorApi[val]}`
 }
 export default doorApi

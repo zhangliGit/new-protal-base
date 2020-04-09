@@ -5,7 +5,7 @@
       <search-form isReset @search-form="searchForm" :search-label="searchLabel"></search-form>
       <table-list :page-list="pageList" :columns="columns" :table-list="recordList">
         <template v-slot:actions="action">
-          <a-tag color="#ccc" @click.stop="changeDetial(action.record)">变更状态</a-tag>
+          <a-tag color="#ccc" @click.stop="changeDetail(action.record)">变更状态</a-tag>
           <a-tag @click.stop="checkDetial(action.record)">操作记录</a-tag>
         </template>
       </table-list>
@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import OrgTree from '@c/OrgTree'
 import SearchForm from '@c/SearchForm'
 import TableList from '@c/TableList'
@@ -27,7 +27,7 @@ import RecordChange from './RecordChange'
 import columns from '../../assets/js/table/teacherRecord'
 const searchLabel = [
   {
-    value: 'name', // 表单属性
+    value: 'searchKey', // 表单属性
     type: 'input', // 表单类型
     label: '姓名', // 表单label值
     placeholder: '请输入姓名' // 表单默认值(非必选字段)
@@ -44,23 +44,23 @@ const searchLabel = [
         val: '全部'
       },
       {
-        key: 1,
+        key: '5',
         val: '正常'
       },
       {
-        key: 2,
+        key: '1',
         val: '迟到'
       },
       {
-        key: 3,
+        key: '3',
         val: '缺卡'
       },
       {
-        key: 4,
+        key: '4',
         val: '请假'
       }
     ],
-    value: 'workStatus',
+    value: 'onStatue',
     type: 'select',
     label: '上班状态'
   },
@@ -71,23 +71,23 @@ const searchLabel = [
         val: '全部'
       },
       {
-        key: 1,
+        key: '5',
         val: '正常'
       },
       {
-        key: 2,
+        key: '2',
         val: '早退'
       },
       {
-        key: 3,
+        key: '6',
         val: '缺卡'
       },
       {
-        key: 4,
+        key: '4',
         val: '请假'
       }
     ],
-    value: 'restStatus',
+    value: 'offStatue',
     type: 'select',
     label: '下班状态'
   }
@@ -106,14 +106,13 @@ export default {
     return {
       searchLabel,
       pageList: {
-        orgCode: '1',
-        searchKey: '1',
-        startDay: '2020-02-01',
-        endDay: '2020-04-01',
-        onStatue: '1',
-        offStatue: '1',
-        schoolCode: '1',
-        // teacherRecordListDto: [],
+        orgCode: '',
+        searchKey: '',
+        startDay: '',
+        endDay: '',
+        onStatue: '',
+        offStatue: '',
+        schoolCode: '',
         page: 1,
         size: 20
       },
@@ -122,7 +121,16 @@ export default {
       recordList: []
     }
   },
+  computed: {
+    ...mapState('home', [
+      'userInfo'
+    ])
+  },
   async mounted () {
+    this.pageList.schoolCode = this.userInfo.schoolCode
+    this.pageList.orgCode = this.userInfo.schoolCode
+    // this.pageList.schoolCode = 'CANPOINT'
+    // this.pageList.orgCode = ''
     this.showList()
   },
   methods: {
@@ -131,16 +139,17 @@ export default {
     ]),
     async showList () {
       const res = await this.getTeacherRecord(this.pageList)
-      this.recordList = res.data
-      this.total = res.total
+      this.recordList = res.data.list
+      this.total = res.data.total
     },
     select (item) {
-      console.log(item) // { name: '', code: ''}
+      this.pageList.orgCode = item.code
+      this.showList()
     },
     searchForm (values) {
-      console.log('searchForm', values)
-      this.searchInfo = values
-      this.pageList = Object.assign(values, this.pageList)
+      this.pageList.startDay = values.rangeTime[0]
+      this.pageList.endDay = values.rangeTime[1]
+      this.pageList = Object.assign(this.pageList, values)
       this.showList()
     },
     checkDetial (record) {
@@ -149,8 +158,9 @@ export default {
       this.$refs.recordDetail.showList()
       this.$refs.recordDetail.dialogTag = true
     },
-    changeDetial (record) {
-      console.log('changeDetial+++', record)
+    changeDetail (record) {
+      console.log('changeDetail+++', record)
+      this.$refs.recordChange.recordId = record.id
       this.$refs.recordChange.dialogTag = true
     }
   }

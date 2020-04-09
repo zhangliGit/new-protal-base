@@ -31,8 +31,8 @@
       <div class="qui-fx-f1 box-bottom" style="padding:10px;">
         <div class="box-content">
           <div>时间：学生在上学期间
-            <span v-if="noticeList.absent">{{ inTime }}</span>
-            <a-input-number v-else size="small" :min="1" :max="120" v-model="noticeList.inTimeValue" />
+            <span v-if="noticeList.absent">{{ noticeList.inTime }}</span>
+            <a-input-number v-else size="small" :min="1" :max="120" v-model="noticeList.inTime" />
             分钟后还没有进校记录
           </div>
           <div>说明：学生在上学时间后一段时间仍未进校，发送预警通知</div>
@@ -54,8 +54,8 @@
       <div class="qui-fx-f1" style="padding:10px;">
         <div class="box-content">
           <div>时间：学生在放学时间
-            <span v-if="noticeList.retain">{{ outTime }}</span>
-            <a-input-number v-else size="small" :min="1" :max="120" v-model="noticeList.outTimeValue" />
+            <span v-if="noticeList.retain">{{ noticeList.outTime }}</span>
+            <a-input-number v-else size="small" :min="1" :max="120" v-model="noticeList.outTime" />
             分钟后还没有出校记录
           </div>
           <div>说明：学生在放学时间后一段时间仍未出校，发送预警通知</div>
@@ -69,27 +69,25 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 export default {
   name: 'StudentNotice',
   components: {
   },
   data () {
     return {
-      inTime: '30',
-      outTime: '30',
       noticeList: {
         inOut: true,
         absent: true,
         retain: true,
         absentVal: [],
         retainVal: [],
-        inOutVal: ['1'],
-        inOutObj: ['1'],
+        inOutVal: [],
+        inOutObj: [],
         absentObj: [],
         retainObj: [],
-        inTimeValue: '',
-        outTimeValue: ''
+        inTime: '0',
+        outTime: '0'
       },
       options: [{
         label: '启用',
@@ -97,37 +95,85 @@ export default {
       }],
       objOpt: [{
         label: '家长',
-        value: '1'
+        value: '2'
       }],
       plainOpt: [{
         label: '家长',
-        value: '1'
+        value: '2'
       }, {
         label: '班主任',
-        value: '2'
+        value: '1'
       }]
     }
   },
-  async mounted () {
+  computed: {
+    ...mapState('home', [
+      'userInfo'
+    ])
+  },
+  mounted () {
+    this.setGet()
   },
   methods: {
     ...mapActions('home', [
-      'getTeacherDetail', 'studentAccess', 'studentNoEnter', 'studentRetention'
+      'getTeacherDetail', 'studentAccess', 'studentNoEnter', 'studentRetention',
+      'getSetting'
     ]),
+    setGet () {
+      this.getSetting({ 'schoolCode': this.userInfo.schoolCode }).then(res => {
+        const data = res.data
+        if (data.length > 0) {
+          data.forEach(el => {
+            if (el.msgType === '1') {
+              this.noticeList.inOutObj = el.informer.split(',')
+              this.noticeList.inOutVal = el.enable ? ['1'] : []
+            } else if (el.msgType === '2') {
+              this.noticeList.absentObj = el.informer.split(',')
+              this.noticeList.absentVal = el.enable ? ['1'] : []
+              this.noticeList.inTime = el.duration
+            } else {
+              this.noticeList.retainObj = el.informer.split(',')
+              this.noticeList.retainVal = el.enable ? ['1'] : []
+              this.noticeList.outTime = el.duration
+            }
+          })
+        }
+      })
+    },
     modifyInOut () {
       this.noticeList.inOut = true
-      console.log('+++inOutVal', this.noticeList.inOutVal)
-      console.log('+++inOutObj', this.noticeList.inOutObj)
+      const req = {
+        schoolCode: this.userInfo.schoolCode,
+        noticer: this.noticeList.inOutObj.length === 1 ? this.noticeList.inOutObj[0] : '',
+        enable: this.noticeList.inOutVal.length === 1
+      }
+      this.studentAccess(req).then(res => {
+        this.$message.success('操作成功')
+      })
     },
     modifyAbsent () {
       this.noticeList.absent = true
-      console.log('+++absentVal', this.noticeList.absentVal)
-      console.log('+++absentObj', this.noticeList.absentObj)
+      const req = {
+        schoolCode: this.userInfo.schoolCode,
+        noticer: this.noticeList.absentObj.length > 0 ? this.noticeList.absentObj.join(',') : '',
+        enable: this.noticeList.absentVal.length > 0,
+        timeCount: this.noticeList.inTime
+      }
+      this.studentNoEnter(req).then(res => {
+        this.$message.success('操作成功')
+      })
     },
     modifyRetain () {
       this.noticeList.retain = true
-      console.log('+++retainVal', this.noticeList.retainVal)
-      console.log('+++retainObj', this.noticeList.retainObj)
+      const req = {
+        schoolCode: this.userInfo.schoolCode,
+        noticer: this.noticeList.retainObj.length > 0 ? this.noticeList.retainObj.join(',') : '',
+        enable: this.noticeList.retainVal.length > 0,
+        timeCount: this.noticeList.outTime
+      }
+      this.studentRetention(req).then(res => {
+        this.$message.success('操作成功')
+      })
     }
   }
 }

@@ -5,8 +5,8 @@
       <search-form isReset @search-form="searchForm" :search-label="searchLabel"></search-form>
       <table-list :page-list="pageList" :columns="columns" :table-list="recordList">
         <template v-slot:actions="action">
-          <a-tag color="#ccc" @click.stop="changeDetial(action.record)">变更状态</a-tag>
-          <a-tag @click.stop="checkDetial(action.record)">操作记录</a-tag>
+          <a-tag color="#ccc" @click.stop="changeDetail(action.record)">变更状态</a-tag>
+          <a-tag @click.stop="checkDetail(action.record)">操作记录</a-tag>
         </template>
       </table-list>
       <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import GradeTree from '@c/GradeTree'
 import SearchForm from '@c/SearchForm'
 import TableList from '@c/TableList'
@@ -27,7 +27,7 @@ import RecordChange from './RecordChange'
 import columns from '../../assets/js/table/studentRecord'
 const searchLabel = [
   {
-    value: 'name', // 表单属性
+    value: 'searchKey', // 表单属性
     type: 'input', // 表单类型
     label: '姓名', // 表单label值
     placeholder: '请输入姓名' // 表单默认值(非必选字段)
@@ -44,23 +44,23 @@ const searchLabel = [
         val: '全部'
       },
       {
-        key: 1,
+        key: '5',
         val: '正常'
       },
       {
-        key: 2,
+        key: '1',
         val: '迟到'
       },
       {
-        key: 3,
+        key: '3',
         val: '缺卡'
       },
       {
-        key: 4,
+        key: '4',
         val: '请假'
       }
     ],
-    value: 'startStatus',
+    value: 'onStatue',
     type: 'select',
     label: '上学状态'
   },
@@ -71,23 +71,23 @@ const searchLabel = [
         val: '全部'
       },
       {
-        key: 1,
+        key: '5',
         val: '正常'
       },
       {
-        key: 2,
+        key: '2',
         val: '早退'
       },
       {
-        key: 3,
+        key: '6',
         val: '缺卡'
       },
       {
-        key: 4,
+        key: '4',
         val: '请假'
       }
     ],
-    value: 'endStatus',
+    value: 'offStatue',
     type: 'select',
     label: '放学状态'
   }
@@ -122,8 +122,14 @@ export default {
       recordList: []
     }
   },
-  async mounted () {
-    this.showList()
+  computed: {
+    ...mapState('home', [
+      'userInfo'
+    ])
+  },
+  mounted () {
+    this.pageList.schoolCode = this.userInfo.schoolCode
+    // this.showList()
   },
   methods: {
     ...mapActions('home', [
@@ -131,24 +137,31 @@ export default {
     ]),
     async showList () {
       const res = await this.getStudentRecord(this.pageList)
-      this.recordList = res.data
-      this.total = res.total
+      this.recordList = res.data.list
+      this.total = res.data.total
     },
     select (item) {
       console.log(item) // { name: '', code: ''}
-    },
-    searchForm (values) {
-      this.pageList = Object.assign(values, this.pageList)
+      this.pageList.schoolYearId = item.schoolYearId
+      this.pageList.gradeCode = item.gradeCode
+      this.pageList.classCode = item.classCode
       this.showList()
     },
-    checkDetial (record) {
-      console.log('checkDetial+++', record)
+    searchForm (values) {
+      this.pageList.startDay = values.rangeTime[0]
+      this.pageList.endDay = values.rangeTime[1]
+      this.pageList = Object.assign(this.pageList, values)
+      this.showList()
+    },
+    checkDetail (record) {
+      console.log('checkDetail+++', record)
       this.$refs.recordDetail.recordId = record.id
       this.$refs.recordDetail.showList()
       this.$refs.recordDetail.dialogTag = true
     },
-    changeDetial (record) {
-      console.log('changeDetial+++', record)
+    changeDetail (record) {
+      console.log('changeDetail+++', record)
+      this.$refs.recordChange.recordId = record.id
       this.$refs.recordChange.dialogTag = true
     }
   }
