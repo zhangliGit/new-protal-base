@@ -15,8 +15,7 @@ const { logs } = require('./logs')
 const buildModule = process.argv[process.argv.length - 1]
 const envHost = {
   prod: 'http://39.97.164.4:8090/upload-web',
-  test: 'http://39.97.164.4:8090/upload-web',
-  dev: 'http://39.97.164.4:8090/upload-web'
+  test: 'http://39.97.164.4:8090/upload-web'
 }
 
 class uploadZip {

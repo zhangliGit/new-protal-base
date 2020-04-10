@@ -10,14 +10,16 @@ require('colors')
 modulesDir.forEach((file) => {
   projectList.push(file.split('/')[file.split('/').length - 1])
 })
-if (projectList.indexOf(buildModule) === -1) {
-  console.log(`请您输入正确的打包模块: ${JSON.stringify(projectList)}`.red)
-  console.log(`例如: npm run build-prod ${projectList[1]}`.green)
-  process.exit()
+if (process.env.NODE_ENV === 'production') {
+  if (projectList.indexOf(buildModule) === -1) {
+    console.log(`请您输入正确的打包模块: ${JSON.stringify(projectList)}`.red)
+    console.log(`例如: npm run build-prod ${projectList[1]}`.green)
+    process.exit()
+  }
+  projectList = [buildModule]
+  const msg = process.env.VUE_APP_URL === 'prod' ? '正式环境' : '测试环境'
+  logs(`您正在打包模块：${buildModule}，打包环境：${msg}`)
 }
-projectList = [buildModule]
-const msg = process.env.VUE_APP_URL === 'prod' ? '正式环境' : '测试环境'
-logs(`您正在打包模块：${buildModule}，打包环境：${msg}`)
 
 // cdn配置
 const cdn = [

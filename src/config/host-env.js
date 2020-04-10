@@ -16,11 +16,12 @@ let zx = ''
 let mj = ''
 
 if (ConfigEnv === 'test') {
-  wangxuanzhang = '/wangxuanzhang' // 控制中心
-  zhuxu = '/zhuxu'
-  zhangkun = '/zhangkun'
-  gejunwei = '/lvzhuo'
-  lvzhuo = '/lvzhuo'
+  // 线上接口
+  wangxuanzhang = '/web-protal/controlCenter'
+  zhuxu = '/web-protal/application'
+  zhangkun = '/web-protal/canpoint-school-view'
+  gejunwei = '/web-protal/plateform-userinfo-view'
+  lvzhuo = '/web-protal/plateform-userinfo-view'
 } else if (ConfigEnv === 'prod') {
   // 线上接口
   wangxuanzhang = '/web-protal/controlCenter'
