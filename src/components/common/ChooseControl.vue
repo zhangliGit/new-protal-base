@@ -68,7 +68,6 @@
 import PageNum from '@c/PageNum'
 import TableList from '@c/TableList'
 import $ajax from '@u/ajax-serve'
-import { mapState } from 'vuex'
 import hostEnv from '@config/host-env'
 const columns = [
   {
@@ -113,6 +112,10 @@ export default {
       type: Boolean,
       default: false
     },
+    schoolCode: {
+      type: String,
+      default: ''
+    },
     title: {
       type: String,
       default: ''
@@ -131,9 +134,6 @@ export default {
     }
   },
   computed: {
-    ...mapState('home', [
-      'schoolCode'
-    ]),
     status: {
       get () {
         return this.value
@@ -185,8 +185,8 @@ export default {
       const res = await $ajax.post({
         url: `${hostEnv.wangxuanzhang}/control/group/info/queryControlGroupInfos`,
         params: {
-          keyword: this.keyword,
-          contorlType: this.contorlType,
+          controlGroupName: this.keyword,
+          controlGroupType: this.contorlType,
           schoolCode: this.schoolCode,
           ...this.pageList
         }
@@ -211,6 +211,7 @@ export default {
       this.chooseList.splice(this.chooseList.indexOf(id), 1)
     },
     selectAll (item, type) {
+      console.log(item)
       if (type) {
         this.totalList = this.totalList.concat(item)
       } else {

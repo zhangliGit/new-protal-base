@@ -10,20 +10,20 @@
       :visible="detailTag"
     >
       <p>访客姓名：{{ recordDetail.visitorName }}</p>
-      <p>访客电话：{{ recordDetail.visitorName }}</p>
+      <p>访客电话：{{ recordDetail.visitorMobile }}</p>
       <p>来访事由：{{ recordDetail.causeName }}</p>
       <p>进入时间：{{ recordDetail.inTime }}</p>
-      <p>预计离开时间：{{ recordDetail.entryTime }}</p>
-      <p>签离时间：{{ recordDetail.entryTime }}</p>
-      <p>来访时长：3小时</p>
+      <p>预计离开时间：{{ recordDetail.accessEndTime}}</p>
+      <p>签离时间：{{ recordDetail.outTime }}</p>
+      <p>来访时长：{{ recordDetail.retentionTime }}</p>
       <p>进入地点：{{ recordDetail.inPlace }}</p>
       <p>签离地点：{{ recordDetail.outPlace }}</p>
       <p>被访人姓名：{{ recordDetail.respondentName }}</p>
-      <p>被访人类型：{{ recordDetail.respondentType }}</p>
-      <p>被访人手机号：{{ recordDetail.phone }}</p>
+      <p>被访人类型：{{ recordDetail.respondentType? '学生' : '教职工' }}</p>
+      <p>被访人手机号：{{ recordDetail.resMobile }}</p>
       <p>组织机构：教务处</p>
       <p>审批状态：{{ recordDetail.state}}</p>
-      <p>访问状态：{{ recordDetail.visitState }}</p>
+      <p>访问状态：{{ recordDetail.visitState ? '在访' : '签离'}}</p>
     </a-drawer>
     <table-list :page-list="pageList" :columns="columns" :table-list="recordList">
       <template v-slot:actions="action">
@@ -159,22 +159,25 @@ const columns = [
   {
     title: '被访人类型',
     dataIndex: 'respondentType',
-    width: '10%'
+    width: '10%',
+    customRender: text => {
+      return parseInt(text) === 1 ? '学生' : '教职工'
+    }
   },
   {
     title: '审批状态',
     dataIndex: 'state',
-    width: '8%' ,
-   customRender: (text) => {
+    width: '8%',
+    customRender: text => {
       if (text === 0) {
         return '待审批'
       } else if (text === 1) {
         return '同意'
       } else if (text === 2) {
         return '不同意'
-      }else if (text === 3) {
+      } else if (text === 3) {
         return '撤销'
-      }else {
+      } else {
         return '失效'
       }
     }
@@ -183,7 +186,7 @@ const columns = [
     title: '访问状态',
     dataIndex: 'visitState',
     width: '8%',
-      customRender: text => {
+    customRender: text => {
       return parseInt(text) === 1 ? '在访' : '签离'
     }
   },
@@ -221,15 +224,15 @@ export default {
         visitorName: '',
         visitorName: '',
         state: '',
-        visitState:''
-      },
+        visitState: ''
+      }
     }
   },
   mounted() {
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getappointList']),
+    ...mapActions('home', ['getappointList', 'getappointDetail']),
     async showList(searchObj = this.searchObj) {
       const req = {
         ...this.pageList,
@@ -241,9 +244,27 @@ export default {
       this.recordList = res.data.list
       this.total = res.data.total
     },
-    goDetail(record) {
-      this.recordDetail = record
+    async goDetail(record) {
       this.detailTag = true
+      const req = {
+        id: record.id
+      }
+      const res = await this.getappointDetail(req)
+      this.recordDetail = res.data    
+      this.recordDetail.accessEndTime = new Date(res.data.accessEndTime).toLocaleString()
+      this.recordDetail.inTime = new Date(res.data.inTime).toLocaleString()
+      this.recordDetail.outTime = new Date(res.data.outTime).toLocaleString()
+      if (this.recordDetail.state === 0) {
+        this.recordDetail.state = '待审批'
+      } else if (this.recordDetail.state === 1) {
+        this.recordDetail.state = '同意'
+      } else if (this.recordDetail.state === 2) {
+        this.recordDetail.state = '不同意'
+      } else if (this.recordDetail.state === 3) {
+        this.recordDetail.state = '撤销'
+      } else {
+        this.recordDetail.state = '失效'
+      }
     },
     searchForm(values) {
       this.searchObj.visitorName = values.visitorName
