@@ -13,15 +13,22 @@ var zip = new AdmZip()
 const { logs } = require('./logs')
 const buildModule = process.argv[process.argv.length - 1]
 const envHost = {
-  prod: 'http://39.97.164.4:8090/upload-zip?uploadPath=/',
-  test: 'http://39.97.164.4:8090/upload-zip?uploadPath=/usr/local/openresty/nginx/html/pc-protal/'
+  prod: {
+    url: 'http://39.97.164.4:8090/upload-zip',
+    uploadPath: '/usr/local/openresty/nginx/html/pc-protal/'
+  },
+  test: {
+    url: 'http://39.97.164.4:8090/upload-zip',
+    uploadPath: '/usr/local/openresty/nginx/html/pc-protal/'
+  }
 }
 
 class uploadZip {
   apply(compiler) {
     compiler.hooks.done.tap('done', compilation => {
       logs(`${buildModule}模块打包完成`)
-      const url = envHost[process.env.VUE_APP_URL]
+      const env = process.env.VUE_APP_URL
+      const url = envHost[env].url + '?uploadPath=' + envHost[env].uploadPath
       const msg = process.env.VUE_APP_URL === 'prod' ? '正式环境' : '测试环境'
       logs(`正在上传${buildModule}模块到${msg}`)
       zip.addLocalFolder('dist')
