@@ -44,11 +44,34 @@ import ChooseControl from '@c/ChooseControl'
 import SearchForm from '@c/SearchForm'
 import { mapState, mapActions } from 'vuex'
 const searchLabel = [
+  // {
+  //   value: 'userName', // 表单属性
+  //   type: 'input', // 表单类型
+  //   label: '门卫姓名', // 表单label值
+  //   placeholder: '请输入姓名' // 表单默认值(非必选字段)
+  // }
   {
-    value: 'userName', // 表单属性
-    type: 'input', // 表单类型
-    label: '门卫姓名', // 表单label值
-    placeholder: '请输入姓名' // 表单默认值(非必选字段)
+    list: [ // 选择列表项，select控件必传
+      {
+        key: '',
+        val: '全部'
+      },
+      {
+        key: '01',
+        val: '小学'
+      },
+      {
+        key: '02',
+        val: '初中'
+      },
+      {
+        key: '03',
+        val: '高中'
+      }
+    ],
+    value: 'placeCode',
+    type: 'select',
+    label: '出入口'
   }
 ]
 const columns = [
@@ -115,11 +138,24 @@ export default {
   },
   mounted() {
     this.getDoorList()
+    this.placeGet()
   },
   methods: {
     ...mapActions('home', [
-      'getDoorSet', 'addDoor', 'delDoor', 'addControl', 'delControl'
+      'getDoorSet', 'addDoor', 'delDoor', 'addControl', 'delControl', 'getPlace'
     ]),
+    async placeGet() {
+      const req = {
+        category: '103',
+        schoolCode: this.userInfo.schoolCode
+      }
+      const res = await this.getPlace(req)
+      this.searchLabel[0].list = res.data.map(el => {
+        el.key = el.placeCode
+        el.val = el.placeName
+        return el
+      })
+    },
     userDeal(type, user) {
       if (type) {
         return {
@@ -174,7 +210,7 @@ export default {
     },
     searchForm(value) {
       console.log('value', value)
-      this.pageList.userName = value.userName
+      this.pageList.placeCode = value.placeCode
       this.getDoorList()
     },
     submitUser(item) {

@@ -164,6 +164,13 @@ module.exports = {
         pathRewrite: {
           '^/zk': ''
         }
+      },
+      'base': {
+        target: 'http://39.97.164.4:10050/', // 平台
+        changeOrigin: true,
+        pathRewrite: {
+          '^/base': ''
+        }
       }
     }
   },
