@@ -5,34 +5,15 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const webpack = require('webpack')
 const uploadZip = require('./build/upload-zip')
-
 function resolve(dir) {
   return path.join(__dirname, dir)
 }
 const isProduction = process.env.NODE_ENV === 'production'
 const isCdn = process.env.VUE_APP_URL === 'prod'
-// const cdn = [
-//   'https://cdn.bootcss.com/vue/2.6.10/vue.min.js',
-//   'https://cdn.bootcss.com/vue-router/3.0.2/vue-router.min.js',
-//   'https://cdn.bootcss.com/vuex/3.1.0/vuex.min.js',
-//   'https://cdn.bootcss.com/axios/0.19.0-beta.1/axios.min.js',
-//   'https://cdn.bootcss.com/moment.js/2.24.0/moment.min.js',
-//   'https://cdn.bootcss.com/moment.js/2.24.0/locale/zh-cn.js'
-// ]
 // vue.config.js
 module.exports = {
   pages: {
     ...utils.entries()
-    // index: {
-    //   // 入口文件
-    //   entry: `src/main.js`,
-    //   // 模板来源
-    //   template: 'public/index.html',
-    //   // 在 dist/index.html 的输出
-    //   filename: 'index.html',
-    //   // 提取出来的通用 chunk 和 vendor
-    //   cdnConfig: process.env.NODE_ENV === 'production' && process.env.VUE_APP_URL === 'prod' ? cdn : []
-    // }
   },
   publicPath: isProduction ? './' : '/',
   chainWebpack: config => {
