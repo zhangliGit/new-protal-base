@@ -104,8 +104,8 @@ export default {
       // const res = await this.getStudentDetail({ id: this.detailId })
       const res = {
         data: {
-          name: '123',
-          num: '1',
+          userName: '123',
+          workNo: '1',
           grade: '1',
           class: '1',
           account: '1'
@@ -114,11 +114,11 @@ export default {
       this.baseList = [
         {
           key: '姓名',
-          value: res.data.name
+          value: res.data.userName
         },
         {
           key: '学号',
-          value: res.data.num
+          value: res.data.workNo
         },
         {
           key: '年级',

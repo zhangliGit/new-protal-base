@@ -1,6 +1,14 @@
 <template>
   <div class="page-layout qui-fx-ver">
     <choose-user ref="user" @submit="submitUser" is-check v-model="chooseTag"></choose-user>
+    <choose-control
+      ref="chooseControl"
+      is-check
+      v-model="controlTag"
+      :schoolCode="userInfo.schoolCode"
+      @submit="submitControl"
+      title="添加控制组">
+    </choose-control>
     <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
       <div slot="left"></div>
     </search-form>
@@ -11,19 +19,19 @@
       :dataSource="doorList"
     >
       <template slot="index" slot-scope="text, record, index">{{ index + 1 }}</template>
-      <template slot="controlGroupList" slot-scope="text">
+      <template slot="controlGroupList" slot-scope="text,record">
         <div v-for="(control, index) in text" :key="index" class="control-list">
-          <delete-tag @delTag="delControl" :tag-info="control"></delete-tag>
+          <delete-tag @delTag="del(control,record)" :tag-info="userDeal(1,control)"></delete-tag>
         </div>
       </template>
       <template slot="userInfoList" slot-scope="text,record">
         <div v-for="(user, index) in text" :key="index" class="control-list">
-          <delete-tag @delTag="delUser(user,record)" :tag-info="userDeal(user)"></delete-tag>
+          <delete-tag @delTag="delUser(user,record)" :tag-info="userDeal(0,user)"></delete-tag>
         </div>
       </template>
       <template slot="actions" slot-scope="text">
-        <a-tag>绑定设备</a-tag>
-        <a-tag @click="addUser(text)">添加门卫</a-tag>
+        <a-tag @click="addUser(1,text)">绑定设备</a-tag>
+        <a-tag @click="addUser(0,text)">添加门卫</a-tag>
       </template>
     </a-table>
   </div>
@@ -32,11 +40,12 @@
 <script>
 import DeleteTag from '@c/DeleteTag'
 import ChooseUser from '@c/ChooseUser'
+import ChooseControl from '@c/ChooseControl'
 import SearchForm from '@c/SearchForm'
 import { mapState, mapActions } from 'vuex'
 const searchLabel = [
   {
-    value: 'name', // 表单属性
+    value: 'userName', // 表单属性
     type: 'input', // 表单类型
     label: '门卫姓名', // 表单label值
     placeholder: '请输入姓名' // 表单默认值(非必选字段)
@@ -81,17 +90,23 @@ const columns = [
 ]
 export default {
   name: 'DoorSet',
-  components: { SearchForm, DeleteTag, ChooseUser },
+  components: {
+    SearchForm,
+    DeleteTag,
+    ChooseUser,
+    ChooseControl
+  },
   data() {
     return {
       chooseTag: false,
+      controlTag: false,
       columns,
       searchLabel,
       doorList: [],
       placeCode: '',
-      pageSize: {
+      pageList: {
         pageNum: 1,
-        pageSize: 20
+        pageSize: 10000000
       }
     }
   },
@@ -102,25 +117,47 @@ export default {
     this.getDoorList()
   },
   methods: {
-    ...mapActions('home', ['getDoorSet', 'addDoor', 'delDoor']),
-    userDeal(user) {
-      return {
-        name: user.userName,
-        ...user
+    ...mapActions('home', [
+      'getDoorSet', 'addDoor', 'delDoor', 'addControl', 'delControl'
+    ]),
+    userDeal(type, user) {
+      if (type) {
+        return {
+          name: user.controlGroupName,
+          ...user
+        }
+      } else {
+        return {
+          name: user.userName,
+          ...user
+        }
       }
     },
     async getDoorList() {
-      this.pageSize.schoolCode = this.userInfo.schoolCode
-      const res = await this.getDoorSet(this.pageSize)
+      this.pageList.schoolCode = this.userInfo.schoolCode
+      const res = await this.getDoorSet(this.pageList)
       this.doorList = res.data
     },
-    addUser(text) {
-      console.log('text', text)
+    addUser(type, text) {
+      if (type) {
+        this.controlTag = true
+      } else {
+        this.chooseTag = true
+      }
       this.placeCode = text.placeCode
-      this.chooseTag = true
     },
-    delControl(user) {
-      console.log('user', user)
+    del(control, record) {
+      const req = {
+        placeCode: record.placeCode,
+        schoolCode: this.userInfo.schoolCode,
+        controlGroupCode: control.controlGroupCode
+      }
+      this.delControl(req).then(res => {
+        this.$message.success('操作成功')
+        this.$tools.goNext(() => {
+          this.getDoorList()
+        })
+      })
     },
     delUser(user, record) {
       const req = {
@@ -135,7 +172,11 @@ export default {
         })
       })
     },
-    searchForm() {},
+    searchForm(value) {
+      console.log('value', value)
+      this.pageList.userName = value.userName
+      this.getDoorList()
+    },
     submitUser(item) {
       const userList = item.map(el => {
         el.userType = '1'
@@ -147,6 +188,20 @@ export default {
         userList: userList
       }
       this.addDoor(req).then(res => {
+        this.$message.success('操作成功')
+        this.$tools.goNext(() => {
+          this.$refs.user.reset()
+          this.getDoorList()
+        })
+      })
+    },
+    submitControl(item) {
+      const req = {
+        placeCode: this.placeCode,
+        schoolCode: this.userInfo.schoolCode,
+        controlGroupList: item
+      }
+      this.addControl(req).then(res => {
         this.$message.success('操作成功')
         this.$tools.goNext(() => {
           this.$refs.user.reset()

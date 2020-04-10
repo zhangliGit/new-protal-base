@@ -13,6 +13,8 @@ const homeApi = {
   getDoorSet: '/setting/place/relation/list#post', // 获取门卫列表
   addDoor: '/setting/place/user/relation/add#post', // 添加门卫
   delDoor: '/setting/place/user/relation/delete#delQuery', // 删除门卫
+  addControl: '/setting/place/controller/relation/add#post', // 添加控制组
+  delControl: '/setting/place/controller/relation/delete#delQuery', // 删除控制组
 
   getFkRecord: '/fkRecord#get', // 获取访客记录
   getStudentAccess: '/studentAccess#get', // 学生通行权限
