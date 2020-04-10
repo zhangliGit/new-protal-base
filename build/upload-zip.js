@@ -1,4 +1,3 @@
-
 /**
  *
  * @Description 压缩文件后上传服务器
@@ -14,12 +13,12 @@ var zip = new AdmZip()
 const { logs } = require('./logs')
 const buildModule = process.argv[process.argv.length - 1]
 const envHost = {
-  prod: 'http://39.97.164.4:8090/upload-web',
-  test: 'http://39.97.164.4:8090/upload-web'
+  prod: 'http://39.97.164.4:8090/upload-zip?uploadPath=/',
+  test: 'http://39.97.164.4:8090/upload-zip?uploadPath=/usr/local/openresty/nginx/html/pc-protal/'
 }
 
 class uploadZip {
-  apply (compiler) {
+  apply(compiler) {
     compiler.hooks.done.tap('done', compilation => {
       logs(`${buildModule}模块打包完成`)
       const url = envHost[process.env.VUE_APP_URL]
@@ -30,16 +29,21 @@ class uploadZip {
       var formData = {
         file: fs.createReadStream(path.resolve(__dirname, `../${buildModule}.zip`))
       }
-      request.post({
-        url: url,
-        formData: formData
-      }, function (error, response, body) {
-        if (!error && response.statusCode === 200) {
-          // 删除压缩包
-          fs.unlink(`${buildModule}.zip`, function () {})
-          logs('上传成功')
+      request.post(
+        {
+          url: url,
+          formData: formData
+        },
+        function(error, response, body) {
+          if (!error && response.statusCode === 200) {
+            // 删除压缩包
+            fs.unlink(path.resolve(__dirname, `../${buildModule}.zip`), function() {
+              logs('上传成功')
+              process.exit()
+            })
+          }
         }
-      })
+      )
     })
   }
 }

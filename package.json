@@ -61,6 +61,7 @@
     "opencollective": "^1.0.3",
     "opencollective-postinstall": "^2.0.2",
     "request": "^2.88.0",
+    "requirer": "^0.0.4",
     "style-resources-loader": "^1.2.1",
     "uglifyjs-webpack-plugin": "^2.2.0",
     "vconsole": "^3.3.4",

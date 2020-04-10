@@ -53,20 +53,18 @@ module.exports = {
     config.plugins.push(new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/))
     // 配置cdn模块
     if (isProduction) {
-      config.plugins.push(
-        new BundleAnalyzerPlugin({
-          analyzerPort: 8891
-        })
-      )
+      // config.plugins.push(
+      //   new BundleAnalyzerPlugin({
+      //     analyzerPort: 8891
+      //   })
+      // )
       config.plugins.push(new uploadZip())
-      if (isCdn) {
-        config.externals = {
-          vue: 'Vue',
-          'vue-router': 'VueRouter',
-          vuex: 'Vuex',
-          axios: 'axios',
-          moment: 'moment'
-        }
+      config.externals = {
+        vue: 'Vue',
+        'vue-router': 'VueRouter',
+        vuex: 'Vuex',
+        axios: 'axios',
+        moment: 'moment'
       }
       // 压缩代码
       config.optimization = {
@@ -104,63 +102,63 @@ module.exports = {
           '^/wangxuanzhang': ''
         }
       },
-      'zhuxu': {
+      zhuxu: {
         target: 'http://39.97.164.4:8081/', // zhuxu
         changeOrigin: true,
         pathRewrite: {
           '^/zhuxu': ''
         }
       },
-      'zhangkun': {
+      zhangkun: {
         target: 'http://39.97.164.4:8081/', // zhangkun
         changeOrigin: true,
         pathRewrite: {
           '^/zhangkun': ''
         }
       },
-      'gejunwei': {
+      gejunwei: {
         target: 'http://39.97.164.4:8081/', // gejunwei
         changeOrigin: true,
         pathRewrite: {
           '^/gejunwei': ''
         }
       },
-      'lvzhuo': {
+      lvzhuo: {
         target: 'http://39.97.164.4:8081/', // lvzhuo
         changeOrigin: true,
         pathRewrite: {
           '^/lvzhuo': ''
         }
       },
-      'wxz': {
+      wxz: {
         target: 'http://39.97.164.4:8081/', // 王选章
         changeOrigin: true,
         pathRewrite: {
           '^/wxz': ''
         }
       },
-      'lz': {
+      lz: {
         target: 'http://39.97.164.4:10091/', // 吕卓
         changeOrigin: true,
         pathRewrite: {
           '^/lz': ''
         }
       },
-      'zx': {
+      zx: {
         target: 'http://39.97.164.4:10160//', // 朱旭
         changeOrigin: true,
         pathRewrite: {
           '^/zx': ''
         }
       },
-      'mj': {
+      mj: {
         target: 'http://39.97.164.4:10162/', // 朱旭门禁
         changeOrigin: true,
         pathRewrite: {
           '^/mj': ''
         }
       },
-      'zk': {
+      zk: {
         target: 'http://pugai.natapp1.cc/', // 张坤
         changeOrigin: true,
         pathRewrite: {
