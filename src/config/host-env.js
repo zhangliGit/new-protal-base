@@ -14,6 +14,7 @@ let zk = ''
 let lz = ''
 let zx = ''
 let mj = ''
+let base = ''
 
 if (ConfigEnv === 'test') {
   // 线上接口
@@ -45,6 +46,7 @@ if (ConfigEnv === 'test') {
   mj = '/mj'
   lz = '/lz'
   zk = '/zk'
+  base = '/base'
 }
 
 export default {
@@ -57,5 +59,6 @@ export default {
   zx,
   lz,
   zk,
-  mj
+  mj,
+  base
 }
