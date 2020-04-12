@@ -31,8 +31,8 @@ class uploadZip {
       const url = envHost[env].url + '?uploadPath=' + envHost[env].uploadPath
       const msg = process.env.VUE_APP_URL === 'prod' ? '正式环境' : '测试环境'
       logs(`正在上传${buildModule}模块到${msg}`)
-      zip.addLocalFolder('dist')
-      zip.writeZip(`${buildModule}.zip`)
+      zip.addLocalFolder('../dist')
+      zip.writeZip(`../${buildModule}.zip`)
       var formData = {
         file: fs.createReadStream(path.resolve(__dirname, `../${buildModule}.zip`))
       }
