@@ -45,7 +45,8 @@ exports.entries = function () {
       title: '',
       // 在这个页面中包含的块，默认情况下会包含
       // 提取出来的通用 chunk 和 vendor chunk
-      cdnConfig: process.env.NODE_ENV === 'production' && process.env.VUE_APP_URL === 'prod' ? cdn : [],
+      // cdnConfig: process.env.NODE_ENV === 'production' && process.env.VUE_APP_URL === 'prod' ? cdn : [],
+      cdnConfig: process.env.NODE_ENV === 'production' ? cdn : [],
       chunks: ['chunk-vendors', 'chunk-common', pageDir]
     }
   })

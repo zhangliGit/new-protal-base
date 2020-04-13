@@ -36,8 +36,10 @@ class uploadZip {
       }, function (error, response, body) {
         if (!error && response.statusCode === 200) {
           // 删除压缩包
-          fs.unlink(`${buildModule}.zip`, function () {})
-          logs('上传成功')
+          fs.unlink(`${buildModule}.zip`, function () {
+            logs(`${buildModule}上传成功`)
+            process.exit()
+          })
         }
       })
     })

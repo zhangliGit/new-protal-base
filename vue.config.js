@@ -53,21 +53,20 @@ module.exports = {
     config.plugins.push(new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/))
     // 配置cdn模块
     if (isProduction) {
-      config.plugins.push(
-        new BundleAnalyzerPlugin({
-          analyzerPort: 8891
-        })
-      )
+      // config.plugins.push(
+      //   new BundleAnalyzerPlugin({
+      //     analyzerPort: 8891
+      //   })
+      // )
       config.plugins.push(new uploadZip())
-      if (isCdn) {
-        config.externals = {
-          vue: 'Vue',
-          'vue-router': 'VueRouter',
-          vuex: 'Vuex',
-          axios: 'axios',
-          moment: 'moment'
-        }
+      config.externals = {
+        vue: 'Vue',
+        'vue-router': 'VueRouter',
+        vuex: 'Vuex',
+        axios: 'axios',
+        moment: 'moment'
       }
+
       // 压缩代码
       config.optimization = {
         splitChunks: {},
