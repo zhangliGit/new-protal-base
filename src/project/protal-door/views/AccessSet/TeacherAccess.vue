@@ -20,12 +20,18 @@
       :columns="columns"
       :table-list="recordList">
       <template v-slot:accessTimes="accessTime">
-        <div class="qui-fx-ver" v-if="accessTime.record.timeRuleList.leng>0">
-          <div class="qu-fx" v-for="(ele, i) in JSON.parse(accessTime.record.timeRuleList)" :key="i">
-            <span style="margin-right:10px;">{{ ele.weekCode | getWeekDay }}</span>
-            <span>{{ ele.accessStart }}</span>
-            <span> ~ </span>
-            <span>{{ ele.accessEnd }}</span>
+        <div class="qui-fx-ver">
+          <div v-for="(ele, i) in accessTime.record.timeRuleList" :key="i">
+            <div class="qui-fx-ac" style="margin:5px 0">
+              <span style="margin-right:10px;">{{ ele.weekCode | getWeekDay }}</span>
+              <div class="qui-fx-ver">
+                <div class="qui-fx" v-for="(item, j) in ele.timeRuleList" :key="j">
+                  <span>{{ item.accessStart | getTimeString }}</span>
+                  <span> ~ </span>
+                  <span>{{ item.accessEnd | getTimeString }}</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </template>
