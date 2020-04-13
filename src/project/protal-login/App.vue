@@ -100,7 +100,7 @@ export default {
     }
   },
   mounted() {
-    this.ConfigEnv = process.env.VUE_APP_URL
+    this.ConfigEnv = process.env.NODE_ENV
     const rememberInfo = window.localStorage.getItem('isRemember')
     if (rememberInfo) {
       this.userName = JSON.parse(rememberInfo).userName
@@ -180,10 +180,10 @@ export default {
           window.sessionStorage.removeItem('protal-entry')
           window.sessionStorage.setItem('loginInfo', JSON.stringify(res.data))
           setTimeout(() => {
-            if (this.ConfigEnv === 'prod') {
-              window.location.href = '/home'
-            } else {
+            if (this.ConfigEnv === 'development') {
               window.location.href = './protal-entry.html'
+            } else {
+              window.location.href = '/home'
             }
           }, 300)
         })
@@ -225,10 +225,10 @@ export default {
           window.sessionStorage.removeItem('protal-entry')
           window.sessionStorage.setItem('loginInfo', JSON.stringify(res.data))
           setTimeout(() => {
-            if (this.ConfigEnv === 'prod') {
-              window.location.href = '/home'
-            } else {
+            if (this.ConfigEnv === 'development') {
               window.location.href = './protal-entry.html'
+            } else {
+              window.location.href = '/home'
             }
           }, 300)
         })

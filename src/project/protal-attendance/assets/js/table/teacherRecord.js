@@ -8,17 +8,17 @@ const teacherRecord = [
   },
   {
     title: '姓名',
-    dataIndex: 'name',
+    dataIndex: 'userName',
     width: '10%'
   },
   {
     title: '性别',
-    dataIndex: 'gender',
+    dataIndex: 'sex',
     width: '10%',
     customRender: (text) => {
-      if (text === 1) {
+      if (text === '1') {
         return '男'
-      } else if (text === 2) {
+      } else if (text === '2') {
         return '女'
       } else {
         return '未知'
@@ -27,30 +27,48 @@ const teacherRecord = [
   },
   {
     title: '组织机构',
-    dataIndex: 'org',
+    dataIndex: 'orgName',
     width: '10%'
   },
   {
     title: '工号',
-    dataIndex: 'num',
+    dataIndex: 'workNo',
     width: '10%'
   },
   {
     title: '上班时间',
-    dataIndex: 'workTime',
-    width: '10%'
+    dataIndex: 'onTime',
+    width: '10%',
+    customRender: (text) => {
+      const d = new Date(text)
+      return d.getFullYear() + '-' +
+           ((d.getMonth() + 1) > 9 ? d.getMonth() + 1 : '0' + (d.getMonth() + 1)) + '-' +
+           (d.getDate() > 9 ? d.getDate() : '0' + d.getDate()) +
+           ' ' +
+           (d.getHours() > 9 ? d.getHours() : '0' + d.getHours()) +
+           ':' +
+           (d.getMinutes() > 9 ? d.getMinutes() : '0' + d.getMinutes()) +
+           ':' +
+           (d.getSeconds() > 9 ? d.getSeconds() : '0' + d.getSeconds())
+    }
   },
   {
     title: '上班状态',
-    dataIndex: 'workState',
+    dataIndex: 'onState',
     width: '10%',
     customRender: (text) => {
-      if (text === 0) {
-        return '正常'
-      } else if (text === 1) {
+      if (text === 1) {
         return '迟到'
       } else if (text === 2) {
-        return '缺卡'
+        return '早退'
+      } else if (text === 3) {
+        return '上班缺卡'
+      } else if (text === 4) {
+        return '请假'
+      } else if (text === 5) {
+        return '正常'
+      } else if (text === 6) {
+        return '下班缺卡'
       } else {
         return '请假'
       }
@@ -58,20 +76,38 @@ const teacherRecord = [
   },
   {
     title: '下班时间',
-    dataIndex: 'restTime',
-    width: '10%'
+    dataIndex: 'offTime',
+    width: '10%',
+    customRender: (text) => {
+      const d = new Date(text)
+      return d.getFullYear() + '-' +
+             ((d.getMonth() + 1) > 9 ? d.getMonth() + 1 : '0' + (d.getMonth() + 1)) + '-' +
+             (d.getDate() > 9 ? d.getDate() : '0' + d.getDate()) +
+             ' ' +
+             (d.getHours() > 9 ? d.getHours() : '0' + d.getHours()) +
+             ':' +
+             (d.getMinutes() > 9 ? d.getMinutes() : '0' + d.getMinutes()) +
+             ':' +
+             (d.getSeconds() > 9 ? d.getSeconds() : '0' + d.getSeconds())
+    }
   },
   {
     title: '下班状态',
-    dataIndex: 'restState',
+    dataIndex: 'offState',
     width: '10%',
     customRender: (text) => {
-      if (text === 0) {
-        return '正常'
-      } else if (text === 1) {
-        return '早退'
+      if (text === 1) {
+        return '迟到'
       } else if (text === 2) {
-        return '缺卡'
+        return '早退'
+      } else if (text === 3) {
+        return '上班缺卡'
+      } else if (text === 4) {
+        return '请假'
+      } else if (text === 5) {
+        return '正常'
+      } else if (text === 6) {
+        return '下班缺卡'
       } else {
         return '请假'
       }

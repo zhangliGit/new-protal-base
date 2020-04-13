@@ -7,9 +7,9 @@
         </div>
         <div class="qui-fx-f2">
           <div class="pos-box data-title">
-            <img :src="logo" alt="" />
+            {{ schoolName }}
           </div>
-          <dv-decoration-5 :color="borderColor" dur="6" style="width:100%;height:60px; color:#ff"> </dv-decoration-5>
+          <dv-decoration-5 :color="borderColor" dur="6" style="width:100%;height:60px; color:#ff"></dv-decoration-5>
         </div>
         <div class="qui-fx-f1">
           <div class="pos-box data-time">{{ dateTime }}</div>
@@ -24,27 +24,27 @@
                 <div class="contrast-photo">
                   <div class="photo">
                     <dv-border-box-8>
-                      <img :src="face1" alt="" />
+                      <img :src="contrastDetail.snapSrc" alt />
                     </dv-border-box-8>
                   </div>
                   <div class="info">
-                    <div>地点：学校东大门</div>
-                    <div>时间：2020-04-12 12:12:24</div>
+                    <div>地点：{{ contrastDetail.controllerName }}</div>
+                    <div>时间：{{ getDateTime(contrastDetail.recordTime, false) }}</div>
                   </div>
                 </div>
                 <div class="contrast-result qui-fx-ver qui-fx-ac">
-                  <dv-decoration-9 class="result">
-                    66%
-                  </dv-decoration-9>
-                  <dv-decoration-11 class="number">对比成功</dv-decoration-11>
+                  <dv-decoration-9 class="result">{{ contrastDetail.precent }}</dv-decoration-9>
+                  <dv-decoration-11 class="number">{{ tipMsg }}</dv-decoration-11>
                 </div>
                 <div class="contrast-photo">
                   <div class="photo">
-                    <img :src="face1" alt="" />
+                    <dv-border-box-8>
+                      <img :src="contrastDetail.photoSrc" alt />
+                    </dv-border-box-8>
                   </div>
                   <div class="info">
-                    <div>姓名：张立</div>
-                    <div>卡号：439019281721821721278</div>
+                    <div>姓名：{{ contrastDetail.userName }}</div>
+                    <div>卡号：{{ contrastDetail.studentNo }}</div>
                   </div>
                 </div>
               </div>
@@ -52,19 +52,22 @@
           </div>
           <div class="data-record">
             <dv-border-box-10 :color="borderColor">
-              <div class="pos-box" style="width: 99%; margin-right: 1%; overflow-x:scroll;white-space: nowrap">
+              <div
+                class="pos-box bar"
+                style="width: 98%; margin-right: 1%; margin-left: 1%; overflow-x:scroll;white-space: nowrap"
+              >
                 <div class="contrast-list" v-for="contrast in contrastList" :key="contrast.id">
                   <div class="pic qui-fx">
-                    <img :src="contrast.img1" alt="" />
-                    <img class="pic-two" :src="contrast.img2" alt="" />
+                    <img :src="contrast.snapSrc" alt />
+                    <img class="pic-two" :src="contrast.photoSrc" alt />
                   </div>
-                  <div class="info">
+                  <div class="info" style="">
                     <div class="qui-fx-jsb">
-                      <div>姓名: {{ contrast.name }}</div>
-                      <div>地点：{{ contrast.address }}</div>
+                      <div>姓名: {{ contrast.userName }}</div>
+                      <div>地点：{{ contrast.controllerName }}</div>
                     </div>
-                    <div>卡号：{{ contrast.cardNo }}</div>
-                    <div>时间：{{ contrast.time }}</div>
+                    <div>卡号：{{ contrast.studentNo }}</div>
+                    <div>时间：{{ getDateTime(contrast.recordTime, false) }}</div>
                   </div>
                 </div>
               </div>
@@ -73,7 +76,10 @@
         </div>
         <div class="data-face">
           <dv-border-box-10 :color="borderColor">
-            <div class="pos-box box-scroll qui-fx-ver qui-fx-jsa" style="height: 97%; margin-top: 3%;">
+            <div
+              class="pos-box box-scroll qui-fx-ver qui-fx-jsa"
+              style="height: 97%; margin-top: 3%;"
+            >
               <div
                 class="bg-show qui-fx"
                 :style="{ color: record.color }"
@@ -81,12 +87,16 @@
                 :key="index"
               >
                 <div class="bg-wh">
-                  <img :src="record.img" alt="" />
+                  <img :src="record.img" alt />
                 </div>
                 <div class="qui-fx-f1">
                   <div class="title">{{ record.title }}</div>
                   <div class="total qui-fx">
-                    <div class="total-number" v-for="(num, ind) in record.total.split('')" :key="ind">
+                    <div
+                      class="total-number"
+                      v-for="(num, ind) in record.total.split('')"
+                      :key="ind"
+                    >
                       <dv-border-box-10 :color="[record.color, record.color]">{{ num }}</dv-border-box-10>
                     </div>
                   </div>
@@ -97,123 +107,54 @@
         </div>
       </div>
     </div>
-    <dv-border-box-11 :titleWidth="300" class="qui-fx-f1 qui-fx-ver" title="贵阳观山湖区华润小学"></dv-border-box-11>
+    <dv-border-box-11 :titleWidth="300" class="qui-fx-f1 qui-fx-ver" :title="schoolName"></dv-border-box-11>
   </div>
 </template>
 
 <script>
-import face1 from '../../images/face1.jpg'
-import face2 from '../../images/face2.jpg'
-import face3 from '../../images/face3.jpg'
-import face4 from '../../images/face4.jpg'
-import face5 from '../../images/face5.jpg'
-import face6 from '../../images/face6.jpg'
-import face7 from '../../images/face7.jpg'
-import face8 from '../../images/face8.jpg'
-import face9 from '../../images/face9.jpg'
 import zx from '../../images/bg-zx.png'
 import dx from '../../images/bg-dx.png'
 import lx from '../../images/bg-lx.png'
-import warn from '../../images/warn.png'
-import success from '../../images/success.png'
 import logo from '../../images/logo.png'
+import $ajax from '@u/ajax-serve'
 export default {
   name: 'Home',
   components: {},
   computed: {},
   data() {
     return {
+      schoolName: '',
       logo,
-      warn,
-      success,
-      face1,
-      face2,
+      tipMsg: '等待对比',
       dateTime: '',
-      contrastList: [
-        {
-          id: 1,
-          img1: face1,
-          img2: face2,
-          name: '张立',
-          address: '校大门',
-          cardNo: '429006182738918271621',
-          time: '2020-04-12 10:12:23'
-        },
-        {
-          id: 2,
-          img1: face1,
-          img2: face2,
-          name: '张立',
-          address: '校大门',
-          cardNo: '429006182738918271621',
-          time: '2020-04-12 10:12:23'
-        }
-      ],
+      contrastDetail: {
+        snapSrc: '',
+        photoSrc: '',
+        controllerName: '',
+        recordTime: '',
+        userName: '',
+        studentNo: '',
+        precent: ''
+      },
+      contrastList: [],
       recordList: [
         {
           img: zx,
           title: '实时在校人数',
-          total: '1345',
+          total: '0',
           color: '#c2ae29'
         },
         {
           img: dx,
           title: '今日到校人数',
-          total: '1000',
+          total: '0',
           color: '#2ec5c0'
         },
         {
           img: lx,
           title: '今日离校人数',
-          total: '1200',
+          total: '0',
           color: '#d02629'
-        }
-      ],
-      imgList: [
-        {
-          id: 1,
-          url: face1,
-          name: '李传亮'
-        },
-        {
-          id: 2,
-          url: face2,
-          name: '朱本福'
-        },
-        {
-          id: 3,
-          url: face3,
-          name: '宋祥'
-        },
-        {
-          id: 4,
-          url: face4,
-          name: '张文键'
-        },
-        {
-          id: 5,
-          url: face5,
-          name: '张坤'
-        },
-        {
-          id: 6,
-          url: face6,
-          name: '张立'
-        },
-        {
-          id: 7,
-          url: face7,
-          name: '高鸿志'
-        },
-        {
-          id: 8,
-          url: face8,
-          name: '王选章'
-        },
-        {
-          id: 9,
-          url: face9,
-          name: '朱旭'
         }
       ],
       borderColor: ['#204486', '#00ffff'],
@@ -221,34 +162,93 @@ export default {
     }
   },
   directives: {
-    scale: {
-      inserted: function(el) {}
-    }
   },
   mounted() {
+    const url = window.location.href
+    const schoolCode = url.substr(url.indexOf('?')).split('=')[1]
+    const nowD = new Date()
+    const month = nowD.getMonth() + 1
+    const todayTime = `${nowD.getFullYear()}-${month < 10 ? '0' + month : month}-${nowD.getDate() < 10 ? '0' + nowD.getDate() : nowD.getDate()}`
+    $ajax
+      .postQuery(
+        {
+          url: '/dorm/show/result/data',
+          params: {
+            schoolCode,
+            todayTime
+          }
+        },
+        false
+      )
+      .then(res => {
+        const data = res.data
+        this.schoolName = data.schoolName
+        this.recordList[0].total = data.totalNum + ''
+        this.recordList[1].total = data.inNum + ''
+        this.recordList[2].total = data.outNum + ''
+      })
     setInterval(() => {
-      this.dateTime = this.getDateTime()
+      this.dateTime = this.getDateTime(new Date().getTime())
     }, 1000)
-    setInterval(() => {
-      const obj = {
-        id: Math.floor(Math.random() * 10000),
-        img1: face1,
-        img2: face2,
-        name: Math.floor(Math.random() * 100),
-        address: '校大门',
-        cardNo: '429006182738918271621',
-        time: '2020-04-12 10:12:23'
+    if (window.WebSocket) {
+      this.ws = new WebSocket('ws://192.168.1.123:10090/dorm/showSocket/CANPOINT')
+      this.ws.onopen = () => {
+        console.log('连接服务器成功')
       }
-      if (this.faceList.length > 50) {
-        this.contrastList.splice(50)
+      this.ws.onclose = () => {
+        console.log('服务器关闭')
       }
-      this.contrastList.unshift(obj)
-    }, 1500)
+      this.ws.onerror = () => {
+        console.log('连接出错')
+      }
+      this.ws.onmessage = e => {
+        console.log(e)
+        const data = JSON.parse(e.data)
+        if (parseInt(data.type) === 2) {
+          // const obj = {
+          //   userName: '',
+          //   gender: '',
+          //   controllerName: '',
+          //   className: '',
+          //   recordTime: '',
+          //   snapSrc: face1,
+          //   inOrOut: '',
+          //   photoSrc: face2,
+          //   studentNo: '',
+          // }
+          this.tipMsg = '对比成功'
+          this.contrastDetail = {
+            ...data.data,
+            precent: Math.floor(Math.random() * 25) + 75 + '%'
+          }
+          const res = {
+            id: Math.floor(Math.random() * 100000000),
+            ...data.data
+          }
+          if (this.faceList.length > 50) {
+            this.contrastList.splice(50)
+          }
+          if (parseInt(data.data.inOrOut) === 1) {
+            this.recordList[1].total = parseInt(this.recordList[1].total) + 1 + ''
+            const total = this.recordList[1].total - this.recordList[2].total
+            this.recordList[0].total = total < 0 ? '0' : total + ''
+          } else {
+            this.recordList[2].total = parseInt(this.recordList[2].total) + 1 + ''
+            const total = this.recordList[1].total - this.recordList[2].total
+            this.recordList[0].total = total < 0 ? '0' : total + ''
+          }
+          this.contrastList.unshift(res)
+        }
+      }
+    }
   },
   methods: {
     // 获取时间日期
-    getDateTime() {
-      var today = new Date()
+    getDateTime(t, tag = true) {
+      if (!t) {
+        return ''
+      }
+      var today = new Date(t)
       var hou
       var time
       var day
@@ -287,9 +287,8 @@ export default {
         (today.getMinutes() < 10 ? '0' + today.getMinutes() : today.getMinutes()) +
         ':' +
         (today.getSeconds() < 10 ? '0' + today.getSeconds() : today.getSeconds()) +
-        ' ' +
-        ' 星期' +
-        day
+        ' ' + (tag ? ' 星期' +
+        day : '')
       )
     }
   }
@@ -297,6 +296,24 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.bar::-webkit-scrollbar {
+  /*滚动条整体样式*/
+  width: 400px;
+  height: 8px;
+  border-radius: 20px;
+}
+.bar::-webkit-scrollbar-thumb {
+  /*滚动条里面小方块*/
+  border-radius: 10px;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  background: #041e49;
+}
+.bar::-webkit-scrollbar-track {
+  /*滚动条里面轨道*/
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  background: #ededed;
+}
 .data-view {
   background-color: #041e49;
 }
@@ -316,7 +333,7 @@ export default {
   top: -20px;
   width: 100%;
   height: 40px;
-  color: #fff;
+  color: #87eff8;
   font-size: 24px;
   font-weight: 600;
   letter-spacing: 4px;
@@ -365,7 +382,6 @@ export default {
     .info {
       padding: 0.1rem 0;
       color: #87eff8;
-      line-height: 0.25rem;
     }
   }
   .contrast-result {
@@ -394,7 +410,7 @@ export default {
     position: relative;
     background: #06104d;
     animation: moveLeft ease-out 0.3s;
-    margin-left: 0.12rem;
+    margin-right: 0.12rem;
     margin-top: 0.2rem;
     border: 4px #204486 solid;
     border-radius: 2px;
