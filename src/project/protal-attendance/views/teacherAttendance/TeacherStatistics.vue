@@ -74,12 +74,14 @@ export default {
   },
   async mounted() {
     this.pageList.schoolCode = this.userInfo.schoolCode
-    this.pageList.orgCode = this.userInfo.schoolCode
+    // this.pageList.orgCode = this.userInfo.schoolCode
+    this.pageList.orgCode = ''
     this.showList()
   },
   methods: {
     ...mapActions('home', ['getTeacherStatistics']),
     async showList() {
+      this.pageList.schoolCode = this.userInfo.schoolCode
       const res = await this.getTeacherStatistics(this.pageList)
       this.recordList = res.data.list
       this.total = res.data.total

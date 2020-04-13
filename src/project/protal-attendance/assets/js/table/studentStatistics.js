@@ -8,37 +8,37 @@ const studentStatistics = [
   },
   {
     title: '姓名',
-    dataIndex: 'name',
+    dataIndex: 'userName',
     width: '10%'
   },
   {
     title: '学号',
-    dataIndex: 'num',
+    dataIndex: 'workNo',
     width: '10%'
   },
   {
     title: '年级',
-    dataIndex: 'grade',
+    dataIndex: 'gradeName',
     width: '10%'
   },
   {
     title: '班级',
-    dataIndex: 'class',
+    dataIndex: 'className',
     width: '10%'
   },
   {
     title: '正常次数',
-    dataIndex: 'normal',
+    dataIndex: 'normalCount',
     width: '10%'
   },
   {
     title: '迟到次数',
-    dataIndex: 'late',
+    dataIndex: 'lateCount',
     width: '10%'
   },
   {
     title: '早退次数',
-    dataIndex: 'early',
+    dataIndex: 'earlyCount',
     width: '10%'
   },
   // {
@@ -57,8 +57,8 @@ const studentStatistics = [
   //   width: '10%'
   // },
   {
-    title: '考勤次数',
-    dataIndex: 'absence',
+    title: '缺勤次数',
+    dataIndex: 'noRecord',
     width: '10%'
   },
   {

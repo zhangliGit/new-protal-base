@@ -2,14 +2,25 @@
   <div class="page-layout qui-fx">
     <grade-tree @select="select"></grade-tree>
     <div class="qui-fx-f1 qui-fx-ver">
-      <search-form isReset @search-form="searchForm" :search-label="searchLabel"></search-form>
-      <table-list :page-list="pageList" :columns="columns" :table-list="recordList">
+      <search-form
+        isReset
+        @search-form="searchForm"
+        :search-label="searchLabel"></search-form>
+      <table-list
+        :page-list="pageList"
+        :columns="columns"
+        :table-list="recordList">
         <template v-slot:actions="action">
-          <a-tag color="#ccc" @click.stop="changeDetail(action.record)">变更状态</a-tag>
+          <a-tag
+            color="#ccc"
+            @click.stop="changeDetail(action.record)">变更状态</a-tag>
           <a-tag @click.stop="checkDetail(action.record)">操作记录</a-tag>
         </template>
       </table-list>
-      <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
+      <page-num
+        v-model="pageList"
+        :total="total"
+        @change-page="showList"></page-num>
     </div>
     <record-detail ref="recordDetail"></record-detail>
     <record-change ref="recordChange" @update="showList"></record-change>
@@ -129,7 +140,7 @@ export default {
   },
   mounted () {
     this.pageList.schoolCode = this.userInfo.schoolCode
-    // this.showList()
+    this.showList()
   },
   methods: {
     ...mapActions('home', [

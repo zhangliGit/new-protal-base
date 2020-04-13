@@ -2,7 +2,7 @@
 import { RouteView } from '../layouts'
 const TeacherRecord = resolve => require(['../views/teacherAttendance/TeacherRecord.vue'], resolve)
 const TeacherStatistics = resolve => require(['../views/teacherAttendance/TeacherStatistics.vue'], resolve)
-const StudentStatisticsDetail = resolve => require(['../views/studentAttendance/StudentStatisticsDetail.vue'], resolve)
+const StatisticsDetail = resolve => require(['../views/teacherAttendance/StatisticsDetail.vue'], resolve)
 const teacher = {
   path: '/teacherRecord',
   name: 'teacherRecord',
@@ -29,8 +29,8 @@ const teacher = {
     },
     {
       path: '/teacherStatistics/detail',
-      name: 'teacherStatisticsDetail',
-      component: StudentStatisticsDetail,
+      name: 'statisticsDetail',
+      component: StatisticsDetail,
       meta: {
         title: '统计详情',
         isHide: true
