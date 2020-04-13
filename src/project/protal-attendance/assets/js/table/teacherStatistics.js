@@ -8,32 +8,32 @@ const teacherStatistics = [
   },
   {
     title: '姓名',
-    dataIndex: 'name',
+    dataIndex: 'userName',
     width: '10%'
   },
   {
     title: '工号',
-    dataIndex: 'num',
+    dataIndex: 'workNo',
     width: '10%'
   },
   {
     title: '组织机构',
-    dataIndex: 'org',
+    dataIndex: 'orgName',
     width: '10%'
   },
   {
     title: '正常次数',
-    dataIndex: 'normal',
+    dataIndex: 'normalCount',
     width: '10%'
   },
   {
     title: '迟到次数',
-    dataIndex: 'late',
+    dataIndex: 'lateCount',
     width: '10%'
   },
   {
     title: '早退次数',
-    dataIndex: 'early',
+    dataIndex: 'earlyCount',
     width: '10%'
   },
   // {
@@ -52,8 +52,8 @@ const teacherStatistics = [
   //   width: '10%'
   // },
   {
-    title: '考勤次数',
-    dataIndex: 'absence',
+    title: '缺勤次数',
+    dataIndex: 'noRecord',
     width: '10%'
   },
   {

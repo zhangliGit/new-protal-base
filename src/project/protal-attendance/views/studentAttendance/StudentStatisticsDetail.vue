@@ -39,20 +39,49 @@ import PageNum from '@c/PageNum'
 const columns = [
   {
     title: '序号',
-    width: '5%',
+    width: '10%',
     scopedSlots: {
       customRender: 'index'
     }
   },
   {
     title: '日期',
-    dataIndex: 'date',
-    width: '15%'
+    dataIndex: 'dayTime',
+    width: '15%',
+    customRender: (text) => {
+      const d = new Date(text)
+      return d.getFullYear() + '-' +
+             ((d.getMonth() + 1) > 9 ? d.getMonth() + 1 : '0' + (d.getMonth() + 1)) + '-' +
+             (d.getDate() > 9 ? d.getDate() : '0' + d.getDate())
+    }
   },
   {
     title: '打卡时间',
     dataIndex: 'dealTime',
-    width: '30%'
+    width: '45%',
+    customRender: (text, record) => {
+      const onWork = new Date(record.onWorkTime)
+      const offWork = new Date(record.offWorkTime)
+      return onWork.getFullYear() + '-' +
+             ((onWork.getMonth() + 1) > 9 ? onWork.getMonth() + 1 : '0' + (onWork.getMonth() + 1)) + '-' +
+             (onWork.getDate() > 9 ? onWork.getDate() : '0' + onWork.getDate()) +
+             ' ' +
+             (onWork.getHours() > 9 ? onWork.getHours() : '0' + onWork.getHours()) +
+             ':' +
+             (onWork.getMinutes() > 9 ? onWork.getMinutes() : '0' + onWork.getMinutes()) +
+             ':' +
+             (onWork.getSeconds() > 9 ? onWork.getSeconds() : '0' + onWork.getSeconds()) + '  ' +
+
+             offWork.getFullYear() + '-' +
+             ((offWork.getMonth() + 1) > 9 ? offWork.getMonth() + 1 : '0' + (offWork.getMonth() + 1)) + '-' +
+             (offWork.getDate() > 9 ? offWork.getDate() : '0' + offWork.getDate()) +
+             ' ' +
+             (offWork.getHours() > 9 ? offWork.getHours() : '0' + offWork.getHours()) +
+             ':' +
+             (offWork.getMinutes() > 9 ? offWork.getMinutes() : '0' + offWork.getMinutes()) +
+             ':' +
+             (offWork.getSeconds() > 9 ? offWork.getSeconds() : '0' + offWork.getSeconds())
+    }
   },
   {
     title: '底照',
@@ -64,8 +93,8 @@ const columns = [
   },
   {
     title: '抓拍照',
-    dataIndex: 'snapPic',
-    width: '30%',
+    dataIndex: 'onSnacpUrl',
+    width: '15%',
     scopedSlots: {
       customRender: 'snapPic'
     }
@@ -93,24 +122,18 @@ export default {
   },
   async mounted () {
     this.detailId = this.$route.query.id
-    this.infoGet()
     this.showList()
   },
   methods: {
     ...mapActions('home', [
-      'getStudentStatistics', 'getStudentDetail', 'studentStatisticsDetail'
+      'getStudentStatistics', 'getStudentDetail', 'studentDetailStatistics'
     ]),
-    async infoGet() {
-      // const res = await this.getStudentDetail({ id: this.detailId })
-      const res = {
-        data: {
-          userName: '123',
-          workNo: '1',
-          grade: '1',
-          class: '1',
-          account: '1'
-        }
-      }
+    async showList () {
+      this.pageList.userId = this.detailId
+      this.pageList.attendanceState = this.attendanceState
+      const res = await this.studentDetailStatistics(this.pageList)
+      this.detailList = res.data.pageInfo.list
+      this.total = res.data.pageInfo.total
       this.baseList = [
         {
           key: '姓名',
@@ -122,25 +145,17 @@ export default {
         },
         {
           key: '年级',
-          value: res.data.grade
+          value: res.data.gradeName
         },
         {
           key: '班级',
-          value: res.data.class
-        },
-        {
-          key: '考勤次数',
-          value: res.data.account
+          value: res.data.className
         }
+        // {
+        //   key: '考勤次数',
+        //   value: res.data.account
+        // }
       ]
-    },
-    async showList () {
-      this.pageList.userId = this.detailId
-      this.pageList.attendanceState = this.attendanceState
-      console.log('this.pageList', this.pageList)
-      const res = await this.studentStatisticsDetail(this.pageList)
-      this.detailList = res.data.list
-      this.total = res.total
     },
     callback (key) {
       setTimeout(() => {

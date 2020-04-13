@@ -65,10 +65,7 @@ export default {
       },
       total: 0,
       columns,
-      recordList: [{
-        id: '1',
-        name: '1'
-      }]
+      recordList: []
     }
   },
   computed: {
@@ -78,13 +75,13 @@ export default {
   },
   async mounted() {
     this.pageList.schoolCode = this.userInfo.schoolCode
-    // this.showList()
+    this.showList()
   },
   methods: {
     ...mapActions('home', ['getStudentStatistics']),
     async showList() {
       const res = await this.getStudentStatistics(this.pageList)
-      // this.recordList = res.data.list
+      this.recordList = res.data.list
       this.total = res.data.total
     },
     select(item) {
