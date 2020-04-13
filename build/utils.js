@@ -7,7 +7,7 @@ const modulesDir = glob.sync(pagePath + '/*')
 const buildModule = process.argv[process.argv.length - 1]
 let projectList = []
 require('colors')
-modulesDir.forEach((file) => {
+modulesDir.forEach(file => {
   projectList.push(file.split('/')[file.split('/').length - 1])
 })
 if (process.env.NODE_ENV === 'production') {
@@ -31,9 +31,9 @@ const cdn = [
   'https://cdn.bootcss.com/moment.js/2.24.0/locale/zh-cn.js'
 ]
 // 多页面配置
-exports.entries = function () {
+exports.entries = function() {
   const entries = {}
-  projectList.forEach((pageDir) => {
+  projectList.forEach(pageDir => {
     entries[pageDir] = {
       // 入口文件
       entry: `src/project/${pageDir}/main.js`,

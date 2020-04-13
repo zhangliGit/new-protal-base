@@ -1,37 +1,35 @@
 <template>
   <div class="page-layout qui-fx-ver">
-    <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
-    </search-form>
+    <search-form is-reset @search-form="searchForm" :search-label="searchLabel"></search-form>
     <table-list :page-list="pageList" :columns="columns" :table-list="recordList"></table-list>
     <page-num v-model="pageList" :total="total" @change-page="showList(searchObj)"></page-num>
   </div>
 </template>
-
 <script>
 import { mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import SearchForm from '@c/SearchForm'
 import PageNum from '@c/PageNum'
 const searchLabel = [
-  {
-    value: 'userName', // 表单属性
-    type: 'selectInput', // 表单类型
-    label: '姓名', // 表单label值
+    {
+    value: 'userNo',
+    initValue: '',
+    type: 'selectInput',
     selectType: [
       {
-        key: 1,
+        key: 'userName',
         val: '姓名'
       },
       {
-        key: 2,
-        val: '学号/工号'
+        key: 'mobile',
+        val: '手机号'
       },
       {
-        key: 3,
-        val: '手机号'
+        key: 'userNo',
+        val: '学号/工号'
       }
     ],
-    placeholder: '请输入' // 表单默认值(非必选字段)
+    placeholder: '请输入'
   },
   {
     list: [
@@ -161,7 +159,7 @@ export default {
   components: {
     TableList,
     SearchForm,
-    PageNum,
+    PageNum
   },
   data() {
     return {
@@ -173,13 +171,6 @@ export default {
         size: 20
       },
       recordList: [],
-      searchObj: {
-        startTime: null,
-        endTime: null,
-        userName: '',
-        userType: '',
-        accessType: ''
-      },
     }
   },
   mounted() {
@@ -187,12 +178,12 @@ export default {
   },
   methods: {
     ...mapActions('home', ['getrecordList']),
-    async showList(searchObj = this.searchObj) {
+    async showList(searchObj = {}) {
       const req = {
         ...this.pageList,
         // schoolCode: this.userInfo.schoolCode,
         schoolCode: 'QPZX',
-        ...this.searchObj
+        ...searchObj
       }
       const res = await this.getrecordList(req)
       this.recordList = res.data.list
@@ -200,13 +191,15 @@ export default {
     },
     searchForm(values) {
       console.log(values)
-      this.searchObj.userName = values.userName
-      this.searchObj.startTime = values.rangeTime ? this.$tools.getDateTime(values.rangeTime[0]) :null
-      this.searchObj.endTime = values.rangeTime ? this.$tools.getDateTime(values.rangeTime[1]) : null
-      this.searchObj.userType = values.userType
-      this.searchObj.accessType = values.accessType
-      this.showList(this.searchObj)
-    },
+       const searchObj = {
+        userNo: values.userNo,
+        userType: values.userType,
+        accessType: values.accessType,
+        startTime: values.rangeTime[0],
+        endTime: values.rangeTime[1]
+      }
+      this.showList(searchObj)
+    }
   }
 }
 </script>

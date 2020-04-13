@@ -176,7 +176,6 @@ export default {
       })
     },
     async chooseUser(value) {
-      console.log(value)
       this.userTag = false
       this.$refs.chooseUser.reset()
       this.controlList = []

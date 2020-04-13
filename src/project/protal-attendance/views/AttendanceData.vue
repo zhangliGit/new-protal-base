@@ -30,12 +30,15 @@
           <a-radio-button value="1">昨天</a-radio-button>
           <a-radio-button value="7">近7天</a-radio-button>
           <a-radio-button value="30">一个月</a-radio-button>
+          <a-radio-button value="0">自定义</a-radio-button>
         </a-radio-group>
         <a-radio-group v-show="autoKey === '2'" v-model="studentType" buttonStyle="solid">
           <a-radio-button value="1">昨天</a-radio-button>
           <a-radio-button value="7">近7天</a-radio-button>
           <a-radio-button value="30">一个月</a-radio-button>
+          <a-radio-button value="0">自定义</a-radio-button>
         </a-radio-group>
+        <a-range-picker style="margin-left:10px" :disabledDate="disabledEndDate" @change="onChange" v-if="tearcherType === '0' || studentType === '0'"/>
       </div>
     </a-tabs>
   </div>
@@ -43,105 +46,329 @@
 
 <script>
 import Highcharts from 'highcharts/highstock'
+import { mapState, mapActions } from 'vuex'
+import moment from 'moment'
+import 'moment/locale/zh-cn'
 export default {
   name: 'AttendanceData',
   components: {},
-  watch: {},
+  watch: {
+    autoKey: {
+      handler (newVal, oldVal) {
+        if (this.tearcherType === '1' || this.studentType === '1') {
+          this.startDay = this.getDate(new Date().getTime(), '1')
+          this.endDay = this.getDate(new Date().getTime(), '1')
+        } else if (this.tearcherType === '7' || this.studentType === '7') {
+          this.startDay = this.getDate(new Date().getTime(), '2')
+          this.endDay = this.getDate(new Date().getTime(), '1')
+        } else if (this.tearcherType === '30' || this.studentType === '30') {
+          this.startDay = this.getDate(new Date().getTime(), '3')
+          this.endDay = this.getDate(new Date().getTime(), '1')
+        }
+        if (newVal === '1') {
+          this.showTeaData()
+        } else if (newVal === '2') {
+          this.showStuData()
+        }
+      },
+      deep: true
+    },
+    tearcherType: {
+      handler (newVal, oldVal) {
+        if (newVal === '7') {
+          this.startDay = this.getDate(new Date().getTime(), '2')
+          this.endDay = this.getDate(new Date().getTime(), '1')
+          this.xDate = []
+          this.teaDate = []
+          this.stuDate = []
+          for (var i = 0; i < 7; i++) {
+            this.xDate.unshift(moment(new Date(new Date().setDate(new Date().getDate() - i - 1))).format('MM-DD'))
+            this.teaDate.unshift(0)
+            this.stuDate.unshift(0)
+          }
+        } else if (newVal === '30') {
+          this.startDay = this.getDate(new Date().getTime(), '3')
+          this.endDay = this.getDate(new Date().getTime(), '1')
+          this.xDate = []
+          this.teaDate = []
+          this.stuDate = []
+          for (var j = 0; j < 30; j++) {
+            this.xDate.unshift(moment(new Date(new Date().setDate(new Date().getDate() - j - 1))).format('MM-DD'))
+            this.teaDate.unshift(0)
+            this.stuDate.unshift(0)
+          }
+        } else if (newVal === '1') {
+          this.startDay = this.getDate(new Date().getTime(), '1')
+          this.endDay = this.getDate(new Date().getTime(), '1')
+        }
+        if (this.autoKey === '1' && this.tearcherType !== '0' && this.studentType !== '0') {
+          this.showTeaData()
+          setTimeout(() => {
+            this.showBI('container', this.xDate, this.teaDate)
+          }, 500)
+        } else if (this.autoKey === '2' && this.tearcherType !== '0' && this.studentType !== '0') {
+          this.showStuData()
+          setTimeout(() => {
+            this.showBI('container1', this.xDate, this.stuDate)
+          }, 500)
+        }
+      },
+      deep: true
+    },
+    studentType: {
+      handler (newVal, oldVal) {
+        if (newVal === '7') {
+          this.startDay = this.getDate(new Date().getTime(), '2')
+          this.endDay = this.getDate(new Date().getTime(), '1')
+          this.xDate = []
+          this.teaDate = []
+          this.stuDate = []
+          for (var i = 0; i < 7; i++) {
+            this.xDate.unshift(moment(new Date(new Date().setDate(new Date().getDate() - i - 1))).format('MM-DD'))
+            this.teaDate.unshift(0)
+            this.stuDate.unshift(0)
+          }
+        } else if (newVal === '30') {
+          this.startDay = this.getDate(new Date().getTime(), '3')
+          this.endDay = this.getDate(new Date().getTime(), '1')
+          this.xDate = []
+          this.teaDate = []
+          this.stuDate = []
+          for (var j = 0; j < 30; j++) {
+            this.xDate.unshift(moment(new Date(new Date().setDate(new Date().getDate() - j - 1))).format('MM-DD'))
+            this.teaDate.unshift(0)
+            this.stuDate.unshift(0)
+          }
+        } else if (newVal === '1') {
+          this.startDay = this.getDate(new Date().getTime(), '1')
+          this.endDay = this.getDate(new Date().getTime(), '1')
+        }
+        if (this.autoKey === '1' && this.tearcherType !== '0' && this.studentType !== '0') {
+          this.showTeaData()
+          setTimeout(() => {
+            this.showBI('container', this.xDate, this.teaDate)
+          }, 500)
+        } else if (this.autoKey === '2' && this.tearcherType !== '0' && this.studentType !== '0') {
+          this.showStuData()
+          setTimeout(() => {
+            this.showBI('container1', this.xDate, this.stuDate)
+          }, 500)
+        }
+      },
+      deep: true
+    }
+  },
   data() {
     return {
+      moment,
       autoKey: '1',
       studentType: '1',
       tearcherType: '1',
+      pageList: {
+        page: 1,
+        size: 20
+      },
+      startDay: this.getDate(new Date().getTime(), '1'),
+      endDay: this.getDate(new Date().getTime(), '1'),
       teacherData: [
         {
           title: '正常',
-          total: '300',
-          tip: 'Check in to work normally'
+          total: '0',
+          tip: ''
         },
         {
           title: '迟到',
-          total: '20',
-          tip: 'Check in to work normally'
+          total: '0',
+          tip: ''
         },
         {
           title: '上班缺卡',
-          total: '28',
-          tip: 'Check in to work normally'
+          total: '0',
+          tip: ''
         },
         {
           title: '早退',
-          total: '4',
-          tip: 'Check in to work normally'
+          total: '0',
+          tip: ''
         },
         {
           title: '下班缺卡',
-          total: '6',
-          tip: 'Check in to work normally'
+          total: '0',
+          tip: ''
         },
         {
           title: '缺勤',
-          total: '8',
-          tip: 'Check in to work normally'
+          total: '0',
+          tip: ''
         },
         {
           title: '请假',
-          total: '10',
-          tip: 'Check in to work normally'
+          total: '0',
+          tip: ''
         }
       ],
       studentData: [
         {
           title: '正常',
-          total: '200',
-          tip: 'Check in to work normally'
+          total: '0',
+          tip: ''
         },
         {
           title: '迟到',
-          total: '28',
-          tip: 'Check in to work normally'
+          total: '0',
+          tip: ''
         },
         {
           title: '上学缺卡',
-          total: '18',
-          tip: 'Check in to work normally'
+          total: '0',
+          tip: ''
         },
         {
           title: '早退',
-          total: '14',
-          tip: 'Check in to work normally'
+          total: '0',
+          tip: ''
         },
         {
           title: '放学缺卡',
-          total: '16',
-          tip: 'Check in to work normally'
+          total: '0',
+          tip: ''
         },
         {
           title: '缺勤',
-          total: '23',
-          tip: 'Check in to work normally'
+          total: '0',
+          tip: ''
         },
         {
           title: '请假',
-          total: '12',
-          tip: 'Check in to work normally'
+          total: '0',
+          tip: ''
         }
-      ]
+      ],
+      xDate: [],
+      teaDate: [],
+      stuDate: []
     }
   },
+  computed: {
+    ...mapState('home', ['userInfo'])
+  },
+  created() {
+  },
   mounted() {
-    setTimeout(() => {
-      this.showBI('container')
-      this.showBI('container1')
-    }, 1500)
+    this.showTeaData()
   },
   methods: {
-    showBI(id) {
+    ...mapActions('home', [
+      'getTeaRecordStatic', 'getStuRecordStatic'
+    ]),
+    async showTeaData() {
+      const req = {
+        endDay: this.endDay,
+        startDay: this.startDay,
+        schoolCode: this.userInfo.schoolCode
+      }
+      const res = await this.getTeaRecordStatic(req)
+      if (res.data.length === 0) {
+        return
+      }
+      if (this.tearcherType === '1') {
+        this.teacherData[0].total = res.data[0].normalCount || 0
+        this.teacherData[1].total = res.data[0].lateCount || 0
+        this.teacherData[2].total = res.data[0].onNoRecordCount || 0
+        this.teacherData[3].total = res.data[0].earlyCount || 0
+        this.teacherData[4].total = res.data[0].offNoRecordCount || 0
+        this.teacherData[5].total = res.data[0].noRecord || 0
+        this.teacherData[6].total = res.data[0].leaveCount || 0
+      }
+    },
+    async showStuData() {
+      const req = {
+        endDay: this.endDay,
+        startDay: this.startDay,
+        schoolCode: this.userInfo.schoolCode
+      }
+      const res = await this.getStuRecordStatic(req)
+      if (res.data.length === 0) {
+        return
+      }
+      if (this.studentType === '1') {
+        this.studentData[0].total = res.data[0].normalCount || 0
+        this.studentData[1].total = res.data[0].lateCount || 0
+        this.studentData[2].total = res.data[0].onNoRecordCount || 0
+        this.studentData[3].total = res.data[0].earlyCount || 0
+        this.studentData[4].total = res.data[0].offNoRecordCount || 0
+        this.studentData[5].total = res.data[0].noRecord || 0
+        this.studentData[6].total = res.data[0].leaveCount || 0
+      }
+    },
+    disabledEndDate (current) {
+      return current && current > moment().endOf('day')
+    },
+    /* disabledEndDate (time) {
+      const lastMonthTime = new Date().setMonth(new Date().getMonth() - 1)
+      return time > Date.now() || time < lastMonthTime
+    }, */
+    // 时间转换
+    getDate(date, type) {
+      const day = type === '1' ? 1 : type === '2' ? 7 : 30
+      return moment(date - day * 24 * 60 * 60 * 1000).format('MM-DD')
+    },
+    // 获取两个日期之间的每一天
+    formatEveryDay(start, end) {
+      const dateList = []
+      var startTime = this.getNewDate(start)
+      var endTime = this.getNewDate(end)
+      while ((endTime.getTime() - startTime.getTime()) >= 0) {
+        var month = startTime.getMonth() + 1 < 10 ? '0' + (startTime.getMonth() + 1) : startTime.getMonth() + 1
+        var day = startTime.getDate().toString().length === 1 ? '0' + startTime.getDate() : startTime.getDate()
+        dateList.push(month + '-' + day)
+        startTime.setDate(startTime.getDate() + 1)
+      }
+      return dateList
+    },
+    getNewDate(datestr) {
+      var temp = datestr.split('-')
+      var date = new Date(temp[0], temp[1] - 1, temp[2])
+      return date
+    },
+    onChange(date, dateString) {
+      console.log(date, dateString)
+      const length = parseInt((moment(date[1]).valueOf() - moment(date[0]).valueOf()) / (1000 * 60 * 60 * 24))
+      console.log(length)
+      if (length > 31) {
+        this.$message.warning('日期区间不能大于1一个月')
+        return
+      }
+      this.xDate = []
+      this.teaDate = []
+      this.stuDate = []
+      this.startDay = dateString[0]
+      this.endDay = dateString[1]
+      this.xDate = this.formatEveryDay(dateString[0], dateString[1])
+      for (var i = 0; i < (length + 1); i++) {
+        this.teaDate.unshift(0)
+        this.stuDate.unshift(0)
+      }
+      console.log(this.xDate)
+      if (this.autoKey === '1') {
+        this.showTeaData()
+        setTimeout(() => {
+          this.showBI('container', this.xDate, this.teaDate)
+        }, 500)
+      } else if (this.autoKey === '2') {
+        this.showStuData()
+        setTimeout(() => {
+          this.showBI('container1', this.xDate, this.stuDate)
+        }, 500)
+      }
+    },
+    showBI(id, xDate, yDate) {
       Highcharts.chart(id, {
         title: {
           text: ''
         },
         xAxis: {
-          categories: ['0201', '0202', '0203', '0204', '0205', '0206', '0207']
+          categories: xDate
         },
         yAxis: {
           title: {
@@ -175,49 +402,49 @@ export default {
             marker: {
               symbol: 'square'
             },
-            data: [4, 7, 6, 9, 14, 18, 21]
+            data: yDate
           },
           {
             name: '迟到',
             marker: {
               symbol: 'diamond'
             },
-            data: [2, 4, 5, 8, 11, 15, 17]
+            data: yDate
           },
           {
-            name: '上班缺卡',
+            name: this.autoKey === '1' ? '上班缺卡' : '上学缺卡',
             marker: {
               symbol: 'diamond'
             },
-            data: [5, 3, 5, 8, 11, 15, 17]
+            data: yDate
           },
           {
             name: '早退',
             marker: {
               symbol: 'diamond'
             },
-            data: [7, 3, 8, 12, 16, 12, 15]
+            data: yDate
           },
           {
-            name: '下班缺卡',
+            name: this.autoKey === '1' ? '下班缺卡' : '放学缺卡',
             marker: {
               symbol: 'diamond'
             },
-            data: [15, 13, 15, 18, 12, 16, 11]
+            data: yDate
           },
           {
             name: '缺勤',
             marker: {
               symbol: 'diamond'
             },
-            data: [8, 11, 5, 4, 10, 12, 8]
+            data: yDate
           },
           {
-            name: '下班缺卡',
+            name: '请假',
             marker: {
-              symbol: '请假'
+              symbol: 'leave'
             },
-            data: [10, 4, 6, 8, 10, 12, 14]
+            data: yDate
           }
         ]
       })

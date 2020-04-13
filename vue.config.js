@@ -103,67 +103,74 @@ module.exports = {
           '^/wangxuanzhang': ''
         }
       },
-      'zhuxu': {
+      zhuxu: {
         target: 'http://39.97.164.4:8081/', // zhuxu
         changeOrigin: true,
         pathRewrite: {
           '^/zhuxu': ''
         }
       },
-      'zhangkun': {
+      zhangkun: {
         target: 'http://39.97.164.4:8081/', // zhangkun
         changeOrigin: true,
         pathRewrite: {
           '^/zhangkun': ''
         }
       },
-      'gejunwei': {
+      gejunwei: {
         target: 'http://39.97.164.4:8081/', // gejunwei
         changeOrigin: true,
         pathRewrite: {
           '^/gejunwei': ''
         }
       },
-      'lvzhuo': {
+      lvzhuo: {
         target: 'http://39.97.164.4:8081/', // lvzhuo
         changeOrigin: true,
         pathRewrite: {
           '^/lvzhuo': ''
         }
       },
-      'wxz': {
+      wxz: {
         target: 'http://39.97.164.4:8081/', // 王选章
         changeOrigin: true,
         pathRewrite: {
           '^/wxz': ''
         }
       },
-      'lz': {
+      lz: {
         target: 'http://39.97.164.4:10091/', // 吕卓
         changeOrigin: true,
         pathRewrite: {
           '^/lz': ''
         }
       },
-      'zx': {
+      zx: {
         target: 'http://39.97.164.4:10160//', // 朱旭
         changeOrigin: true,
         pathRewrite: {
           '^/zx': ''
         }
       },
-      'mj': {
+      mj: {
         target: 'http://39.97.164.4:10162/', // 朱旭门禁
         changeOrigin: true,
         pathRewrite: {
           '^/mj': ''
         }
       },
-      'zk': {
+      zk: {
         target: 'http://pugai.natapp1.cc/', // 张坤
         changeOrigin: true,
         pathRewrite: {
           '^/zk': ''
+        }
+      },
+      'base': {
+        target: 'http://39.97.164.4:10050/', // 平台
+        changeOrigin: true,
+        pathRewrite: {
+          '^/base': ''
         }
       }
     }

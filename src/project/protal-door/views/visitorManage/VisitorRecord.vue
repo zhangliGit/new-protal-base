@@ -70,12 +70,24 @@ const searchLabel = [
         val: '全部'
       },
       {
+        key: 0,
+        val: '待审批'
+      },
+      {
         key: 1,
         val: '同意'
       },
       {
         key: 2,
-        val: '拒绝'
+        val: '不同意'
+      },
+      {
+        key: 3,
+        val: '撤销'
+      },
+      {
+        key: 4,
+        val: '失效'
       }
     ],
     value: 'state',
@@ -85,7 +97,7 @@ const searchLabel = [
   {
     list: [
       {
-        key: '',
+        key: 0,
         val: '全部'
       },
       {
@@ -161,7 +173,11 @@ const columns = [
     dataIndex: 'respondentType',
     width: '10%',
     customRender: text => {
-      return parseInt(text) === 1 ? '学生' : '教职工'
+     if (text === 1) {
+        return '学生'
+      } else {
+        return '教职工'
+      }
     }
   },
   {
@@ -187,7 +203,11 @@ const columns = [
     dataIndex: 'visitState',
     width: '8%',
     customRender: text => {
-      return parseInt(text) === 1 ? '在访' : '签离'
+      if (text === 1) {
+        return '在访'
+      } else {
+        return '签离'
+      }
     }
   },
   {
@@ -218,14 +238,6 @@ export default {
       },
       recordList: [],
       recordDetail: {},
-      searchObj: {
-        inStartTime: '',
-        inEndTime: '',
-        visitorName: '',
-        visitorName: '',
-        state: '',
-        visitState: ''
-      }
     }
   },
   mounted() {
@@ -233,7 +245,7 @@ export default {
   },
   methods: {
     ...mapActions('home', ['getappointList', 'getappointDetail']),
-    async showList(searchObj = this.searchObj) {
+    async showList(searchObj = {}) {
       const req = {
         ...this.pageList,
         // schoolCode: this.userInfo.schoolCode,
@@ -267,12 +279,15 @@ export default {
       }
     },
     searchForm(values) {
-      this.searchObj.visitorName = values.visitorName
-      this.searchObj.inStartTime = values.rangeTime ? this.$tools.getDateTime(values.rangeTime[0]) : ''
-      this.searchObj.inEndTime = values.rangeTime ? this.$tools.getDateTime(values.rangeTime[1]) : ''
-      this.searchObj.state = values.state
-      this.searchObj.visitState = values.visitState
-      this.showList(this.searchObj)
+       const searchObj = {
+        visitorName: values.visitorName,
+        state: values.state,
+        visitState: values.visitState,
+        accessType: values.accessType,
+        inStartTime: values.rangeTime[0],
+        inEndTime: values.rangeTime[1]
+      }
+      this.showList(searchObj)
     }
   }
 }

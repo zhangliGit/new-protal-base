@@ -1,7 +1,7 @@
 <template>
   <a-locale-provider :locale="locale">
     <div id="app">
-      <router-view/>
+      <router-view />
     </div>
   </a-locale-provider>
 </template>
@@ -16,48 +16,13 @@ export default {
   computed: {
     ...mapState('home', ['userInfo'])
   },
-  data () {
+  data() {
     return {
       locale: zhCN
     }
   },
-  mounted () {
-    this.initializeSchoolYear()
-  },
-  methods: {
-    ...mapActions('home', [
-      'getSchoolYear', 'addSchoolYear'
-    ]),
-    // 初始化学年
-    async initializeSchoolYear () {
-      const req = {
-        schoolCode: this.userInfo.schoolCode
-      }
-      const res = await this.getSchoolYear(req)
-      if (!res.data) {
-        return
-      }
-      if (res.data.list.length === 0) {
-        let defaultYear = ''
-        let term = ''
-        const year = new Date().getFullYear()
-        if (new Date().getMonth() + 1 < 9) {
-          defaultYear = (Number(year) - 1) + '-' + year
-          term = '上学期'
-        } else {
-          defaultYear = year + '-' + (Number(year) + 1)
-          term = '下学期'
-        }
-        const req = {
-          ...this.userInfo,
-          schoolYear: defaultYear,
-          semester: term
-        }
-        await this.addSchoolYear(req)
-        // this.$message.success('初始化学年设置成功')
-      }
-    }
-  }
+  mounted() {},
+  methods: {}
 }
 </script>
 <style>
