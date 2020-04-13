@@ -12,7 +12,7 @@ import SearchForm from '@c/SearchForm'
 import PageNum from '@c/PageNum'
 const searchLabel = [
     {
-    value: 'userNo',
+    value: 'keyword',
     initValue: '',
     type: 'selectInput',
     selectType: [
@@ -103,7 +103,7 @@ const columns = [
     dataIndex: 'userType',
     width: '10%',
     customRender: text => {
-      return parseInt(text) === false ? '学生' : '教职工'
+      return parseInt(text) === 1 ? '学生' : '教职工'
     }
   },
   {
@@ -192,7 +192,7 @@ export default {
     searchForm(values) {
       console.log(values)
        const searchObj = {
-        userNo: values.userNo,
+        keyword: values.keyword,
         userType: values.userType,
         accessType: values.accessType,
         startTime: values.rangeTime[0],

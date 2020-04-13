@@ -106,7 +106,12 @@ export default {
       controlList: [],
       reasonList: [],
       chooseTag: false,
-      userTag: false
+      userTag: false,
+      userGroupCode: '',
+       pageList: {
+        page: 1,
+        size: 20
+      },
     }
   },
   mounted() {
@@ -158,14 +163,22 @@ export default {
       })
     },
     async showControl() {
-      const res = await this.getcontrolgroupList()
-      this.controlList = res.data.list.map(item => {
+      const req = {
+        pageNum: this.pageList.page,
+        pageSize: this.pageList.size,
+        schoolCode: 'QPZX',
+        userGroupCode: this.userGroupCode
+      }
+      const res = await this.getcontrolgroupList(req)
+      this.total = res.data.total
+        this.controlList = res.data.list.map(item => {
         return {
           name: item.controlGroupName,
           ...item
         }
       })
     },
+
     async delControl(record) {
       await this.delcontrolgroup({
         id: record.id
@@ -194,7 +207,7 @@ export default {
         controlGroupType: this.controlList[0].type,
         id: this.controlList[0].id,
         createTime: new Date(),
-        userGroupCode: 1
+        userGroupCode: this.userGroupCode
       })
       this.$message.success('添加成功')
       this.$tools.goNext(() => {

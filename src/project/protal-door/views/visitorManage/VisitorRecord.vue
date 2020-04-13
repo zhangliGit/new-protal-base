@@ -47,16 +47,16 @@ import SearchForm from '@c/SearchForm'
 import PageNum from '@c/PageNum'
 const searchLabel = [
   {
-    value: 'visitorName',
+    value: 'keyword',
     type: 'selectInput',
     label: '访客姓名',
     selectType: [
       {
-        key: 1,
+        key: 'visitorName',
         val: '访客姓名'
       },
       {
-        key: 2,
+        key: 'visitorMobile',
         val: '访客电话'
       }
     ],
@@ -97,8 +97,12 @@ const searchLabel = [
   {
     list: [
       {
-        key: 0,
+        key: '',
         val: '全部'
+      },
+      {
+        key: 0,
+        val: '待访问'
       },
       {
         key: 1,
@@ -203,7 +207,9 @@ const columns = [
     dataIndex: 'visitState',
     width: '8%',
     customRender: text => {
-      if (text === 1) {
+      if (text === 0) {
+        return '待访问'
+      } else if (text === 1) {
         return '在访'
       } else {
         return '签离'
@@ -280,7 +286,7 @@ export default {
     },
     searchForm(values) {
        const searchObj = {
-        visitorName: values.visitorName,
+        keyword: values.keyword,
         state: values.state,
         visitState: values.visitState,
         accessType: values.accessType,
