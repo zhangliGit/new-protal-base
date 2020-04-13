@@ -39,6 +39,13 @@ const filters = {
       return time.substring(11, 15)
     }
   },
+  // 去掉秒时间
+  getTimeString (time) {
+    if (!time) {
+      return '--'
+    }
+    return (time.split(':')[0] + ':' + time.split(':')[1])
+  },
   getDate: function (val, type) {
     if (val === '' || val === null) {
       return '--'
@@ -119,19 +126,20 @@ const filters = {
     }
   },
   getWeekDay: val => {
-    if (val === '2') {
+    const week = parseInt(val)
+    if (week === 2) {
       return '周一'
-    } else if (val === '3') {
+    } else if (week === 3) {
       return '周二'
-    } else if (val === '4') {
+    } else if (week === 4) {
       return '周三'
-    } else if (val === '5') {
+    } else if (week === 5) {
       return '周四'
-    } else if (val === '6') {
+    } else if (week === 6) {
       return '周五'
-    } else if (val === '7') {
+    } else if (week === 7) {
       return '周六'
-    } else if (val === '1') {
+    } else if (week === 1) {
       return '周日'
     }
   }

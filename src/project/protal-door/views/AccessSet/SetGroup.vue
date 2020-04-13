@@ -12,7 +12,7 @@
       <a-form-item label="权限组名称" :label-col="{ span: 3 }" :wrapper-col="{ span: 15 }">
         <a-input
           placeholder="请输入权限组名称"
-          v-decorator="['name', { rules: [{ required: true, message: '请输入权限组名称' }] }]"
+          v-decorator="['name', {initialValue: groupName, rules: [{ required: true, message: '请输入权限组名称' }] }]"
         />
       </a-form-item>
       <a-form-item label="通行时间" :label-col="{ span: 3 }" :wrapper-col="{ span: 15 }" :required="true">
@@ -160,22 +160,55 @@ export default {
       selectedRowKeys: [],
       form: this.$form.createForm(this),
       groupList: [],
-      ruleGroupCode: ''
+      ruleGroupCode: '',
+      detailData: null,
+      groupName: ''
     }
   },
   created() {
     this.ruleGroupCode = this.$route.query.id
     if (this.ruleGroupCode) {
       this.showData()
+    } else {
+      this.data.forEach(ele => {
+        ele.accessTimeList = [{ startTime: '00:00', endTime: '00:00', canAdd: true }]
+      })
     }
-    this.data.forEach(ele => {
-      ele.accessTimeList = [{ startTime: '00:00', endTime: '00:00', canAdd: true }]
-    })
   },
   methods: {
-    ...mapActions('home', ['addGroup']),
-    showData() {
+    ...mapActions('home', ['addGroup', 'getAccessDetail']),
+    // 考勤组表单回填
+    async showData() {
       console.log(this.ruleGroupCode)
+      const req = {
+        ruleGroupCode: this.ruleGroupCode,
+        schoolCode: this.userInfo.schoolCode
+      }
+      const res = await this.getAccessDetail(req)
+      if (!res.data) {
+        return
+      }
+      this.detailData = res.data
+      console.log(this.detailData)
+      this.groupName = res.data.groupName
+      res.data.controllerGroups.forEach(ele => {
+        this.groupList.push({
+          name: ele.name,
+          code: ele.code
+        })
+      })
+      this.data.forEach(ele => {
+        ele.accessTimeList = [{ startTime: '00:00', endTime: '00:00', canAdd: true }]
+      })
+      res.data.rules.forEach(item => {
+        this.selectedRowKeys.push(parseInt(item.dayName))
+        if (item.dayName === '1') {
+          this.data[6].accessTimeList[0] = { startTime: item.startTime, endTime: item.endTime, canAdd: true }
+        } else {
+          this.data[parseInt(item.dayName) - 2].accessTimeList[0] = { startTime: item.startTime, endTime: item.endTime, canAdd: true }
+        }
+      })
+      console.log(this.selectedRowKeys)
     },
     // 提交权限组
     handleSubmit(e) {

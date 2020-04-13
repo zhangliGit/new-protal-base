@@ -112,8 +112,9 @@ export default {
           values.recordId = this.recordId
           this.dialogTag = false
           this.recordUpdate(values).then(res => {
-            this.confirmLoading = true
+            this.confirmLoading = false
             this.dialogTag = false
+            this.checkedList = []
             this.$message.success('操作成功')
             this.$tools.goNext(() => {
               this.$emit('update')

@@ -12,7 +12,7 @@
       <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
     </div>
     <record-detail ref="recordDetail"></record-detail>
-    <record-change ref="recordChange"></record-change>
+    <record-change ref="recordChange" @update="showList"></record-change>
   </div>
 </template>
 
@@ -128,9 +128,8 @@ export default {
   },
   async mounted () {
     this.pageList.schoolCode = this.userInfo.schoolCode
-    this.pageList.orgCode = this.userInfo.schoolCode
-    // this.pageList.schoolCode = 'CANPOINT'
-    // this.pageList.orgCode = ''
+    // this.pageList.orgCode = this.userInfo.schoolCode
+    this.pageList.orgCode = ''
     this.showList()
   },
   methods: {

@@ -1,6 +1,6 @@
 
 import autoApp from '../img/auto_app.png'
-const ConfigEnv = process.env.VUE_APP_URL
+const ConfigEnv = process.env.NODE_ENV
 const adminMenu = [{
   id: '001',
   name: '平台管理',
@@ -12,13 +12,13 @@ const adminMenu = [{
       id: '003',
       name: '菜单库',
       icon: '',
-      url: ConfigEnv === 'prod' ? '/pc-protal/protal-admin/index.html#/menuManage' : '/protal-admin.html#/menuManage'
+      url: ConfigEnv !== 'development' ? '/pc-protal/protal-admin/index.html#/menuManage' : '/protal-admin.html#/menuManage'
     },
     {
       id: '004',
       name: '应用库',
       icon: '',
-      url: ConfigEnv === 'prod' ? '/pc-protal/protal-admin/index.html#/apply' : '/protal-admin.html#/apply'
+      url: ConfigEnv !== 'development' ? '/pc-protal/protal-admin/index.html#/apply' : '/protal-admin.html#/apply'
     }
     ]
   },
@@ -26,7 +26,7 @@ const adminMenu = [{
     id: '005',
     name: '机构管理',
     icon: '',
-    url: ConfigEnv === 'prod' ? '/pc-protal/protal-admin/index.html#/institute' : '/protal-admin.html#/institute'
+    url: ConfigEnv !== 'development' ? '/pc-protal/protal-admin/index.html#/institute' : '/protal-admin.html#/institute'
   },
   {
     id: '006',
@@ -35,13 +35,13 @@ const adminMenu = [{
       id: '007',
       name: '角色管理',
       icon: '',
-      url: ConfigEnv === 'prod' ? '/pc-protal/protal-admin/index.html#/role' : '/protal-admin.html#/role'
+      url: ConfigEnv !== 'development' ? '/pc-protal/protal-admin/index.html#/role' : '/protal-admin.html#/role'
     },
     {
       id: '008',
       name: '员工管理',
       icon: '',
-      url: ConfigEnv === 'prod' ? '/pc-protal/protal-admin/index.html#/staff' : '/protal-admin.html#/staff'
+      url: ConfigEnv !== 'development' ? '/pc-protal/protal-admin/index.html#/staff' : '/protal-admin.html#/staff'
     }
     ]
   }
