@@ -95,6 +95,14 @@ module.exports = {
     port: 8001,
     open: true,
     proxy: {
+      // 单独人脸识别接口
+      '/dorm': {
+        target: 'http://192.168.1.123:10090/dorm/', // wangxuanzhang
+        changeOrigin: true,
+        pathRewrite: {
+          '^/dorm': ''
+        }
+      },
       // 控制中心接口代理
       '/wangxuanzhang': {
         target: 'http://39.97.164.4:8081/', // wangxuanzhang
