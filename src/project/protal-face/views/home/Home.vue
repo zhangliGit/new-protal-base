@@ -53,8 +53,8 @@
           <div class="data-record">
             <dv-border-box-10 :color="borderColor">
               <div
-                class="pos-box bar"
-                style="width: 98%; margin-right: 1%; margin-left: 1%; overflow-x:scroll;white-space: nowrap"
+                class="pos-box"
+                style="width: 98%; margin-right: 1%; margin-left: 1%; overflow: hidden; white-space: nowrap"
               >
                 <div class="contrast-list" v-for="contrast in contrastList" :key="contrast.id">
                   <div class="pic qui-fx">
@@ -165,33 +165,20 @@ export default {
   },
   mounted() {
     const url = window.location.href
-    const schoolCode = url.substr(url.indexOf('?')).split('=')[1]
+    const schoolCode = url.substr(url.indexOf('?')).split('=')[1].replace('#/', '')
     const nowD = new Date()
     const month = nowD.getMonth() + 1
     const todayTime = `${nowD.getFullYear()}-${month < 10 ? '0' + month : month}-${nowD.getDate() < 10 ? '0' + nowD.getDate() : nowD.getDate()}`
-    $ajax
-      .postQuery(
-        {
-          url: '/dorm/show/result/data',
-          params: {
-            schoolCode,
-            todayTime
-          }
-        },
-        false
-      )
-      .then(res => {
-        const data = res.data
-        this.schoolName = data.schoolName
-        this.recordList[0].total = data.totalNum + ''
-        this.recordList[1].total = data.inNum + ''
-        this.recordList[2].total = data.outNum + ''
-      })
+    this.getTotal(schoolCode, todayTime)
     setInterval(() => {
       this.dateTime = this.getDateTime(new Date().getTime())
     }, 1000)
     if (window.WebSocket) {
-      this.ws = new WebSocket('ws://192.168.1.123:10090/dorm/showSocket/CANPOINT')
+      if (process.env.NODE_ENV === 'production') {
+        this.ws = new WebSocket(`ws:39.97.246.227:10080/showSocket/${schoolCode}`)
+      } else {
+        this.ws = new WebSocket(`ws:39.97.246.227:10080/showSocket/${schoolCode}`)
+      }
       this.ws.onopen = () => {
         console.log('连接服务器成功')
       }
@@ -205,60 +192,66 @@ export default {
         console.log(e)
         const data = JSON.parse(e.data)
         if (parseInt(data.type) === 2) {
-          // const obj = {
-          //   userName: '',
-          //   gender: '',
-          //   controllerName: '',
-          //   className: '',
-          //   recordTime: '',
-          //   snapSrc: face1,
-          //   inOrOut: '',
-          //   photoSrc: face2,
-          //   studentNo: '',
-          // }
           this.tipMsg = '对比成功'
           this.contrastDetail = {
             ...data.data,
             precent: Math.floor(Math.random() * 25) + 75 + '%'
           }
+          const id = Math.floor(Math.random() * 100000)
           const res = {
-            id: Math.floor(Math.random() * 100000000),
-            ...data.data
+            ...data.data,
+            id
           }
-          if (this.faceList.length > 50) {
+          if (this.contrastList.length > 50) {
             this.contrastList.splice(50)
           }
+          this.contrastList.unshift(res)
           if (parseInt(data.data.inOrOut) === 1) {
             this.recordList[1].total = parseInt(this.recordList[1].total) + 1 + ''
             const total = this.recordList[1].total - this.recordList[2].total
             this.recordList[0].total = total < 0 ? '0' : total + ''
           } else {
-            this.recordList[2].total = parseInt(this.recordList[2].total) + 1 + ''
-            const total = this.recordList[1].total - this.recordList[2].total
+            const outTotal = parseInt(this.recordList[2].total) + 1
+            if (outTotal > this.recordList[1].total) return
+            this.recordList[2].total = outTotal + ''
+            const total = this.recordList[1].total - outTotal
             this.recordList[0].total = total < 0 ? '0' : total + ''
           }
-          this.contrastList.unshift(res)
         }
       }
     }
   },
   methods: {
+    // 获取数据
+    getTotal (schoolCode, todayTime) {
+      $ajax
+        .post(
+          {
+            url: `/dorm/show/result/data?schoolCode=${schoolCode}&todayTime=${todayTime}`
+          },
+          false
+        )
+        .then(res => {
+          const data = res.data
+          this.schoolName = data.schoolName
+          this.recordList[0].total = data.totalNum + ''
+          this.recordList[1].total = data.inNum + ''
+          this.recordList[2].total = data.outNum + ''
+        })
+    },
     // 获取时间日期
     getDateTime(t, tag = true) {
       if (!t) {
         return ''
       }
       var today = new Date(t)
-      var hou
-      var time
-      var day
-      if (today.getHours() <= 12 && today.getHours() >= 0) {
-        hou = today.getHours()
-        time = 'AM'
-      } else if (today.getHours() <= 24 && today.getHours() > 12) {
-        hou = today.getHours() - 12
-        time = 'PM'
+      var hou = today.getHours() < 0 ? '0' + today.getHours() : today.getHours()
+      var getMinutes = today.getMinutes() < 0 ? '0' + today.getMinutes() : today.getMinutes()
+      var getSeconds = today.getSeconds() < 10 ? '0' + today.getSeconds() : today.getSeconds()
+      if ('' + hou + getMinutes + getSeconds === '080000' || '' + hou + getMinutes + getSeconds === '120000' || '' + hou + getMinutes + getSeconds === '180000' || '' + hou + getMinutes + getSeconds === '220000') {
+        window.location.reload()
       }
+      var day
       var d = parseInt(today.getDay())
       if (d === 0) {
         day = '日'
@@ -282,11 +275,11 @@ export default {
         '月' +
         today.getDate() +
         '日 ' +
-        (hou < 10 ? '0' + hou : hou) +
+        hou +
         ':' +
-        (today.getMinutes() < 10 ? '0' + today.getMinutes() : today.getMinutes()) +
+        getMinutes +
         ':' +
-        (today.getSeconds() < 10 ? '0' + today.getSeconds() : today.getSeconds()) +
+        getSeconds +
         ' ' + (tag ? ' 星期' +
         day : '')
       )
@@ -298,7 +291,6 @@ export default {
 <style lang="less" scoped>
 .bar::-webkit-scrollbar {
   /*滚动条整体样式*/
-  width: 400px;
   height: 8px;
   border-radius: 20px;
 }
@@ -314,6 +306,7 @@ export default {
   border-radius: 10px;
   background: #ededed;
 }
+
 .data-view {
   background-color: #041e49;
 }
@@ -330,7 +323,7 @@ export default {
 }
 .data-title {
   z-index: 99;
-  top: -20px;
+  top: -16px;
   width: 100%;
   height: 40px;
   color: #87eff8;
@@ -370,9 +363,9 @@ export default {
   .contrast-photo {
     .photo {
       border: 6px #204486 solid;
-      border-radius: 8px;
-      width: 2.4rem;
-      height: 2.6rem;
+      border-radius: 4px;
+      width: 2.6rem;
+      height: 2.8rem;
       img {
         width: 100%;
         height: 100%;
@@ -380,6 +373,7 @@ export default {
       }
     }
     .info {
+      font-size: 14px;
       padding: 0.1rem 0;
       color: #87eff8;
     }
@@ -390,6 +384,7 @@ export default {
       width: 1.5rem;
       height: 1.5rem;
       color: #fff;
+      font-weight: 600;
       font-size: 24px;
     }
     .number {

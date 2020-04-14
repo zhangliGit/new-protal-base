@@ -18,18 +18,18 @@ let base = ''
 
 if (ConfigEnv === 'test') {
   // 线上接口
-  wangxuanzhang = '/web-protal/controlCenter'
-  zhuxu = '/web-protal/application'
-  zhangkun = '/web-protal/canpoint-school-view'
-  gejunwei = '/web-protal/plateform-userinfo-view'
-  lvzhuo = '/web-protal/plateform-userinfo-view'
+  wangxuanzhang = '/api-pc-protal/controlCenter'
+  zhuxu = '/api-pc-protal/application'
+  zhangkun = '/api-pc-protal/canpoint-school-view'
+  gejunwei = '/api-pc-protal/plateform-userinfo-view'
+  lvzhuo = '/api-pc-protal/plateform-userinfo-view'
 } else if (ConfigEnv === 'prod') {
   // 线上接口
-  wangxuanzhang = '/web-protal/controlCenter'
-  zhuxu = '/web-protal/application'
-  zhangkun = '/web-protal/canpoint-school-view'
-  gejunwei = '/web-protal/plateform-userinfo-view'
-  lvzhuo = '/web-protal/plateform-userinfo-view'
+  wangxuanzhang = '/api-pc-protal/controlCenter'
+  zhuxu = '/api-pc-protal/application'
+  zhangkun = '/api-pc-protal/canpoint-school-view'
+  gejunwei = '/api-pc-protal/plateform-userinfo-view'
+  lvzhuo = '/api-pc-protal/plateform-userinfo-view'
 } else {
   // wangxuanzhang = '/wangxuanzhang' // 控制中心
   // zhuxu = '/zhuxu'
