@@ -6,7 +6,7 @@
   </div>
 </template>
 <script>
-import { mapActions } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import SearchForm from '@c/SearchForm'
 import PageNum from '@c/PageNum'
@@ -173,6 +173,9 @@ export default {
       recordList: [],
     }
   },
+    computed: {
+    ...mapState('home', ['userInfo'])
+  },
   mounted() {
     this.showList()
   },
@@ -181,8 +184,8 @@ export default {
     async showList(searchObj = {}) {
       const req = {
         ...this.pageList,
-        // schoolCode: this.userInfo.schoolCode,
-        schoolCode: 'QPZX',
+        schoolCode: this.userInfo.schoolCode,
+        // schoolCode: 'QPZX',
         ...searchObj
       }
       const res = await this.getrecordList(req)
