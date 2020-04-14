@@ -12,6 +12,7 @@
       <a-form-item label="考勤组名称" :label-col="{ span: 3 }" :wrapper-col="{ span: 15 }">
         <a-input
           placeholder="请输入考勤组名称"
+          maxLength="15"
           v-decorator="['name', {initialValue: groupName, rules: [{ required: true, message: '请输入考勤组名称' }] }]"
         />
       </a-form-item>
