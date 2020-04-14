@@ -12,6 +12,7 @@
       <a-form-item label="权限组名称" :label-col="{ span: 3 }" :wrapper-col="{ span: 15 }">
         <a-input
           placeholder="请输入权限组名称"
+          maxLength="15"
           v-decorator="['name', {initialValue: groupName, rules: [{ required: true, message: '请输入权限组名称' }] }]"
         />
       </a-form-item>
@@ -160,9 +161,15 @@ export default {
       selectedRowKeys: [],
       form: this.$form.createForm(this),
       groupList: [],
+      userList: [],
       ruleGroupCode: '',
+      userGroupCode: '',
       detailData: null,
-      groupName: ''
+      groupName: '',
+      pageList: {
+        page: 1,
+        size: 15
+      }
     }
   },
   created() {
@@ -176,7 +183,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('home', ['addGroup', 'getAccessDetail']),
+    ...mapActions('home', ['addGroup', 'getGroupDetail', 'getAccessUserList']),
     // 考勤组表单回填
     async showData() {
       console.log(this.ruleGroupCode)
@@ -184,31 +191,78 @@ export default {
         ruleGroupCode: this.ruleGroupCode,
         schoolCode: this.userInfo.schoolCode
       }
-      const res = await this.getAccessDetail(req)
+      const res = await this.getGroupDetail(req)
       if (!res.data) {
         return
       }
       this.detailData = res.data
       console.log(this.detailData)
-      this.groupName = res.data.groupName
-      res.data.controllerGroups.forEach(ele => {
+      this.groupName = res.data.ruleGroupName
+      this.userGroupCode = res.data.userGroupCode
+      /* this.$nextTick(() => {
+        this.getUserList()
+      }) */
+      res.data.controlGroupList.forEach(ele => {
         this.groupList.push({
-          name: ele.name,
-          code: ele.code
+          name: ele.controlGroupName,
+          code: ele.controlGroupCode,
+          type: ele.controlGroupType
         })
       })
       this.data.forEach(ele => {
         ele.accessTimeList = [{ startTime: '00:00', endTime: '00:00', canAdd: true }]
       })
-      res.data.rules.forEach(item => {
-        this.selectedRowKeys.push(parseInt(item.dayName))
-        if (item.dayName === '1') {
-          this.data[6].accessTimeList[0] = { startTime: item.startTime, endTime: item.endTime, canAdd: true }
+      res.data.timeRuleList.forEach(item => {
+        this.selectedRowKeys.push(parseInt(item.weekCode))
+        if (parseInt(item.weekCode) === 1) {
+          if (item.timeRuleList.length === 0) {
+            this.data[6].accessTimeList[0] = { startTime: '00:00', endTime: '00:00', canAdd: true }
+          } else {
+            this.data[6].accessTimeList = []
+            this.$nextTick(() => {
+              item.timeRuleList.forEach((ele, index) => {
+                this.data[6].accessTimeList.push({
+                  startTime: ele.accessStart ? (ele.accessStart.split(':')[0] + ':' + ele.accessStart.split(':')[1]) : '00:00',
+                  endTime: ele.accessEnd ? (ele.accessEnd.split(':')[0] + ':' + ele.accessEnd.split(':')[1]) : '00:00',
+                  canAdd: index === (item.timeRuleList.length - 1)
+                })
+              })
+            })
+          }
         } else {
-          this.data[parseInt(item.dayName) - 2].accessTimeList[0] = { startTime: item.startTime, endTime: item.endTime, canAdd: true }
+          if (item.timeRuleList.length === 0) {
+            this.data[parseInt(item.weekCode) - 2].accessTimeList[0] = { startTime: '00:00', endTime: '00:00', canAdd: true }
+          } else {
+            this.data[parseInt(item.weekCode) - 2].accessTimeList = []
+            this.$nextTick(() => {
+              item.timeRuleList.forEach((ele, index) => {
+                this.data[parseInt(item.weekCode) - 2].accessTimeList.push({
+                  startTime: ele.accessStart ? (ele.accessStart.toString().split(':')[0] + ':' + ele.accessStart.split(':')[1]) : '00:00',
+                  endTime: ele.accessEnd ? (ele.accessEnd.split(':')[0] + ':' + ele.accessEnd.split(':')[1]) : '00:00',
+                  canAdd: index === (item.timeRuleList.length - 1)
+                })
+              })
+            })
+          }
         }
       })
       console.log(this.selectedRowKeys)
+    },
+    // 权限组用户列表
+    async getUserList() {
+      const req = {
+        ruleGroupCode: this.ruleGroupCode,
+        userGroupCode: this.userGroupCode,
+        schoolCode: this.userInfo.schoolCode,
+        pageNum: this.pageList.page,
+        pageSize: this.pageList.size
+      }
+      const res = await this.getAccessUserList(req)
+      if (!res.data) {
+        return
+      }
+      this.userList = res.data
+      console.log(this.userList)
     },
     // 提交权限组
     handleSubmit(e) {
@@ -252,7 +306,8 @@ export default {
             ruleGroupName: values.name,
             timeRuleList: rules,
             schoolCode: this.userInfo.schoolCode,
-            ruleGroupType: this.$route.query.type === 'teacher' ? 1 : 2
+            ruleGroupType: this.$route.query.type === 'teacher' ? 1 : 2,
+            ruleGroupCode: this.ruleGroupCode ? this.ruleGroupCode : null
           }
           console.log(req)
           this.addGroup(req).then(res => {
@@ -354,6 +409,10 @@ export default {
     },
     // 移除通行时间
     deleteAccessTime(index, id) {
+      if (index === 0 && this.data[id].accessTimeList.length === 1) {
+        this.$message.warning('已经是最后一项了')
+        return
+      }
       this.data[id].accessTimeList.splice(index, 1)
       if (this.data[id].accessTimeList.length > 0) {
         this.data[id].accessTimeList[this.data[id].accessTimeList.length - 1].canAdd = true

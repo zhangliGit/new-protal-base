@@ -161,6 +161,7 @@ module.exports = {
       },
       mj: {
         target: 'http://39.97.164.4:10162/', // 朱旭门禁
+        // target: 'http://192.168.1.24:10162/',
         changeOrigin: true,
         pathRewrite: {
           '^/mj': ''

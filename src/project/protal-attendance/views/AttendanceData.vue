@@ -52,112 +52,6 @@ import 'moment/locale/zh-cn'
 export default {
   name: 'AttendanceData',
   components: {},
-  watch: {
-    autoKey: {
-      handler (newVal, oldVal) {
-        if (this.tearcherType === '1' || this.studentType === '1') {
-          this.startDay = this.getDate(new Date().getTime(), '1')
-          this.endDay = this.getDate(new Date().getTime(), '1')
-        } else if (this.tearcherType === '7' || this.studentType === '7') {
-          this.startDay = this.getDate(new Date().getTime(), '2')
-          this.endDay = this.getDate(new Date().getTime(), '1')
-        } else if (this.tearcherType === '30' || this.studentType === '30') {
-          this.startDay = this.getDate(new Date().getTime(), '3')
-          this.endDay = this.getDate(new Date().getTime(), '1')
-        }
-        if (newVal === '1') {
-          this.showTeaData()
-        } else if (newVal === '2') {
-          this.showStuData()
-        }
-      },
-      deep: true
-    },
-    tearcherType: {
-      handler (newVal, oldVal) {
-        if (newVal === '7') {
-          this.startDay = this.getDate(new Date().getTime(), '2')
-          this.endDay = this.getDate(new Date().getTime(), '1')
-          this.xDate = []
-          this.teaDate = []
-          this.stuDate = []
-          for (var i = 0; i < 7; i++) {
-            this.xDate.unshift(moment(new Date(new Date().setDate(new Date().getDate() - i - 1))).format('MM-DD'))
-            this.teaDate.unshift(0)
-            this.stuDate.unshift(0)
-          }
-        } else if (newVal === '30') {
-          this.startDay = this.getDate(new Date().getTime(), '3')
-          this.endDay = this.getDate(new Date().getTime(), '1')
-          this.xDate = []
-          this.teaDate = []
-          this.stuDate = []
-          for (var j = 0; j < 30; j++) {
-            this.xDate.unshift(moment(new Date(new Date().setDate(new Date().getDate() - j - 1))).format('MM-DD'))
-            this.teaDate.unshift(0)
-            this.stuDate.unshift(0)
-          }
-        } else if (newVal === '1') {
-          this.startDay = this.getDate(new Date().getTime(), '1')
-          this.endDay = this.getDate(new Date().getTime(), '1')
-        }
-        if (this.autoKey === '1' && this.tearcherType !== '0' && this.studentType !== '0') {
-          this.showTeaData()
-          setTimeout(() => {
-            this.showBI('container', this.xDate, this.teaDate)
-          }, 500)
-        } else if (this.autoKey === '2' && this.tearcherType !== '0' && this.studentType !== '0') {
-          this.showStuData()
-          setTimeout(() => {
-            this.showBI('container1', this.xDate, this.stuDate)
-          }, 500)
-        }
-      },
-      deep: true
-    },
-    studentType: {
-      handler (newVal, oldVal) {
-        if (newVal === '7') {
-          this.startDay = this.getDate(new Date().getTime(), '2')
-          this.endDay = this.getDate(new Date().getTime(), '1')
-          this.xDate = []
-          this.teaDate = []
-          this.stuDate = []
-          for (var i = 0; i < 7; i++) {
-            this.xDate.unshift(moment(new Date(new Date().setDate(new Date().getDate() - i - 1))).format('MM-DD'))
-            this.teaDate.unshift(0)
-            this.stuDate.unshift(0)
-          }
-        } else if (newVal === '30') {
-          this.startDay = this.getDate(new Date().getTime(), '3')
-          this.endDay = this.getDate(new Date().getTime(), '1')
-          this.xDate = []
-          this.teaDate = []
-          this.stuDate = []
-          for (var j = 0; j < 30; j++) {
-            this.xDate.unshift(moment(new Date(new Date().setDate(new Date().getDate() - j - 1))).format('MM-DD'))
-            this.teaDate.unshift(0)
-            this.stuDate.unshift(0)
-          }
-        } else if (newVal === '1') {
-          this.startDay = this.getDate(new Date().getTime(), '1')
-          this.endDay = this.getDate(new Date().getTime(), '1')
-        }
-        if (this.autoKey === '1' && this.tearcherType !== '0' && this.studentType !== '0') {
-          this.showTeaData()
-          setTimeout(() => {
-            this.showBI('container', this.xDate, this.teaDate)
-          }, 500)
-        } else if (this.autoKey === '2' && this.tearcherType !== '0' && this.studentType !== '0') {
-          this.showStuData()
-          setTimeout(() => {
-            this.showBI('container1', this.xDate, this.stuDate)
-          }, 500)
-        }
-      },
-      deep: true
-    }
-  },
   data() {
     return {
       moment,
@@ -245,12 +139,141 @@ export default {
         }
       ],
       xDate: [],
-      teaDate: [],
-      stuDate: []
+      teaDate: [[], [], [], [], [], [], []],
+      stuDate: [[], [], [], [], [], [], []],
+      normalList: [],
+      lateList: [],
+      onNoRecordList: [],
+      earlyList: [],
+      offNoRecordList: [],
+      noRecordList: [],
+      leaveList: []
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
+  },
+  watch: {
+    autoKey: {
+      handler (newVal, oldVal) {
+        if (this.tearcherType === '1' || this.studentType === '1') {
+          this.startDay = this.getDate(new Date().getTime(), '1')
+          this.endDay = this.getDate(new Date().getTime(), '1')
+        } else if (this.tearcherType === '7' || this.studentType === '7') {
+          this.startDay = this.getDate(new Date().getTime(), '2')
+          this.endDay = this.getDate(new Date().getTime(), '1')
+        } else if (this.tearcherType === '30' || this.studentType === '30') {
+          this.startDay = this.getDate(new Date().getTime(), '3')
+          this.endDay = this.getDate(new Date().getTime(), '1')
+        }
+        if (newVal === '1') {
+          this.showTeaData()
+        } else if (newVal === '2') {
+          this.showStuData()
+        }
+      },
+      deep: true
+    },
+    tearcherType: {
+      handler (newVal, oldVal) {
+        if (newVal === '7') {
+          this.startDay = this.getDate(new Date().getTime(), '2')
+          this.endDay = this.getDate(new Date().getTime(), '1')
+          this.xDate = []
+          this.teaDate = [[], [], [], [], [], [], []]
+          this.stuDate = [[], [], [], [], [], [], []]
+          for (var i = 0; i < 7; i++) {
+            this.xDate.unshift(moment(new Date(new Date().setDate(new Date().getDate() - i - 1))).format('MM-DD'))
+            this.teaDate.forEach(ele => {
+              ele.unshift(0)
+            })
+            this.stuDate.forEach(ele => {
+              ele.unshift(0)
+            })
+          }
+        } else if (newVal === '30') {
+          this.startDay = this.getDate(new Date().getTime(), '3')
+          this.endDay = this.getDate(new Date().getTime(), '1')
+          this.xDate = []
+          this.teaDate = [[], [], [], [], [], [], []]
+          this.stuDate = [[], [], [], [], [], [], []]
+          for (var j = 0; j < 30; j++) {
+            this.xDate.unshift(moment(new Date(new Date().setDate(new Date().getDate() - j - 1))).format('MM-DD'))
+            this.teaDate.forEach(ele => {
+              ele.unshift(0)
+            })
+            this.stuDate.forEach(ele => {
+              ele.unshift(0)
+            })
+          }
+        } else if (newVal === '1') {
+          this.startDay = this.getDate(new Date().getTime(), '1')
+          this.endDay = this.getDate(new Date().getTime(), '1')
+        }
+        if (this.autoKey === '1' && this.tearcherType !== '0' && this.studentType !== '0') {
+          this.showTeaData()
+          setTimeout(() => {
+            this.showBI('container', this.xDate, this.teaDate)
+          }, 500)
+        } else if (this.autoKey === '2' && this.tearcherType !== '0' && this.studentType !== '0') {
+          this.showStuData()
+          setTimeout(() => {
+            this.showBI('container1', this.xDate, this.stuDate)
+          }, 500)
+        }
+      },
+      deep: true
+    },
+    studentType: {
+      handler (newVal, oldVal) {
+        if (newVal === '7') {
+          this.startDay = this.getDate(new Date().getTime(), '2')
+          this.endDay = this.getDate(new Date().getTime(), '1')
+          this.xDate = []
+          this.teaDate = [[], [], [], [], [], [], []]
+          this.stuDate = [[], [], [], [], [], [], []]
+          for (var i = 0; i < 7; i++) {
+            this.xDate.unshift(moment(new Date(new Date().setDate(new Date().getDate() - i - 1))).format('MM-DD'))
+            this.teaDate.forEach(ele => {
+              ele.unshift(0)
+            })
+            this.stuDate.forEach(ele => {
+              ele.unshift(0)
+            })
+          }
+        } else if (newVal === '30') {
+          this.startDay = this.getDate(new Date().getTime(), '3')
+          this.endDay = this.getDate(new Date().getTime(), '1')
+          this.xDate = []
+          this.teaDate = [[], [], [], [], [], [], []]
+          this.stuDate = [[], [], [], [], [], [], []]
+          for (var j = 0; j < 30; j++) {
+            this.xDate.unshift(moment(new Date(new Date().setDate(new Date().getDate() - j - 1))).format('MM-DD'))
+            this.teaDate.forEach(ele => {
+              ele.unshift(0)
+            })
+            this.stuDate.forEach(ele => {
+              ele.unshift(0)
+            })
+          }
+        } else if (newVal === '1') {
+          this.startDay = this.getDate(new Date().getTime(), '1')
+          this.endDay = this.getDate(new Date().getTime(), '1')
+        }
+        if (this.autoKey === '1' && this.tearcherType !== '0' && this.studentType !== '0') {
+          this.showTeaData()
+          setTimeout(() => {
+            this.showBI('container', this.xDate, this.teaDate)
+          }, 500)
+        } else if (this.autoKey === '2' && this.tearcherType !== '0' && this.studentType !== '0') {
+          this.showStuData()
+          setTimeout(() => {
+            this.showBI('container1', this.xDate, this.stuDate)
+          }, 500)
+        }
+      },
+      deep: true
+    }
   },
   created() {
   },
@@ -279,6 +302,22 @@ export default {
         this.teacherData[4].total = res.data[0].offNoRecordCount || 0
         this.teacherData[5].total = res.data[0].noRecord || 0
         this.teacherData[6].total = res.data[0].leaveCount || 0
+      } else {
+        res.data.forEach(ele => {
+          const day = (new Date(ele.day).getMonth() + 1 > 9 ? new Date(ele.day).getMonth() + 1 : '0' + (new Date(ele.day).getMonth() + 1)) +
+      '-' + (new Date(ele.day).getDate() > 9 ? new Date(ele.day).getDate() : '0' + new Date(ele.day).getDate())
+          this.xDate.forEach((item, i) => {
+            if (item === day) {
+              this.teaDate[0][i] = ele.normalCount
+              this.teaDate[1][i] = ele.lateCount
+              this.teaDate[2][i] = ele.onNoRecordCount
+              this.teaDate[3][i] = ele.earlyCount
+              this.teaDate[4][i] = ele.offNoRecordCount
+              this.teaDate[5][i] = ele.noRecord
+              this.teaDate[6][i] = ele.leaveCount
+            }
+          })
+        })
       }
     },
     async showStuData() {
@@ -299,6 +338,22 @@ export default {
         this.studentData[4].total = res.data[0].offNoRecordCount || 0
         this.studentData[5].total = res.data[0].noRecord || 0
         this.studentData[6].total = res.data[0].leaveCount || 0
+      } else {
+        res.data.forEach(ele => {
+          const day = (new Date(ele.day).getMonth() + 1 > 9 ? new Date(ele.day).getMonth() + 1 : '0' + (new Date(ele.day).getMonth() + 1)) +
+      '-' + (new Date(ele.day).getDate() > 9 ? new Date(ele.day).getDate() : '0' + new Date(ele.day).getDate())
+          this.xDate.forEach((item, i) => {
+            if (item === day) {
+              this.stuDate[0][i] = ele.normalCount
+              this.stuDate[1][i] = ele.lateCount
+              this.stuDate[2][i] = ele.onNoRecordCount
+              this.stuDate[3][i] = ele.earlyCount
+              this.stuDate[4][i] = ele.offNoRecordCount
+              this.stuDate[5][i] = ele.noRecord
+              this.stuDate[6][i] = ele.leaveCount
+            }
+          })
+        })
       }
     },
     disabledEndDate (current) {
@@ -311,7 +366,7 @@ export default {
     // 时间转换
     getDate(date, type) {
       const day = type === '1' ? 1 : type === '2' ? 7 : 30
-      return moment(date - day * 24 * 60 * 60 * 1000).format('MM-DD')
+      return moment(date - day * 24 * 60 * 60 * 1000).format('YYYY-MM-DD')
     },
     // 获取两个日期之间的每一天
     formatEveryDay(start, end) {
@@ -340,16 +395,20 @@ export default {
         return
       }
       this.xDate = []
-      this.teaDate = []
-      this.stuDate = []
+      this.teaDate = [[], [], [], [], [], [], []]
+      this.stuDate = [[], [], [], [], [], [], []]
       this.startDay = dateString[0]
       this.endDay = dateString[1]
       this.xDate = this.formatEveryDay(dateString[0], dateString[1])
       for (var i = 0; i < (length + 1); i++) {
-        this.teaDate.unshift(0)
-        this.stuDate.unshift(0)
+        this.teaDate.forEach(ele => {
+          ele.unshift(0)
+        })
+        this.stuDate.forEach(ele => {
+          ele.unshift(0)
+        })
       }
-      console.log(this.xDate)
+      console.log(this.teaDate)
       if (this.autoKey === '1') {
         this.showTeaData()
         setTimeout(() => {
@@ -402,49 +461,49 @@ export default {
             marker: {
               symbol: 'square'
             },
-            data: yDate
+            data: yDate[0]
           },
           {
             name: '迟到',
             marker: {
               symbol: 'diamond'
             },
-            data: yDate
+            data: yDate[1]
           },
           {
             name: this.autoKey === '1' ? '上班缺卡' : '上学缺卡',
             marker: {
               symbol: 'diamond'
             },
-            data: yDate
+            data: yDate[2]
           },
           {
             name: '早退',
             marker: {
               symbol: 'diamond'
             },
-            data: yDate
+            data: yDate[3]
           },
           {
             name: this.autoKey === '1' ? '下班缺卡' : '放学缺卡',
             marker: {
               symbol: 'diamond'
             },
-            data: yDate
+            data: yDate[4]
           },
           {
             name: '缺勤',
             marker: {
               symbol: 'diamond'
             },
-            data: yDate
+            data: yDate[5]
           },
           {
             name: '请假',
             marker: {
               symbol: 'leave'
             },
-            data: yDate
+            data: yDate[6]
           }
         ]
       })
