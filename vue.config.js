@@ -67,18 +67,18 @@ module.exports = {
         moment: 'moment'
       }
       // 压缩代码
-      config.optimization = {
-        splitChunks: {},
-        minimizer: [
-          new UglifyJsPlugin({
-            uglifyOptions: {
-              compress: {
-                drop_console: true
-              }
-            }
-          })
-        ]
-      }
+      // config.optimization = {
+      //   splitChunks: {},
+      //   minimizer: [
+      //     new UglifyJsPlugin({
+      //       uglifyOptions: {
+      //         compress: {
+      //           drop_console: true
+      //         }
+      //       }
+      //     })
+      //   ]
+      // }
     }
   },
   css: {
