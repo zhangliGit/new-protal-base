@@ -165,31 +165,30 @@ export default {
   },
   mounted() {
     const url = window.location.href
-    const schoolCode = url.substr(url.indexOf('?')).split('=')[1].replace('#/', '')
+    this.schoolCode = url.substr(url.indexOf('?')).split('=')[1].replace('#/', '')
     const nowD = new Date()
     const month = nowD.getMonth() + 1
-    const todayTime = `${nowD.getFullYear()}-${month < 10 ? '0' + month : month}-${nowD.getDate() < 10 ? '0' + nowD.getDate() : nowD.getDate()}`
-    this.getTotal(schoolCode, todayTime)
+    this.todayTime = `${nowD.getFullYear()}-${month < 10 ? '0' + month : month}-${nowD.getDate() < 10 ? '0' + nowD.getDate() : nowD.getDate()}`
+    this.getTotal()
     setInterval(() => {
       this.dateTime = this.getDateTime(new Date().getTime())
     }, 1000)
+    setInterval(() => {
+      this.getTotal()
+    }, 1000 * 60 * 10)
     if (window.WebSocket) {
       if (process.env.NODE_ENV === 'production') {
-        this.ws = new WebSocket(`ws:39.97.246.227:10080/showSocket/${schoolCode}`)
+        this.ws = new WebSocket(`ws:39.97.246.227:10080/showSocket/${this.schoolCode}`)
       } else {
-        this.ws = new WebSocket(`ws:39.97.246.227:10080/showSocket/${schoolCode}`)
+        this.ws = new WebSocket(`ws:192.168.1.123:10090/dorm/showSocket/${this.schoolCode}`)
       }
       this.ws.onopen = () => {
-        console.log('连接服务器成功')
       }
       this.ws.onclose = () => {
-        console.log('服务器关闭')
       }
       this.ws.onerror = () => {
-        console.log('连接出错')
       }
       this.ws.onmessage = e => {
-        console.log(e)
         const data = JSON.parse(e.data)
         if (parseInt(data.type) === 2) {
           this.tipMsg = '对比成功'
@@ -223,11 +222,11 @@ export default {
   },
   methods: {
     // 获取数据
-    getTotal (schoolCode, todayTime) {
+    getTotal () {
       $ajax
         .post(
           {
-            url: `/dorm/show/result/data?schoolCode=${schoolCode}&todayTime=${todayTime}`
+            url: `/dorm/show/result/data?schoolCode=${this.schoolCode}&todayTime=${this.todayTime}`
           },
           false
         )
