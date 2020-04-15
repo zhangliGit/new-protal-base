@@ -130,7 +130,7 @@ export default {
     async showReason() {
       const req = {
         ...this.pageList,
-        schoolCode: 'QPZX'
+        schoolCode: this.userInfo.schoolCode,
       }
       const res = await this.getcauseList(req)
       this.reasonList = res.data.list
@@ -143,7 +143,7 @@ export default {
       } else {
         await this.addcause({
           ...this.pageList,
-          schoolCode: 'QPZX',
+        schoolCode: this.userInfo.schoolCode,
           causeName: this.causeName
         })
         this.$message.success('添加成功')
@@ -166,7 +166,7 @@ export default {
       const req = {
         pageNum: this.pageList.page,
         pageSize: this.pageList.size,
-        schoolCode: 'QPZX',
+        schoolCode: this.userInfo.schoolCode,
         userGroupCode: this.userGroupCode
       }
       const res = await this.getcontrolgroupList(req)
@@ -202,7 +202,7 @@ export default {
       })
       await this.addcontrolgroup({
         ...this.pageList,
-        schoolCode: 'QPZX',
+        schoolCode: this.userInfo.schoolCode,
         controlGroupCode: this.controlList[0].code,
         controlGroupType: this.controlList[0].type,
         id: this.controlList[0].id,
