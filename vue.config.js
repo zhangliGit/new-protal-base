@@ -67,18 +67,18 @@ module.exports = {
         moment: 'moment'
       }
       // 压缩代码
-      // config.optimization = {
-      //   splitChunks: {},
-      //   minimizer: [
-      //     new UglifyJsPlugin({
-      //       uglifyOptions: {
-      //         compress: {
-      //           drop_console: true
-      //         }
-      //       }
-      //     })
-      //   ]
-      // }
+      config.optimization = {
+        splitChunks: {},
+        minimizer: [
+          new UglifyJsPlugin({
+            uglifyOptions: {
+              compress: {
+                drop_console: true
+              }
+            }
+          })
+        ]
+      }
     }
   },
   css: {
@@ -96,7 +96,7 @@ module.exports = {
     proxy: {
       // 单独人脸识别接口
       '/dorm': {
-        target: 'http://39.97.246.227:10080/', // wangxuanzhang
+        target: 'http://192.168.1.123:10080/', // wangxuanzhang
         changeOrigin: true,
         pathRewrite: {
           '^/dorm': ''

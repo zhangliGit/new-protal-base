@@ -177,7 +177,7 @@ export default {
       if (process.env.NODE_ENV === 'production') {
         this.ws = new WebSocket(`ws:39.97.246.227:10080/showSocket/${schoolCode}`)
       } else {
-        this.ws = new WebSocket(`ws:39.97.246.227:10080/showSocket/${schoolCode}`)
+        this.ws = new WebSocket(`ws:192.168.1.123:10090/dorm/showSocket/${schoolCode}`)
       }
       this.ws.onopen = () => {
         console.log('连接服务器成功')
