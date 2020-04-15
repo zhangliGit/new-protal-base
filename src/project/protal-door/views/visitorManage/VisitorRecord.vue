@@ -238,7 +238,7 @@ export default {
       searchLabel,
       columns,
       total: 0,
-      pageList: {
+     pageList: {
         page: 1,
         size: 20
       },

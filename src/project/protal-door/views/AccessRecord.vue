@@ -166,7 +166,7 @@ export default {
       columns,
       searchLabel,
       total: 0,
-      pageList: {
+       pageList: {
         page: 1,
         size: 20
       },
@@ -184,8 +184,8 @@ export default {
     async showList(searchObj = {}) {
       const req = {
         ...this.pageList,
-        schoolCode: this.userInfo.schoolCode,
-        // schoolCode: 'QPZX',
+        // schoolCode: this.userInfo.schoolCode,
+        schoolCode: 'QPZX',
         ...searchObj
       }
       const res = await this.getrecordList(req)
