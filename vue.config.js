@@ -15,7 +15,7 @@ module.exports = {
   pages: {
     ...utils.entries()
   },
-  publicPath: isProduction ? './' : '/',
+  publicPath: isProduction ? '././' : '././',
   chainWebpack: config => {
     const types = ['vue-modules', 'vue', 'normal-modules', 'normal']
     types.forEach(type => addStyleResource(config.module.rule('less').oneOf(type)))
@@ -67,18 +67,18 @@ module.exports = {
         moment: 'moment'
       }
       // 压缩代码
-      // config.optimization = {
-      //   splitChunks: {},
-      //   minimizer: [
-      //     new UglifyJsPlugin({
-      //       uglifyOptions: {
-      //         compress: {
-      //           drop_console: true
-      //         }
-      //       }
-      //     })
-      //   ]
-      // }
+      config.optimization = {
+        splitChunks: {},
+        minimizer: [
+          new UglifyJsPlugin({
+            uglifyOptions: {
+              compress: {
+                drop_console: true
+              }
+            }
+          })
+        ]
+      }
     }
   },
   css: {
@@ -173,7 +173,7 @@ module.exports = {
           '^/zk': ''
         }
       },
-      'base': {
+      base: {
         target: 'http://39.97.164.4:10050/', // 平台
         changeOrigin: true,
         pathRewrite: {

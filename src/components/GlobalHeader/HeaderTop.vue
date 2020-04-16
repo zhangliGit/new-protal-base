@@ -4,7 +4,12 @@
     </submit-form>
     <a-row type="flex" justify="space-between">
       <a-col style="font-size: 18px">
-        <a-icon v-if="isEntryApp" style="vertical-align: -0.15em; cursor: pointer; padding-right: 15px" :type="slideTag ? 'menu-unfold' : 'menu-fold'" @click="toggle"/>
+        <a-icon
+          v-if="isEntryApp"
+          style="vertical-align: -0.15em; cursor: pointer; padding-right: 15px"
+          :type="slideTag ? 'menu-unfold' : 'menu-fold'"
+          @click="toggle"
+        />
         <a-dropdown>
           <span class="select-box">
             <span>{{ currentName }}</span>
@@ -22,7 +27,7 @@
           <div class="qui-fx-ac user-block">
             <span>{{ userName }}</span>
             <div class="user-icon">
-              <img :src="userPic" alt="">
+              <img :src="userPic" alt="" />
             </div>
           </div>
           <a-menu slot="overlay" style="background-color: #31384b; min-width: 120px">
@@ -50,14 +55,16 @@ const formData = [
     type: 'input',
     label: '旧密码',
     placeholder: '请输入旧密码'
-  }, {
+  },
+  {
     value: 'newPassword',
     initValue: '',
     type: 'input',
     password: true,
     label: '新密码',
     placeholder: '请输入新密码'
-  }, {
+  },
+  {
     value: 'confirmPassword',
     initValue: '',
     password: true,
@@ -68,19 +75,15 @@ const formData = [
 ]
 export default {
   name: 'HeaderTop',
-  props: {
-  },
+  props: {},
   components: {
     UserMenu,
     SubmitForm
   },
   computed: {
-    ...mapState('home', [
-      'isEntryApp',
-      'slideTag'
-    ])
+    ...mapState('home', ['isEntryApp', 'slideTag'])
   },
-  data () {
+  data() {
     const loginInfo = JSON.parse(window.sessionStorage.getItem('loginInfo') || JSON.stringify({}))
     return {
       formStatus: false,
@@ -91,8 +94,10 @@ export default {
       currentName: '云平台管理端'
     }
   },
-  mounted () {
-    const { accountType, schoolName, schoolCode } = JSON.parse(window.sessionStorage.getItem('loginInfo') || JSON.stringify({}))
+  mounted() {
+    const { accountType, schoolName, schoolCode } = JSON.parse(
+      window.sessionStorage.getItem('loginInfo') || JSON.stringify({})
+    )
     /**
      * @des 账号类型
      */
@@ -114,36 +119,37 @@ export default {
     this.currentName = this.schoolList[0].name
   },
   methods: {
-    ...mapMutations('home', [
-      'updateState'
-    ]),
-    changePass () {
+    ...mapMutations('home', ['updateState']),
+    changePass() {
       this.formStatus = true
     },
-    submitForm ({ oldPassword, newPassword, confirmPassword }) {
+    submitForm({ oldPassword, newPassword, confirmPassword }) {
       if (newPassword !== confirmPassword) {
         this.$message.warning('两次输入的新密码不一致')
         return
       }
       const loginInfo = JSON.stringify({ id: '' })
-      $ajax.postQuery({
-        url: `${hostEnv.lvzhuo}/userinfo/user/login/update/password`,
-        params: {
-          oldPassword,
-          newPassword,
-          userId: JSON.parse(window.sessionStorage.getItem('loginInfo') || loginInfo).id
-        }
-      }).then(res => {
-        this.$refs.form.reset()
-        this.$message.success('修改成功')
-      }).catch(e => {
-        this.$refs.form.error()
-      })
+      $ajax
+        .postQuery({
+          url: `${hostEnv.lvzhuo}/userinfo/user/login/update/password`,
+          params: {
+            oldPassword,
+            newPassword,
+            userId: JSON.parse(window.sessionStorage.getItem('loginInfo') || loginInfo).id
+          }
+        })
+        .then(res => {
+          this.$refs.form.reset()
+          this.$message.success('修改成功')
+        })
+        .catch(e => {
+          this.$refs.form.error()
+        })
     },
-    switchSchool (item) {
+    switchSchool(item) {
       this.currentName = item.name
     },
-    goConsole () {
+    goConsole() {
       this.updateState({
         key: 'slideTag',
         data: true
@@ -153,72 +159,76 @@ export default {
         data: false
       })
     },
-    toggle () {
+    toggle() {
       const tag = !this.slideTag
       this.updateState({
         key: 'slideTag',
         data: tag
       })
     },
-    loginOut () {
+    loginOut() {
       const { userCode, schoolCode } = JSON.parse(window.sessionStorage.getItem('loginInfo') || JSON.stringify({}))
-      $ajax.postQuery({
-        url: `${hostEnv.lvzhuo}/userinfo/user/login/loginout`,
-        params: {
-          schoolCode,
-          userCode
-        }
-      }).then(res => {
-        this.$message.success('注销成功')
-        this.$tools.goNext(() => {
-          if (process.env.VUE_APP_URL === 'prod') {
-            window.location.href = '/login'
-          } else {
-            window.location.href = './protal-login.html'
+      $ajax
+        .postQuery({
+          url: `${hostEnv.lvzhuo}/userinfo/user/login/loginout`,
+          params: {
+            schoolCode,
+            userCode
           }
         })
-      })
+        .then(res => {
+          this.$message.success('注销成功')
+          window.localStorage.removeItem('loginInfo')
+          window.localStorage.removeItem('protal-entry')
+          this.$tools.goNext(() => {
+            if (process.env.NODE_ENV === 'production') {
+              window.location.href = '/login'
+            } else {
+              window.location.href = './protal-login.html'
+            }
+          })
+        })
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
-  .header-top {
-    height: @head-h;
-    padding: 0 10px;
-    line-height: @head-h;
-    color: @head-fff;
-    width: 100%;
-    background-color: @head-color;
+.header-top {
+  height: @head-h;
+  padding: 0 10px;
+  line-height: @head-h;
+  color: @head-fff;
+  width: 100%;
+  background-color: @head-color;
+}
+.select-box {
+  font-size: 16px;
+  padding: 0 15px 0 15px;
+  display: inline-block;
+  height: 28px;
+  line-height: 28px;
+  border-radius: 20px;
+  background-color: #31384b;
+  span {
+    padding-right: 10px;
   }
-  .select-box {
-    font-size: 16px;
-    padding: 0 15px 0 15px;
-    display: inline-block;
-    height: 28px;
-    line-height: 28px;
-    border-radius: 20px;
-    background-color: #31384b;
-    span {
-      padding-right: 10px;
-    }
-  }
-  .user-block {
-    height: 30px;
-    margin-top: 10px;
-  }
-  .user-icon {
+}
+.user-block {
+  height: 30px;
+  margin-top: 10px;
+}
+.user-icon {
+  width: 30px;
+  height: 30px;
+  margin: 0 10px;
+  background-color: #ccc;
+  overflow: hidden;
+  border-radius: 100%;
+  img {
     width: 30px;
     height: 30px;
-    margin: 0 10px;
-    background-color: #ccc;
-    overflow: hidden;
-    border-radius: 100%;
-    img {
-      width: 30px;
-      height: 30px;
-      display: block;
-    }
+    display: block;
   }
+}
 </style>

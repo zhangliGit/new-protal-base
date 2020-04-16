@@ -17,12 +17,18 @@ let mj = ''
 let base = ''
 
 if (ConfigEnv === 'test') {
-  // 线上接口
+  // 环境接口
   wangxuanzhang = '/api-pc-protal/controlCenter'
   zhuxu = '/api-pc-protal/application'
   zhangkun = '/api-pc-protal/canpoint-school-view'
   gejunwei = '/api-pc-protal/plateform-userinfo-view'
   lvzhuo = '/api-pc-protal/plateform-userinfo-view'
+  wxz = '/wxz'
+  lz = '/lz'
+  zx = '/zx'
+  zk = '/zk'
+  base = '/base'
+  mj = '/mj'
 } else if (ConfigEnv === 'prod') {
   // 线上接口
   wangxuanzhang = '/api-pc-protal/controlCenter'
