@@ -104,11 +104,6 @@ const columns = [
     }
   },
   {
-    title: '审批单号',
-    dataIndex: 'oddNumbers',
-    width: '8%'
-  },
-  {
     title: '姓名',
     dataIndex: 'userName',
     width: '8%'
@@ -146,7 +141,7 @@ const columns = [
   {
     title: '开始时间',
     dataIndex: 'startTime',
-    width: '8%',
+    width: '12%',
     customRender: text => {
       return new Date(text).toLocaleString()
     }
@@ -154,7 +149,7 @@ const columns = [
   {
     title: '结束时间',
     dataIndex: 'endTime',
-    width: '8%',
+    width: '12%',
     customRender: text => {
       return new Date(text).toLocaleString()
     }

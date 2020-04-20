@@ -8,7 +8,7 @@
       @submit="chooseUser"
       title="添加控制组"
     ></choose-control>
-    <a-tabs v-model="autoKey">
+    <a-tabs v-model="autoKey" style="margin-left: 10px">
       <a-tab-pane tab="来访事由" key="1" forceRender>
         <div>
           <a-input
@@ -50,6 +50,7 @@
         </a-row>
       </a-tab-pane>
       <a-button
+        style="margin-top: 5px; margin-right: 10px"
         v-if="autoKey === '2'"
         slot="tabBarExtraContent"
         type="primary"

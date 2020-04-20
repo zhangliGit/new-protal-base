@@ -99,12 +99,7 @@ const columns = [
     }
   },
   {
-    title: '审批单号',
-    dataIndex: 'oddNumbers',
-    width: '7%'
-  },
-  {
-    title: '请假人姓名',
+    title: '姓名',
     dataIndex: 'userName',
     width: '7%'
   },
@@ -136,7 +131,7 @@ const columns = [
     }
   },
   {
-    title: '申请人姓名',
+    title: '申请人',
     dataIndex: 'applyUserName',
     width: '7%'
   },
@@ -151,7 +146,7 @@ const columns = [
   {
     title: '开始时间',
     dataIndex: 'startTime',
-    width: '7%',
+    width: '10%',
     customRender: text => {
       return new Date(text).toLocaleString()
     }
@@ -159,7 +154,7 @@ const columns = [
   {
     title: '结束时间',
     dataIndex: 'endTime',
-    width: '7%',
+    width: '10%',
     customRender: text => {
       return new Date(text).toLocaleString()
     }

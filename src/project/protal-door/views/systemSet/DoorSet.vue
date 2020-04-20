@@ -1,20 +1,22 @@
 <template>
   <div class="page-layout qui-fx-ver">
-    <choose-user ref="user" @submit="submitUser" is-check v-model="chooseTag"></choose-user>
+    <choose-user ref="user" v-if="chooseTag" @submit="submitUser" is-check v-model="chooseTag"></choose-user>
     <choose-control
       ref="chooseControl"
       is-check
+      v-if="controlTag"
       v-model="controlTag"
       :schoolCode="userInfo.schoolCode"
       @submit="submitControl"
       title="添加控制组">
     </choose-control>
-    <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
+    <search-form v-if="false" is-reset @search-form="searchForm" :search-label="searchLabel">
       <div slot="left"></div>
     </search-form>
     <a-table
+      style="margin-top: 10px"
       :pagination="false"
-      :rowKey="record => record.placeCode"
+      :rowKey="record => record.id"
       :columns="columns"
       :dataSource="doorList"
     >
@@ -84,7 +86,7 @@ const columns = [
   },
   {
     title: '出入口',
-    dataIndex: 'placeName',
+    dataIndex: 'name',
     width: '15%'
   },
   {
@@ -173,6 +175,7 @@ export default {
       this.pageList.schoolCode = this.userInfo.schoolCode
       const res = await this.getDoorSet(this.pageList)
       this.doorList = res.data
+      console.log(this.doorList)
     },
     addUser(type, text) {
       if (type) {
