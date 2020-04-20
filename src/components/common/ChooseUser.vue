@@ -112,6 +112,12 @@ export default {
     value: {
       type: Boolean,
       default: false
+    },
+    checkData: {
+      type: Array,
+      default: () => {
+        return []
+      }
     }
   },
   computed: {
@@ -127,9 +133,6 @@ export default {
       }
     }
   },
-  async mounted () {
-    this.getUserList()
-  },
   data () {
     return {
       keyword: '',
@@ -144,6 +147,20 @@ export default {
       userList: [],
       totalList: []
     }
+  },
+  async mounted () {
+    const users = [{
+      id: 757,
+      userName: '朱旭17'
+    }]
+    users.forEach(item => {
+      this.chooseList.push(item.id)
+      this.totalList.push({
+        id: item.id,
+        userName: item.userName
+      })
+    })
+    this.getUserList()
   },
   methods: {
     async getUserList () {

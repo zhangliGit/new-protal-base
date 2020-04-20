@@ -34,6 +34,21 @@
         <template slot="totalNum" slot-scope="text, record">
           <slot name="totalNums" :record="record"></slot>
         </template>
+        <template slot="other1" slot-scope="text, record">
+          <slot name="other1" :record="record"></slot>
+        </template>
+        <template slot="other2" slot-scope="text, record">
+          <slot name="other2" :record="record"></slot>
+        </template>
+        <template slot="other3" slot-scope="text, record">
+          <slot name="other3" :record="record"></slot>
+        </template>
+        <template slot="other4" slot-scope="text, record">
+          <slot name="other4" :record="record"></slot>
+        </template>
+        <template slot="other5" slot-scope="text, record">
+          <slot name="other5" :record="record"></slot>
+        </template>
         <template slot="action" slot-scope="text, record">
           <slot name="actions" :record="record"></slot>
         </template>

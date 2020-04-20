@@ -139,28 +139,32 @@ module.exports = {
         }
       },
       wxz: {
-        target: 'http://39.97.164.4:8081/', // 王选章
+        // target: 'http://39.97.164.4:8081/', // 王选章
+        target: 'http://192.168.1.123:10090/',
         changeOrigin: true,
         pathRewrite: {
           '^/wxz': ''
         }
       },
       lz: {
-        target: 'http://39.97.164.4:10091/', // 吕卓
+        // target: 'http://39.97.164.4:10091/', // 吕卓
+        target: 'http://192.168.1.170:10091/',
         changeOrigin: true,
         pathRewrite: {
           '^/lz': ''
         }
       },
       zx: {
-        target: 'http://39.97.164.4:10160//', // 朱旭
+        // target: 'http://39.97.164.4:10160//', // 朱旭
+        target: 'http://192.168.1.24:10160/',
         changeOrigin: true,
         pathRewrite: {
           '^/zx': ''
         }
       },
       mj: {
-        target: 'http://39.97.164.4:10162/', // 朱旭门禁
+        // target: 'http://39.97.164.4:10162/', // 朱旭门禁
+        target: 'http://192.168.1.24:10162/',
         changeOrigin: true,
         pathRewrite: {
           '^/mj': ''
@@ -179,7 +183,14 @@ module.exports = {
         pathRewrite: {
           '^/base': ''
         }
-      }
+      },
+      year: {
+        target: 'http://112.125.89.37:1010/', // 吕卓
+        changeOrigin: true,
+        pathRewrite: {
+          '^/year': ''
+        }
+      },
     }
   },
   productionSourceMap: false,

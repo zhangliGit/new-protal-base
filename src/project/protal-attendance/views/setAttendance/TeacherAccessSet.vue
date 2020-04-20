@@ -3,9 +3,10 @@
     <choose-user
       ref="chooseUser"
       is-check
+      v-if="userTag"
       v-model="userTag"
       @submit="chooseUser"
-      title="添加考勤设备控制组">
+      title="添加考勤人员">
     </choose-user>
     <div class="qui-fx-jsb qui-fx-ac">
       <div></div>

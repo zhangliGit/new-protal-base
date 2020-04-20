@@ -15,6 +15,7 @@ let lz = ''
 let zx = ''
 let mj = ''
 let base = ''
+let year = ''
 
 if (ConfigEnv === 'test') {
   // 环境接口
@@ -53,6 +54,7 @@ if (ConfigEnv === 'test') {
   lz = '/lz'
   zk = '/zk'
   base = '/base'
+  year = '/year'
 }
 
 export default {
@@ -66,5 +68,6 @@ export default {
   lz,
   zk,
   mj,
-  base
+  base,
+  year
 }
