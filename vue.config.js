@@ -147,8 +147,8 @@ module.exports = {
         }
       },
       lz: {
-        // target: 'http://39.97.164.4:10091/', // 吕卓
-        target: 'http://192.168.1.170:10091/',
+        target: 'http://39.97.164.4:10091/', // 吕卓
+        // target: 'http://192.168.1.170:10091/',
         changeOrigin: true,
         pathRewrite: {
           '^/lz': ''
@@ -190,7 +190,7 @@ module.exports = {
         pathRewrite: {
           '^/year': ''
         }
-      },
+      }
     }
   },
   productionSourceMap: false,

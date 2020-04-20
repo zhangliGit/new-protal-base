@@ -44,16 +44,18 @@ const studentRecord = [{
   dataIndex: 'onTime',
   width: '10%',
   customRender: (text) => {
-    const d = new Date(text)
-    return d.getFullYear() + '-' +
-           ((d.getMonth() + 1) > 9 ? d.getMonth() + 1 : '0' + (d.getMonth() + 1)) + '-' +
-           (d.getDate() > 9 ? d.getDate() : '0' + d.getDate()) +
-           ' ' +
-           (d.getHours() > 9 ? d.getHours() : '0' + d.getHours()) +
-           ':' +
-           (d.getMinutes() > 9 ? d.getMinutes() : '0' + d.getMinutes()) +
-           ':' +
-           (d.getSeconds() > 9 ? d.getSeconds() : '0' + d.getSeconds())
+    if (text) {
+      const d = new Date(text)
+      return d.getFullYear() + '-' +
+             ((d.getMonth() + 1) > 9 ? d.getMonth() + 1 : '0' + (d.getMonth() + 1)) + '-' +
+             (d.getDate() > 9 ? d.getDate() : '0' + d.getDate()) +
+             ' ' +
+             (d.getHours() > 9 ? d.getHours() : '0' + d.getHours()) +
+             ':' +
+             (d.getMinutes() > 9 ? d.getMinutes() : '0' + d.getMinutes()) +
+             ':' +
+             (d.getSeconds() > 9 ? d.getSeconds() : '0' + d.getSeconds())
+    }
   }
 },
 {
@@ -65,16 +67,14 @@ const studentRecord = [{
       return '迟到'
     } else if (text === 2) {
       return '早退'
-    } else if (text === 3) {
-      return '上学缺卡'
+    } else if (text === 3 || text === 6) {
+      return '缺卡'
     } else if (text === 4) {
       return '请假'
     } else if (text === 5) {
       return '正常'
-    } else if (text === 6) {
-      return '放学缺卡'
-    } else {
-      return '请假'
+    } else if (text === 7) {
+      return '缺勤'
     }
   }
 },
@@ -83,16 +83,18 @@ const studentRecord = [{
   dataIndex: 'offTime',
   width: '10%',
   customRender: (text) => {
-    const d = new Date(text)
-    return d.getFullYear() + '-' +
-           ((d.getMonth() + 1) > 9 ? d.getMonth() + 1 : '0' + (d.getMonth() + 1)) + '-' +
-           (d.getDate() > 9 ? d.getDate() : '0' + d.getDate()) +
-           ' ' +
-           (d.getHours() > 9 ? d.getHours() : '0' + d.getHours()) +
-           ':' +
-           (d.getMinutes() > 9 ? d.getMinutes() : '0' + d.getMinutes()) +
-           ':' +
-           (d.getSeconds() > 9 ? d.getSeconds() : '0' + d.getSeconds())
+    if (text) {
+      const d = new Date(text)
+      return d.getFullYear() + '-' +
+             ((d.getMonth() + 1) > 9 ? d.getMonth() + 1 : '0' + (d.getMonth() + 1)) + '-' +
+             (d.getDate() > 9 ? d.getDate() : '0' + d.getDate()) +
+             ' ' +
+             (d.getHours() > 9 ? d.getHours() : '0' + d.getHours()) +
+             ':' +
+             (d.getMinutes() > 9 ? d.getMinutes() : '0' + d.getMinutes()) +
+             ':' +
+             (d.getSeconds() > 9 ? d.getSeconds() : '0' + d.getSeconds())
+    }
   }
 },
 {
@@ -104,16 +106,14 @@ const studentRecord = [{
       return '迟到'
     } else if (text === 2) {
       return '早退'
-    } else if (text === 3) {
-      return '上学缺卡'
+    } else if (text === 3 || text === 6) {
+      return '缺卡'
     } else if (text === 4) {
       return '请假'
     } else if (text === 5) {
       return '正常'
-    } else if (text === 6) {
-      return '放学缺卡'
-    } else {
-      return '请假'
+    } else if (text === 7) {
+      return '缺勤'
     }
   }
 },

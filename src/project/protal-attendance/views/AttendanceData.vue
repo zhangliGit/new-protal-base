@@ -113,7 +113,7 @@ export default {
           tip: ''
         },
         {
-          title: '上学缺卡',
+          title: '缺卡',
           total: '0',
           tip: ''
         },
@@ -123,7 +123,7 @@ export default {
           tip: ''
         },
         {
-          title: '放学缺卡',
+          title: '缺卡',
           total: '0',
           tip: ''
         },

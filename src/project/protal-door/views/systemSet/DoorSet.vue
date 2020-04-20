@@ -151,8 +151,8 @@ export default {
       }
       const res = await this.getPlace(req)
       this.searchLabel[0].list = res.data.map(el => {
-        el.key = el.placeCode
-        el.val = el.placeName
+        el.key = el.code
+        el.val = el.name
         return el
       })
     },
