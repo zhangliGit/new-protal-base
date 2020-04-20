@@ -183,7 +183,14 @@ module.exports = {
         pathRewrite: {
           '^/base': ''
         }
-      }
+      },
+      year: {
+        target: 'http://112.125.89.37:1010/', // 吕卓
+        changeOrigin: true,
+        pathRewrite: {
+          '^/year': ''
+        }
+      },
     }
   },
   productionSourceMap: false,
