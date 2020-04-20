@@ -1,9 +1,7 @@
 <template>
   <div class="teacher-leave page-layout qui-fx">
-    <div class="page-left">
-      <org-tree @select="select"></org-tree>
-    </div>
-    <div class="page-right qui-fx-ver">
+    <org-tree @select="select"></org-tree>
+    <div class="qui-fx-f1  qui-fx-ver">
       <search-form is-reset @search-form="searchForm" :search-label="searchLabel"></search-form>
       <no-data msg="暂无应用列表" v-if="false">
         <div slot="btn">
@@ -12,17 +10,15 @@
       </no-data>
       <table-list :page-list="pageList" :columns="columns" :table-list="userList">
         <template v-slot:actions="action">
-          <div>
-            <a-tooltip placement="topLeft" title="详情">
-              <a-button
-                size="small"
-                style="margin-right: 5px; background: #909399; color:#fff"
-                icon="ellipsis"
-                @click="detail(action.record)"
-              ></a-button>
-            </a-tooltip>
-          </div>
-        </template>
+          <a-tooltip placement="topLeft" title="详情">
+            <a-button
+              size="small"
+              style="margin-right: 5px; background: #909399; color:#fff"
+              icon="ellipsis"
+              @click="detail(action.record)"
+            ></a-button>
+          </a-tooltip></template>
+      </table-list></div></div></template>
       </table-list>
       <page-num v-model="pageList" :total="total" @change-page="showList(searchObj)"></page-num>
     </div>
@@ -35,6 +31,8 @@ import TableList from '@c/TableList'
 import SearchForm from '@c/SearchForm'
 import OrgTree from '@c/OrgTree'
 import PageNum from '@c/PageNum'
+import 'moment/locale/zh-cn'
+
 const searchLabel = [
   {
     value: 'userName', // 表单属性
@@ -102,11 +100,6 @@ const columns = [
     scopedSlots: {
       customRender: 'index'
     }
-  },
-  {
-    title: '审批单号',
-    dataIndex: 'oddNumbers',
-    width: '8%'
   },
   {
     title: '姓名',
@@ -229,11 +222,14 @@ export default {
     async showList(searchObj = this.searchObj) {
       const req = {
         ...this.pageList,
-        orgId: this.orgCode,
+        orgCode: this.orgCode,
         schoolCode: this.userInfo.schoolCode,
         ...searchObj
       }
       const res = await this.getTeachersLeave(req)
+      if (!res.data) {
+        return
+      }
       this.userList = res.data.list
       this.total = res.data.total
     },
@@ -263,8 +259,12 @@ export default {
 <style lang="less" scoped>
 .teacher-leave {
   .page-left {
-    margin-right: 10px;
     background: #fff;
+    margin-right: 10px;
+    width: 200px;
+  }
+  .page-right{
+    width: calc(100% - 210px);
   }
 }
 </style>

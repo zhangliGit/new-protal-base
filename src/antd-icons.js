@@ -148,3 +148,25 @@ export {
   default as QuestionCircleOutline
 }
   from '@ant-design/icons/lib/outline/QuestionCircleOutline'
+export {
+  default as CloseCircleOutline
+}
+  from '@ant-design/icons/lib/outline/CloseCircleOutline'
+
+export {
+  default as PushpinOutline
+}
+  from '@ant-design/icons/lib/outline/PushpinOutline'
+export {
+  default as ToolOutline
+}
+  from '@ant-design/icons/lib/outline/ToolOutline'
+export {
+  default as PoweroffOutline
+}
+  from '@ant-design/icons/lib/outline/PoweroffOutline'
+
+export {
+  default as CloseCircleFill
+}
+  from '@ant-design/icons/lib/fill/CloseCircleFill'
