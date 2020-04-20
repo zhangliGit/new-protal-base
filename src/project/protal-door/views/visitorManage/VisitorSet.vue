@@ -109,10 +109,11 @@ export default {
       chooseTag: false,
       userTag: false,
       userGroupCode: '',
-       pageList: {
+      pageList: {
         page: 1,
         size: 20
       },
+      total: 0
     }
   },
   mounted() {
@@ -130,8 +131,9 @@ export default {
     ]),
     async showReason() {
       const req = {
-        ...this.pageList,
-        schoolCode: this.userInfo.schoolCode,
+        pageNum: this.pageList.page,
+        pageSize: this.pageList.size,
+        schoolCode: this.userInfo.schoolCode
       }
       const res = await this.getcauseList(req)
       this.reasonList = res.data.list
@@ -144,7 +146,7 @@ export default {
       } else {
         await this.addcause({
           ...this.pageList,
-        schoolCode: this.userInfo.schoolCode,
+          schoolCode: this.userInfo.schoolCode,
           causeName: this.causeName
         })
         this.$message.success('添加成功')
@@ -172,14 +174,13 @@ export default {
       }
       const res = await this.getcontrolgroupList(req)
       this.total = res.data.total
-        this.controlList = res.data.list.map(item => {
+      this.controlList = res.data.list.map(item => {
         return {
           name: item.controlGroupName,
           ...item
         }
       })
     },
-
     async delControl(record) {
       await this.delcontrolgroup({
         id: record.id
@@ -190,26 +191,21 @@ export default {
       })
     },
     async chooseUser(value) {
-      this.userTag = false
+      console.log(value)
       this.$refs.chooseUser.reset()
-      this.controlList = []
+      this.userTag = false
+      this.controlList  = []
       value.forEach(ele => {
         this.controlList.push({
-          name: ele.controlGroupName,
+          controlGroupName: ele.controlGroupName,
           id: ele.id,
-          code: ele.controlGroupCode,
-          type: ele.controlGroupType
+          controlGroupCode: ele.controlGroupCode,
+          controlGroupType: ele.controlGroupType,
+          schoolCode:ele.schoolCode,
+          userGroupCode:this.userGroupCode
         })
       })
-      await this.addcontrolgroup({
-        ...this.pageList,
-        schoolCode: this.userInfo.schoolCode,
-        controlGroupCode: this.controlList[0].code,
-        controlGroupType: this.controlList[0].type,
-        id: this.controlList[0].id,
-        createTime: new Date(),
-        userGroupCode: this.userGroupCode
-      })
+      await this.addcontrolgroup(this.controlList)
       this.$message.success('添加成功')
       this.$tools.goNext(() => {
         this.showControl()

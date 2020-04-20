@@ -94,7 +94,7 @@ export default {
     searchForm(values) {
       this.pageList.startDay = values.rangeTime[0]
       this.pageList.endDay = values.rangeTime[1]
-      this.pageList = Object.assign(values, this.pageList)
+      this.pageList = Object.assign(this.pageList, values)
       this.showList()
     },
     detail(record) {
