@@ -382,6 +382,7 @@ export default {
     },
     // 添加考勤设备
     chooseUser (value) {
+      debugger
       this.userTag = false
       this.$refs.chooseUser.reset()
       this.groupList = []

@@ -188,6 +188,7 @@ export default {
       this.userTag = true
     },
     async chooseUser(values) {
+      debugger;
       console.log(values)
       this.userTag = false
       this.$refs.chooseUser.reset()
