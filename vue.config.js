@@ -173,6 +173,13 @@ module.exports = {
           '^/zk': ''
         }
       },
+      year: {
+        target: 'http://112.125.89.37:1010/', // 吕卓
+        changeOrigin: true,
+        pathRewrite: {
+          '^/year': ''
+        }
+      },
       'base': {
         target: 'http://39.97.164.4:10050/', // 平台
         changeOrigin: true,

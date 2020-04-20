@@ -13,7 +13,7 @@
       <table-list :page-list="pageList" :columns="columns" :table-list="userList">
         <template v-slot:actions="action">
           <div>
-            <a-tooltip placement="topLeft" title="详情" @click="detail(action.record)">
+            <a-tooltip placement="topLeft" title="" @click="detail(action.record)">
               <a-button size="small" class="detail-action-btn" icon="form"></a-button>
             </a-tooltip>
           </div>
