@@ -91,7 +91,17 @@ export default {
     },
     goSrc (path) {
       this.$nextTick(() => {
-        document.querySelector('#iframe-content').src = `${window.location.origin}${path}`
+        if (process.env.NODE_ENV === 'production') {
+          document.querySelector('#iframe-content').src = `${window.location.origin}${path}`
+        } else {
+          let params
+          if (path.indexOf('pc-protal') > -1) {
+            params = path.replace('/pc-protal', '').split('#/')
+          } else {
+            params = path.split('#/')
+          }
+          document.querySelector('#iframe-content').src = `${window.location.origin}${params[0]}.html#/${params[1]}`
+        }
       })
     }
   }

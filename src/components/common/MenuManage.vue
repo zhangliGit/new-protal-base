@@ -277,7 +277,7 @@ export default {
             url: `${hostEnv.zhuxu}/menu/manage/add`,
             params: {
               menuName,
-              isPlatform: isPlatform || this.isPlatform,
+              isPlatform: isPlatform,
               linkUrl,
               menuType: this.menuType,
               parentId: this.id,

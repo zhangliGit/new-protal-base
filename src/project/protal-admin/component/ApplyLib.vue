@@ -335,13 +335,13 @@ export default {
       }
       try {
         values.logoUrl = this.fileList[0].url
+        values.plateformType = this.plateformType
         if (this.title === '编辑应用') {
           values.id = this.applyId
           await this.updateApply(values)
         } else {
           await this.addApply(values)
         }
-        values.plateformType = this.plateformType
         this.$message.success('操作成功')
         this.$tools.goNext(() => {
           this.$refs.form.reset()

@@ -62,6 +62,7 @@ export default {
     }
   },
   mounted () {
+    this.plateformType = this.$route.query.plateformType
     this.getMenuList(1, '')
   },
   methods: {
@@ -76,7 +77,7 @@ export default {
           menuType,
           parentId,
           isPlatform: this.platType,
-          plateformType: 2
+          plateformType: this.plateformType
         }
       })
       if (menuType === 1) {

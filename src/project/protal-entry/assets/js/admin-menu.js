@@ -10,15 +10,26 @@ const adminMenu = [{
     name: '应用管理',
     children: [{
       id: '003',
-      name: '菜单库',
+      name: 'PC菜单库',
       icon: '',
-      url: ConfigEnv === 'production' ? '/pc-protal/protal-admin/index.html#/menuManage' : '/protal-admin.html#/menuManage'
+      url: ConfigEnv === 'production' ? '/pc-protal/protal-admin#/menuManage' : '/protal-admin.html#/menuManage'
     },
     {
       id: '004',
-      name: '应用库',
+      name: 'PC应用库',
       icon: '',
-      url: ConfigEnv === 'production' ? '/pc-protal/protal-admin/index.html#/apply' : '/protal-admin.html#/apply'
+      url: ConfigEnv === 'production' ? '/pc-protal/protal-admin#/apply' : '/protal-admin.html#/apply'
+    }, {
+      id: '033',
+      name: 'APP菜单库',
+      icon: '',
+      url: ConfigEnv === 'production' ? '/pc-protal/protal-admin#/appMenuManage' : '/protal-admin.html#/appMenuManage'
+    },
+    {
+      id: '044',
+      name: 'APP应用库',
+      icon: '',
+      url: ConfigEnv === 'production' ? '/pc-protal/protal-admin#/appApply' : '/protal-admin.html#/appApply'
     }
     ]
   },
@@ -26,7 +37,7 @@ const adminMenu = [{
     id: '005',
     name: '机构管理',
     icon: '',
-    url: ConfigEnv === 'production' ? '/pc-protal/protal-admin/index.html#/institute' : '/protal-admin.html#/institute'
+    url: ConfigEnv === 'production' ? '/pc-protal/protal-admin#/institute' : '/protal-admin.html#/institute'
   },
   {
     id: '006',
@@ -35,13 +46,13 @@ const adminMenu = [{
       id: '007',
       name: '角色管理',
       icon: '',
-      url: ConfigEnv === 'production' ? '/pc-protal/protal-admin/index.html#/role' : '/protal-admin.html#/role'
+      url: ConfigEnv === 'production' ? '/pc-protal/protal-admin#/role' : '/protal-admin.html#/role'
     },
     {
       id: '008',
       name: '员工管理',
       icon: '',
-      url: ConfigEnv === 'production' ? '/pc-protal/protal-admin/index.html#/staff' : '/protal-admin.html#/staff'
+      url: ConfigEnv === 'production' ? '/pc-protal/protal-admin#/staff' : '/protal-admin.html#/staff'
     }
     ]
   }

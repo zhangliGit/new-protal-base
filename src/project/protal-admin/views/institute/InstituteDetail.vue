@@ -20,7 +20,7 @@
               :class="['qui-fx-ac-jc app-check',{'app-choose':item.check}]"
               v-for="(item, index) in applyList"
               :key="item.id"
-              @click="appClick(index)"
+              @click="appClick('1', index)"
             >
               <img class="right-img" :src="item.icon" alt />
               <div class="title qui-te">{{ item.name }}</div>
@@ -32,13 +32,13 @@
         </a-tab-pane>
         <a-tab-pane tab="移动端应用" key="2">
           <div class="app-list">
-            <no-data v-if="applyList.length === 0" msg="暂无关联应用~"></no-data>
+            <no-data v-if="mobileList.length === 0" msg="暂无关联应用~"></no-data>
             <div
               v-else
               :class="['qui-fx-ac-jc app-check',{'app-choose':item.check}]"
-              v-for="(item, index) in applyList"
+              v-for="(item, index) in mobileList"
               :key="item.id"
-              @click="appClick(index)"
+              @click="appClick('2', index)"
             >
               <img class="right-img" :src="item.icon" alt />
               <div class="title qui-te">{{ item.name }}</div>
@@ -62,7 +62,7 @@
             <a-button type="primary" slot="btn" @click="tabAdd">添加管理员</a-button>
           </no-data>
         </a-tab-pane>
-        <span slot="tabBarExtraContent" v-if="activeTab === '1'">
+        <span slot="tabBarExtraContent" v-if="activeTab !== '3'">
           <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="del">
             <template slot="title">您确定解绑选中的应用吗?</template>
             <a-tooltip placement="topLeft" title="解绑">
@@ -75,7 +75,7 @@
           title="绑定"
           slot="tabBarExtraContent"
           @click="showDrawer"
-          v-if="activeTab === '1'"
+          v-if="activeTab !== '3'"
         >
           <a-button size="small" class="add-action-btn" icon="plus"></a-button>
         </a-tooltip>
@@ -174,10 +174,12 @@ export default {
       detailInfo: [],
       infoTitle: '基本信息',
       applyList: [],
+      mobileList: [],
       schoolInfo: {},
       chooseValue: [],
       adminId: '',
-      visible: false
+      visible: false,
+      plateformType: '2'
     }
   },
   mounted() {
@@ -186,12 +188,17 @@ export default {
   },
   methods: {
     ...mapActions('home', ['schoolDetail', 'queryApply', 'unbindApply', 'addAdmin', 'getAdmin', 'updateAdmin']),
-    appClick(index) {
-      this.applyList[index].check = !this.applyList[index].check
-      this.appFilter()
+    appClick(type, index) {
+      if (type === '1') {
+        this.applyList[index].check = !this.applyList[index].check
+        this.appFilter('applyList')
+      } else {
+        this.mobileList[index].check = !this.mobileList[index].check
+        this.appFilter('mobileList')
+      }
     },
-    appFilter() {
-      this.chooseValue = this.applyList.filter(el => {
+    appFilter(list) {
+      this.chooseValue = this[list].filter(el => {
         return el.check
       })
     },
@@ -199,7 +206,7 @@ export default {
       this.visible = true
       this.$refs.bindApply.searchValue = ''
       this.$refs.bindApply.chooseList = []
-      this.$refs.bindApply.applyGetList()
+      this.$refs.bindApply.applyGetList(this.plateformType)
     },
     update() {
       this.visible = false
@@ -256,8 +263,15 @@ export default {
     },
     // 已关联的应用
     async showList() {
-      const res = await this.queryApply({ schoolCode: this.schoolInfo.schoolCode, plateformType: '2' })
-      this.applyList = res.data.list.map(el => {
+      const web = await this.queryApply({ schoolCode: this.schoolInfo.schoolCode, plateformType: '2' })
+      this.applyList = web.data.list.map(el => {
+        return {
+          ...el,
+          check: false
+        }
+      })
+      const mobile = await this.queryApply({ schoolCode: this.schoolInfo.schoolCode, plateformType: '1' })
+      this.mobileList = mobile.data.list.map(el => {
         return {
           ...el,
           check: false
@@ -272,6 +286,7 @@ export default {
       }
     },
     callback(key) {
+      this.plateformType = key === '1' ? '2' : '1'
       this.activeTab = key
     },
     tabAdd() {
@@ -312,6 +327,7 @@ export default {
       })
       const req = {
         appIdList: appIdList.join(','),
+        plateformType: this.plateformType,
         schoolCode: this.schoolInfo.schoolCode
       }
       this.unbindApply(req).then(res => {

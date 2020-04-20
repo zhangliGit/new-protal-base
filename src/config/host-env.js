@@ -18,12 +18,18 @@ let base = ''
 let year = ''
 
 if (ConfigEnv === 'test') {
-  // 线上接口
+  // 环境接口
   wangxuanzhang = '/api-pc-protal/controlCenter'
   zhuxu = '/api-pc-protal/application'
   zhangkun = '/api-pc-protal/canpoint-school-view'
   gejunwei = '/api-pc-protal/plateform-userinfo-view'
   lvzhuo = '/api-pc-protal/plateform-userinfo-view'
+  wxz = '/wxz'
+  lz = '/lz'
+  zx = '/zx'
+  zk = '/zk'
+  base = '/base'
+  mj = '/mj'
 } else if (ConfigEnv === 'prod') {
   // 线上接口
   wangxuanzhang = '/api-pc-protal/controlCenter'
@@ -37,11 +43,11 @@ if (ConfigEnv === 'test') {
   // zhangkun = '/zhangkun'
   // gejunwei = '/lvzhuo'
   // lvzhuo = '/lvzhuo'
-  wangxuanzhang = '/wangxuanzhang/web-protal/controlCenter'
-  zhuxu = '/zhuxu/web-protal/application'
-  zhangkun = '/zhangkun/web-protal/canpoint-school-view'
-  gejunwei = '/gejunwei/web-protal/plateform-userinfo-view'
-  lvzhuo = '/lvzhuo/web-protal/plateform-userinfo-view'
+  wangxuanzhang = '/wangxuanzhang/api-pc-protal/controlCenter'
+  zhuxu = '/zhuxu/api-pc-protal/application'
+  zhangkun = '/zhangkun/api-pc-protal/canpoint-school-view'
+  gejunwei = '/gejunwei/api-pc-protal/plateform-userinfo-view'
+  lvzhuo = '/lvzhuo/api-pc-protal/plateform-userinfo-view'
   wxz = '/wxz'
   zx = '/zx'
   mj = '/mj'
