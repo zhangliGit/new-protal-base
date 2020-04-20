@@ -16,8 +16,8 @@
         <a-tab-pane tab="正常次数" key="5"></a-tab-pane>
         <a-tab-pane tab="迟到次数" key="1"></a-tab-pane>
         <a-tab-pane tab="早退次数" key="2"></a-tab-pane>
-        <a-tab-pane tab="上学缺卡次数" key="3"></a-tab-pane>
-        <a-tab-pane tab="放学缺卡次数" key="6"></a-tab-pane>
+        <a-tab-pane tab="上学缺卡" key="3"></a-tab-pane>
+        <a-tab-pane tab="放学缺卡" key="6"></a-tab-pane>
         <a-tab-pane tab="请假次数" key="4"></a-tab-pane>
         <a-tab-pane tab="缺勤次数" key="7"></a-tab-pane>
       </a-tabs>
@@ -63,14 +63,14 @@ const columns = [
       const onWork = new Date(record.onWorkTime)
       const offWork = new Date(record.offWorkTime)
       return onWork.getFullYear() + '-' +
-             ((onWork.getMonth() + 1) > 9 ? onWork.getMonth() + 1 : '0' + (onWork.getMonth() + 1)) + '-' +
-             (onWork.getDate() > 9 ? onWork.getDate() : '0' + onWork.getDate()) +
-             ' ' +
-             (onWork.getHours() > 9 ? onWork.getHours() : '0' + onWork.getHours()) +
-             ':' +
-             (onWork.getMinutes() > 9 ? onWork.getMinutes() : '0' + onWork.getMinutes()) +
-             ':' +
-             (onWork.getSeconds() > 9 ? onWork.getSeconds() : '0' + onWork.getSeconds()) + '  ' +
+               ((onWork.getMonth() + 1) > 9 ? onWork.getMonth() + 1 : '0' + (onWork.getMonth() + 1)) + '-' +
+               (onWork.getDate() > 9 ? onWork.getDate() : '0' + onWork.getDate()) +
+               ' ' +
+               (onWork.getHours() > 9 ? onWork.getHours() : '0' + onWork.getHours()) +
+               ':' +
+               (onWork.getMinutes() > 9 ? onWork.getMinutes() : '0' + onWork.getMinutes()) +
+               ':' +
+               (onWork.getSeconds() > 9 ? onWork.getSeconds() : '0' + onWork.getSeconds()) + '  ' +
 
              offWork.getFullYear() + '-' +
              ((offWork.getMonth() + 1) > 9 ? offWork.getMonth() + 1 : '0' + (offWork.getMonth() + 1)) + '-' +

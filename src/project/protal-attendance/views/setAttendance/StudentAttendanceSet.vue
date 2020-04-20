@@ -3,6 +3,7 @@
     <choose-student
       ref="chooseUser"
       is-check
+      v-if="userTag"
       v-model="userTag"
       @submit="chooseUser"
       title="添加学生">

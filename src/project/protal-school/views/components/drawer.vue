@@ -7,6 +7,10 @@
     @close="onClose"
     :visible="visible"
   >
+    <a-tabs defaultActiveKey="2" @change="changeMenu">
+      <a-tab-pane tab="pc端模块" key="2"></a-tab-pane>
+      <a-tab-pane tab="移动端模块" key="1" forceRender></a-tab-pane>
+    </a-tabs>
     <div class="menu-top qui-fx mar-b10">
       <a-input-search v-model="searchValue" placeholder="请输入权限名称" style="width: 260px" @search="onSearch" />
     </div>
@@ -125,13 +129,18 @@ export default {
     }
   },
   mounted () {
-    this.height = document.body.clientHeight - 200
+    this.height = document.body.clientHeight - 250
+    this.plateformType = '2'
     this.initMenu()
   },
   methods: {
     ...mapActions('home', [
       'getAppBySchool', 'getAppMenu', 'addRoleMenu', 'getRoleMenuList'
     ]),
+    changeMenu (index) {
+      this.plateformType = index
+      this.initMenu()
+    },
     onCheck (checkedKeys, e) {
       this.finalCheck = checkedKeys.concat(e.halfCheckedKeys)
       console.log('onCheck', this.finalCheck)
@@ -212,7 +221,7 @@ export default {
     async getRoleMenu (data) {
       const req = {
         roleId: data.id,
-        plateformType: 2
+        plateformType: this.plateformType
       }
       const res = await this.getRoleMenuList(req)
       const arr = res.data.map(item => {
@@ -230,7 +239,7 @@ export default {
     async initMenu () {
       const req = {
         schoolCode: this.userInfo.schoolCode,
-        plateformType: 2
+        plateformType: this.plateformType
       }
       const res = await this.getAppBySchool(req)
       this.menuList = res.data.list
@@ -316,7 +325,7 @@ export default {
       const req = {
         roleId: this.menuData.id,
         nodeList,
-        plateformType: 2
+        plateformType: this.plateformType
       }
       console.log(req)
       this.addRoleMenu(req).then(res => {

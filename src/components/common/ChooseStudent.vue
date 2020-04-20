@@ -16,6 +16,7 @@
       </a-col>
     </a-row>
     <div class="choose-user qui-fx" >
+      <grade-tree @select="select"></grade-tree>
       <div class="qui-fx-ver qui-fx-f1">
         <table-list
           is-check
@@ -60,6 +61,7 @@ import PageNum from './PageNum'
 import TableList from './TableList'
 import $ajax from '@u/ajax-serve'
 import { mapState } from 'vuex'
+import GradeTree from './GradeTree'
 import hostEnv from '@config/host-env'
 const columns = [
   {
@@ -100,7 +102,8 @@ export default {
   name: 'ChooseStudent',
   components: {
     PageNum,
-    TableList
+    TableList,
+    GradeTree
   },
   props: {
     isAll: {
@@ -156,6 +159,9 @@ export default {
     }
   },
   methods: {
+    select () {
+
+    },
     async getStudentList () {
       const res = await $ajax.post({
         url: `${hostEnv.lvzhuo}/userinfo/student/user/without/class`,
