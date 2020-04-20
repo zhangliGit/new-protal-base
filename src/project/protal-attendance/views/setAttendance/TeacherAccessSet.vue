@@ -3,9 +3,12 @@
     <choose-user
       ref="chooseUser"
       is-check
+      chooseType="attendance"
+      :bind-obj="bindObj"
+      v-if="userTag"
       v-model="userTag"
       @submit="chooseUser"
-      title="添加考勤设备控制组">
+      title="添加考勤人员">
     </choose-user>
     <div class="qui-fx-jsb qui-fx-ac">
       <div></div>
@@ -127,8 +130,9 @@ export default {
     return {
       columns,
       userTag: false,
-      total: 1,
+      total: 0,
       id: '',
+      bindObj: {},
       pageList: {
         page: 1,
         size: 20
@@ -165,29 +169,39 @@ export default {
       console.log(id)
       await this.delAccess({ id })
       this.$message.success('删除成功')
-      this.showList()
+      this.$tools.goNext(() => {
+        this.showList()
+      })
     },
     // 适用人员管理
     addCrew(id) {
       this.id = id
+      this.bindObj.id = id
       this.userTag = true
     },
     async chooseUser(values) {
-      console.log(values)
-      this.userTag = false
-      this.$refs.chooseUser.reset()
-      const userCodes = []
+      const users = []
       values.forEach(ele => {
-        userCodes.push(ele.userCode)
+        users.push({
+          userName: ele.userName,
+          userCode: ele.userCode
+        })
       })
       const req = {
         schoolCode: this.userInfo.schoolCode,
         groupId: this.id,
-        userCodes
+        users
       }
-      await this.bindAccessUser(req)
-      this.$message.success('添加成功')
-      this.showList()
+      try {
+        await this.bindAccessUser(req)
+        this.$message.success('添加成功')
+        this.$refs.chooseUser.reset()
+        this.$tools.goNext(() => {
+          this.showList()
+        })
+      } catch (err) {
+        this.$refs.chooseUser.error()
+      }
     }
   }
 }

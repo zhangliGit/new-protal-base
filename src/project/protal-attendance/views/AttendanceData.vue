@@ -113,7 +113,7 @@ export default {
           tip: ''
         },
         {
-          title: '上学缺卡',
+          title: '缺卡',
           total: '0',
           tip: ''
         },
@@ -123,7 +123,7 @@ export default {
           tip: ''
         },
         {
-          title: '放学缺卡',
+          title: '缺卡',
           total: '0',
           tip: ''
         },
@@ -543,11 +543,11 @@ export default {
       background-size: 100% 100%;
     }
     &:nth-child(3) {
-      background: url('../assets/img/zt.png') no-repeat center;
+      background: url('../assets/img/qk.png') no-repeat center;
       background-size: 100% 100%;
     }
     &:nth-child(4) {
-      background: url('../assets/img/qj.png') no-repeat center;
+      background: url('../assets/img/zt.png') no-repeat center;
       background-size: 100% 100%;
     }
     &:nth-child(5) {
@@ -559,7 +559,7 @@ export default {
       background-size: 100% 100%;
     }
     &:nth-child(7) {
-      background: url('../assets/img/qq.png') no-repeat center;
+      background: url('../assets/img/qj.png') no-repeat center;
       background-size: 100% 100%;
     }
   }

@@ -16,8 +16,8 @@
         <a-tab-pane tab="正常次数" key="5"></a-tab-pane>
         <a-tab-pane tab="迟到次数" key="1"></a-tab-pane>
         <a-tab-pane tab="早退次数" key="2"></a-tab-pane>
-        <a-tab-pane tab="上学缺卡次数" key="3"></a-tab-pane>
-        <a-tab-pane tab="放学缺卡次数" key="6"></a-tab-pane>
+        <a-tab-pane tab="上学缺卡" key="3"></a-tab-pane>
+        <a-tab-pane tab="放学缺卡" key="6"></a-tab-pane>
         <a-tab-pane tab="请假次数" key="4"></a-tab-pane>
         <a-tab-pane tab="缺勤次数" key="7"></a-tab-pane>
       </a-tabs>
@@ -25,7 +25,16 @@
         is-zoom
         :page-list="pageList"
         :columns="columns"
-        :table-list="detailList">
+        :table-list="detailList"
+        :rowKey="(record,index) => index">
+        <template v-slot:other1="dealTime">
+          <div>{{ dealTime.record.onWorkTime | gmtToDate }}</div>
+          <div>{{ dealTime.record.offWorkTime | gmtToDate }}</div>
+        </template>
+        <template v-slot:other2="onSnacpUrl">
+          <img :src="onSnacpUrl.onSnacpUrl" alt="">
+          <img :src="onSnacpUrl.offSnacpUrl" alt="">
+        </template>
       </table-list>
       <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
     </div>
@@ -59,28 +68,8 @@ const columns = [
     title: '打卡时间',
     dataIndex: 'dealTime',
     width: '45%',
-    customRender: (text, record) => {
-      const onWork = new Date(record.onWorkTime)
-      const offWork = new Date(record.offWorkTime)
-      return onWork.getFullYear() + '-' +
-             ((onWork.getMonth() + 1) > 9 ? onWork.getMonth() + 1 : '0' + (onWork.getMonth() + 1)) + '-' +
-             (onWork.getDate() > 9 ? onWork.getDate() : '0' + onWork.getDate()) +
-             ' ' +
-             (onWork.getHours() > 9 ? onWork.getHours() : '0' + onWork.getHours()) +
-             ':' +
-             (onWork.getMinutes() > 9 ? onWork.getMinutes() : '0' + onWork.getMinutes()) +
-             ':' +
-             (onWork.getSeconds() > 9 ? onWork.getSeconds() : '0' + onWork.getSeconds()) + '  ' +
-
-             offWork.getFullYear() + '-' +
-             ((offWork.getMonth() + 1) > 9 ? offWork.getMonth() + 1 : '0' + (offWork.getMonth() + 1)) + '-' +
-             (offWork.getDate() > 9 ? offWork.getDate() : '0' + offWork.getDate()) +
-             ' ' +
-             (offWork.getHours() > 9 ? offWork.getHours() : '0' + offWork.getHours()) +
-             ':' +
-             (offWork.getMinutes() > 9 ? offWork.getMinutes() : '0' + offWork.getMinutes()) +
-             ':' +
-             (offWork.getSeconds() > 9 ? offWork.getSeconds() : '0' + offWork.getSeconds())
+    scopedSlots: {
+      customRender: 'other1'
     }
   },
   {
@@ -96,7 +85,7 @@ const columns = [
     dataIndex: 'onSnacpUrl',
     width: '15%',
     scopedSlots: {
-      customRender: 'snapPic'
+      customRender: 'other2'
     }
   }
 ]

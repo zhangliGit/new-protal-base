@@ -61,10 +61,6 @@ export default {
     this.collapsed = !this.sidebarOpened
   },
   mounted () {
-    const ConfigEnv = process.env.VUE_APP_URL
-    if (!ConfigEnv) {
-      this.isDev = true
-    }
   },
   methods: {
     toggle () {

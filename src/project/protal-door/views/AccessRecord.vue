@@ -2,7 +2,7 @@
   <div class="page-layout qui-fx-ver">
     <search-form is-reset @search-form="searchForm" :search-label="searchLabel"></search-form>
     <table-list :page-list="pageList" :columns="columns" :table-list="recordList"></table-list>
-    <page-num v-model="pageList" :total="total" @change-page="showList(searchObj)"></page-num>
+    <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
   </div>
 </template>
 <script>
@@ -11,7 +11,7 @@ import TableList from '@c/TableList'
 import SearchForm from '@c/SearchForm'
 import PageNum from '@c/PageNum'
 const searchLabel = [
-    {
+  {
     value: 'keyword',
     initValue: '',
     type: 'selectInput',
@@ -166,14 +166,14 @@ export default {
       columns,
       searchLabel,
       total: 0,
-       pageList: {
+      pageList: {
         page: 1,
         size: 20
       },
-      recordList: [],
+      recordList: []
     }
   },
-    computed: {
+  computed: {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
@@ -183,8 +183,9 @@ export default {
     ...mapActions('home', ['getrecordList']),
     async showList(searchObj = {}) {
       const req = {
-        ...this.pageList,
-        // schoolCode: this.userInfo.schoolCode,
+        pageNum: this.pageList.page,
+        pageSize: this.pageList.size,
+        schoolCode: this.userInfo.schoolCode,
         schoolCode: 'QPZX',
         ...searchObj
       }
@@ -193,8 +194,8 @@ export default {
       this.total = res.data.total
     },
     searchForm(values) {
-      console.log(values)
-       const searchObj = {
+      this.pageList.pageNum = 1
+      const searchObj = {
         keyword: values.keyword,
         userType: values.userType,
         accessType: values.accessType,

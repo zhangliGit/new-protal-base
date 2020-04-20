@@ -3,6 +3,9 @@
     <choose-student
       ref="chooseUser"
       is-check
+      v-if="userTag"
+      chooseType="attendance"
+      :bind-obj="bindObj"
       v-model="userTag"
       @submit="chooseUser"
       title="添加学生">
@@ -133,6 +136,7 @@ export default {
         size: 20
       },
       id: '',
+      bindObj: {},
       recordList: []
     }
   },
@@ -162,32 +166,41 @@ export default {
     },
     // 删除控制组
     async delGroup(id) {
-      console.log(id)
       await this.delAccess({ id })
       this.$message.success('删除成功')
-      this.showList()
+      this.$tools.goNext(() => {
+        this.showList()
+      })
     },
     // 适用人员管理
     addCrew(id) {
       this.id = id
+      this.bindObj.id = id
       this.userTag = true
     },
     async chooseUser(values) {
-      console.log(values)
-      this.userTag = false
-      this.$refs.chooseUser.reset()
-      const userCodes = []
+      const users = []
       values.forEach(ele => {
-        userCodes.push(ele.userCode)
+        users.push({
+          userName: ele.userName,
+          userCode: ele.userCode
+        })
       })
       const req = {
         schoolCode: this.userInfo.schoolCode,
         groupId: this.id,
-        userCodes
+        users
       }
-      await this.bindAccessUser(req)
-      this.$message.success('添加成功')
-      this.showList()
+      try {
+        await this.bindAccessUser(req)
+        this.$message.success('添加成功')
+        this.$refs.chooseUser.reset()
+        this.$tools.goNext(() => {
+          this.showList()
+        })
+      } catch (err) {
+        this.$refs.chooseUser.error()
+      }
     }
   }
 }

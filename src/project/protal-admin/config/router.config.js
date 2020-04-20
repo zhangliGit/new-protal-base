@@ -6,6 +6,7 @@ import apply from './apply'
 const InstituteManage = resolve => require(['../views/institute/InstituteManage.vue'], resolve)
 const InstituteDetail = resolve => require(['../views/institute/InstituteDetail.vue'], resolve)
 const PanelDetail = resolve => require(['../views/operation/PanelDetail.vue'], resolve)
+const SchoolCalendar = resolve => require(['../views/calendar/schoolCalendar.vue'], resolve)
 export const asyncRouterMap = [
   {
     path: '/',
@@ -37,6 +38,14 @@ export const asyncRouterMap = [
       },
       consumer,
       // operation,
+      {
+        path: '/calendar',
+        name: 'calendar',
+        component: SchoolCalendar,
+        meta: {
+          title: '校历管理'
+        }
+      },
       {
         path: '/panel/detail',
         name: 'panelDetail',

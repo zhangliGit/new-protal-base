@@ -42,7 +42,7 @@ if (ConfigEnv === 'test') {
   // zhangkun = '/zhangkun'
   // gejunwei = '/lvzhuo'
   // lvzhuo = '/lvzhuo'
-  wangxuanzhang = '/wangxuanzhang/api-pc-protal/controlCenter'
+  wangxuanzhang = '/wxz'
   zhuxu = '/zhuxu/api-pc-protal/application'
   zhangkun = '/zhangkun/api-pc-protal/canpoint-school-view'
   gejunwei = '/gejunwei/api-pc-protal/plateform-userinfo-view'

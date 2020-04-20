@@ -363,12 +363,16 @@ export default {
             req.id = this.groupId
             this.updateAccess(req).then(res => {
               this.$message.success('编辑成功')
-              this.$router.push({ path })
+              this.$tools.goNext(() => {
+                this.$router.push({ path })
+              })
             })
           } else {
             this.addAccess(req).then(res => {
               this.$message.success('添加成功')
-              this.$router.push({ path })
+              this.$tools.goNext(() => {
+                this.$router.push({ path })
+              })
             })
           }
         }

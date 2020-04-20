@@ -3,13 +3,16 @@
     <choose-student
       ref="chooseUser"
       is-check
+      chooseType="door"
+      :bind-obj="bindObj"
+      v-if="userTag"
       v-model="userTag"
       @submit="chooseUser"
       title="添加学生">
     </choose-student>
     <div class="qui-fx-jsb qui-fx-ac">
       <div>
-        <span style="font-size:12px;color:#999;">说明：未加入通行权限组的学校人员在任意时间不允许通行</span>
+        <span style="font-size:12px;color:#999; margin-left: 10px">说明：未加入通行权限组的学校人员在任意时间不允许通行</span>
       </div>
       <div class="top-btn-group">
         <a-button icon="plus" type="primary" @click="addGroup(0)">添加权限组</a-button>
@@ -137,6 +140,7 @@ export default {
       userTag: false,
       total: 0,
       id: '',
+      bindObj: {},
       userGroupCode: '',
       ruleGroupCode: '',
       pageList: {
@@ -185,6 +189,11 @@ export default {
     addCrew (ruleGroupCode, userGroupCode) {
       this.ruleGroupCode = ruleGroupCode
       this.userGroupCode = userGroupCode
+      this.bindObj = {
+        ruleGroupCode,
+        userGroupCode,
+        schoolCode: this.userInfo.schoolCode
+      }
       this.userTag = true
     },
     async chooseUser(values) {

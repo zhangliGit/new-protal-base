@@ -97,6 +97,16 @@ export default {
     OrgTree
   },
   props: {
+    bindObj: {
+      type: Object,
+      default: () => {
+        return {}
+      }
+    },
+    chooseType: {
+      type: String,
+      default: ''
+    },
     isRadio: {
       type: Boolean,
       default: false
@@ -112,6 +122,12 @@ export default {
     value: {
       type: Boolean,
       default: false
+    },
+    checkData: {
+      type: Array,
+      default: () => {
+        return []
+      }
     }
   },
   computed: {
@@ -126,9 +142,6 @@ export default {
         this.$emit('input', false)
       }
     }
-  },
-  async mounted () {
-    this.getUserList()
   },
   data () {
     return {
@@ -145,6 +158,29 @@ export default {
       totalList: []
     }
   },
+  async mounted () {
+    if (this.chooseType === 'attendance') {
+      const res = await $ajax.get({
+        url: `${hostEnv.lz}/attendance/group/bind/user/query`,
+        params: {
+          attendanceUserId: this.bindObj.id
+        }
+      })
+      const users = res.data
+      users.forEach(item => {
+        this.chooseList.push(item.userCode)
+        this.totalList.push({
+          userCode: item.userCode,
+          userName: item.userName
+        })
+      })
+      this.getUserList()
+    } else if (this.chooseType === 'door') {
+
+    } else {
+      this.getUserList()
+    }
+  },
   methods: {
     async getUserList () {
       const res = await $ajax.post({
@@ -156,7 +192,12 @@ export default {
           ...this.pageList
         }
       })
-      this.userList = res.data.list
+      this.userList = res.data.list.map(item => {
+        return {
+          ...item,
+          id: item.userCode
+        }
+      })
       this.total = res.data.total
     },
     select (item) {
@@ -191,7 +232,11 @@ export default {
     clickRow (item, type) {
       if (type) {
         if (this.isCheck) {
-          this.totalList.push(item)
+          this.totalList.push({
+            id: item.id,
+            userCode: item.userCode,
+            userName: item.userName
+          })
         } else {
           this.totalList = [item]
         }
@@ -201,7 +246,7 @@ export default {
       }
     },
     submitOk () {
-      if (this.totalList.length === 0) {
+      if (this.totalList.length === 0 && this.bindId === -1) {
         this.$message.warning('请选择人员')
         return
       }
