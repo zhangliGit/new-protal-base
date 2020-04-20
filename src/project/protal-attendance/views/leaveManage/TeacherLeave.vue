@@ -3,7 +3,7 @@
     <div class="page-left">
       <org-tree @select="select"></org-tree>
     </div>
-    <div class="page-right qui-fx-ver">
+    <div class="qui-fx-f1 qui-fx-ver">
       <search-form is-reset @search-form="searchForm" :search-label="searchLabel"></search-form>
       <no-data msg="暂无应用列表" v-if="false">
         <div slot="btn">
