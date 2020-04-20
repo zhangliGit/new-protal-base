@@ -12,18 +12,20 @@
       <p>访客姓名：{{ recordDetail.visitorName }}</p>
       <p>访客电话：{{ recordDetail.visitorMobile }}</p>
       <p>来访事由：{{ recordDetail.causeName }}</p>
-      <p>进入时间：{{ recordDetail.inTime }}</p>
+      <p v-if="recordDetail.inTime!=null">进入时间：{{new Date(recordDetail.inTime).toLocaleString()}}</p>
+      <p v-else>进入时间：{{recordDetail.accessStartTime}}</p>
       <p>预计离开时间：{{ recordDetail.accessEndTime}}</p>
-      <p>签离时间：{{ recordDetail.outTime }}</p>
-      <p>来访时长：{{ recordDetail.retentionTime }}</p>
+      <p v-if="recordDetail.outTime!=null">签离时间：{{ new Date(recordDetail.outTime).toLocaleString()}}</p>
+      <p v-else>签离时间：{{recordDetail.accessEndTime}}</p>
+      <p>来访时长：{{ recordDetail.duration }}</p>
       <p>进入地点：{{ recordDetail.inPlace }}</p>
       <p>签离地点：{{ recordDetail.outPlace }}</p>
       <p>被访人姓名：{{ recordDetail.respondentName }}</p>
-      <p>被访人类型：{{ recordDetail.respondentType? '学生' : '教职工' }}</p>
+      <p>被访人类型：{{ recordDetail.respondentType =='1'?'学生' : '教职工' }}</p>
       <p>被访人手机号：{{ recordDetail.resMobile }}</p>
       <p>组织机构：教务处</p>
       <p>审批状态：{{ recordDetail.state}}</p>
-      <p>访问状态：{{ recordDetail.visitState ? '在访' : '签离'}}</p>
+      <p>访问状态：{{(recordDetail.visitState=='0' ? '待访问' : (recordDetail.visitState=='1'?'在访':'签离'))}}</p>
     </a-drawer>
     <table-list :page-list="pageList" :columns="columns" :table-list="recordList">
       <template v-slot:actions="action">
@@ -177,7 +179,7 @@ const columns = [
     dataIndex: 'respondentType',
     width: '10%',
     customRender: text => {
-     if (text === 1) {
+      if (text === 1) {
         return '学生'
       } else {
         return '教职工'
@@ -238,15 +240,15 @@ export default {
       searchLabel,
       columns,
       total: 0,
-     pageList: {
+      pageList: {
         page: 1,
         size: 20
       },
       recordList: [],
-      recordDetail: {},
+      recordDetail: {}
     }
   },
-      computed: {
+  computed: {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
@@ -256,7 +258,8 @@ export default {
     ...mapActions('home', ['getappointList', 'getappointDetail']),
     async showList(searchObj = {}) {
       const req = {
-        ...this.pageList,
+        pageNum: this.pageList.page,
+        pageSize: this.pageList.size,
         schoolCode: this.userInfo.schoolCode,
         ...searchObj
       }
@@ -270,10 +273,8 @@ export default {
         id: record.id
       }
       const res = await this.getappointDetail(req)
-      this.recordDetail = res.data    
+      this.recordDetail = res.data
       this.recordDetail.accessEndTime = new Date(res.data.accessEndTime).toLocaleString()
-      this.recordDetail.inTime = new Date(res.data.inTime).toLocaleString()
-      this.recordDetail.outTime = new Date(res.data.outTime).toLocaleString()
       if (this.recordDetail.state === 0) {
         this.recordDetail.state = '待审批'
       } else if (this.recordDetail.state === 1) {
@@ -287,7 +288,8 @@ export default {
       }
     },
     searchForm(values) {
-       const searchObj = {
+      this.pageList.page = 1
+      const searchObj = {
         keyword: values.keyword,
         state: values.state,
         visitState: values.visitState,
