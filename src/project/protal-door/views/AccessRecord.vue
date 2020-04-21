@@ -60,11 +60,11 @@ const searchLabel = [
       },
       {
         key: 1,
-        val: '出'
+        val: '进'
       },
       {
         key: 2,
-        val: '入'
+        val: '出'
       }
     ],
     value: 'accessType',
@@ -126,7 +126,7 @@ const columns = [
     dataIndex: 'accessType',
     width: '10%',
     customRender: text => {
-      return parseInt(text) === false ? '进' : '出'
+      return parseInt(text) === 1 ? '进' : '出'
     }
   },
   {
@@ -186,7 +186,6 @@ export default {
         pageNum: this.pageList.page,
         pageSize: this.pageList.size,
         schoolCode: this.userInfo.schoolCode,
-        schoolCode: 'QPZX',
         ...searchObj
       }
       const res = await this.getrecordList(req)

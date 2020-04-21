@@ -86,7 +86,7 @@ const columns = [
   },
   {
     title: '出入口',
-    dataIndex: 'name',
+    dataIndex: 'placeName',
     width: '15%'
   },
   {
@@ -140,7 +140,6 @@ export default {
   },
   mounted() {
     this.getDoorList()
-    this.placeGet()
   },
   methods: {
     ...mapActions('home', [
@@ -174,8 +173,12 @@ export default {
     async getDoorList() {
       this.pageList.schoolCode = this.userInfo.schoolCode
       const res = await this.getDoorSet(this.pageList)
-      this.doorList = res.data
-      console.log(this.doorList)
+      this.doorList = res.data.map(item => {
+        return {
+          ...item,
+          id: item.placeCode
+        }
+      })
     },
     addUser(type, text) {
       if (type) {
@@ -212,7 +215,6 @@ export default {
       })
     },
     searchForm(value) {
-      console.log('value', value)
       this.pageList.placeCode = value.placeCode
       this.getDoorList()
     },
@@ -242,8 +244,8 @@ export default {
       }
       this.addControl(req).then(res => {
         this.$message.success('操作成功')
+        //   this.$refs.chooseControl.reset()
         this.$tools.goNext(() => {
-          this.$refs.user.reset()
           this.getDoorList()
         })
       })

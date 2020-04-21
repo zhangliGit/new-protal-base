@@ -199,6 +199,7 @@ export default {
           }
         })
         const users = res.data.list
+        console.log(users)
         users.forEach(item => {
           this.chooseList.push(item.userCode)
           this.totalList.push({

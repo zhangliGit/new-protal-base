@@ -188,7 +188,7 @@ export default {
   border: 1px solid #7365c1;
   border-radius: 5px;
   &:first-of-type{
-    margin-left: 0;
+    margin-left: 10px;
   }
   .box-top{
     height: 40px;

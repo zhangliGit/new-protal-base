@@ -183,7 +183,9 @@ export default {
     async delGroup(ruleGroupCode) {
       await this.delRuleGroup({ ruleGroupCode, schoolCode: this.userInfo.schoolCode })
       this.$message.success('删除成功')
-      this.showList()
+      this.$tools.goNext(() => {
+        this.showList()
+      })
     },
     // 适用人员管理
     addCrew (ruleGroupCode, userGroupCode) {
@@ -197,9 +199,6 @@ export default {
       this.userTag = true
     },
     async chooseUser(values) {
-      console.log(values)
-      this.userTag = false
-      this.$refs.chooseUser.reset()
       const userInfoList = []
       values.forEach(ele => {
         userInfoList.push({
@@ -215,9 +214,16 @@ export default {
         userInfoList,
         userType: '1'
       }
-      await this.bindAccessUser(req)
-      this.$message.success('添加成功')
-      this.showList()
+      try {
+        await this.bindAccessUser(req)
+        this.$refs.chooseUser.reset()
+        this.$message.success('添加成功')
+        this.$tools.goNext(() => {
+          this.showList()
+        })
+      } catch (e) {
+        this.$refs.chooseUser.error()
+      }
     }
   }
 }
