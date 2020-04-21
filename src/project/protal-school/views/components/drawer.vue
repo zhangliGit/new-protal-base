@@ -17,6 +17,7 @@
     <div class="menu-content" :style="{height: `${height}px`,overflow:'auto'}">
       <a-tree
         checkable
+        v-if="showTag"
         v-model="checkedKeys"
         :treeData="treeData"
         :selectedKeys="selectedKeys"
@@ -94,6 +95,7 @@ export default {
   },
   data () {
     return {
+      showTag: false,
       treeData: [],
       dataList: [],
       checkedKeys: [],
@@ -139,7 +141,12 @@ export default {
     ]),
     changeMenu (index) {
       this.plateformType = index
+      this.checkedKeys = []
+      this.finalCheck = []
       this.initMenu()
+      this.$tools.goNext(() => {
+        this.getRoleMenu(this.menuData)
+      })
     },
     onCheck (checkedKeys, e) {
       this.finalCheck = checkedKeys.concat(e.halfCheckedKeys)
@@ -271,6 +278,7 @@ export default {
       })
       this.treeData = [...this.treeData]
       console.log(111, this.treeData)
+      this.showTag = true
     },
     dealValue (item) {
       return {
