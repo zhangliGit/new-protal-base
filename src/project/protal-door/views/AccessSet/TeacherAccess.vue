@@ -4,6 +4,7 @@
       ref="chooseUser"
       is-check
       chooseType="door"
+      v-if="userTag"
       :bind-obj="bindObj"
       v-model="userTag"
       @submit="chooseUser"

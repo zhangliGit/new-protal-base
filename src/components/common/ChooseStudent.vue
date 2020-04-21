@@ -198,7 +198,7 @@ export default {
             userGroupCode: this.bindObj.userGroupCode
           }
         })
-        const users = res.data
+        const users = res.data.list
         users.forEach(item => {
           this.chooseList.push(item.userCode)
           this.totalList.push({
