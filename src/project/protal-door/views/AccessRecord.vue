@@ -94,8 +94,8 @@ const columns = [
     title: '性别',
     dataIndex: 'gender',
     width: '5%',
-    customRender: text => {
-      return parseInt(text) === false ? '男' : '女'
+   customRender: text => {
+      return parseInt(text) === 1 ? '男' : '女'
     }
   },
   {
@@ -125,8 +125,8 @@ const columns = [
     title: '出入类型',
     dataIndex: 'accessType',
     width: '10%',
-    customRender: text => {
-      return parseInt(text) === false ? '进' : '出'
+   customRender: text => {
+      return parseInt(text) === 1 ? '进' : '出'
     }
   },
   {
@@ -186,7 +186,6 @@ export default {
         pageNum: this.pageList.page,
         pageSize: this.pageList.size,
         schoolCode: this.userInfo.schoolCode,
-        schoolCode: 'QPZX',
         ...searchObj
       }
       const res = await this.getrecordList(req)
