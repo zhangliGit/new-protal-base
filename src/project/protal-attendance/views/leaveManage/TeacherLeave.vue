@@ -1,14 +1,9 @@
 <template>
   <div class="teacher-leave page-layout qui-fx">
-<<<<<<< HEAD
-    <org-tree @select="select"></org-tree>
-    <div class="qui-fx-f1  qui-fx-ver">
-=======
     <div class="page-left">
       <org-tree @select="select"></org-tree>
     </div>
     <div class="qui-fx-f1 qui-fx-ver">
->>>>>>> d229e218585c87c97524cbea77b5b99316ef7834
       <search-form is-reset @search-form="searchForm" :search-label="searchLabel"></search-form>
       <no-data msg="暂无应用列表" v-if="false">
         <div slot="btn">

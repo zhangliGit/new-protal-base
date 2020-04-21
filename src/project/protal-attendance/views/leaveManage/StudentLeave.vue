@@ -1,12 +1,8 @@
 <template>
   <div class="student-leave page-layout qui-fx">
-<<<<<<< HEAD
-    <grade-tree @select="select"></grade-tree>
-=======
     <div class="page-left">
       <grade-tree @select="select"></grade-tree>
     </div>
->>>>>>> d229e218585c87c97524cbea77b5b99316ef7834
     <div class="qui-fx-f1 qui-fx-ver">
       <search-form is-reset @search-form="searchForm" :search-label="searchLabel"></search-form>
       <no-data msg="暂无应用列表" v-if="false">
@@ -16,23 +12,12 @@
       </no-data>
       <table-list :page-list="pageList" :columns="columns" :table-list="userList">
         <template v-slot:actions="action">
-<<<<<<< HEAD
-          <a-tooltip placement="topLeft" title="详情">
-            <a-button
-              size="small"
-              style="margin-right: 5px; background: #909399; color:#fff"
-              icon="ellipsis"
-              @click="detail(action.record)"
-            ></a-button>
-          </a-tooltip></template>
-=======
           <div>
             <a-tooltip placement="topLeft" title="" @click="detail(action.record)">
               <a-button size="small" class="detail-action-btn" icon="form"></a-button>
             </a-tooltip>
           </div>
         </template>
->>>>>>> d229e218585c87c97524cbea77b5b99316ef7834
       </table-list>
       <page-num v-model="pageList" :total="total" @change-page="showList(searchObj)"></page-num>
     </div>
@@ -116,11 +101,7 @@ const columns = [
     }
   },
   {
-<<<<<<< HEAD
-    title: '请假人姓名',
-=======
     title: '姓名',
->>>>>>> d229e218585c87c97524cbea77b5b99316ef7834
     dataIndex: 'userName',
     width: '7%'
   },
@@ -152,13 +133,8 @@ const columns = [
     }
   },
   {
-<<<<<<< HEAD
-    title: '申请人姓名',
-    dataIndex: 'applicantName',
-=======
     title: '申请人',
     dataIndex: 'applyUserName',
->>>>>>> d229e218585c87c97524cbea77b5b99316ef7834
     width: '7%'
   },
   {
