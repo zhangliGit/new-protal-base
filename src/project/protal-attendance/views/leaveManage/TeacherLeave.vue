@@ -134,24 +134,57 @@ const columns = [
     title: '发起时间',
     dataIndex: 'updateTime',
     width: '8%',
-    customRender: text => {
-      return new Date(text).toLocaleString()
+    customRender: (text) => {
+      if (text) {
+        const d = new Date(text)
+        return d.getFullYear() + '-' +
+             ((d.getMonth() + 1) > 9 ? d.getMonth() + 1 : '0' + (d.getMonth() + 1)) + '-' +
+             (d.getDate() > 9 ? d.getDate() : '0' + d.getDate()) +
+             ' ' +
+             (d.getHours() > 9 ? d.getHours() : '0' + d.getHours()) +
+             ':' +
+             (d.getMinutes() > 9 ? d.getMinutes() : '0' + d.getMinutes()) +
+             ':' +
+             (d.getSeconds() > 9 ? d.getSeconds() : '0' + d.getSeconds())
+      }
     }
   },
   {
     title: '开始时间',
     dataIndex: 'startTime',
     width: '12%',
-    customRender: text => {
-      return new Date(text).toLocaleString()
+    customRender: (text) => {
+      if (text) {
+        const d = new Date(text)
+        return d.getFullYear() + '-' +
+             ((d.getMonth() + 1) > 9 ? d.getMonth() + 1 : '0' + (d.getMonth() + 1)) + '-' +
+             (d.getDate() > 9 ? d.getDate() : '0' + d.getDate()) +
+             ' ' +
+             (d.getHours() > 9 ? d.getHours() : '0' + d.getHours()) +
+             ':' +
+             (d.getMinutes() > 9 ? d.getMinutes() : '0' + d.getMinutes()) +
+             ':' +
+             (d.getSeconds() > 9 ? d.getSeconds() : '0' + d.getSeconds())
+      }
     }
   },
   {
     title: '结束时间',
     dataIndex: 'endTime',
     width: '12%',
-    customRender: text => {
-      return new Date(text).toLocaleString()
+    customRender: (text) => {
+      if (text) {
+        const d = new Date(text)
+        return d.getFullYear() + '-' +
+             ((d.getMonth() + 1) > 9 ? d.getMonth() + 1 : '0' + (d.getMonth() + 1)) + '-' +
+             (d.getDate() > 9 ? d.getDate() : '0' + d.getDate()) +
+             ' ' +
+             (d.getHours() > 9 ? d.getHours() : '0' + d.getHours()) +
+             ':' +
+             (d.getMinutes() > 9 ? d.getMinutes() : '0' + d.getMinutes()) +
+             ':' +
+             (d.getSeconds() > 9 ? d.getSeconds() : '0' + d.getSeconds())
+      }
     }
   },
   {

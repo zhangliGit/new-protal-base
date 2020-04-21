@@ -10,6 +10,7 @@ import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import SearchForm from '@c/SearchForm'
 import PageNum from '@c/PageNum'
+import Tools from '@u/tools'
 const searchLabel = [
   {
     value: 'keyword',
@@ -95,7 +96,7 @@ const columns = [
     dataIndex: 'gender',
     width: '5%',
     customRender: text => {
-      return parseInt(text) === false ? '男' : '女'
+      return parseInt(text) === 1 ? '男' : '女'
     }
   },
   {
@@ -134,7 +135,7 @@ const columns = [
     dataIndex: 'accessTime',
     width: '12%',
     customRender: text => {
-      return new Date(text).toLocaleString()
+      return Tools.getDate(text)
     }
   },
   {

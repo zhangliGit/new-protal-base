@@ -12,10 +12,10 @@
       <p>访客姓名：{{ recordDetail.visitorName }}</p>
       <p>访客电话：{{ recordDetail.visitorMobile }}</p>
       <p>来访事由：{{ recordDetail.causeName }}</p>
-      <p v-if="recordDetail.inTime!=null">进入时间：{{new Date(recordDetail.inTime).toLocaleString()}}</p>
+      <p v-if="recordDetail.inTime!=null">进入时间：{{ $tools.getDateTime(recordDetail.inTime)}}</p>
       <p v-else>进入时间：{{recordDetail.accessStartTime}}</p>
       <p>预计离开时间：{{ recordDetail.accessEndTime}}</p>
-      <p v-if="recordDetail.outTime!=null">签离时间：{{ new Date(recordDetail.outTime).toLocaleString()}}</p>
+      <p v-if="recordDetail.outTime!=null">签离时间：{{ $tools.getDateTime(recordDetail.outTime)}}</p>
       <p v-else>签离时间：{{recordDetail.accessEndTime}}</p>
       <p>来访时长：{{ recordDetail.duration }}</p>
       <p>进入地点：{{ recordDetail.inPlace }}</p>
@@ -47,6 +47,7 @@ import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import SearchForm from '@c/SearchForm'
 import PageNum from '@c/PageNum'
+import Tools from '@u/tools'
 const searchLabel = [
   {
     value: 'keyword',
@@ -161,7 +162,7 @@ const columns = [
     dataIndex: 'inTime',
     width: '8%',
     customRender: text => {
-      return new Date(text).toLocaleString()
+      return Tools.getDate(text)
     }
   },
   {
@@ -274,7 +275,7 @@ export default {
       }
       const res = await this.getappointDetail(req)
       this.recordDetail = res.data
-      this.recordDetail.accessEndTime = new Date(res.data.accessEndTime).toLocaleString()
+      this.recordDetail.accessEndTime = this.$tools.getDateTime(res.data.accessEndTime)
       if (this.recordDetail.state === 0) {
         this.recordDetail.state = '待审批'
       } else if (this.recordDetail.state === 1) {

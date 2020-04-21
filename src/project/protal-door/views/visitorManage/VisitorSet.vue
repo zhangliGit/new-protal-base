@@ -67,6 +67,7 @@ import DeleteTag from '@c/DeleteTag'
 import TableList from '@c/TableList'
 import ChooseControl from '@c/ChooseControl'
 import { mapState, mapActions } from 'vuex'
+import Tools from '@u/tools'
 const columns = [
   {
     title: '序号',

@@ -12,12 +12,14 @@
       </no-data>
       <table-list :page-list="pageList" :columns="columns" :table-list="userList">
         <template v-slot:actions="action">
-          <div>
-            <a-tooltip placement="topLeft" title="" @click="detail(action.record)">
-              <a-button size="small" class="detail-action-btn" icon="form"></a-button>
-            </a-tooltip>
-          </div>
-        </template>
+          <a-tooltip placement="topLeft" title="详情">
+            <a-button
+              size="small"
+              style="margin-right: 5px; background: #909399; color:#fff"
+              icon="ellipsis"
+              @click="detail(action.record)"
+            ></a-button>
+          </a-tooltip></template>
       </table-list>
       <page-num v-model="pageList" :total="total" @change-page="showList(searchObj)"></page-num>
     </div>
@@ -134,31 +136,64 @@ const columns = [
   },
   {
     title: '申请人',
-    dataIndex: 'applyUserName',
+    dataIndex: 'applicantName',
     width: '7%'
   },
   {
     title: '发起时间',
     dataIndex: 'initiationTime',
     width: '7%',
-    customRender: text => {
-      return new Date(text).toLocaleString()
+    customRender: (text) => {
+      if (text) {
+        const d = new Date(text)
+        return d.getFullYear() + '-' +
+             ((d.getMonth() + 1) > 9 ? d.getMonth() + 1 : '0' + (d.getMonth() + 1)) + '-' +
+             (d.getDate() > 9 ? d.getDate() : '0' + d.getDate()) +
+             ' ' +
+             (d.getHours() > 9 ? d.getHours() : '0' + d.getHours()) +
+             ':' +
+             (d.getMinutes() > 9 ? d.getMinutes() : '0' + d.getMinutes()) +
+             ':' +
+             (d.getSeconds() > 9 ? d.getSeconds() : '0' + d.getSeconds())
+      }
     }
   },
   {
     title: '开始时间',
     dataIndex: 'startTime',
     width: '10%',
-    customRender: text => {
-      return new Date(text).toLocaleString()
+    customRender: (text) => {
+      if (text) {
+        const d = new Date(text)
+        return d.getFullYear() + '-' +
+             ((d.getMonth() + 1) > 9 ? d.getMonth() + 1 : '0' + (d.getMonth() + 1)) + '-' +
+             (d.getDate() > 9 ? d.getDate() : '0' + d.getDate()) +
+             ' ' +
+             (d.getHours() > 9 ? d.getHours() : '0' + d.getHours()) +
+             ':' +
+             (d.getMinutes() > 9 ? d.getMinutes() : '0' + d.getMinutes()) +
+             ':' +
+             (d.getSeconds() > 9 ? d.getSeconds() : '0' + d.getSeconds())
+      }
     }
   },
   {
     title: '结束时间',
     dataIndex: 'endTime',
     width: '10%',
-    customRender: text => {
-      return new Date(text).toLocaleString()
+    customRender: (text) => {
+      if (text) {
+        const d = new Date(text)
+        return d.getFullYear() + '-' +
+             ((d.getMonth() + 1) > 9 ? d.getMonth() + 1 : '0' + (d.getMonth() + 1)) + '-' +
+             (d.getDate() > 9 ? d.getDate() : '0' + d.getDate()) +
+             ' ' +
+             (d.getHours() > 9 ? d.getHours() : '0' + d.getHours()) +
+             ':' +
+             (d.getMinutes() > 9 ? d.getMinutes() : '0' + d.getMinutes()) +
+             ':' +
+             (d.getSeconds() > 9 ? d.getSeconds() : '0' + d.getSeconds())
+      }
     }
   },
   {

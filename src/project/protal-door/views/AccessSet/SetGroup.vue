@@ -311,7 +311,7 @@ export default {
           })
           let result = true
           rules.forEach(eve => {
-            if ((eve.accessStart.split(':')[0] * 60 + eve.accessStart.split(':')[1]) >= (eve.accessEnd.split(':')[0] * 60 + eve.accessEnd.split(':')[1])) {
+            if ((parseInt(eve.accessStart.split(':')[0]) * 60 + parseInt(eve.accessStart.split(':')[1])) > (parseInt(eve.accessEnd.split(':')[0]) * 60 + parseInt(eve.accessEnd.split(':')[1]))) {
               result = false
             }
           })
