@@ -238,6 +238,9 @@ export default {
   created() {
     this.maxHeight = window.screen.height - 280 + 'px'
     this.groupId = this.$route.query.id
+    if (this.$route.query.type === 'student') {
+      this.columns[1].title = '上学时间一放学时间'
+    }
     if (this.groupId) {
       this.showData()
     } else {
@@ -310,6 +313,14 @@ export default {
           console.log(this.data)
           console.log(this.groupList)
           console.log(this.selectedRowKeys)
+          if (this.selectedRowKeys.length === 0) {
+            this.$message.warning('请勾选考勤时间')
+            return
+          }
+          if (this.groupList.length === 0) {
+            this.$message.warning('请添加考勤设备')
+            return
+          }
           // console.log(this.data[0].accessTimeList[0].startTime.format('YYYY-MM-DD HH:mm:ss'))
           const rules = []
           const weeks = []
@@ -329,6 +340,16 @@ export default {
               endTime: ele.accessTimeList[0].endTime ? ele.accessTimeList[0].endTime : '00:00'
             })
           })
+          let result = true
+          rules.forEach(eve => {
+            if ((eve.startTime.split(':')[0] * 60 + eve.startTime.split(':')[1]) >= (eve.endTime.split(':')[0] * 60 + eve.endTime.split(':')[1])) {
+              result = false
+            }
+          })
+          if (!result) {
+            this.$message.warning('考勤开始时间不能晚于结束时间')
+            return
+          }
           const req = {
             controllerGroups: this.groupList,
             groupName: values.name,

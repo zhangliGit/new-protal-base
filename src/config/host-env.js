@@ -15,7 +15,6 @@ let lz = ''
 let zx = ''
 let mj = ''
 let base = ''
-let year = ''
 
 if (ConfigEnv === 'test') {
   // 环境接口
@@ -43,7 +42,7 @@ if (ConfigEnv === 'test') {
   // zhangkun = '/zhangkun'
   // gejunwei = '/lvzhuo'
   // lvzhuo = '/lvzhuo'
-  wangxuanzhang = '/wangxuanzhang/api-pc-protal/controlCenter'
+  wangxuanzhang = '/wxz'
   zhuxu = '/zhuxu/api-pc-protal/application'
   zhangkun = '/zhangkun/api-pc-protal/canpoint-school-view'
   gejunwei = '/gejunwei/api-pc-protal/plateform-userinfo-view'
@@ -54,7 +53,6 @@ if (ConfigEnv === 'test') {
   lz = '/lz'
   zk = '/zk'
   base = '/base'
-  year = '/year'
 }
 
 export default {
@@ -68,6 +66,5 @@ export default {
   lz,
   zk,
   mj,
-  base,
-  year
+  base
 }

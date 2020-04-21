@@ -8,6 +8,7 @@
     :footer="null"
   >
     <table-list
+      :scroll-h="350"
       :columns="columns"
       :table-list="recordList">
     </table-list>

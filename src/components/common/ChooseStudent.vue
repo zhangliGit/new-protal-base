@@ -106,6 +106,16 @@ export default {
     GradeTree
   },
   props: {
+    bindObj: {
+      type: Object,
+      default: () => {
+        return {}
+      }
+    },
+    chooseType: {
+      type: String,
+      default: ''
+    },
     isAll: {
       type: Boolean,
       default: false
@@ -141,7 +151,6 @@ export default {
     }
   },
   mounted () {
-    this.getStudentList()
   },
   data () {
     return {
@@ -159,19 +168,68 @@ export default {
     }
   },
   methods: {
-    select () {
-
+    async select (obj) {
+      this.treeObj = obj
+      if (this.chooseType === 'attendance') {
+        const res = await $ajax.get({
+          url: `${hostEnv.lz}/attendance/group/bind/user/query`,
+          params: {
+            attendanceUserId: this.bindObj.id
+          }
+        })
+        const users = res.data
+        users.forEach(item => {
+          this.chooseList.push(item.userCode)
+          this.totalList.push({
+            id: item.userCode,
+            userCode: item.userCode,
+            userName: item.userName
+          })
+        })
+        this.getStudentList()
+      } else if (this.chooseType === 'door') {
+        const res = await $ajax.post({
+          url: `${hostEnv.mj}/setting/rule/user/list`,
+          params: {
+            pageNum: 1,
+            pageSize: 500,
+            ruleGroupCode: this.bindObj.ruleGroupCode,
+            schoolCode: this.bindObj.schoolCode,
+            userGroupCode: this.bindObj.userGroupCode
+          }
+        })
+        const users = res.data
+        users.forEach(item => {
+          this.chooseList.push(item.userCode)
+          this.totalList.push({
+            id: item.userCode,
+            userCode: item.userCode,
+            userName: item.userName
+          })
+        })
+        this.getStudentList()
+      } else {
+        this.getStudentList()
+      }
     },
     async getStudentList () {
       const res = await $ajax.post({
-        url: `${hostEnv.lvzhuo}/userinfo/student/user/without/class`,
+        url: `${hostEnv.lvzhuo}/userinfo/student/user/queryStudentInfoList`,
         params: {
           keyword: this.keyword,
           schoolCode: this.schoolCode,
+          gradeId: this.treeObj.gradeCode,
+          classId: this.treeObj.classCode,
+          schoolYearId: this.treeObj.schoolYearId,
           ...this.pageList
         }
       })
-      this.userList = res.data.list
+      this.userList = res.data.list.map(item => {
+        return {
+          ...item,
+          id: item.userCode
+        }
+      })
       this.total = res.data.total
     },
     reset () {
@@ -200,14 +258,18 @@ export default {
     // 监听选中或取消
     clickRow (item, type) {
       if (type) {
-        this.totalList.push(item)
+        this.totalList.push({
+          id: item.id,
+          userCode: item.userCode,
+          userName: item.userName
+        })
       } else {
         const index = this.totalList.findIndex(list => list.id === item.id)
         this.totalList.splice(index, 1)
       }
     },
     submitOk () {
-      if (this.totalList.length === 0) {
+      if (this.totalList.length === 0 && this.bindId === -1) {
         this.$message.warning('请选择人员')
         return
       }

@@ -30,6 +30,8 @@ import TableList from '@c/TableList'
 import SearchForm from '@c/SearchForm'
 import GradeTree from '@c/GradeTree'
 import PageNum from '@c/PageNum'
+import 'moment/locale/zh-cn'
+
 const searchLabel = [
   {
     value: 'userName', // 表单属性
@@ -99,12 +101,7 @@ const columns = [
     }
   },
   {
-    title: '审批单号',
-    dataIndex: 'oddNumbers',
-    width: '7%'
-  },
-  {
-    title: '请假人姓名',
+    title: '姓名',
     dataIndex: 'userName',
     width: '7%'
   },
@@ -136,7 +133,7 @@ const columns = [
     }
   },
   {
-    title: '申请人姓名',
+    title: '申请人',
     dataIndex: 'applyUserName',
     width: '7%'
   },
@@ -151,7 +148,7 @@ const columns = [
   {
     title: '开始时间',
     dataIndex: 'startTime',
-    width: '7%',
+    width: '10%',
     customRender: text => {
       return new Date(text).toLocaleString()
     }
@@ -159,7 +156,7 @@ const columns = [
   {
     title: '结束时间',
     dataIndex: 'endTime',
-    width: '7%',
+    width: '10%',
     customRender: text => {
       return new Date(text).toLocaleString()
     }
@@ -242,6 +239,9 @@ export default {
         ...searchObj
       }
       const res = await this.getStudentsLeave(req)
+      if (!res.data) {
+        return
+      }
       this.userList = res.data.list
       this.total = res.data.total
     },
@@ -276,6 +276,10 @@ export default {
   .page-left {
     background: #fff;
     margin-right: 10px;
+    width: 200px;
+  }
+  .page-right{
+    width: calc(100% - 210px);
   }
 }
 </style>

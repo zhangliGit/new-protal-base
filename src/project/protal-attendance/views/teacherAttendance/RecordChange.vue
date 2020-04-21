@@ -17,7 +17,7 @@
               <a-checkbox :value="onWork"> 上班 </a-checkbox>
             </div>
             <div style="width:300px">
-              <a-select v-model="workState">
+              <a-select v-model="onState">
                 <a-select-option v-for="item in stateType" :key="item.key">{{ item.value }}</a-select-option>
               </a-select>
             </div>
@@ -27,7 +27,7 @@
               <a-checkbox :value="onRest"> 下班 </a-checkbox>
             </div>
             <div style="width:300px">
-              <a-select v-model="restState" >
+              <a-select v-model="offState" >
                 <a-select-option v-for="item in stateType" :key="item.key">{{ item.value }}</a-select-option>
               </a-select>
             </div>
@@ -66,15 +66,15 @@ export default {
       confirmLoading: false,
       recordId: '',
       checkedList: [],
-      workState: '1',
-      restState: '1',
+      onState: '5',
+      offState: '5',
       onWork: '1',
       onRest: '2',
       stateType: [{
-        key: '1',
+        key: '5',
         value: '正常'
       }, {
-        key: '2',
+        key: '4',
         value: '请假'
       }],
       appForm: {}
@@ -97,15 +97,15 @@ export default {
           }
           if (this.checkedList.indexOf('1') > -1) {
             values.onWork = true
-            values.workState = this.workState
+            values.onState = this.onState
           } else {
-            values.workState = ''
+            values.onState = ''
           }
           if (this.checkedList.indexOf('2') > -1) {
             values.onRest = true
-            values.restState = this.restState
+            values.offState = this.offState
           } else {
-            values.restState = ''
+            values.offState = ''
           }
           values.optName = this.userInfo.userName
           values.userType = '1'
