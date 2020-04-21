@@ -341,8 +341,9 @@ export default {
             })
           })
           let result = true
+          console.log(rules)
           rules.forEach(eve => {
-            if ((eve.startTime.split(':')[0] * 60 + eve.startTime.split(':')[1]) >= (eve.endTime.split(':')[0] * 60 + eve.endTime.split(':')[1])) {
+            if ((parseInt(eve.startTime.split(':')[0]) * 60 + parseInt(eve.startTime.split(':')[1])) > (parseInt(eve.endTime.split(':')[0]) * 60 + parseInt(eve.endTime.split(':')[1]))) {
               result = false
             }
           })

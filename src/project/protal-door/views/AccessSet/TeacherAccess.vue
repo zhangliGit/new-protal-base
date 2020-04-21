@@ -182,7 +182,9 @@ export default {
     async delGroup(ruleGroupCode) {
       await this.delRuleGroup({ ruleGroupCode, schoolCode: this.userInfo.schoolCode })
       this.$message.success('删除成功')
-      this.showList()
+      this.$tools.goNext(() => {
+        this.showList()
+      })
     },
     // 适用人员管理
     addCrew (ruleGroupCode, userGroupCode) {
@@ -216,7 +218,9 @@ export default {
       }
       await this.bindAccessUser(req)
       this.$message.success('添加成功')
-      this.showList()
+      this.$tools.goNext(() => {
+        this.showList()
+      })
     }
   }
 }
