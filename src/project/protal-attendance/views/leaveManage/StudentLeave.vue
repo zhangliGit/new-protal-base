@@ -30,6 +30,8 @@ import TableList from '@c/TableList'
 import SearchForm from '@c/SearchForm'
 import GradeTree from '@c/GradeTree'
 import PageNum from '@c/PageNum'
+import 'moment/locale/zh-cn'
+
 const searchLabel = [
   {
     value: 'userName', // 表单属性
@@ -237,6 +239,9 @@ export default {
         ...searchObj
       }
       const res = await this.getStudentsLeave(req)
+      if (!res.data) {
+        return
+      }
       this.userList = res.data.list
       this.total = res.data.total
     },
@@ -271,6 +276,10 @@ export default {
   .page-left {
     background: #fff;
     margin-right: 10px;
+    width: 200px;
+  }
+  .page-right{
+    width: calc(100% - 210px);
   }
 }
 </style>

@@ -273,6 +273,14 @@ export default {
           console.log(this.data)
           console.log(this.groupList)
           console.log(this.selectedRowKeys)
+          if (this.selectedRowKeys.length === 0) {
+            this.$message.warning('请勾选通行时间')
+            return
+          }
+          if (this.groupList.length === 0) {
+            this.$message.warning('请添加通行设备')
+            return
+          }
           const rules = []
           const weeks = []
           this.selectedRowKeys.forEach(item => {
@@ -301,6 +309,16 @@ export default {
               controlGroupType: ele.type
             })
           })
+          let result = true
+          rules.forEach(eve => {
+            if ((eve.accessStart.split(':')[0] * 60 + eve.accessStart.split(':')[1]) >= (eve.accessEnd.split(':')[0] * 60 + eve.accessEnd.split(':')[1])) {
+              result = false
+            }
+          })
+          if (!result) {
+            this.$message.warning('通行开始时间不能晚于结束时间')
+            return
+          }
           const req = {
             controlGroupList,
             ruleGroupName: values.name,
