@@ -10,6 +10,7 @@ import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import SearchForm from '@c/SearchForm'
 import PageNum from '@c/PageNum'
+import Tools from '@u/tools'
 const searchLabel = [
   {
     value: 'keyword',
@@ -94,7 +95,7 @@ const columns = [
     title: '性别',
     dataIndex: 'gender',
     width: '5%',
-   customRender: text => {
+    customRender: text => {
       return parseInt(text) === 1 ? '男' : '女'
     }
   },
@@ -125,7 +126,7 @@ const columns = [
     title: '出入类型',
     dataIndex: 'accessType',
     width: '10%',
-   customRender: text => {
+    customRender: text => {
       return parseInt(text) === 1 ? '进' : '出'
     }
   },
@@ -134,7 +135,7 @@ const columns = [
     dataIndex: 'accessTime',
     width: '12%',
     customRender: text => {
-      return new Date(text).toLocaleString()
+      return Tools.getDate(text)
     }
   },
   {
