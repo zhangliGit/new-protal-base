@@ -9,7 +9,7 @@ const teacherOperate = [
   {
     title: '时间',
     dataIndex: 'optTime',
-    width: '30%',
+    width: '22%',
     customRender: (text) => {
       if (text) {
         const d = new Date(text)
@@ -28,15 +28,12 @@ const teacherOperate = [
   {
     title: '操作类型',
     dataIndex: 'type',
-    width: '15%',
-    customRender: (text) => {
-      return text === 1 ? '上学' : '放学'
-    }
+    width: '12%'
   },
   {
     title: '原状态',
     dataIndex: 'oldState',
-    width: '12%',
+    width: '10%',
     customRender: (text) => {
       if (text === 1) {
         return '迟到'
@@ -58,18 +55,30 @@ const teacherOperate = [
     dataIndex: 'newState',
     width: '15%',
     customRender: (text) => {
-      return text === 1 ? '正常' : '请假'
+      if (text === 1) {
+        return '迟到'
+      } else if (text === 2) {
+        return '早退'
+      } else if (text === 3 || text === 6) {
+        return '缺卡'
+      } else if (text === 4) {
+        return '请假'
+      } else if (text === 5) {
+        return '正常'
+      } else if (text === 7) {
+        return '缺勤'
+      }
     }
   },
   {
     title: '操作人',
     dataIndex: 'optName',
-    width: '12%'
+    width: '10%'
   },
   {
     title: '备注',
     dataIndex: 'remark',
-    width: '10%'
+    width: '22%'
   }
 ]
 export default teacherOperate
