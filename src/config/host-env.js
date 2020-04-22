@@ -4,67 +4,46 @@
  */
 
 const ConfigEnv = process.env.VUE_APP_URL
-let wangxuanzhang = ''
-let zhuxu = ''
-let lvzhuo = ''
-let zhangkun = ''
-let gejunwei = ''
-let wxz = ''
-let zk = ''
-let lz = ''
-let zx = ''
-let mj = ''
-let base = ''
+let wxz_contorl = ''
+let zk_school = ''
+let zk_leave = ''
+let zx_visitor = ''
+let zx_door = ''
+let lz_attendance = ''
+let lz_user_center = ''
 
 if (ConfigEnv === 'test') {
-  // 环境接口
-  wangxuanzhang = '/api-pc-protal/controlCenter'
-  zhuxu = '/api-pc-protal/application'
-  zhangkun = '/api-pc-protal/canpoint-school-view'
-  gejunwei = '/api-pc-protal/plateform-userinfo-view'
-  lvzhuo = '/api-pc-protal/plateform-userinfo-view'
-  wxz = '/wxz'
-  lz = '/lz'
-  zx = '/zx'
-  zk = '/zk'
-  base = '/base'
-  mj = '/mj'
+  wxz_contorl = '/wxz_contorl'
+  zk_school = '/zk_school'
+  zk_leave = '/zk_leave'
+  zx_visitor = '/zx_visitor'
+  zx_door = '/zx_door'
+  lz_attendance = '/lz_attendance'
+  lz_user_center = '/lz_user_center'
 } else if (ConfigEnv === 'prod') {
-  // 线上接口
-  wangxuanzhang = '/api-pc-protal/controlCenter'
-  zhuxu = '/api-pc-protal/application'
-  zhangkun = '/api-pc-protal/canpoint-school-view'
-  gejunwei = '/api-pc-protal/plateform-userinfo-view'
-  lvzhuo = '/api-pc-protal/plateform-userinfo-view'
+  wxz_contorl = '/wxz_contorl'
+  zk_school = '/zk_school'
+  zk_leave = '/zk_leave'
+  zx_visitor = '/zx_visitor'
+  zx_door = '/zx_door'
+  lz_attendance = '/lz_attendance'
+  lz_user_center = '/lz_user_center'
 } else {
-  // wangxuanzhang = '/wangxuanzhang' // 控制中心
-  // zhuxu = '/zhuxu'
-  // zhangkun = '/zhangkun'
-  // gejunwei = '/lvzhuo'
-  // lvzhuo = '/lvzhuo'
-  wangxuanzhang = '/wxz'
-  zhuxu = '/zhuxu/api-pc-protal/application'
-  zhangkun = '/zhangkun/api-pc-protal/canpoint-school-view'
-  gejunwei = '/gejunwei/api-pc-protal/plateform-userinfo-view'
-  lvzhuo = '/lvzhuo/api-pc-protal/plateform-userinfo-view'
-  wxz = '/wxz'
-  zx = '/zx'
-  mj = '/mj'
-  lz = '/lz'
-  zk = '/zk'
-  base = '/base'
+  wxz_contorl = '/wxz_contorl'
+  zk_school = '/zk_school'
+  zk_leave = '/zk_leave'
+  zx_visitor = '/zx_visitor'
+  zx_door = '/zx_door'
+  lz_attendance = '/lz_attendance'
+  lz_user_center = '/lz_user_center'
 }
 
 export default {
-  wangxuanzhang,
-  zhuxu,
-  zhangkun,
-  gejunwei,
-  lvzhuo,
-  wxz,
-  zx,
-  lz,
-  zk,
-  mj,
-  base
+  wxz_contorl,
+  zk_school,
+  zk_leave,
+  zx_visitor,
+  zx_door,
+  lz_attendance,
+  lz_user_center
 }

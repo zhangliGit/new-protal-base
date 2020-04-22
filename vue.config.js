@@ -102,93 +102,53 @@ module.exports = {
           '^/dorm': ''
         }
       },
-      // 控制中心接口代理
-      '/wangxuanzhang': {
-        target: 'http://112.125.89.37/', // wangxuanzhang
-        changeOrigin: true,
-        pathRewrite: {
-          '^/wangxuanzhang': ''
+      '/wxz_control': {
+        'target': 'http://192.168.1.123:10090/', // 王选章-控制中心
+        'changeOrigin': true,
+        'pathRewrite': {
+          '^/wxz_control': ''
         }
       },
-      zhuxu: {
-        target: 'http://112.125.89.37/', // zhuxu
-        changeOrigin: true,
-        pathRewrite: {
-          '^/zhuxu': ''
+      '/zk_school': {
+        'target': 'http://192.168.1.23:10050/', // 张坤-学校管理
+        'changeOrigin': true,
+        'pathRewrite': {
+          '^/zk_school': ''
         }
       },
-      zhangkun: {
-        target: 'http://112.125.89.37/', // zhangkun
-        changeOrigin: true,
-        pathRewrite: {
-          '^/zhangkun': ''
+      '/zk_leave': {
+        'target': 'http://192.168.1.23:10054/', // 张坤-校历请假
+        'changeOrigin': true,
+        'pathRewrite': {
+          '^/zk_leave': ''
         }
       },
-      gejunwei: {
-        target: 'http://112.125.89.37/', // gejunwei
-        changeOrigin: true,
-        pathRewrite: {
-          '^/gejunwei': ''
+      '/zx_door': {
+        'target': 'http://192.168.1.24:10163/', // 朱旭-门禁系统
+        'changeOrigin': true,
+        'pathRewrite': {
+          '^/zx_door': ''
         }
       },
-      lvzhuo: {
-        target: 'http://112.125.89.37/', // lvzhuo
-        changeOrigin: true,
-        pathRewrite: {
-          '^/lvzhuo': ''
+      '/zx_visitor': {
+        'target': 'http://192.168.1.24:10160/', // 朱旭-访客系统
+        'changeOrigin': true,
+        'pathRewrite': {
+          '^/zx_visitor': ''
         }
       },
-      wxz: {
-        // target: 'http://39.97.164.4:8081/', // 王选章
-        target: 'http://192.168.1.123:10090/',
-        changeOrigin: true,
-        pathRewrite: {
-          '^/wxz': ''
+      '/lz_attendance': {
+        'target': 'http://192.168.1.170:11004/', // 吕卓-考勤
+        'changeOrigin': true,
+        'pathRewrite': {
+          '^/lz_attendance': ''
         }
       },
-      lz: {
-        // target: 'http://39.97.164.4:10091/', // 吕卓
-        target: 'http://192.168.1.170:10091/',
-        changeOrigin: true,
-        pathRewrite: {
-          '^/lz': ''
-        }
-      },
-      zx: {
-        // target: 'http://39.97.164.4:10160//', // 朱旭
-        target: 'http://192.168.1.24:10160/',
-        changeOrigin: true,
-        pathRewrite: {
-          '^/zx': ''
-        }
-      },
-      mj: {
-        // target: 'http://39.97.164.4:10162/', // 朱旭门禁
-        target: 'http://192.168.1.24:10162/',
-        changeOrigin: true,
-        pathRewrite: {
-          '^/mj': ''
-        }
-      },
-      zk: {
-        target: 'http://pugai.natapp1.cc/', // 张坤
-        changeOrigin: true,
-        pathRewrite: {
-          '^/zk': ''
-        }
-      },
-      base: {
-        target: 'http://39.97.164.4:10050/', // 平台
-        changeOrigin: true,
-        pathRewrite: {
-          '^/base': ''
-        }
-      },
-      year: {
-        target: 'http://112.125.89.37:1010/', // 吕卓
-        changeOrigin: true,
-        pathRewrite: {
-          '^/year': ''
+      '/lz_user_center': {
+        'target': 'http://192.168.1.170:11002/', // 吕卓-用户中心
+        'changeOrigin': true,
+        'pathRewrite': {
+          '^/lz_user_center': ''
         }
       }
     }
