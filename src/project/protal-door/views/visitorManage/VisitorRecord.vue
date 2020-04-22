@@ -275,13 +275,13 @@ export default {
       }
       const res = await this.getappointDetail(req)
       this.recordDetail = res.data
-      if (this.recordDetail.state === 0) {
+      if (this.recordDetail.state == 0) {
         this.recordDetail.state = '待审批'
-      } else if (this.recordDetail.state === 1) {
+      } else if (this.recordDetail.state == 1) {
         this.recordDetail.state = '同意'
-      } else if (this.recordDetail.state === 2) {
+      } else if (this.recordDetail.state == 2) {
         this.recordDetail.state = '不同意'
-      } else if (this.recordDetail.state === 3) {
+      } else if (this.recordDetail.state == 3) {
         this.recordDetail.state = '撤销'
       } else {
         this.recordDetail.state = '失效'
