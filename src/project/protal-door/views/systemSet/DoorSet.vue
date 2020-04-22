@@ -173,6 +173,7 @@ export default {
     },
     async getDoorList() {
       this.pageList.schoolCode = this.userInfo.schoolCode
+      this.pageList.placeType = '103'
       const res = await this.getDoorSet(this.pageList)
       this.doorList = res.data.map(item => {
         return {
