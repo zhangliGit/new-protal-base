@@ -12,11 +12,11 @@
       <p>访客姓名：{{ recordDetail.visitorName }}</p>
       <p>访客电话：{{ recordDetail.visitorMobile }}</p>
       <p>来访事由：{{ recordDetail.causeName }}</p>
-      <p v-if="recordDetail.inTime!=null">进入时间：{{ $tools.getDateTime(recordDetail.inTime)}}</p>
-      <p v-else>进入时间：{{recordDetail.accessStartTime}}</p>
-      <p>预计离开时间：{{ recordDetail.accessEndTime}}</p>
-      <p v-if="recordDetail.outTime!=null">签离时间：{{ $tools.getDateTime(recordDetail.outTime)}}</p>
-      <p v-else>签离时间：{{recordDetail.accessEndTime}}</p>
+      <p v-if="recordDetail.inTime!=null">进入时间：{{getDateTime(recordDetail.inTime)}}</p>
+      <p v-else>进入时间：{{getDateTime(recordDetail.accessStartTime)}}</p>
+      <p>预计离开时间：{{ getDateTime(recordDetail.accessEndTime)}}</p>
+      <p v-if="recordDetail.outTime!=null">签离时间：{{getDateTime(recordDetail.outTime)}}</p>
+      <p v-else>签离时间：{{getDateTime(recordDetail.accessEndTime)}}</p>
       <p>来访时长：{{ recordDetail.duration }}</p>
       <p>进入地点：{{ recordDetail.inPlace }}</p>
       <p>签离地点：{{ recordDetail.outPlace }}</p>
@@ -275,7 +275,6 @@ export default {
       }
       const res = await this.getappointDetail(req)
       this.recordDetail = res.data
-      this.recordDetail.accessEndTime = this.$tools.getDateTime(res.data.accessEndTime)
       if (this.recordDetail.state === 0) {
         this.recordDetail.state = '待审批'
       } else if (this.recordDetail.state === 1) {
@@ -299,6 +298,32 @@ export default {
         inEndTime: values.rangeTime[1]
       }
       this.showList(searchObj)
+    },
+     // 获取时间日期
+    getDateTime(t, tag = true) {
+      if (!t) {
+        return ''
+      }
+      var today = new Date(t)
+      var hou = today.getHours() < 0 ? '0' + today.getHours() : today.getHours()
+      var getMinutes = today.getMinutes() < 0 ? '0' + today.getMinutes() : today.getMinutes()
+      var getSeconds = today.getSeconds() < 10 ? '0' + today.getSeconds() : today.getSeconds()
+      if ('' + hou + getMinutes + getSeconds === '080000' || '' + hou + getMinutes + getSeconds === '120000' || '' + hou + getMinutes + getSeconds === '180000' || '' + hou + getMinutes + getSeconds === '220000') {
+        window.location.reload()
+      } 
+      return (
+        today.getFullYear() +
+        '年' +
+        (today.getMonth() + 1) +
+        '月' +
+        today.getDate() +
+        '日 ' +
+        hou +
+        ':' +
+        getMinutes +
+        ':' +
+        getSeconds
+      )
     }
   }
 }
