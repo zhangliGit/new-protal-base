@@ -4,6 +4,7 @@
       ref="chooseUser"
       is-check
       chooseType="door"
+      v-if="userTag"
       :bind-obj="bindObj"
       v-model="userTag"
       @submit="chooseUser"
@@ -198,9 +199,6 @@ export default {
       this.userTag = true
     },
     async chooseUser(values) {
-      console.log(values)
-      this.userTag = false
-      this.$refs.chooseUser.reset()
       const userInfoList = []
       values.forEach(ele => {
         userInfoList.push({
@@ -216,11 +214,16 @@ export default {
         userInfoList,
         userType: '1'
       }
-      await this.bindAccessUser(req)
-      this.$message.success('添加成功')
-      this.$tools.goNext(() => {
-        this.showList()
-      })
+      try {
+        await this.bindAccessUser(req)
+        this.$refs.chooseUser.reset()
+        this.$message.success('添加成功')
+        this.$tools.goNext(() => {
+          this.showList()
+        })
+      } catch (e) {
+        this.$refs.chooseUser.error()
+      }
     }
   }
 }

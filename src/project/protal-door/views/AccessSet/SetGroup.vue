@@ -331,7 +331,9 @@ export default {
           this.addGroup(req).then(res => {
             this.$message.success('添加成功')
             const path = this.$route.query.type === 'teacher' ? '/teacherAccess' : '/studentAccess'
-            this.$router.push({ path })
+            this.$tools.goNext(() => {
+              this.$router.push({ path })
+            })
           })
         }
       })

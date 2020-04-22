@@ -1,5 +1,5 @@
 <template>
-  <div class="page-layout qui-fx-ver">
+  <div class="page-layout qui-fx-ver" id="tableList">
     <choose-user ref="user" v-if="chooseTag" @submit="submitUser" is-check v-model="chooseTag"></choose-user>
     <choose-control
       ref="chooseControl"
@@ -19,6 +19,7 @@
       :rowKey="record => record.id"
       :columns="columns"
       :dataSource="doorList"
+      :scroll="{y: this.$tools.setScroll('tableList')}"
     >
       <template slot="index" slot-scope="text, record, index">{{ index + 1 }}</template>
       <template slot="controlGroupList" slot-scope="text,record">
@@ -86,7 +87,7 @@ const columns = [
   },
   {
     title: '出入口',
-    dataIndex: 'name',
+    dataIndex: 'placeName',
     width: '15%'
   },
   {
@@ -140,7 +141,6 @@ export default {
   },
   mounted() {
     this.getDoorList()
-    this.placeGet()
   },
   methods: {
     ...mapActions('home', [
@@ -174,8 +174,12 @@ export default {
     async getDoorList() {
       this.pageList.schoolCode = this.userInfo.schoolCode
       const res = await this.getDoorSet(this.pageList)
-      this.doorList = res.data
-      console.log(this.doorList)
+      this.doorList = res.data.map(item => {
+        return {
+          ...item,
+          id: item.placeCode
+        }
+      })
     },
     addUser(type, text) {
       if (type) {
@@ -212,7 +216,6 @@ export default {
       })
     },
     searchForm(value) {
-      console.log('value', value)
       this.pageList.placeCode = value.placeCode
       this.getDoorList()
     },
@@ -242,8 +245,8 @@ export default {
       }
       this.addControl(req).then(res => {
         this.$message.success('操作成功')
+        //   this.$refs.chooseControl.reset()
         this.$tools.goNext(() => {
-          this.$refs.user.reset()
           this.getDoorList()
         })
       })

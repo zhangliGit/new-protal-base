@@ -3,6 +3,7 @@
     <choose-control
       ref="chooseUser"
       is-check
+      v-if="userTag"
       v-model="userTag"
       :schoolCode="userInfo.schoolCode"
       @submit="chooseUser"

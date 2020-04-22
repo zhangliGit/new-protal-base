@@ -61,11 +61,11 @@ const searchLabel = [
       },
       {
         key: 1,
-        val: '出'
+        val: '进'
       },
       {
         key: 2,
-        val: '入'
+        val: '出'
       }
     ],
     value: 'accessType',

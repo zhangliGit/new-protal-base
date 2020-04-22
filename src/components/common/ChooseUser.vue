@@ -176,7 +176,26 @@ export default {
       })
       this.getUserList()
     } else if (this.chooseType === 'door') {
-
+      const res = await $ajax.post({
+        url: `${hostEnv.mj}/setting/rule/user/list`,
+        params: {
+          pageNum: 1,
+          pageSize: 500,
+          ruleGroupCode: this.bindObj.ruleGroupCode,
+          schoolCode: this.bindObj.schoolCode,
+          userGroupCode: this.bindObj.userGroupCode
+        }
+      })
+      const users = res.data.list
+      users.forEach(item => {
+        this.chooseList.push(item.userCode)
+        this.totalList.push({
+          id: item.userCode,
+          userCode: item.userCode,
+          userName: item.userName
+        })
+      })
+      this.getUserList()
     } else {
       this.getUserList()
     }
