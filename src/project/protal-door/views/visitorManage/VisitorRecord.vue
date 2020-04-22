@@ -299,7 +299,7 @@ export default {
       }
       this.showList(searchObj)
     },
-     // 获取时间日期
+    // 获取时间日期
     getDateTime(t, tag = true) {
       if (!t) {
         return ''
@@ -308,9 +308,14 @@ export default {
       var hou = today.getHours() < 0 ? '0' + today.getHours() : today.getHours()
       var getMinutes = today.getMinutes() < 0 ? '0' + today.getMinutes() : today.getMinutes()
       var getSeconds = today.getSeconds() < 10 ? '0' + today.getSeconds() : today.getSeconds()
-      if ('' + hou + getMinutes + getSeconds === '080000' || '' + hou + getMinutes + getSeconds === '120000' || '' + hou + getMinutes + getSeconds === '180000' || '' + hou + getMinutes + getSeconds === '220000') {
+      if (
+        '' + hou + getMinutes + getSeconds === '080000' ||
+        '' + hou + getMinutes + getSeconds === '120000' ||
+        '' + hou + getMinutes + getSeconds === '180000' ||
+        '' + hou + getMinutes + getSeconds === '220000'
+      ) {
         window.location.reload()
-      } 
+      }
       return (
         today.getFullYear() +
         '年' +
