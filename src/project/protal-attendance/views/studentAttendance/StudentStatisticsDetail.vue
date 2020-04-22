@@ -74,7 +74,7 @@ const columns = [
   },
   {
     title: '底照',
-    dataIndex: 'photoPic',
+    dataIndex: 'photoUrl',
     width: '15%',
     scopedSlots: {
       customRender: 'photoPic'
