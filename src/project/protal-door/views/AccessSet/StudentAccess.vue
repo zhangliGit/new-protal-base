@@ -85,7 +85,7 @@ import ChooseStudent from '@c/ChooseStudent'
 const columns = [
   {
     title: '序号',
-    width: '10%',
+    width: '16%',
     scopedSlots: {
       customRender: 'index'
     }
@@ -93,12 +93,12 @@ const columns = [
   {
     title: '权限组名称',
     dataIndex: 'ruleGroupName',
-    width: '10%'
+    width: '16%'
   },
   {
     title: '通行时间',
     dataIndex: 'timeRuleList',
-    width: '30%',
+    width: '16%',
     scopedSlots: {
       customRender: 'accessTime'
     }
@@ -106,7 +106,7 @@ const columns = [
   {
     title: '通行设备',
     dataIndex: 'controlGroupList',
-    width: '20%',
+    width: '16%',
     scopedSlots: {
       customRender: 'accessEq'
     }
