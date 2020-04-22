@@ -261,7 +261,6 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   async mounted() {
-    this.showList()
   },
   methods: {
     ...mapActions('home', ['getStudentsLeave']),
@@ -269,8 +268,9 @@ export default {
       const req = {
         ...this.pageList,
         schoolCode: this.userInfo.schoolCode,
-        classId: this.classCode,
-        gradeId: this.gradeCode,
+        classCode: this.classCode,
+        gradeCode: this.gradeCode,
+        schoolYearId: this.schoolYearId,
         ...searchObj
       }
       const res = await this.getStudentsLeave(req)
