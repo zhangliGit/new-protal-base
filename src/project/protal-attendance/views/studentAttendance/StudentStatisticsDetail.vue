@@ -32,8 +32,8 @@
           <div>{{ dealTime.record.offWorkTime | gmtToDate }}</div>
         </template>
         <template v-slot:other2="onSnacpUrl">
-          <img :src="onSnacpUrl.onSnacpUrl" alt="">
-          <img :src="onSnacpUrl.offSnacpUrl" alt="">
+          <img style="width: 60px; height: 60px; display: inline-block;" :src="onSnacpUrl.record.onSnacpUrl" alt="">
+          <img style="width: 60px; height: 60px; display: inline-block;margin-left:10px;" :src="onSnacpUrl.record.offSnacpUrl" alt="">
         </template>
       </table-list>
       <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
@@ -67,14 +67,14 @@ const columns = [
   {
     title: '打卡时间',
     dataIndex: 'dealTime',
-    width: '45%',
+    width: '35%',
     scopedSlots: {
       customRender: 'other1'
     }
   },
   {
     title: '底照',
-    dataIndex: 'photoPic',
+    dataIndex: 'photoUrl',
     width: '15%',
     scopedSlots: {
       customRender: 'photoPic'
@@ -83,7 +83,7 @@ const columns = [
   {
     title: '抓拍照',
     dataIndex: 'onSnacpUrl',
-    width: '15%',
+    width: '25%',
     scopedSlots: {
       customRender: 'other2'
     }

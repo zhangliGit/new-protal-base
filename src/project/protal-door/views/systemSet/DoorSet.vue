@@ -1,5 +1,5 @@
 <template>
-  <div class="page-layout qui-fx-ver">
+  <div class="page-layout qui-fx-ver" id="tableList">
     <choose-user ref="user" v-if="chooseTag" @submit="submitUser" is-check v-model="chooseTag"></choose-user>
     <choose-control
       ref="chooseControl"
@@ -19,6 +19,7 @@
       :rowKey="record => record.id"
       :columns="columns"
       :dataSource="doorList"
+      :scroll="{y: this.$tools.setScroll('tableList')}"
     >
       <template slot="index" slot-scope="text, record, index">{{ index + 1 }}</template>
       <template slot="controlGroupList" slot-scope="text,record">
@@ -172,6 +173,7 @@ export default {
     },
     async getDoorList() {
       this.pageList.schoolCode = this.userInfo.schoolCode
+      this.pageList.placeType = '103'
       const res = await this.getDoorSet(this.pageList)
       this.doorList = res.data.map(item => {
         return {

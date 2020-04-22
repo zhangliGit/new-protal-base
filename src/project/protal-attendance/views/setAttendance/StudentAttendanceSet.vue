@@ -74,7 +74,7 @@ import ChooseStudent from '@c/ChooseStudent'
 const columns = [
   {
     title: '序号',
-    width: '10%',
+    width: '16%',
     scopedSlots: {
       customRender: 'index'
     }
@@ -82,12 +82,12 @@ const columns = [
   {
     title: '考勤组名称',
     dataIndex: 'name',
-    width: '10%'
+    width: '16%'
   },
   {
     title: '考勤时间',
     dataIndex: 'ruleTime',
-    width: '20%',
+    width: '16%',
     scopedSlots: {
       customRender: 'accessTime'
     }
@@ -95,7 +95,7 @@ const columns = [
   {
     title: '考勤设备',
     dataIndex: 'controllerNames',
-    width: '20%',
+    width: '16%',
     scopedSlots: {
       customRender: 'accessEq'
     }
@@ -103,7 +103,7 @@ const columns = [
   {
     title: '考勤人员',
     dataIndex: 'userCount',
-    width: '20%',
+    width: '16%',
     scopedSlots: {
       customRender: 'crew'
     }

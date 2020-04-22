@@ -48,7 +48,7 @@
           <span>{{ item.state === '0' ? '未读' : '已读' }}</span>
         </div>
       </div>
-      <span>{{ item.state === '0' ? '--' : item.readTime }}</span>
+      <span>{{ item.state === '0' ? '--' : (item.readTime | getTimeString ) }}</span>
     </div>
   </div>
 </template>
@@ -124,11 +124,11 @@ export default {
       this.detailInfo[3].val = res.data.reason
       this.detailInfo[4].val = res.data.outSchool === 'Y' ? '是' : '否'
       this.detailInfo[5].val = res.data.oddNumbers
-      this.detailInfo[6].val = new Date(res.data.startTime).toLocaleString() + ' ~ ' + new Date((res.data.endTime)).toLocaleString()
+      this.detailInfo[6].val = this.$tools.getDate(new Date(res.data.startTime)) + ' ~ ' + this.$tools.getDate(new Date(res.data.endTime))
       this.detailInfo[7].val = res.data.duration + '小时'
       this.detailInfo[8].val = this.$tools.getState(res.data.state)
       this.approveName = res.data.leaveApprovalAddDto.userName
-      this.approveTime = res.data.state === '0' ? '--' : new Date(res.data.initiationTime).toLocaleString()
+      this.approveTime = res.data.state === '0' ? '--' : this.$tools.getDate(new Date(res.data.initiationTime))
       this.approveImg = res.data.leaveApprovalAddDto.photoUrl
       this.approveState = this.$tools.getState(res.data.state)
       this.copyList = res.data.leaveCopyList
