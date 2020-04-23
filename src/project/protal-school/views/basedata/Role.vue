@@ -2,7 +2,7 @@
   <div class="role page-layout qui-fx-ver">
     <submit-form ref="form" @submit-form="submitForm" :title="title" v-model="formStatus" :form-data="formData">
     </submit-form>
-    <menu-drawer :title="menutitle" :visible="visible" @close="onClose" :menu-data="menuData">
+    <menu-drawer v-if="visible" :title="menutitle" :visible="visible" @close="onClose" :menu-data="menuData">
     </menu-drawer>
     <no-data msg="添加角色后，您可以开始管理角色的权限范围。" v-if="false">
       <div slot="btn">
