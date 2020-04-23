@@ -1,12 +1,14 @@
 import homeApi from './home'
 import doorApi from './door'
-import doorsApi from './doors'
+import visitorApi from './visitor'
 import baseApi from './base'
+import recordApi from './record'
 
 const apiList = {
   ...homeApi,
-  ...doorsApi,
+  ...visitorApi,
   ...doorApi,
-  ...baseApi
+  ...baseApi,
+  ...recordApi
 }
 export default apiList

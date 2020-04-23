@@ -5,7 +5,7 @@
 
 import hostEnv from '@config/host-env'
 
-const doorsApi = {
+const visitorApi = {
   getappointList: '/invite/appoint/list#post', // 访客记录
   getappointDetail: '/invite/appoint/detail#get', // 详细访问记录
   addcause: '/cause/info/add#post', // 事由添加
@@ -15,7 +15,7 @@ const doorsApi = {
   delcontrolgroup: '/visitor/controlgroup/delete#get', // 删除访客控制组
   getcontrolgroupList: '/visitor/controlgroup/list#post' // 访客控制组查询列表
 }
-for (const val in doorsApi) {
-  doorsApi[val] = `${hostEnv.zx_protal}${doorsApi[val]}`
+for (const val in visitorApi) {
+  visitorApi[val] = `${hostEnv.zx_visitor}${visitorApi[val]}`
 }
-export default doorsApi
+export default visitorApi

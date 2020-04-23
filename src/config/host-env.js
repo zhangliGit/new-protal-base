@@ -22,6 +22,7 @@ if (ConfigEnv === 'test') {
   zx_protal = '/zx_protal'
   lz_attendance = '/lz_attendance'
   lz_user_center = '/lz_user_center'
+
 } else if (ConfigEnv === 'prod') {
   wxz_contorl = '/wxz_contorl'
   zk_school = '/zk_school'
@@ -31,6 +32,7 @@ if (ConfigEnv === 'test') {
   zx_protal = '/zx_protal'
   lz_attendance = '/lz_attendance'
   lz_user_center = '/lz_user_center'
+
 } else {
   wxz_contorl = '/wxz_contorl'
   zk_school = '/zk_school'
@@ -40,6 +42,7 @@ if (ConfigEnv === 'test') {
   zx_protal = '/zx_protal'
   lz_attendance = '/lz_attendance'
   lz_user_center = '/lz_user_center'
+
 }
 
 export default {
@@ -50,5 +53,5 @@ export default {
   zx_door,
   zx_protal,
   lz_attendance,
-  lz_user_center
+  lz_user_center,
 }
