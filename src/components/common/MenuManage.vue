@@ -183,7 +183,7 @@ export default {
      */
     async getMenuList(menuType, parentId) {
       const res = await $ajax.post({
-        url: `${hostEnv.zhuxu}/menu/manage/node/list`,
+        url: `${hostEnv.zx_protal}/menu/manage/node/list`,
         params: {
           menuType,
           parentId,
@@ -261,7 +261,7 @@ export default {
             remark
           }
           await $ajax.post({
-            url: `${hostEnv.zhuxu}/menu/manage/update`,
+            url: `${hostEnv.zx_protal}/menu/manage/update`,
             params
           })
           if (this.parentId) {
@@ -274,7 +274,7 @@ export default {
           }
         } else {
           await $ajax.post({
-            url: `${hostEnv.zhuxu}/menu/manage/add`,
+            url: `${hostEnv.zx_protal}/menu/manage/add`,
             params: {
               menuName,
               isPlatform: isPlatform,
@@ -307,7 +307,7 @@ export default {
     },
     async delMenu(record, index) {
       await $ajax.get({
-        url: `${hostEnv.zhuxu}/menu/manage/delete/${record.id}`
+        url: `${hostEnv.zx_protal}/menu/manage/delete/${record.id}`
       })
       if (record.parentId) {
         this.menuList
