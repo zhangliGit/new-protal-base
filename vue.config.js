@@ -138,7 +138,7 @@ module.exports = {
         }
       },
       '/zx_visitor': {
-        'target': 'http://192.168.1.24:10160/', // 朱旭-访客系统
+        'target': 'http://192.168.1.24:10162/', // 朱旭-访客系统
         'changeOrigin': true,
         'pathRewrite': {
           '^/zx_visitor': ''

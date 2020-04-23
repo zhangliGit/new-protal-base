@@ -117,10 +117,10 @@ export default {
     console.log(this.$route.query.type)
     if (this.$route.query.type === 'teachers') {
       this.isTeacher = true
-      this.fileUrl = `${hostEnv.lvzhuo}/userinfo/teacher/user/batTeacherAdd?schoolCode=${this.userInfo.schoolCode}`
+      this.fileUrl = `${hostEnv.lz_user_center}/userinfo/teacher/user/batTeacherAdd?schoolCode=${this.userInfo.schoolCode}`
     } else if (this.$route.query.type === 'students') {
       this.isStudent = true
-      this.fileUrl = `${hostEnv.lvzhuo}/userinfo/student/user/upload`
+      this.fileUrl = `${hostEnv.lz_user_center}/userinfo/student/user/upload`
     }
   },
   mounted () {
@@ -188,9 +188,9 @@ export default {
     },
     download () {
       if (this.isStudent === true) {
-        window.location.href = `${hostEnv.lvzhuo}/userinfo/student/user/download/template`
+        window.location.href = `${hostEnv.lz_user_center}/userinfo/student/user/download/template`
       } else if (this.isTeacher) {
-        window.location.href = `${hostEnv.lvzhuo}/userinfo/teacher/user/download/teacher/template`
+        window.location.href = `${hostEnv.lz_user_center}/userinfo/teacher/user/download/teacher/template`
       }
     }
   }
