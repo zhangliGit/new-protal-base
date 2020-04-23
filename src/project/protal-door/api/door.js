@@ -10,6 +10,11 @@ const visitorApi = {
   getFkRecord: '/fkRecord#get', // 获取访客记录
 }
 let doorApi = {
+  getDoorSet: '/setting/place/relation/list#post', // 获取门卫列表
+  addDoor: '/setting/place/user/relation/add#post', // 添加门卫
+  delDoor: '/setting/place/user/relation/delete#delQuery', // 删除门卫
+  addControl: '/setting/place/controller/relation/add#post', // 添加控制组
+  delControl: '/setting/place/controller/relation/delete#delQuery', // 删除控制组
   getGroupList: '/setting/rule/group/list#postForm', // 获取通行权限列表
   addGroup: '/setting/rule/group/add#post', // 添加编辑通行权限组
   getGroupDetail: '/setting/rule/group/detail#get', // 查询权限组详情
@@ -17,9 +22,8 @@ let doorApi = {
   bindAccessUser: '/setting/rule/group/user/add#post', // 权限组添加人员
   getAccessUserList: '/setting/rule/user/list#post', // 权限组人员列表
   getStudentAccess: '/studentAccess#get', // 学生通行权限
-  getTeacherAccess: '/teacherAccess#get', // 教师通行权限
-  getrecordList: '/record/access/list#post', // 出入记录列表
-  addRecord: '/record/access/add#post' // 添加出入记录
+  getTeacherAccess: '/teacherAccess#get' // 教师通行权限
+
 }
 for (const val in visitorApi) {
   visitorApi[val] = `${hostEnv.zx_visitor}${visitorApi[val]}`
