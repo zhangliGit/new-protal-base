@@ -124,7 +124,7 @@ export default {
       $ajax
         .get(
           {
-            url: `${hostEnv.lvzhuo}/userinfo/user/login/mobile`,
+            url: `${hostEnv.lz_user_center}/userinfo/user/login/mobile`,
             params: {
               mobile: this.phoneNum
             }
@@ -166,7 +166,7 @@ export default {
       $ajax
         .postQuery(
           {
-            url: `${hostEnv.lvzhuo}/userinfo/user/login/mobile`,
+            url: `${hostEnv.lz_user_center}/userinfo/user/login/mobile`,
             params: {
               mobile: this.phoneNum,
               captchaCode: this.phoneCode
@@ -206,7 +206,7 @@ export default {
       $ajax
         .postQuery(
           {
-            url: `${hostEnv.lvzhuo}/userinfo/user/login/password`,
+            url: `${hostEnv.lz_user_center}/userinfo/user/login/password`,
             params: {
               userName: this.userName,
               password: this.userPass
