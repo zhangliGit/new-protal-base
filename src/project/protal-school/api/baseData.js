@@ -100,7 +100,7 @@ for (const val in baseData2Api) {
   baseData2Api[val] = `${hostEnv.zk_school}${baseData2Api[val]}`
 }
 for (const val in baseData3Api) {
-  baseData3Api[val] = `${hostEnv.zhuxu}${baseData3Api[val]}`
+  baseData3Api[val] = `${hostEnv.zx_protal}${baseData3Api[val]}`
 }
 for (const val in baseData4Api) {
   baseData4Api[val] = `${hostEnv.lz_user_center}${baseData4Api[val]}`
