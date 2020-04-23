@@ -10,6 +10,6 @@ const recordApi = {
   addRecord: '/record/access/add#post' // 添加出入记录
 }
 for (const val in recordApi) {
-  recordApi[val] = `${hostEnv.zx_visitor}${recordApi[val]}`
+  recordApi[val] = `${hostEnv.zx_door}${recordApi[val]}`
 }
 export default recordApi

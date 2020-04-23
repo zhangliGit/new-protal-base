@@ -4,7 +4,7 @@
  */
 
 const ConfigEnv = process.env.VUE_APP_URL
-let wxz_contorl = ''
+let wxz_control = ''
 let zk_school = ''
 let zk_leave = ''
 let zx_visitor = ''
@@ -14,7 +14,7 @@ let lz_attendance = ''
 let lz_user_center = ''
 
 if (ConfigEnv === 'test') {
-  wxz_contorl = '/wxz_contorl'
+  wxz_control = '/wxz_control'
   zk_school = '/zk_school'
   zk_leave = '/zk_leave'
   zx_visitor = '/zx_visitor'
@@ -24,7 +24,7 @@ if (ConfigEnv === 'test') {
   lz_user_center = '/lz_user_center'
 
 } else if (ConfigEnv === 'prod') {
-  wxz_contorl = '/wxz_contorl'
+  wxz_control = '/wxz_control'
   zk_school = '/zk_school'
   zk_leave = '/zk_leave'
   zx_visitor = '/zx_visitor'
@@ -34,7 +34,7 @@ if (ConfigEnv === 'test') {
   lz_user_center = '/lz_user_center'
 
 } else {
-  wxz_contorl = '/wxz_contorl'
+  wxz_control = '/wxz_control'
   zk_school = '/zk_school'
   zk_leave = '/zk_leave'
   zx_visitor = '/zx_visitor'
@@ -46,7 +46,7 @@ if (ConfigEnv === 'test') {
 }
 
 export default {
-  wxz_contorl,
+  wxz_control,
   zk_school,
   zk_leave,
   zx_visitor,
