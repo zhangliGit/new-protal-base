@@ -16,6 +16,6 @@ const homeApi = {
   getStuRecordStatic: '/student/static/index#get' // 学生考勤统计
 }
 for (const val in homeApi) {
-  homeApi[val] = `${hostEnv.lz}${homeApi[val]}`
+  homeApi[val] = `${hostEnv.lz_attendance}${homeApi[val]}`
 }
 export default homeApi

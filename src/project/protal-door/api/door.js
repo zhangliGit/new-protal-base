@@ -22,6 +22,10 @@ const doorApi = {
   addRecord: '/record/access/add#post' // 添加出入记录
 }
 for (const val in doorApi) {
+<<<<<<< HEAD
   doorApi[val] = `${hostEnv.zx_visitor}${doorApi[val]}`
+=======
+  doorApi[val] = `${hostEnv.zx_door}${doorApi[val]}`
+>>>>>>> 96f707b2c7a962fff0fa60a78220bc968134ad6b
 }
 export default doorApi
