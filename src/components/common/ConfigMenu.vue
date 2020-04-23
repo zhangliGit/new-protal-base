@@ -72,7 +72,7 @@ export default {
      */
     async getMenuList (menuType, parentId) {
       const res = await $ajax.post({
-        url: `${hostEnv.zhuxu}/menu/manage/node/list`,
+        url: `${hostEnv.zx_protal}/menu/manage/node/list`,
         params: {
           menuType,
           parentId,
