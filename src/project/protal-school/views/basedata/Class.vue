@@ -443,7 +443,8 @@ export default {
         const req = {
           id: this.record.id,
           placeId: values.placeName.join(','),
-          teacherId: this.record.teacherId
+          teacherId: this.record.teacherId,
+          schoolYearId: this.schoolYearId
         }
         console.log(req)
         this.addPlace(req).then(res => {
@@ -505,7 +506,8 @@ export default {
         placeName: type === 0 ? '' : record.placeName,
         placeId: type === 0 ? '' : record.placeId,
         teacherName: type === 1 ? '' : record.teacherName,
-        teacherId: type === 1 ? '' : record.teacherId
+        teacherId: type === 1 ? '' : record.teacherId,
+        schoolYearId: this.schoolYearId
       }
       console.log(req)
       this.addPlace(req).then(res => {
@@ -533,7 +535,8 @@ export default {
         id: this.record.id,
         teacherName: value[0].userName,
         teacherId: value[0].id,
-        placeId: this.record.placeId
+        placeId: this.record.placeId,
+        schoolYearId: this.schoolYearId
       }
       console.log(req)
       this.addPlace(req).then(res => {

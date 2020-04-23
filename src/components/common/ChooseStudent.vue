@@ -203,7 +203,7 @@ export default {
         users.forEach(item => {
           this.chooseList.push(item.userCode)
           this.totalList.push({
-            id: item.userCode,
+            id: item.id,
             userCode: item.userCode,
             userName: item.userName
           })
@@ -228,7 +228,7 @@ export default {
       this.userList = res.data.list.map(item => {
         return {
           ...item,
-          id: item.userCode
+          id: item.id
         }
       })
       this.total = res.data.total
