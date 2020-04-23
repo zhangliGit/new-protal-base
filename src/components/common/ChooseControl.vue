@@ -183,7 +183,7 @@ export default {
   methods: {
     async getStudentList () {
       const res = await $ajax.post({
-        url: `${hostEnv.wangxuanzhang}/control/group/info/queryControlGroupInfos`,
+        url: `${hostEnv.wzx_control}/control/group/info/queryControlGroupInfos`,
         params: {
           controlGroupName: this.keyword,
           controlGroupType: this.contorlType,

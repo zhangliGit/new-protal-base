@@ -172,7 +172,7 @@ export default {
       this.treeObj = obj
       if (this.chooseType === 'attendance') {
         const res = await $ajax.get({
-          url: `${hostEnv.lz}/attendance/group/bind/user/query`,
+          url: `${hostEnv.lz_attendance}/attendance/group/bind/user/query`,
           params: {
             attendanceUserId: this.bindObj.id
           }
@@ -189,7 +189,7 @@ export default {
         this.getStudentList()
       } else if (this.chooseType === 'door') {
         const res = await $ajax.post({
-          url: `${hostEnv.mj}/setting/rule/user/list`,
+          url: `${hostEnv.zx_door}/setting/rule/user/list`,
           params: {
             pageNum: 1,
             pageSize: 500,
@@ -215,7 +215,7 @@ export default {
     },
     async getStudentList () {
       const res = await $ajax.post({
-        url: `${hostEnv.lvzhuo}/userinfo/student/user/queryStudentInfoList`,
+        url: `${hostEnv.lz_user_center}/userinfo/student/user/queryStudentInfoList`,
         params: {
           keyword: this.keyword,
           schoolCode: this.schoolCode,

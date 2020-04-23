@@ -161,7 +161,7 @@ export default {
   async mounted () {
     if (this.chooseType === 'attendance') {
       const res = await $ajax.get({
-        url: `${hostEnv.lz}/attendance/group/bind/user/query`,
+        url: `${hostEnv.lz_attendance}/attendance/group/bind/user/query`,
         params: {
           attendanceUserId: this.bindObj.id
         }
@@ -177,7 +177,7 @@ export default {
       this.getUserList()
     } else if (this.chooseType === 'door') {
       const res = await $ajax.post({
-        url: `${hostEnv.mj}/setting/rule/user/list`,
+        url: `${hostEnv.zx_door}/setting/rule/user/list`,
         params: {
           pageNum: 1,
           pageSize: 500,
@@ -203,7 +203,7 @@ export default {
   methods: {
     async getUserList () {
       const res = await $ajax.post({
-        url: `${hostEnv.lvzhuo}/userinfo/teacher/user/queryTeacherInfo`,
+        url: `${hostEnv.lz_user_center}/userinfo/teacher/user/queryTeacherInfo`,
         params: {
           orgCode: this.orgCode || null,
           keyword: this.keyword,
