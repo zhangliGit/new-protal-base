@@ -83,7 +83,7 @@ export default {
     if (this.fileInfo.url) {
       this.reqUrl = this.fileInfo.url
     } else {
-      this.reqUrl = !this.isCheck ? `${hostEnv.zhangkun}/file/freeUpload?schoolCode=${this.schoolCode}` : `${hostEnv.zhangkun}/file/uploadUserPhoto?schoolCode=${this.schoolCode}`
+      this.reqUrl = !this.isCheck ? `${hostEnv.zk_school}/file/freeUpload?schoolCode=${this.schoolCode}` : `${hostEnv.zk_school}/file/uploadUserPhoto?schoolCode=${this.schoolCode}`
     }
   },
   computed: {
