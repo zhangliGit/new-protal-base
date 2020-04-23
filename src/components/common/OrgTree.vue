@@ -48,7 +48,7 @@ export default {
     },
     async showList () {
       const res = await $ajax.get({
-        url: `${hostEnv.lvzhuo}/school/org/getSchoolRoot/${this.schoolCode}`
+        url: `${hostEnv.lz_user_center}/school/org/getSchoolRoot/${this.schoolCode}`
       })
       if (res.data === null || res.data.length === 0) {
         this.noData = true
