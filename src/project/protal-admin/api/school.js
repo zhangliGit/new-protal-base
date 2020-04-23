@@ -15,6 +15,6 @@ const schoolApi = {
   getSubNodes: '/provinces/getSubNodes/#getWithPara' // 查询子节点列表
 }
 for (const val in schoolApi) {
-  schoolApi[val] = `${hostEnv.zhangkun}${schoolApi[val]}`
+  schoolApi[val] = `${hostEnv.zk_school}${schoolApi[val]}`
 }
 export default schoolApi

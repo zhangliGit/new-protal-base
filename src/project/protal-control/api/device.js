@@ -33,6 +33,6 @@ const deviceApi = {
   getUnBindIdent: '/ident/server/info/queryNoRelationIdentServerInfos#postQuery' // 获取控制组未绑定的识别服务
 }
 for (const val in deviceApi) {
-  deviceApi[val] = `${hostEnv.wangxuanzhang}${deviceApi[val]}`
+  deviceApi[val] = `${hostEnv.wxz_control}${deviceApi[val]}`
 }
 export default deviceApi

@@ -15,6 +15,6 @@ const userApi = {
   loginOut: '/user/auth/logout#get' // 用户注销
 }
 for (const val in userApi) {
-  userApi[val] = `${hostEnv}${userApi[val]}`
+  userApi[val] = `${hostEnv.lz_user_center}${userApi[val]}`
 }
 export default userApi

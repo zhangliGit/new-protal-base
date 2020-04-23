@@ -131,7 +131,7 @@ export default {
       const loginInfo = JSON.stringify({ id: '' })
       $ajax
         .postQuery({
-          url: `${hostEnv.lvzhuo}/userinfo/user/login/update/password`,
+          url: `${hostEnv.lz_user_center}/userinfo/user/login/update/password`,
           params: {
             oldPassword,
             newPassword,
@@ -170,7 +170,7 @@ export default {
       const { userCode, schoolCode } = JSON.parse(window.sessionStorage.getItem('loginInfo') || JSON.stringify({}))
       $ajax
         .postQuery({
-          url: `${hostEnv.lvzhuo}/userinfo/user/login/loginout`,
+          url: `${hostEnv.lz_user_center}/userinfo/user/login/loginout`,
           params: {
             schoolCode,
             userCode
