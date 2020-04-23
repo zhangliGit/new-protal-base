@@ -15,6 +15,6 @@ const canpointApi = {
   updateAdmin: '/userinfo/paltform/user/school/manage/update#post' // 管理员修改
 }
 for (const val in canpointApi) {
-  canpointApi[val] = `${hostEnv.lvzhuo}${canpointApi[val]}`
+  canpointApi[val] = `${hostEnv.lz_user_center}${canpointApi[val]}`
 }
 export default canpointApi

@@ -13,6 +13,6 @@ const calendarApi = {
   getcalendarList: '/school/date/list#post' // 查询省份列表
 }
 for (const val in calendarApi) {
-  calendarApi[val] = `${hostEnv.zk}${calendarApi[val]}`
+  calendarApi[val] = `${hostEnv.zk_leave}${calendarApi[val]}`
 }
 export default calendarApi

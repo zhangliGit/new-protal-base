@@ -9,6 +9,6 @@ const yearApi = {
   getyearList: '/schoolYearSemester/list#postQuery', // 查询学年列表
 }
 for (const val in yearApi) {
-  yearApi[val] = `${hostEnv.year}${yearApi[val]}`
+  yearApi[val] = `${hostEnv.zk_school}${yearApi[val]}`
 }
 export default yearApi

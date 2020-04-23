@@ -22,6 +22,6 @@ const homeApi = {
 
 }
 for (const val in homeApi) {
-  homeApi[val] = `${hostEnv.wangxuanzhang}${homeApi[val]}`
+  homeApi[val] = `${hostEnv.wxz_control}${homeApi[val]}`
 }
 export default homeApi

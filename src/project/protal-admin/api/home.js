@@ -46,6 +46,6 @@ const homeApi = {
   getPanel: '/panel/list#get' // 面板机列表
 }
 for (const val in homeApi) {
-  homeApi[val] = `${hostEnv.zhuxu}${homeApi[val]}`
+  homeApi[val] = `${hostEnv.zx_protal}${homeApi[val]}`
 }
 export default homeApi
