@@ -21,6 +21,6 @@ const homeApi = {
   getTeacherAccess: '/teacherAccess#get' // 教师通行权限
 }
 for (const val in homeApi) {
-  homeApi[val] = `${hostEnv.zx_door}${homeApi[val]}`
+  homeApi[val] = `${hostEnv.zx_visitor}${homeApi[val]}`
 }
 export default homeApi

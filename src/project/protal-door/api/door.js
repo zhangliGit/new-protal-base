@@ -17,11 +17,10 @@ const doorApi = {
   // getDoorSet: '/doorList#get', // 获取门卫列表
   getFkRecord: '/fkRecord#get', // 获取访客记录
   getStudentAccess: '/studentAccess#get', // 学生通行权限
-  getTeacherAccess: '/teacherAccess#get', // 教师通行权限
-  getrecordList: '/record/access/list#post', // 出入记录列表
-  addRecord: '/record/access/add#post' // 添加出入记录
+  getTeacherAccess: '/teacherAccess#get' // 教师通行权限
+
 }
 for (const val in doorApi) {
-  doorApi[val] = `${hostEnv.zx_visitor}${doorApi[val]}`
+  doorApi[val] = `${hostEnv.zx_door}${doorApi[val]}`
 }
 export default doorApi
