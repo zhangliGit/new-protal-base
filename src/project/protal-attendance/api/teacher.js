@@ -29,6 +29,6 @@ const teacherApi = {
   getStudentDetail: '/student/statistics/detail#get' // 学生考勤统计详情
 }
 for (const val in teacherApi) {
-  teacherApi[val] = `${hostEnv.lz}${teacherApi[val]}`
+  teacherApi[val] = `${hostEnv.lz_attendance}${teacherApi[val]}`
 }
 export default teacherApi
