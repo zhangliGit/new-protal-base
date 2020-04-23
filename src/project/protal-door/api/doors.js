@@ -16,6 +16,6 @@ const doorsApi = {
   getcontrolgroupList: '/visitor/controlgroup/list#post' // 访客控制组查询列表
 }
 for (const val in doorsApi) {
-  doorsApi[val] = `${hostEnv.zx_protal}${doorsApi[val]}`
+  doorsApi[val] = `${hostEnv.zx_visitor}${doorsApi[val]}`
 }
 export default doorsApi

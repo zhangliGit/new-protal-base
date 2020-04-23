@@ -9,6 +9,6 @@ const baseApi = {
   getPlace: '/place/manage/getFirstStagePlaceList#get' // 平台场地接口
 }
 for (const val in baseApi) {
-  baseApi[val] = `${hostEnv.base}${baseApi[val]}`
+  baseApi[val] = `${hostEnv.zk_school}${baseApi[val]}`
 }
 export default baseApi

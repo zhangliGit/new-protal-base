@@ -131,14 +131,14 @@ module.exports = {
         }
       },
       '/zx_door': {
-        'target': 'http://192.168.1.24:10163/', // 朱旭-门禁系统
+        'target': 'http://192.168.1.24:10162/', // 朱旭-门禁系统
         'changeOrigin': true,
         'pathRewrite': {
           '^/zx_door': ''
         }
       },
       '/zx_visitor': {
-        'target': 'http://192.168.1.24:10162/', // 朱旭-访客系统
+        'target': 'http://192.168.1.24:10160/', // 朱旭-访客系统
         'changeOrigin': true,
         'pathRewrite': {
           '^/zx_visitor': ''
