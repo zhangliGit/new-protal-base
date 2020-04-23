@@ -31,9 +31,21 @@
           <div>{{ dealTime.record.onWorkTime | gmtToDate }}</div>
           <div>{{ dealTime.record.offWorkTime | gmtToDate }}</div>
         </template>
-        <template v-slot:other2="onSnacpUrl">
-          <img style="width: 60px; height: 60px; display: inline-block;" :src="onSnacpUrl.record.onSnacpUrl" alt="">
-          <img style="width: 60px; height: 60px; display: inline-block;margin-left:10px;" :src="onSnacpUrl.record.offSnacpUrl" alt="">
+        <template v-slot:other2="text">
+          <a-popover placement="left">
+            <template slot="content">
+              <img :src="text.record.onSnacpUrl" style="max-width: 200px; max-height: 220px; display: block;" alt="">
+            </template>
+            <img :src="text.record.onSnacpUrl" style="width: 60px; height: 60px; display: inline-block;" alt="">
+          </a-popover>
+          <a-popover placement="left">
+            <template slot="content">
+              <img :src="text.record.offSnacpUrl" style="max-width: 200px; max-height: 220px; display: block;" alt="">
+            </template>
+            <img :src="text.record.offSnacpUrl" style="width: 60px; height: 60px; display: inline-block;margin-left:10px;" alt="">
+          </a-popover>
+          <!-- <img style="width: 60px; height: 60px; display: inline-block;" :src="onSnacpUrl.record.onSnacpUrl" alt="">
+          <img style="width: 60px; height: 60px; display: inline-block;margin-left:10px;" :src="onSnacpUrl.record.offSnacpUrl" alt=""> -->
         </template>
       </table-list>
       <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
