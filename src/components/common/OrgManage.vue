@@ -157,7 +157,7 @@ export default {
   methods: {
     async showList () {
       const res = await $ajax.get({
-        url: `${hostEnv.lvzhuo}/school/org/getSchoolRoot/${this.schoolCode}`
+        url: `${hostEnv.lz_user_center}/school/org/getSchoolRoot/${this.schoolCode}`
       })
       if (res.data === null || res.data.length === 0) {
         this.noData = true
@@ -204,12 +204,12 @@ export default {
         if (this.isEdit) {
           params.id = this.id
           await $ajax.post({
-            url: `${hostEnv.lvzhuo}/school/org/update`,
+            url: `${hostEnv.lz_user_center}/school/org/update`,
             params: params
           })
         } else {
           await $ajax.post({
-            url: `${hostEnv.lvzhuo}/school/org/add`,
+            url: `${hostEnv.lz_user_center}/school/org/add`,
             params: params
           })
         }
@@ -224,7 +224,7 @@ export default {
     },
     async del (record) {
       await $ajax.get({
-        url: `${hostEnv.lvzhuo}/school/org/delete/${record.id}`
+        url: `${hostEnv.lz_user_center}/school/org/delete/${record.id}`
       })
       this.$message.success('删除成功')
       this.$tools.goNext(() => {

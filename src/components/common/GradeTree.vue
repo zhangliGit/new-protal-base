@@ -72,7 +72,7 @@ export default {
         schoolCode: this.schoolCode
       }
       const res = await $ajax.postForm({
-        url: `${hostEnv.lvzhuo}/schoolYearSemester/list`,
+        url: `${hostEnv.lz_user_center}/schoolYearSemester/list`,
         params: req
       })
       if (res.data.list === null || res.data.list.length === 0) {
@@ -126,7 +126,7 @@ export default {
           schoolCode: this.schoolCode
         }
         $ajax.postForm({
-          url: `${hostEnv.lvzhuo}/grade/manage/list`,
+          url: `${hostEnv.lz_user_center}/grade/manage/list`,
           params: req
         }).then(res => {
           treeNode.dataRef.children = res.data.list.map(item => {
@@ -144,7 +144,7 @@ export default {
               gradeCode: item.gradeCode
             }
             $ajax.post({
-              url: `${hostEnv.lvzhuo}/classManage/list`,
+              url: `${hostEnv.lz_user_center}/classManage/list`,
               params: data
             }).then(res => {
               item.children = res.data.list.map(ele => {
