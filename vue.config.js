@@ -123,6 +123,13 @@ module.exports = {
           '^/zk_leave': ''
         }
       },
+      '/zx_protal': {
+        'target': 'http://192.168.1.24:10060/', // 朱旭-平台应用系统
+        'changeOrigin': true,
+        'pathRewrite': {
+          '^/zx_protal': ''
+        }
+      },
       '/zx_door': {
         'target': 'http://192.168.1.24:10163/', // 朱旭-门禁系统
         'changeOrigin': true,
