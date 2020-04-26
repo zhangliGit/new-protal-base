@@ -7,7 +7,7 @@ import hostEnv from '@config/host-env'
 const visitorApi = {
   getReasonList: '/reasonList#get', // 来访事由
   getFkControl: '/fkControl#get', // 获取访客控制组配置
-  getFkRecord: '/fkRecord#get', // 获取访客记录
+  getFkRecord: '/fkRecord#get' // 获取访客记录
 }
 let doorApi = {
   getDoorSet: '/setting/place/relation/list#post', // 获取门卫列表
