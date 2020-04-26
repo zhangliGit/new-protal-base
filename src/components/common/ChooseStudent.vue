@@ -186,7 +186,7 @@ export default {
             userName: item.userName
           })
         })
-        this.getStudentList()
+        this.getStudentList(true)
       } else if (this.chooseType === 'door') {
         const res = await $ajax.post({
           url: `${hostEnv.zx_door}/setting/rule/user/list`,
@@ -208,12 +208,12 @@ export default {
             userName: item.userName
           })
         })
-        this.getStudentList()
+        this.getStudentList(true)
       } else {
         this.getStudentList()
       }
     },
-    async getStudentList () {
+    async getStudentList (type) {
       const res = await $ajax.post({
         url: `${hostEnv.lz_user_center}/userinfo/student/user/queryStudentInfoList`,
         params: {
@@ -228,7 +228,7 @@ export default {
       this.userList = res.data.list.map(item => {
         return {
           ...item,
-          id: item.id
+          id: type ? item.userCode : item.id
         }
       })
       this.total = res.data.total
