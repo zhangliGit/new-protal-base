@@ -247,7 +247,8 @@ export default {
       orgList: [],
       type: 1,
       chooseSite: '',
-      chooseOrg: ''
+      chooseOrg: '',
+      chooseName: ''
     }
   },
   methods: {
@@ -306,11 +307,16 @@ export default {
     },
     orgChange (value, selectedOptions) {
       this.chooseOrg = ''
+      this.chooseName = ''
+      console.log(selectedOptions)
       if (selectedOptions) {
         this.chooseOrg += selectedOptions.map(ele => {
           return ele.value
         })
-        this.$emit('org', this.chooseOrg.split(',').join(','))
+        this.chooseName += selectedOptions.map(ele => {
+          return ele.name
+        })
+        this.$emit('org', this.chooseOrg.split(',').join(','), this.chooseName.split(',').join(','))
       }
     },
     // 深层递归
