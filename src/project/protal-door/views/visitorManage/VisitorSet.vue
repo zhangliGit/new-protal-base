@@ -193,12 +193,9 @@ export default {
       })
     },
     async chooseUser(value) {
-      console.log(value)
-      this.$refs.chooseUser.reset()
-      this.userTag = false
-      this.controlList  = []
+      this.controlArr = []
       value.forEach(ele => {
-        this.controlList.push({
+        this.controlArr.push({
           controlGroupName: ele.controlGroupName,
           id: ele.id,
           controlGroupCode: ele.controlGroupCode,
@@ -207,11 +204,14 @@ export default {
           userGroupCode:this.userGroupCode
         })
       })
-      await this.addcontrolgroup(this.controlList)
-      this.$message.success('添加成功')
-      this.$tools.goNext(() => {
-        this.showControl()
-      })
+      try {
+        await this.addcontrolgroup(this.controlArr)
+        this.$message.success('添加成功')
+        this.$tools.goNext(() => {
+          this.showControl()
+        })
+      } catch(err) {
+      }
     }
   }
 }

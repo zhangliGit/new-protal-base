@@ -223,7 +223,11 @@ export default {
     select (item) {
       this.pageList.page = 1
       this.orgCode = item.code
-      this.getUserList()
+      if (this.chooseType) {
+        this.getUserList(true)
+      } else {
+        this.getUserList()
+      }
     },
     reset () {
       this.confirmLoading = false
