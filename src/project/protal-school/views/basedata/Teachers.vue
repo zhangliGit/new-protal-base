@@ -267,6 +267,7 @@ export default {
       orgCode: '',
       org: '',
       addOrgCode: '',
+      addOrgName: '',
       type: 0,
       keyword: '',
       teacherId: ''
@@ -287,10 +288,16 @@ export default {
       this.orgCode = item.code
       this.showList()
     },
-    addOrg (value) {
-      console.log(value)
-      this.addOrgCode = value
+    addOrg (value, name) {
+      const arr = []
+      value.split(',').forEach(ele => {
+        ele = ele === '' ? this.userInfo.schoolCode : ele
+        arr.push(ele)
+      })
+      this.addOrgCode = arr.join(',')
       this.org = value
+      this.addOrgName = name.split(',').length > 1 ? name.split(',')[name.split(',').length - 1] : name
+      console.log(this.addOrgName)
     },
     submit () {
       this.confirmLoading = true
@@ -312,6 +319,7 @@ export default {
       const req = {
         ...values,
         orgCode: this.type ? this.org : this.addOrgCode,
+        orgName: this.addOrgName,
         photoUrl: this.fileList.length > 0 ? this.fileList[0].url : '',
         schoolCode: this.userInfo.schoolCode,
         schoolId: this.userInfo.schoolId,
