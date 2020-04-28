@@ -6,7 +6,11 @@
       :title="title"
       v-model="formStatus"
       :form-data="formData"
-    ></submit-form>
+    >
+    <div slot="upload">
+      <upload-multi :length="1" v-model="fileList" :fileInfo="fileInfo"></upload-multi>
+    </div>
+    </submit-form>
     <a-button
       style="margin-top: 10px; margin-left: 5px;"
       @click="addMenu(1, '新增菜单分类', {id: '', parentId: ''})"
@@ -65,6 +69,7 @@
 import $ajax from '@u/ajax-serve'
 import hostEnv from '@config/host-env'
 import SubmitForm from './SubmitForm'
+import UploadMulti from '@c/UploadMulti'
 import { Switch, Tooltip } from 'ant-design-vue'
 export { default as FormOutline } from '@ant-design/icons/lib/outline/FormOutline'
 export { default as DeleteOutline } from '@ant-design/icons/lib/outline/DeleteOutline'
@@ -101,7 +106,10 @@ const formData = [
     label: '路径',
     placeholder: '请输入菜单路径'
   },
-
+  {
+    type: 'upload',
+    label: '菜单图标'
+  },
   {
     value: 'remark',
     initValue: '',
@@ -156,7 +164,8 @@ export default {
   components: {
     ASwitch: Switch,
     ATooltip: Tooltip,
-    SubmitForm
+    SubmitForm,
+    UploadMulti
   },
   props: {
     plateformType: {
@@ -170,7 +179,13 @@ export default {
       menuList: [],
       columns,
       formData: formData,
-      formStatus: false
+      formStatus: false,
+      fileList: [], 
+      fileInfo: {
+        tip: '上传图标',
+        h: 120, // 高度
+        w: 120 // 宽度
+      },
     }
   },
   async mounted() {
@@ -225,28 +240,43 @@ export default {
       this.isEdit = tag
       this.formStatus = true
       this.title = title
+      this.fileList = []
       // 编辑
       if (tag) {
         if (type === 1 || !record.parentId) {
-          this.formData = this.$tools.fillForm([formData[0], formData[1], formData[3]], record)
+          this.formData = this.$tools.fillForm([formData[0], formData[1], formData[4]], record)
           this.formData[1].disabled = true
         } else {
-          this.formData = this.$tools.fillForm([formData[0], formData[2], formData[3]], record)
+          if (record.icon) {
+            this.fileList = [{
+              id: Math.floor(Math.random() * 10000),
+              url: record.icon
+            }]
+          }
+          this.formData = this.$tools.fillForm([formData[0], formData[2], formData[3], formData[4]], record)
         }
       } else {
         if (type === 1) {
-          this.formData = [formData[0], formData[1], formData[3]]
+          this.formData = [formData[0], formData[1], formData[4]]
           if (this.plateformType === '1') {
             this.formData[1].disabled = true
           }
         } else {
           this.isPlatform = record.isPlatform
-          this.formData = [formData[0], formData[2], formData[3]]
+          this.formData = [formData[0], formData[2], formData[3], formData[4]]
         }
       }
     },
     async submitForm(values) {
-      const { menuName, linkUrl, remark, isPlatform = 0 } = values
+      if (this.menuType === 2) {
+        if (this.fileList.length === 0) {
+          this.$message.warning('请上传图标')
+          this.$refs.form.error()
+          return
+        }
+        values.icon = this.fileList[0].url
+      }
+      const { menuName, icon = '', linkUrl, remark, isPlatform = 0 } = values
       try {
         // 编辑
         if (this.isEdit) {
@@ -254,6 +284,7 @@ export default {
             id: this.id,
             menuName,
             linkUrl,
+            icon,
             isPlatform,
             parentId: this.parentId,
             plateformType: this.plateformType,
@@ -277,6 +308,7 @@ export default {
             url: `${hostEnv.zx_protal}/menu/manage/add`,
             params: {
               menuName,
+              icon,
               isPlatform: isPlatform,
               linkUrl,
               menuType: this.menuType,
