@@ -19,8 +19,8 @@
               icon="ellipsis"
               @click="detail(action.record)"
             ></a-button>
-          </a-tooltip></template>
-      </table-list></div></div></template>
+          </a-tooltip>
+        </template>
       </table-list>
       <page-num v-model="pageList" :total="total" @change-page="showList(searchObj)"></page-num>
     </div>
