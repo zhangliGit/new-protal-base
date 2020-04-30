@@ -12,7 +12,7 @@
       <a-col>
         <span>姓名/学号：</span>
         <a-input v-model="keyword" style="width: 120px;margin-right: 10px" placeholder="请输入关键字" />
-        <a-button type="primary" @click="getStudentList">查询</a-button>
+        <a-button type="primary" @click="getStudentList(false)">查询</a-button>
       </a-col>
     </a-row>
     <div class="choose-user qui-fx" >
@@ -36,7 +36,7 @@
           :mar-bot="0"
           size="small"
           :total="total"
-          @change-page="getStudentList"></page-num>
+          @change-page="getStudentList(false)"></page-num>
       </div>
       <div class="user-box qui-fx-ver">
         <div class="title qui-fx-jsb">
@@ -217,7 +217,7 @@ export default {
         this.getStudentList(false)
       }
     },
-    async getStudentList (type) {
+    async getStudentList (type = false) {
       const res = await $ajax.post({
         url: `${hostEnv.lz_user_center}/userinfo/student/user/queryStudentInfoList`,
         params: {

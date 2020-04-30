@@ -79,9 +79,9 @@ export default {
 <style lang="less" scoed>
   .grade-tree {
     padding: 0 10px;
-    width: 200px;
-    min-height: 400px;
-    max-height: 600px;
+    width: 240px;
+    min-height: 600px;
+    max-height: 650px;
     overflow-y: auto
   }
 </style>

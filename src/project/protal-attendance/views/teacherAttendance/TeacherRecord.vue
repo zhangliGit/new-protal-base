@@ -2,7 +2,11 @@
   <div class="page-layout qui-fx">
     <org-tree @select="select"></org-tree>
     <div class="qui-fx-f1 qui-fx-ver">
-      <search-form isReset @search-form="searchForm" :search-label="searchLabel"></search-form>
+      <search-form isReset @search-form="searchForm" :search-label="searchLabel">
+        <div slot="left">
+          <a-button icon="export" class="export-all-btn" @click="exportFile">批量导出</a-button>
+        </div>
+      </search-form>
       <table-list :page-list="pageList" :columns="columns" :table-list="recordList">
         <template v-slot:actions="action">
           <a-tag color="#ccc" @click.stop="changeDetail(action.record)">变更状态</a-tag>
@@ -18,6 +22,7 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
+import hostEnv from '@config/host-env'
 import OrgTree from '@c/OrgTree'
 import SearchForm from '@c/SearchForm'
 import TableList from '@c/TableList'
@@ -136,6 +141,13 @@ export default {
     ...mapActions('home', [
       'getTeacherRecord'
     ]),
+    exportFile () {
+      const time = new Date().getTime()
+      const startDay = this.$tools.getDate(time - 1000 * 60 * 60 * 24 * 30).substr(0, 10)
+      const endDay = this.$tools.getDate(time).substr(0, 10)
+      const url = `${hostEnv.lz_attendance}/teacher/static/record/list/download?schoolCode=${window.sessionStorage.getItem('schoolScheme')}&startDay=${startDay}&endDay=${endDay}`
+      window.open(url)
+    },
     async showList () {
       const res = await this.getTeacherRecord(this.pageList)
       this.recordList = res.data.list

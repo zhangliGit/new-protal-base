@@ -12,7 +12,7 @@
       <a-col>
         <span>姓名/工号：</span>
         <a-input v-model="keyword" style="width: 120px;margin-right: 10px" placeholder="请输入姓名" />
-        <a-button type="primary" @click="getUserList">查询</a-button>
+        <a-button type="primary" @click="getUserList(false)">查询</a-button>
       </a-col>
     </a-row>
     <div class="choose-user qui-fx">
@@ -38,7 +38,7 @@
           :mar-bot="0"
           size="small"
           :total="total"
-          @change-page="getUserList"></page-num>
+          @change-page="getUserList(false)"></page-num>
       </div>
       <div class="user-box qui-fx-ver">
         <div class="title qui-fx-jsb">

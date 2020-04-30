@@ -61,10 +61,10 @@ export default {
           name: '局端大屏',
           url: 'organize-view'
         },
-        // {
-        //   name: '人脸识别',
-        //   url: 'protal-face'
-        // }
+        {
+          name: '人脸识别',
+          url: 'protal-face'
+        }
       ]
     }
   },

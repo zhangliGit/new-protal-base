@@ -128,30 +128,30 @@ const columns = [
   {
     title: '应用名称',
     dataIndex: 'appName',
-    width: '12%'
+    width: '20%'
   },
-  {
-    title: '应用路径',
-    dataIndex: 'linkUrl',
-    width: '10%'
-  },
+  // {
+  //   title: '应用路径',
+  //   dataIndex: 'linkUrl',
+  //   width: '10%'
+  // },
   {
     title: '业务地址',
     dataIndex: 'bussUrl',
-    width: '15%'
+    width: '25%'
   },
-  {
-    title: '终端类型',
-    dataIndex: 'plateformType',
-    width: '8%',
-    customRender: text => {
-      if (text === 1) {
-        return '手机'
-      } else {
-        return 'PC'
-      }
-    }
-  },
+  // {
+  //   title: '终端类型',
+  //   dataIndex: 'plateformType',
+  //   width: '8%',
+  //   customRender: text => {
+  //     if (text === 1) {
+  //       return '手机'
+  //     } else {
+  //       return 'PC'
+  //     }
+  //   }
+  // },
   {
     title: 'logo',
     dataIndex: 'logoUrl',
