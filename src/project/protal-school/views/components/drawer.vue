@@ -134,6 +134,9 @@ export default {
     this.height = document.body.clientHeight - 250
     this.plateformType = '2'
     this.initMenu()
+    this.$tools.goNext(() => {
+      this.getRoleMenu(this.menuData)
+    })
   },
   methods: {
     ...mapActions('home', [
