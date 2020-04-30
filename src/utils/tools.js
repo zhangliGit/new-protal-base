@@ -25,7 +25,7 @@ const Tools = {
     return time
   },
   // 根据日期获取时间撮
-  getDateTime (date) {
+  getDateTime(date) {
     return new Date(date.replace(/-/g, '/'))
   },
   // 设置table滚动高度
@@ -84,7 +84,7 @@ const Tools = {
     }
   },
   // 审批状态
-  getState (text) {
+  getState(text) {
     if (text === '0') {
       return '待审批'
     } else if (text === '1') {
@@ -93,7 +93,7 @@ const Tools = {
       return '审批不通过'
     } else if (text === '3') {
       return '撤销'
-    }else if (text === '4') {
+    } else if (text === '4') {
       return '失效'
     }
   },

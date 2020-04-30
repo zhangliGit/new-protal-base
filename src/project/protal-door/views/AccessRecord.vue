@@ -41,16 +41,35 @@ const searchLabel = [
       },
       {
         key: 1,
-        val: '学生'
+        val: '超级管理员'
       },
       {
         key: 2,
+        val: '管理员'
+      },
+      {
+        key: 4,
         val: '教职工'
+      },
+      {
+        key: 8,
+        val: '学生'
+      },
+      {
+        key: 16,
+        val: '家长'
+      },
+      {
+        key: 32,
+        val: '访客'
       }
     ],
     value: 'userType',
     type: 'select',
-    label: '人员类型'
+    label: '人员类型',
+    scopedSlots: {
+      customRender: 'other5'
+    }
   },
   {
     list: [
@@ -96,7 +115,7 @@ const columns = [
     dataIndex: 'gender',
     width: '5%',
     customRender: text => {
-      return parseInt(text) === 1 ? '男' : '女'
+      return Tools.getSex(text)
     }
   },
   {
@@ -104,13 +123,29 @@ const columns = [
     dataIndex: 'userType',
     width: '10%',
     customRender: text => {
-      return parseInt(text) === 1 ? '学生' : '教职工'
+      let arr = text.split(',')
+      arr = arr.map(el => {
+        if (el === '1') {
+          return '超级管理员'
+        } else if (el === '2') {
+          return '管理员'
+        } else if (el === '4') {
+          return '教职工'
+        } else if (el === '8') {
+          return '学生'
+        } else if (el === '16') {
+          return '家长'
+        } else if (el === '32') {
+          return '访客'
+        }
+      })
+      return arr.join(',')
     }
   },
   {
     title: '学号/工号',
     dataIndex: 'userNo',
-    width: '10%'
+    width: '8%'
   },
   {
     title: '手机号',
@@ -118,14 +153,19 @@ const columns = [
     width: '10%'
   },
   {
+    title: '温度',
+    dataIndex: 'temperature',
+    width: '8%'
+  },
+  {
     title: '出入地点',
     dataIndex: 'accessPlace',
-    width: '10%'
+    width: '8%'
   },
   {
     title: '出入类型',
     dataIndex: 'accessType',
-    width: '10%',
+    width: '8%',
     customRender: text => {
       return parseInt(text) === 1 ? '进' : '出'
     }
@@ -133,7 +173,7 @@ const columns = [
   {
     title: '出入时间',
     dataIndex: 'accessTime',
-    width: '12%',
+    width: '10%',
     customRender: text => {
       return Tools.getDate(text)
     }
