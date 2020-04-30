@@ -1,5 +1,5 @@
 <template>
-  <div class="protal-index" style="background-color: #0f054c">
+  <div class="protal-index">
     <div class="title">平安校园云平台</div>
     <div class="qui-fx-f1 protal-list">
       <div
@@ -54,9 +54,17 @@ export default {
           url: 'protal-attendance'
         },
         {
-          name: '人脸识别',
-          url: 'protal-face'
-        }
+          name: '疫情防控',
+          url: 'protal-ncov'
+        },
+        {
+          name: '局端大屏',
+          url: 'organize-view'
+        },
+        // {
+        //   name: '人脸识别',
+        //   url: 'protal-face'
+        // }
       ]
     }
   },
@@ -71,6 +79,8 @@ export default {
 
 <style lang="less">
 .protal-index {
+  background: rgb(15, 13, 65);
+  background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(50,50,190,1) 0%, rgba(10,86,101,1) 70%);
   position: absolute;
   width: 100%;
   height: 100%;

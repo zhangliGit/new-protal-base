@@ -12,6 +12,7 @@ let zx_door = ''
 let zx_protal = ''
 let lz_attendance = ''
 let lz_user_center = ''
+let lz_ncov = ''
 
 if (ConfigEnv === 'test') {
   wxz_control = '/wxz_control'
@@ -22,7 +23,7 @@ if (ConfigEnv === 'test') {
   zx_protal = '/zx_protal'
   lz_attendance = '/lz_attendance'
   lz_user_center = '/lz_user_center'
-
+  lz_ncov = '/lz_ncov'
 } else if (ConfigEnv === 'prod') {
   wxz_control = '/wxz_control'
   zk_school = '/zk_school'
@@ -32,7 +33,7 @@ if (ConfigEnv === 'test') {
   zx_protal = '/zx_protal'
   lz_attendance = '/lz_attendance'
   lz_user_center = '/lz_user_center'
-
+  lz_ncov = '/lz_ncov'
 } else {
   wxz_control = '/wxz_control'
   zk_school = '/zk_school'
@@ -42,7 +43,7 @@ if (ConfigEnv === 'test') {
   zx_protal = '/zx_protal'
   lz_attendance = '/lz_attendance'
   lz_user_center = '/lz_user_center'
-
+  lz_ncov = '/lz_ncov'
 }
 
 export default {
@@ -54,4 +55,5 @@ export default {
   zx_protal,
   lz_attendance,
   lz_user_center,
+  lz_ncov
 }

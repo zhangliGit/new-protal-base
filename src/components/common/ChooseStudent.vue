@@ -150,7 +150,48 @@ export default {
       }
     }
   },
-  mounted () {
+  async mounted () {
+    if (this.chooseType === 'attendance') {
+      const res = await $ajax.get({
+        url: `${hostEnv.lz_attendance}/attendance/group/bind/user/query`,
+        params: {
+          attendanceUserId: this.bindObj.id
+        }
+      })
+      const users = res.data
+      users.forEach(item => {
+        this.chooseList.push(item.userCode)
+        this.totalList.push({
+          id: item.userCode,
+          userCode: item.userCode,
+          userName: item.userName
+        })
+      })
+      this.getStudentList(true)
+    } else if (this.chooseType === 'door') {
+      const res = await $ajax.post({
+        url: `${hostEnv.zx_door}/setting/rule/user/list`,
+        params: {
+          pageNum: 1,
+          pageSize: 500,
+          ruleGroupCode: this.bindObj.ruleGroupCode,
+          schoolCode: this.bindObj.schoolCode,
+          userGroupCode: this.bindObj.userGroupCode
+        }
+      })
+      const users = res.data.list
+      users.forEach(item => {
+        this.chooseList.push(item.userCode)
+        this.totalList.push({
+          id: item.id,
+          userCode: item.userCode,
+          userName: item.userName
+        })
+      })
+      this.getStudentList(true)
+    } else {
+      this.getStudentList()
+    }
   },
   data () {
     return {
@@ -170,50 +211,13 @@ export default {
   methods: {
     async select (obj) {
       this.treeObj = obj
-      if (this.chooseType === 'attendance') {
-        const res = await $ajax.get({
-          url: `${hostEnv.lz_attendance}/attendance/group/bind/user/query`,
-          params: {
-            attendanceUserId: this.bindObj.id
-          }
-        })
-        const users = res.data
-        users.forEach(item => {
-          this.chooseList.push(item.userCode)
-          this.totalList.push({
-            id: item.userCode,
-            userCode: item.userCode,
-            userName: item.userName
-          })
-        })
-        this.getStudentList()
-      } else if (this.chooseType === 'door') {
-        const res = await $ajax.post({
-          url: `${hostEnv.zx_door}/setting/rule/user/list`,
-          params: {
-            pageNum: 1,
-            pageSize: 500,
-            ruleGroupCode: this.bindObj.ruleGroupCode,
-            schoolCode: this.bindObj.schoolCode,
-            userGroupCode: this.bindObj.userGroupCode
-          }
-        })
-        const users = res.data.list
-        console.log(users)
-        users.forEach(item => {
-          this.chooseList.push(item.userCode)
-          this.totalList.push({
-            id: item.id,
-            userCode: item.userCode,
-            userName: item.userName
-          })
-        })
-        this.getStudentList()
+      if (this.chooseType) {
+        this.getStudentList(true)
       } else {
-        this.getStudentList()
+        this.getStudentList(false)
       }
     },
-    async getStudentList () {
+    async getStudentList (type) {
       const res = await $ajax.post({
         url: `${hostEnv.lz_user_center}/userinfo/student/user/queryStudentInfoList`,
         params: {
@@ -228,7 +232,7 @@ export default {
       this.userList = res.data.list.map(item => {
         return {
           ...item,
-          id: item.id
+          id: type ? item.userCode : item.id
         }
       })
       this.total = res.data.total

@@ -114,6 +114,27 @@ const $ajax = {
       return responseRes(err.response.data)
     }
   },
+  async postJsonQuery(obj, tag = true) {
+    if (tag) showToast()
+    let url = obj.url + '?'
+    for (const key in obj.params) {
+      url += key + '=' + obj.params[key] + '&'
+    }
+    try {
+      let res = await axios({
+        url: url,
+        method: 'post',
+        data: obj.params,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      res = res.data
+      return responseRes(res)
+    } catch (err) {
+      return responseRes(err.response.data)
+    }
+  },
   async postQuery(obj, tag = true) {
     if (tag) showToast()
     let url = obj.url + '?'
