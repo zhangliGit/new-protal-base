@@ -3,6 +3,7 @@ import App from './App.vue'
 import router from './router'
 import $ajax from '@u/ajax-serve'
 import '@a/css/common.less'
+import './font/font.less'
 import './rem.js'
 import dataV from '@jiaminghi/data-view'
 Vue.use(dataV)
