@@ -6,9 +6,7 @@
           <dv-decoration-8 :color="borderColor" style="width:100%;height:60px;" />
         </div>
         <div class="qui-fx-f2">
-          <div class="pos-box data-title">
-            {{ schoolName }}
-          </div>
+          <div class="pos-box data-title">{{ schoolName }}</div>
           <dv-decoration-5 :color="borderColor" dur="6" style="width:100%;height:60px; color:#ff"></dv-decoration-5>
         </div>
         <div class="qui-fx-f1">
@@ -61,7 +59,7 @@
                     <img :src="contrast.snapSrc" alt />
                     <img class="pic-two" :src="contrast.photoSrc" alt />
                   </div>
-                  <div class="info" style="">
+                  <div class="info" style>
                     <div class="qui-fx-jsb">
                       <div>姓名: {{ contrast.userName }}</div>
                       <div>地点：{{ contrast.controllerName }}</div>
@@ -97,7 +95,9 @@
                       v-for="(num, ind) in record.total.split('')"
                       :key="ind"
                     >
-                      <dv-border-box-10 :color="[record.color, record.color]">{{ num }}</dv-border-box-10>
+                      <dv-border-box-10 :color="[record.color, record.color]">
+                        <span class="number-font">{{ num }}</span>
+                      </dv-border-box-10>
                     </div>
                   </div>
                 </div>
@@ -165,7 +165,7 @@ const dataList = [
     studentNo: '100001',
     precent: '89'
   },
-   {
+  {
     snapSrc: p55,
     photoSrc: p5,
     controllerName: '门禁',
@@ -173,7 +173,7 @@ const dataList = [
     userName: '李传亮',
     studentNo: '100002',
     precent: '90'
-  },
+  }
 ]
 export default {
   name: 'Home',
@@ -219,18 +219,21 @@ export default {
       faceList: []
     }
   },
-  directives: {
-  },
+  directives: {},
   mounted() {
     try {
       const url = window.location.href
-      this.schoolCode = url.substr(url.indexOf('?')).split('=')[1].replace('#/', '')
-    } catch(err) {
-    }
-    
+      this.schoolCode = url
+        .substr(url.indexOf('?'))
+        .split('=')[1]
+        .replace('#/', '')
+    } catch (err) {}
+
     const nowD = new Date()
     const month = nowD.getMonth() + 1
-    this.todayTime = `${nowD.getFullYear()}-${month < 10 ? '0' + month : month}-${nowD.getDate() < 10 ? '0' + nowD.getDate() : nowD.getDate()}`
+    this.todayTime = `${nowD.getFullYear()}-${month < 10 ? '0' + month : month}-${
+      nowD.getDate() < 10 ? '0' + nowD.getDate() : nowD.getDate()
+    }`
     // this.getTotal()
     setInterval(() => {
       this.dateTime = this.getDateTime(new Date().getTime())
@@ -247,12 +250,9 @@ export default {
       } else {
         this.ws = new WebSocket(`ws:192.168.1.123:10090/dorm/showSocket/${this.schoolCode}`)
       }
-      this.ws.onopen = () => {
-      }
-      this.ws.onclose = () => {
-      }
-      this.ws.onerror = () => {
-      }
+      this.ws.onopen = () => {}
+      this.ws.onclose = () => {}
+      this.ws.onerror = () => {}
       this.ws.onmessage = e => {
         const data = JSON.parse(e.data)
         if (parseInt(data.type) === 2) {
@@ -286,7 +286,7 @@ export default {
     }
   },
   methods: {
-    test (index) {
+    test(index) {
       this.tipMsg = '识别成功'
       this.contrastDetail = {
         ...dataList[index],
@@ -308,7 +308,7 @@ export default {
       this.recordList[0].total = total < 0 ? '0' : total + ''
     },
     // 获取数据
-    getTotal () {
+    getTotal() {
       $ajax
         .post(
           {
@@ -333,7 +333,12 @@ export default {
       var hou = today.getHours() < 0 ? '0' + today.getHours() : today.getHours()
       var getMinutes = today.getMinutes() < 0 ? '0' + today.getMinutes() : today.getMinutes()
       var getSeconds = today.getSeconds() < 10 ? '0' + today.getSeconds() : today.getSeconds()
-      if ('' + hou + getMinutes + getSeconds === '080000' || '' + hou + getMinutes + getSeconds === '120000' || '' + hou + getMinutes + getSeconds === '180000' || '' + hou + getMinutes + getSeconds === '220000') {
+      if (
+        '' + hou + getMinutes + getSeconds === '080000' ||
+        '' + hou + getMinutes + getSeconds === '120000' ||
+        '' + hou + getMinutes + getSeconds === '180000' ||
+        '' + hou + getMinutes + getSeconds === '220000'
+      ) {
         window.location.reload()
       }
       var day
@@ -365,8 +370,8 @@ export default {
         getMinutes +
         ':' +
         getSeconds +
-        ' ' + (tag ? ' 星期' +
-        day : '')
+        ' ' +
+        (tag ? ' 星期' + day : '')
       )
     }
   }
@@ -407,6 +412,7 @@ export default {
   }
 }
 .data-title {
+  font-family: 'myFont';
   z-index: 99;
   top: -16px;
   width: 100%;
@@ -424,6 +430,7 @@ export default {
   }
 }
 .data-time {
+  font-family: 'myFont';
   top: -5px;
   z-index: 99;
   font-size: 16px;
@@ -433,12 +440,14 @@ export default {
   text-align: center;
 }
 .data-top {
+  font-family: 'myFont';
   padding-top: 30px;
   height: 120px;
   letter-spacing: 2px;
   background: #041e49;
 }
 .data-left {
+  font-family: 'myFont';
   .data-video {
     margin: 10px 0 20px 0;
   }
@@ -511,6 +520,7 @@ export default {
   }
 }
 .data-face {
+  font-family: 'myFont';
   margin: 10px 0 0px 20px;
   width: 5rem;
   .bg-show {
@@ -546,6 +556,9 @@ export default {
       font-size: 30px;
       font-weight: bold;
       margin-right: 0.1rem;
+    }
+    .number-font {
+      font-family: 'Digital';
     }
   }
 }
