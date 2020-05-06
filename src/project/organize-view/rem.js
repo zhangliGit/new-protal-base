@@ -1,6 +1,12 @@
-;(function () {
-    var screenW = document.documentElement.clientWidth || document.body.clientWidth
-    var hDom = document.getElementsByTagName('html')[0]
-    if (screenW < 420) screenW = 420
-    hDom.style.fontSize = screenW / 19.2 + 'px'
-  }())
+;(function(doc, win) {
+  const fn = () => {
+    const docEl = doc.documentElement
+    const clientWidth = docEl.clientWidth
+    if (!clientWidth) return
+    alert(100 * (clientWidth / 1920))
+    docEl.style.fontSize = 100 * (clientWidth / 1920) + 'px'
+  }
+  if (!doc.addEventListener) return
+  win.addEventListener('resize', fn)
+  doc.addEventListener('DOMContentLoaded', fn)
+})(document, window)
