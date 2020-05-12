@@ -26,6 +26,6 @@ const homeApi = {
   unBindDoc: '/school/schooldoctorinfo/deleteById#delete' // 通过id删除校医设置信息
 }
 for (const val in homeApi) {
-  homeApi[val] = `${hostEnv.wangxuanzhang}${homeApi[val]}`
+  homeApi[val] = `${hostEnv.lz_ncov}${homeApi[val]}`
 }
 export default homeApi

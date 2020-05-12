@@ -59,6 +59,9 @@
         </a-tabs>
       </div>
     </div>
+    <div class="footer">
+      Copyright © 2018—2019 武汉全品教育科技有限公司版权所有<a href="http://www.beian.miit.gov.cn/" target="_blank">京ICP备15050178号-2</a>
+    </div>
   </div>
 </template>
 <script>
@@ -342,5 +345,22 @@ export default {
     color: #fff;
     height: 36px;
   }
+}
+.footer {
+  position: fixed;
+  height: 40px;
+  line-height: 40px;
+  z-index: 99;
+  bottom: 0px;
+  width: 100%;
+  left: 0px;
+  font-size: 12px;
+  color:#999;
+  text-align: center;
+  a {
+    color:#666;
+    padding-left: 10px;
+  }
+  
 }
 </style>
