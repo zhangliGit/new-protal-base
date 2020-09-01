@@ -37,7 +37,11 @@ const showApi = {
   getHomeworkList: '/homework/findHomeWork#post', // 作业统计列表
   exportHomework: '/homework/export#export' // 作业统计导出
 }
+
 for (const val in showApi) {
   showApi[val] = `${hostEnv.zq_class}${showApi[val]}`
 }
-export default showApi
+export default {
+  ...showApi,
+  delFile: `${hostEnv.zk_oa}/study/theme/file/delete#delWithQuery` // 文件删除
+}
