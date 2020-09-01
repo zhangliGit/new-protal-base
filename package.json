@@ -5,7 +5,7 @@
   "scripts": {
     "web-com": "node update.js",
     "upload": "node upload.js",
-    "dev": "vue-cli-service serve ",
+    "dev": "vue-cli-service serve",
     "dev-test": "vue-cli-service serve --open --mode dev-test",
     "dev-prod": "vue-cli-service serve --open --mode dev-prod",
     "build": "vue-cli-service build",
@@ -15,7 +15,8 @@
     "lint": "vue-cli-service lint",
     "lint:nofix": "vue-cli-service lint --no-fix",
     "test:unit": "vue-cli-service test:unit",
-    "postinstall": "opencollective-postinstall"
+    "postinstall": "opencollective-postinstall",
+    "fix-memory-limit": "cross-env LIMIT=8096 increase-memory-limit"
   },
   "dependencies": {
     "@jiaminghi/data-view": "^2.7.3",
@@ -68,10 +69,12 @@
     "babel-jest": "^23.6.0",
     "babel-plugin-import": "^1.11.0",
     "colors": "^1.4.0",
+    "cross-env": "^7.0.2",
     "cz-conventional-changelog": "^3.0.2",
     "eslint": "^5.8.0",
     "eslint-plugin-html": "^5.0.0",
     "eslint-plugin-vue": "^5.0.0",
+    "increase-memory-limit": "^1.0.7",
     "inquirer": "^7.1.0",
     "less": "^3.8.1",
     "less-loader": "^4.1.0",

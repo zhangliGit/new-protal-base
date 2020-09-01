@@ -11,6 +11,7 @@ const SchoolShow = resolve => require(['../views/schoolShow/SchoolShow.vue'], re
 const ClassAlbum = resolve => require(['../views/classShow/ClassAlbum.vue'], resolve)
 const ClassCard = resolve => require(['../views/classShow/ClassCard.vue'], resolve)
 const ClassHonor = resolve => require(['../views/classHonor/ClassHonor.vue'], resolve)
+const ClassNewspaper = resolve => require(['../views/classNewspaper/ClassNewspaper.vue'], resolve)
 const CountDown = resolve => require(['../views/countDown/CountDown.vue'], resolve)
 const Duty = resolve => require(['../views/duty/Duty.vue'], resolve)
 const Homework = resolve => require(['../views/homework/Homework.vue'], resolve)
@@ -75,6 +76,14 @@ export const asyncRouterMap = [{
       component: ClassHonor,
       meta: {
         title: '班级荣誉'
+      }
+    },
+    {
+      path: '/classNewspaper',
+      name: 'classNewspaper',
+      component: ClassNewspaper,
+      meta: {
+        title: '电子板报'
       }
     },
     {
