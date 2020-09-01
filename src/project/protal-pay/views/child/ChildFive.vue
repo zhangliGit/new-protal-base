@@ -41,7 +41,7 @@
       <page-num v-if="deviceList.length > 0" v-model="pageList" :total="total" @change-page="showList"></page-num>
     </div>
     <div class="place-right">
-      <a-button icon="plus" class="add-btn" @click="addApp(2)">添加物品</a-button>
+      <a-button icon="plus" class="add-btn" @click="addApp(1)">添加物品</a-button>
       <table-list
         :scroll="{ y: scrollH - 50 }"
         :style="{ height: scrollH - 0 + 'px' }"
@@ -89,7 +89,6 @@ import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
 import SubmitForm from '@c/SubmitForm'
 import Tools from '@u/tools'
-import AddType from '../../component/AddType'
 const columns = [
   {
     title: '序号',
@@ -151,17 +150,15 @@ const formData = [
     initValue: '',
     type: 'input',
     label: '物品名称',
-    placeholder: '请输入2-10个字符(中英文)',
-    max: 10
+    placeholder: '请输入2-10个字符(中英文)'
   }
 ]
 export default {
-  name: 'Register',
+  name: 'ChildFive',
   components: {
     TableList,
     PageNum,
     SubmitForm,
-    AddType
   },
   data() {
     return {
@@ -220,18 +217,17 @@ export default {
       this.faultTotal = res.data.total
     },
     addApp(type, record) {
-      if (type === 2) {
-        this.formData[0].initValue = ''
+      this.formStatus = true
+      if (type === 1) {
         this.title = '添加物品'
         this.formData = this.formData
-        this.type = 2
+        this.type = 1
       } else if (type === 3) {
         this.title = '编辑物品'
         this.formData = this.$tools.fillForm(formData, record)
         this.type = 3
         this.record = record
       }
-      this.formStatus = true
     },
     async addType(type, item) {
       if (type) {
@@ -250,7 +246,7 @@ export default {
       this.$refs.addType.addVisible = true
     },
     submitForm(values) {
-      if (this.type === 2) {
+      if (this.type === 1) {
         const req = {
           schoolCode: this.userInfo.schoolCode,
           materialName: values.materialName,

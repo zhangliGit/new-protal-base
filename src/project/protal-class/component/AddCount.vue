@@ -36,7 +36,7 @@
           placeholder="请填写提示语"
         />
       </a-form-item>
-      <a-form-item label="截至日期" :label-col="{ span: 3 }" :wrapper-col="{ span: 21 }">
+      <a-form-item label="截止日期" :label-col="{ span: 3 }" :wrapper-col="{ span: 21 }">
         <a-date-picker
           format="YYYY-MM-DD"
           :disabled-date="disabledDate"
@@ -44,7 +44,7 @@
             'endTime',
             {
               initialValue: appForm.endTime,
-              rules: [{ required: true, message: '请选择截至日期' }]
+              rules: [{ required: true, message: '请选择截止日期' }]
             }
           ]"
         />

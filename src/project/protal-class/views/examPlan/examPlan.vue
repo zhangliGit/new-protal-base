@@ -24,12 +24,7 @@
             @click.stop="modify(1, action.record.id)"
           ></a-button>
         </a-tooltip>
-        <a-popconfirm
-          placement="left"
-          okText="确定"
-          cancelText="取消"
-          @confirm.stop="del(action.record.id)"
-        >
+        <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm.stop="del(action.record.id)">
           <template slot="title">您确定删除吗?</template>
           <a-tooltip placement="topLeft" title="删除">
             <a-button
@@ -158,6 +153,7 @@ export default {
   },
   data() {
     return {
+      uploadTag: true,
       timeList: [],
       columns,
       searchLabel,

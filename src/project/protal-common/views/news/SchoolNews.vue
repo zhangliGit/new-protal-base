@@ -19,11 +19,11 @@
             </div>
             <div class="qui-fx-f1 qui-fx-ver">
               <p class="notice-title">{{ item.title }}</p>
-              <div class="qui-fx-f1 notice-info" style="text-indent:2em" v-if="item.remark.length < 60">
-                {{ item.remark }}
+              <div class="qui-fx-f1 notice-info" style="text-indent:2em" v-if="item.content.length < 60"  v-html="item.content">
+                {{ item.content }}
               </div>
-              <div class="qui-fx-f1 notice-info" style="text-indent:2em" v-if="item.remark.length >= 60">
-                {{ item.remark.substring(0, 90) }}...
+              <div class="qui-fx-f1 notice-info" style="text-indent:2em" v-if="item.content.length >= 60" v-html="item.content">
+                {{ item.content.substring(0, 90) }}...
               </div>
               <div class="qui-fx-jsb notice-action">
                 <span>{{ item.createBy }}&nbsp;发布于：{{ getDateTime(item.createTime) }}</span>

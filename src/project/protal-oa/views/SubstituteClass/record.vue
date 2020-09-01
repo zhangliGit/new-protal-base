@@ -38,7 +38,7 @@
             </span>
           </p>
           <div v-for="(item, i) in detailList.substituteInfoList" :key="i" class="u-mar-b20 u-mar-t20 ">
-            <div class="qui-fx">
+            <div class="qui-fx" v-if="item.category !== null">
               <div>
                 <span>
                   {{ item.fromGradeName }}{{ item.fromClassName }}第{{ item.fromLesson }}节{{ item.fromSubjectName
