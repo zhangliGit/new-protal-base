@@ -78,7 +78,6 @@ import ConfigMenu from '@c/ConfigMenu'
 import PageNum from '@c/PageNum'
 import MenuTree from './MenuTree'
 import SubmitForm from '@c/SubmitForm'
-import mixins from '@u/mixins'
 import DetailShow from '@c/DetailShow'
 const columns = [
   {
@@ -115,7 +114,6 @@ const formData = [
 ]
 export default {
   name: 'ApplyDetail',
-  mixins: [mixins],
   components: {
     TableList,
     PageNum,
@@ -189,7 +187,7 @@ export default {
         },
         {
           key: '创建时间',
-          val: this.getDateTime(res.data.createTime, 1)
+          val: this.$tools.getDate(res.data.createTime)
         },
         {
           key: '备注',

@@ -11,11 +11,11 @@ const visitorApi = {
   addcause: '/cause/info/add#post', // 事由添加
   delcause: '/cause/info/delete#get', // 事由删除
   getcauseList: '/cause/info/list#post', // 事由列表
-  addcontrolgroup: '/visitor/controlgroup/add#post', // 添加访客控制组
-  delcontrolgroup: '/visitor/controlgroup/delete#get', // 删除访客控制组
-  getcontrolgroupList: '/visitor/controlgroup/list#post' // 访客控制组查询列表
+  addcontrolgroup: '/setting/device/info/add#post', // 添加访客控制组
+  delcontrolgroup: '/setting/device/info/del#delete', // 删除访客控制组
+  getcontrolgroupsList: '/setting/device/info/query#post' // 访客控制组查询列表
 }
 for (const val in visitorApi) {
-  visitorApi[val] = `${hostEnv.zx_visitor}${visitorApi[val]}`
+  visitorApi[val] = `${hostEnv.ljj_visitor}${visitorApi[val]}`
 }
 export default visitorApi

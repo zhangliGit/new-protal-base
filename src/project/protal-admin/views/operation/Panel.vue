@@ -1,8 +1,14 @@
 <template>
   <div class="page-layout qui-fx-ver">
-    <submit-form ref="form" @submit-form="submitForm" :title="title" v-model="formStatus" :form-data="formData">
+    <submit-form
+      ref="form"
+      @submit-form="submitForm"
+      :title="title"
+      v-model="formStatus"
+      :form-data="formData"
+    >
       <div slot="upload">
-        <upload-multi :length="3" v-model="fileList" :fileInfo="fileInfo" ></upload-multi>
+        <upload-multi :length="3" v-model="fileList" :fileInfo="fileInfo"></upload-multi>
       </div>
     </submit-form>
     <search-form @search-form="searchForm" :search-label="searchLabel">
@@ -22,7 +28,8 @@
       :page-list="pageList"
       v-model="chooseList"
       :columns="columns"
-      :table-list="userList">
+      :table-list="userList"
+    >
       <template v-slot:actions="action">
         <a-tag color="#ccc" @click.stop="goDetial('/panel/detail')">控制台</a-tag>
       </template>
@@ -59,7 +66,8 @@ const searchLabel = [
     placeholder: '请输入安装位置'
   },
   {
-    list: [ // 选择列表项，select控件必传
+    list: [
+      // 选择列表项，select控件必传
       {
         key: '',
         val: '全部'
@@ -105,7 +113,7 @@ const columns = [
     title: '安装日期',
     dataIndex: 'workTime',
     width: '8%',
-    customRender: (text) => {
+    customRender: text => {
       return `${text[0]}`
     }
   },
@@ -123,7 +131,7 @@ const columns = [
     title: '在线状态',
     dataIndex: 'sex',
     width: '8',
-    customRender: (text) => {
+    customRender: text => {
       if (text === 1) {
         return '在线'
       } else {
@@ -135,7 +143,7 @@ const columns = [
     title: '状态更新时间',
     dataIndex: 'workTime',
     width: '10%',
-    customRender: (text) => {
+    customRender: text => {
       return `${text[0]}`
     }
   },
@@ -240,7 +248,7 @@ export default {
     UploadMulti,
     SearchForm
   },
-  data () {
+  data() {
     return {
       searchLabel,
       fileInfo: {
@@ -262,23 +270,21 @@ export default {
       userList: []
     }
   },
-  mounted () {
+  mounted() {
     this.showList()
   },
   methods: {
-    ...mapActions('home', [
-      'getPanel'
-    ]),
-    searchForm (values) {
+    ...mapActions('home', ['getPanel']),
+    searchForm(values) {
       console.log(values)
     },
-    submitForm (values) {
+    submitForm(values) {
       console.log(values)
       setTimeout(() => {
         this.$refs.form.reset()
       }, 2000)
     },
-    addApp (type, record) {
+    addApp(type, record) {
       this.formStatus = true
       if (type) {
         this.formData = this.$tools.fillForm(formData, record.record)
@@ -286,23 +292,22 @@ export default {
         this.formData = formData
       }
     },
-    deleteList () {
+    deleteList() {
       if (this.chooseList.length === 0) {
         this.$message.warning('请选择删除项')
         return
       }
-      this.$tools.delTip('确定删除吗?', () => {
-      })
+      this.$tools.delTip('确定删除吗?', () => {})
     },
-    async showList () {
+    async showList() {
       const res = await this.getPanel(this.pageList)
       this.userList = res.data
       this.total = res.total
     },
-    clickRow (id) {
+    clickRow(id) {
       console.log(id)
     },
-    goDetial (path) {
+    goDetial(path) {
       this.$router.push(path)
     }
   }

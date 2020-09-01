@@ -6,26 +6,29 @@
       :title="title"
       @org="addOrg"
       v-model="formStatus"
-      :form-data="formData">
+      :form-data="formData"
+    >
       <div slot="upload" class="qui-fx qui-fx-ac">
-        <upload-multi is-check :length="1" v-model="fileList" :fileInfo="fileInfo" ></upload-multi>
+        <upload-multi is-check :length="1" v-model="fileList" :fileInfo="fileInfo"></upload-multi>
         <span style="font-size:12px;margin-left:10px;">大小20到100kB，像素400x400到800x800，格式仅jpg</span>
       </div>
     </submit-form>
     <no-data msg="暂无教职工" v-if="false">
       <div slot="btn">
-        <a-button type="primary" @click="actionTeacher(0)"> <a-icon type="plus" />添加教职工</a-button>
+        <a-button type="primary" @click="actionTeacher(0)">
+          <a-icon type="plus" />添加教职工
+        </a-button>
       </div>
     </no-data>
     <div class="qui-fx qui-fx-jsb" style="width:100%" v-else>
       <div class="left">
-        <org-tree @select="select"></org-tree>
+        <org-tree @select="select" @defaultCode="defaultCode"></org-tree>
       </div>
       <div class="right qui-fx-ver qui-fx-f1">
         <search-form isReset @search-form="searchForm" :search-label="searchLabel">
           <div slot="left">
             <a-button icon="plus" class="add-btn" @click="actionTeacher(0)">添加</a-button>
-            <a-button icon="export" class="export-all-btn" @click.stop="goLead('/basedata/bulkImport')">批量导入</a-button>
+            <a-button icon="export" class="export-all-btn" @click.stop="goLead()">批量导入</a-button>
             <a-button icon="delete" class="del-btn" @click.stop="deleteList(0)">批量删除</a-button>
           </div>
         </search-form>
@@ -36,22 +39,34 @@
           :page-list="pageList"
           v-model="chooseList"
           :columns="columns"
-          :table-list="teacherList">
+          :table-list="teacherList"
+        >
+          <template v-slot:other1="other1">
+            <a-tag :color="parseInt(other1.record.onJob) === 1 ? '#87d068' : '#f50'">{{ other1.record.onJob === '1' ? '在职' : '离职' }}</a-tag>
+          </template>
           <template v-slot:actions="action">
             <a-tooltip placement="topLeft" title="编辑">
-              <a-button size="small" class="edit-action-btn" icon="form" @click.stop="actionTeacher(1, action.record)"></a-button>
+              <a-button
+                size="small"
+                class="edit-action-btn"
+                icon="form"
+                @click.stop="actionTeacher(1, action.record)"
+              ></a-button>
             </a-tooltip>
-            <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="deleteList(1,action.record)">
-              <template slot="title">
-                您确定删除吗?
-              </template>
+            <a-popconfirm
+              placement="left"
+              okText="确定"
+              cancelText="取消"
+              @confirm="deleteList(1,action.record)"
+            >
+              <template slot="title">您确定删除吗?</template>
               <a-tooltip placement="topLeft" title="删除">
                 <a-button size="small" class="del-action-btn" icon="delete"></a-button>
               </a-tooltip>
             </a-popconfirm>
           </template>
         </table-list>
-        <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
+        <page-num v-model="pageList" :total="total" @change-page="showList(searchObj)"></page-num>
       </div>
     </div>
   </div>
@@ -65,7 +80,7 @@ import NoData from '@c/NoData'
 import PageNum from '@c/PageNum'
 import SubmitForm from '../components/SubForm'
 import SearchForm from '@c/SearchForm'
-import UploadMulti from '@c/UploadMulti'
+import UploadMulti from '@c/UploadFace'
 import ShowDialog from '@c/ShowDialog'
 import Tools from '@u/tools'
 const columns = [
@@ -95,7 +110,7 @@ const columns = [
     title: '性别',
     dataIndex: 'sex',
     width: '10',
-    customRender: (text) => {
+    customRender: text => {
       return Tools.getSex(text)
     }
   },
@@ -123,8 +138,16 @@ const columns = [
     width: '10%'
   },
   {
+    title: '状态',
+    dataIndex: 'onJob',
+    width: '10%',
+    scopedSlots: {
+      customRender: 'other1'
+    }
+  },
+  {
     title: '操作',
-    width: '20%',
+    width: '10%',
     scopedSlots: {
       customRender: 'action'
     }
@@ -150,6 +173,44 @@ const searchLabel = [
       }
     ],
     placeholder: '请输入'
+  },
+  {
+    list: [
+      {
+        key: '',
+        val: '全部'
+      },
+      {
+        key: 1,
+        val: '有照片'
+      },
+      {
+        key: 0,
+        val: '无照片'
+      }
+    ],
+    value: 'hasPhoto',
+    type: 'select',
+    label: '有无照片'
+  },
+  {
+    list: [
+      {
+        key: '',
+        val: '全部'
+      },
+      {
+        key: 1,
+        val: '在职'
+      },
+      {
+        key: 0,
+        val: '离职'
+      }
+    ],
+    value: 'onJob',
+    type: 'select',
+    label: '状态'
   }
 ]
 const formData = [
@@ -190,8 +251,32 @@ const formData = [
     placeholder: '请输入教职工手机号码'
   },
   {
+    value: 'orgCode',
+    initValue: [],
+    type: 'orgChoose',
+    label: '组织机构',
+    placeholder: '请选择'
+  },
+  {
+    value: 'onJob',
+    initValue: '1',
+    list: [
+      {
+        key: '1',
+        val: '在职'
+      },
+      {
+        key: '0',
+        val: '离职'
+      }
+    ],
+    type: 'radio',
+    label: '状态'
+  },
+  {
     type: 'upload',
     label: '人脸照片',
+    required: false,
     placeholder: '请上传人脸照片'
   },
   {
@@ -212,10 +297,10 @@ const formData = [
     placeholder: '请输入教职工邮箱'
   },
   {
-    value: 'orgCode',
-    initValue: [],
-    type: 'orgChoose',
-    label: '组织机构',
+    value: 'birthday',
+    initValue: '',
+    type: 'singleTime',
+    label: '出生日期',
     required: false,
     placeholder: '请选择'
   },
@@ -238,10 +323,9 @@ export default {
     UploadMulti,
     SearchForm,
     NoData,
-    ShowDialog,
-    addOrgCode: ''
+    ShowDialog
   },
-  data () {
+  data() {
     return {
       dialogTag: false,
       confirmLoading: false,
@@ -267,51 +351,89 @@ export default {
       orgCode: '',
       org: '',
       addOrgCode: '',
+      addOrgName: '',
       type: 0,
-      keyword: '',
-      teacherId: ''
+      teacherId: '',
+      orgCodeList: [],
+      orgName: '',
+      searchObj: {}
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
-  mounted () {
+  mounted() {
     this.showList()
   },
   methods: {
     ...mapActions('home', [
-      'getTeacherList', 'addTeacher', 'getOrgBySchool', 'getOrgList', 'deleteTeacher', 'deleteTeachers', 'editTeacher'
+      'getTeacherList',
+      'addTeacher',
+      'getOrgBySchool',
+      'getOrgList',
+      'deleteTeacher',
+      'deleteTeachers',
+      'editTeacher',
+      'getTeacherOrg'
     ]),
-    select (item) {
-      console.log(item)
+    defaultCode(item) {
+      this.orgCodeList = item.code
+      this.orgName = item.name
+    },
+    select(item) {
       this.orgCode = item.code
-      this.showList()
+      this.orgName = item.name
+      this.orgCodeList = []
+      this.orgCodeList = this.familyTree(item.treeData, item.id)
+      this.showList(this.searchObj)
     },
-    addOrg (value) {
-      console.log(value)
-      this.addOrgCode = value
+    // 遍历数组 查找节点的父节点
+    familyTree(arr1, id) {
+      var temp = []
+      var forFn = function(arr, id) {
+        for (var i = 0; i < arr.length; i++) {
+          var item = arr[i]
+          if (item.id === id) {
+            temp.unshift(item.code)
+            forFn(arr1, item.parentId)
+            break
+          } else {
+            if (item.children) {
+              forFn(item.children, id)
+            }
+          }
+        }
+      }
+      forFn(arr1, id)
+      return temp
+    },
+    addOrg(value, name) {
+      const arr = []
+      value.split(',').forEach(ele => {
+        ele = ele === '' ? this.userInfo.schoolCode : ele
+        arr.push(ele)
+      })
+      this.addOrgCode = arr.join(',')
       this.org = value
+      this.addOrgName = name.split(',').length > 1 ? name.split(',')[name.split(',').length - 1] : name
+      console.log(this.addOrgName)
     },
-    submit () {
+    submit() {
       this.confirmLoading = true
       setTimeout(() => {
         this.dialogTag = false
         this.confirmLoading = false
       }, 1000)
     },
-    searchForm (values) {
-      this.keyword = values.keyword
-      this.showList(values.keyword)
+    searchForm(values) {
+      this.searchObj = values
+      this.showList(this.searchObj)
     },
-    submitForm (values) {
-      if (this.fileList.length === 0) {
-        this.$message.error('人脸照片不能为空')
-        this.$refs.form.error()
-        return
-      }
+    submitForm(values) {
       const req = {
         ...values,
         orgCode: this.type ? this.org : this.addOrgCode,
+        orgName: this.addOrgName,
         photoUrl: this.fileList.length > 0 ? this.fileList[0].url : '',
         schoolCode: this.userInfo.schoolCode,
         schoolId: this.userInfo.schoolId,
@@ -323,27 +445,44 @@ export default {
       } else {
         res = this.editTeacher(req)
       }
-      res.then(() => {
-        this.$message.success('添加成功')
-        this.$tools.goNext(() => {
-          this.showList()
-          this.$refs.form.reset()
-          this.fileList = []
+      res
+        .then(() => {
+          if (this.type === 0) {
+            this.$message.success('添加成功')
+          } else {
+            this.$message.success('编辑成功')
+          }
+          this.$tools.goNext(() => {
+            this.showList(this.searchObj)
+            this.$refs.form.reset()
+            this.fileList = []
+          })
         })
-      }).catch(() => {
-        this.$refs.form.error()
-      })
+        .catch(() => {
+          this.$refs.form.error()
+        })
     },
-    actionTeacher (type, record) {
+    actionTeacher(type, record) {
       this.formStatus = true
       if (type) {
         this.type = 1
         this.title = '编辑教职工'
+        record.orgCode = []
         this.formData = this.$tools.fillForm(formData, record)
+        this.getTeacherOrg({
+          userCode: record.userCode,
+          schoolCode: this.userInfo.schoolCode
+        }).then(res => {
+          this.org = res.data.orgCode
+          this.formData[3].initValue = res.data.orgCode.split(',')
+          if (this.formData[3].initValue[0] === '') {
+            this.formData[3].initValue[0] = this.userInfo.schoolCode
+          }
+        })
+        record.birthday = this.$tools.getDate(record.birthday, 1)
         this.fileList = record.photoUrl ? [{ url: record.photoUrl }] : []
-        this.formData[6].initValue = record.orgCode.split(',')
+        this.formData[4].initValue = record.onJob
         this.teacherId = record.id
-        this.org = record.orgCode
       } else {
         this.title = '添加教职工'
         this.formData = formData
@@ -351,12 +490,12 @@ export default {
         this.type = 0
       }
     },
-    async showList (keyword = '') {
+    async showList(searchObj) {
       const req = {
         ...this.pageList,
+        ...searchObj,
         schoolCode: this.userInfo.schoolCode,
-        orgCode: this.orgCode,
-        keyword
+        orgCode: this.orgCode
       }
       const res = await this.getTeacherList(req)
       if (!res.data) {
@@ -365,7 +504,7 @@ export default {
       this.teacherList = res.data.list
       this.total = res.data.total
     },
-    async deleteList (type, record) {
+    async deleteList(type, record) {
       if (type) {
         console.log(record.id)
         const req = {
@@ -375,7 +514,7 @@ export default {
         await this.deleteTeacher(req)
         this.$message.success('删除成功')
         this.$tools.goNext(() => {
-          this.showList(this.keyword)
+          this.showList(this.searchObj)
         })
       } else {
         if (this.chooseList.length === 0) {
@@ -389,64 +528,65 @@ export default {
         this.$tools.delTip('您确定删除吗?', () => {
           this.deleteTeachers(req).then(res => {
             this.$message.success('删除成功')
+            this.chooseList = []
             this.$tools.goNext(() => {
-              this.showList(this.keyword)
+              this.showList(this.searchObj)
             })
           })
         })
       }
     },
-    clickRow (id) {
-    },
-    goLead (path) {
+    clickRow(id) {},
+    goLead() {
+      this.orgCodeList[0] = this.orgCodeList[0] === '' ? this.userInfo.schoolCode : this.orgCodeList[0]
+      const path = `/basedata/bulkImport?code=${this.orgCodeList.join(',')}&name=${this.orgName}`
       this.$router.push({ path, query: { type: 'teachers' } })
     }
   }
 }
 </script>
 <style lang="less" scoped>
-.teachers{
+.teachers {
   background: #fff;
   height: 100%;
-  .left{
+  .left {
     padding: 10px;
   }
-  .right{
+  .right {
     padding: 0 10px;
     border-left: 1px solid @bor-color;
-    .action{
-      div{
+    .action {
+      div {
         cursor: pointer;
         margin: 4px 30px 0 0;
-        img{
+        img {
           width: 20px;
           height: 20px;
         }
-        span{
-          font-size:12px;
+        span {
+          font-size: 12px;
         }
       }
     }
   }
 }
-.modal{
+.modal {
   padding: 0 40px;
-  .line{
+  .line {
     margin-bottom: 20px;
   }
-  .title{
+  .title {
     font-size: 14px;
     font-weight: bold;
     margin-right: 20px;
     min-width: 70px;
   }
-  .download{
-    color:#6882da;
+  .download {
+    color: #6882da;
     cursor: pointer;
   }
-  /deep/ .ant-upload-list-item-info{
+  /deep/ .ant-upload-list-item-info {
     padding: 0 22px 0 4px;
   }
 }
-
 </style>

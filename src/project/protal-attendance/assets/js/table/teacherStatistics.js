@@ -24,17 +24,26 @@ const teacherStatistics = [
   {
     title: '正常次数',
     dataIndex: 'normalCount',
-    width: '10%'
+    width: '10%',
+    scopedSlots: {
+      customRender: 'other1'
+    }
   },
   {
     title: '迟到次数',
     dataIndex: 'lateCount',
-    width: '10%'
+    width: '10%',
+    scopedSlots: {
+      customRender: 'other2'
+    }
   },
   {
     title: '早退次数',
     dataIndex: 'earlyCount',
-    width: '10%'
+    width: '10%',
+    scopedSlots: {
+      customRender: 'other3'
+    }
   },
   // {
   //   title: '上班缺卡次数',
@@ -54,7 +63,10 @@ const teacherStatistics = [
   {
     title: '缺勤次数',
     dataIndex: 'noRecord',
-    width: '10%'
+    width: '10%',
+    scopedSlots: {
+      customRender: 'other4'
+    }
   },
   {
     title: '操作',

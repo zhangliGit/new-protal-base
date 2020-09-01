@@ -10,16 +10,19 @@
       <div class="tips qui-fx mar-b10">
         <p>说明：</p>
         <div class="qui-fx-ver" v-if="isStudent">
-          <p>1、请将学生信息Excel表和人脸照片文件夹放在同一个文件夹下，整体压缩后上传，目前支持的压缩包格式为ZIP；</p>
-          <p>2、目前支持的照片文件格式有JPG；每个人的照片建立一个文件夹存放，文件夹名称必须与学生列表中人员序号一致，否则视为无效图片，一个文件夹里最多3张照片；</p>
-          <p>3、如果仅上传学生信息不上传人脸照片，压缩包中仅存放Excel即可，人脸照片文件夹非必填；</p>
-          <p>4、文件上传失败或提示错误，可重新选择压缩包后再上传。</p>
+          <p>1、请将学生信息Excel表和人脸照片放在同一个文件夹下，表格以“student”命名，照片以学生姓名命名，文件夹压缩后上传，目前支持的压缩包格式为ZIP；</p>
+          <p>2、目前支持的照片文件格式有JPG，照片大小20kb-100kb，分辨率400*400-800*800，每个人的照片名称必须与学生列表中人员姓名一致，否则视为无效图片，一个人只能放一张照片；</p>
+          <p>3、如果仅上传学生信息不上传人脸照片，文件夹中仅存放Excel即可；</p>
+          <p>4、填写表格时请确保学生姓名与文件夹中照片命名一致，入学年份请填写数字，性别仅支持填写男/女，走住读类型仅支持填写走读/住读。切忌修改表头字段或改变列顺序，否则将导入异常；</p>
+          <p>5、家长姓名、手机号、亲属关系3列选填，手机号请填写11位数字，亲属关系仅支持填写爸爸/妈妈/爷爷/奶奶/其他。3者必需填写完整才能录入成功。每个学生只能同时导入一个家长。</p>
+          <p>6、文件上传失败或提示错误，可重新选择压缩包后再上传。</p>
         </div>
         <div class="qui-fx-ver" v-if="isTeacher">
-          <p>1、请将教职工信息Excel表和人脸照片文件夹放在同一个文件夹下，整体压缩后上传，目前支持的压缩包格式为ZIP；</p>
-          <p>2、目前支持的照片文件格式有JPG；每个人的照片建立一个文件夹存放，文件夹名称必须与教职工列表中人员序号一致，否则视为无效图片，一个文件夹里最多3张照片；</p>
-          <p>3、如果仅上传教职工信息不上传人脸照片，压缩包中仅存放Excel即可，人脸照片文件夹非必填；</p>
-          <p>4、文件上传失败或提示错误，可重新选择压缩包后再上传。</p>
+          <p>1、请将教职工信息Excel表和人脸照片放在同一个文件夹下，表格以“teacher”命名，照片以教职工姓名命名，文件夹压缩后上传，目前支持的压缩包格式为ZIP；</p>
+          <p>2、目前支持的照片文件格式有JPG，照片大小20kb-100kb，分辨率400*400-800*800，每个人的照片名称必须与教职工列表中人员姓名一致，否则视为无效图片，一个人只能放一张照片；</p>
+          <p>3、如果仅上传教职工信息不上传人脸照片，文件夹中仅存放Excel即可；</p>
+          <p>4、填写表格时请确保教职工姓名与文件夹中照片命名一致，手机号请填写11位数字，性别仅支持填写男/女。切忌修改表头字段或改变列顺序，否则将导入异常；</p>
+          <p>5、文件上传失败或提示错误，可重新选择压缩包后再上传。</p>
         </div>
       </div>
       <div class="line qui-fx">
@@ -30,7 +33,7 @@
             :multiple="false"
             name="multipartFile"
             :data="{fileType: 'zip'}"
-            accept="*.zip"
+            accept=".zip"
             :fileList="fileList"
             :withCredentials="true"
             :customRequest="customRequest"
@@ -47,7 +50,7 @@
         </div>
       </div>
       <table-list
-        is-zoom
+        :scroll-h="isStudent ? 260 : 350"
         :page-list="pageList"
         :columns="columns"
         :table-list="resList">
@@ -107,17 +110,22 @@ export default {
       fileUrl: '',
       total: 100,
       fileList: [],
-      result: false
+      result: false,
+      orgCode: '',
+      orgName: ''
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
   created () {
-    console.log(this.$route.query.type)
+    this.orgCode = this.$route.query.code
+    this.orgName = this.$route.query.name
+    console.log(this.orgCode)
+    console.log(this.orgName)
     if (this.$route.query.type === 'teachers') {
       this.isTeacher = true
-      this.fileUrl = `${hostEnv.lz_user_center}/userinfo/teacher/user/batTeacherAdd?schoolCode=${this.userInfo.schoolCode}`
+      this.fileUrl = `${hostEnv.lz_user_center}/userinfo/teacher/user/batTeacherAdd?schoolCode=${this.userInfo.schoolCode}&orgCode=${this.orgCode}&orgName=${this.orgName}`
     } else if (this.$route.query.type === 'students') {
       this.isStudent = true
       this.fileUrl = `${hostEnv.lz_user_center}/userinfo/student/user/upload`
@@ -135,15 +143,14 @@ export default {
 
     },
     lead () {
-
     },
     beforeUpload (file) {
       console.log(file)
-      /*       const isZip = file.type === 'application/x-zip-compressed'
+      const isZip = file.type === 'application/x-zip-compressed' || 'application/zip'
       if (!isZip) {
         this.$message.error('请上传格式为ZIP的压缩包')
       }
-      return (isZip) */
+      return (isZip)
     },
     customRequest (data) { // 上传提交
       this.resList = []

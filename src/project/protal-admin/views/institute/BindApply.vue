@@ -1,45 +1,24 @@
 <template>
-  <a-drawer
-    title="绑定应用"
-    :width="600"
-    @close="onClose"
-    :visible="visible"
-    :wrapStyle="{height: 'calc(100% - 108px)',overflow: 'auto',paddingBottom: '108px'}"
-    :destroyOnClose="true"
-  >
-    <a-alert message="点击选中应用模块，再次点击则取消，可同时选中多个模块" banner />
-    <div class="app">
+  <a-drawer title="绑定应用" :width="600" @close="onClose" :visible="visible" :destroyOnClose="true">
+    <div class="u-fx-ac u-fx-jsb">
+      <a-alert message="点击选中应用模块，再次点击则取消，可同时选中多个模块" banner />
+      <div>
+        <a-button :style="{ marginRight: '8px' }" @click="onClose">取消</a-button>
+        <a-button @click="onDefine" type="primary">确定</a-button>
+      </div>
+    </div>
+    <div class="app u-auto u-mar-b">
       <no-data v-if="applyList.length === 0" msg="暂无关联应用~"></no-data>
       <div
-        :class="['app-check qui-fx-ac-jc',{'app-choose':item.check}]"
-        v-for="(item,index) in applyList"
+        :class="['app-check qui-fx-ac-jc', { 'app-choose': item.check }]"
+        v-for="(item, index) in applyList"
         :key="item.id"
         style="borderRadius:4px;"
-        v-else
         @click="appClick(index)"
       >
         <img class="right-img" :src="item.logoUrl" alt />
         <div class="title qui-te">{{ item.appName }}</div>
-        <!-- <div class="title" v-if="item.appName.length <= 8">{{ item.appName }}</div>
-        <a-tooltip placement="bottomLeft" :title="item.appName" v-if="item.appName.length > 8">
-          <div class="title">{{ item.appName.substring(0,8) }}...</div>
-        </a-tooltip>-->
       </div>
-    </div>
-    <div
-      :style="{
-        position: 'absolute',
-        left: 0,
-        bottom: 0,
-        width: '100%',
-        borderTop: '1px solid #e9e9e9',
-        padding: '10px 16px',
-        background: '#fff',
-        textAlign: 'right',
-      }"
-    >
-      <a-button :style="{marginRight: '8px'}" @click="onClose">取消</a-button>
-      <a-button @click="onDefine" type="primary">确定</a-button>
     </div>
   </a-drawer>
 </template>
@@ -47,7 +26,6 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import NoData from '@c/NoData'
-// import choose from '@a/img/choose.png'
 export default {
   name: 'BindDrawer',
   components: {
@@ -60,6 +38,14 @@ export default {
         return {}
       }
     },
+    plateformType: {
+      type: String,
+      default: ''
+    },
+    category: {
+      type: String,
+      default: ''
+    },
     visible: {
       type: Boolean,
       default: false
@@ -71,6 +57,7 @@ export default {
       }
     }
   },
+  watch: {},
   data() {
     return {
       applyList: [],
@@ -81,12 +68,20 @@ export default {
   computed: {
     ...mapState('home', ['schoolCode'])
   },
-  mounted() {},
+  mounted() {
+    this.applyGetList(this.plateformType, this.category)
+  },
   methods: {
-    ...mapActions('home', ['getApply', 'bindApply']),
+    ...mapActions('home', ['searchAppList', 'schoolBindApp']),
     // 应用库列表
-    async applyGetList(plateformType) {
-      const res = await this.getApply({ platform: 0, plateformType: plateformType })
+    async applyGetList(plateformType, category) {
+      const res = await this.searchAppList({
+        page: 1,
+        size: 100,
+        keyword: '',
+        plateformType: plateformType,
+        category: category
+      })
       const data = res.data.list.map(el => {
         return {
           ...el,
@@ -122,7 +117,7 @@ export default {
         schoolId: this.schoolInfo.id,
         appIdList: appIdList
       }
-      this.bindApply(req).then(res => {
+      this.schoolBindApp(req).then(res => {
         this.$message.success('操作成功')
         this.$tools.goNext(() => {
           this.$emit('update')

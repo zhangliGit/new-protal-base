@@ -4,13 +4,22 @@
       <org-tree @select="select"></org-tree>
     </div>
     <div class="qui-fx-f1 qui-fx-ver">
-      <search-form is-reset @search-form="searchForm" :search-label="searchLabel"></search-form>
+      <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
+        <div slot="left">
+          <a-button icon="export" class="export-btn" @click="exportClick">导出</a-button>
+        </div>
+      </search-form>
       <no-data msg="暂无应用列表" v-if="false">
         <div slot="btn">
           <a-button type="primary">添加应用</a-button>
         </div>
       </no-data>
       <table-list :page-list="pageList" :columns="columns" :table-list="userList">
+        <template v-slot:other1="other1">
+          <a-tag :color="$tools.getApprovalColor(other1.record.state)">{{
+            other1.record.state | getApprovalState
+          }}</a-tag>
+        </template>
         <template v-slot:actions="action">
           <a-tooltip placement="topLeft" title="详情">
             <a-button
@@ -19,8 +28,8 @@
               icon="ellipsis"
               @click="detail(action.record)"
             ></a-button>
-          </a-tooltip></template>
-      </table-list></div></div></template>
+          </a-tooltip>
+        </template>
       </table-list>
       <page-num v-model="pageList" :total="total" @change-page="showList(searchObj)"></page-num>
     </div>
@@ -67,8 +76,8 @@ const searchLabel = [
         val: '审批不通过'
       },
       {
-        key: '3',
-        val: '撤回'
+        key: '4',
+        val: '审批中'
       }
     ],
     value: 'state',
@@ -134,18 +143,22 @@ const columns = [
     title: '发起时间',
     dataIndex: 'updateTime',
     width: '8%',
-    customRender: (text) => {
+    customRender: text => {
       if (text) {
         const d = new Date(text)
-        return d.getFullYear() + '-' +
-             ((d.getMonth() + 1) > 9 ? d.getMonth() + 1 : '0' + (d.getMonth() + 1)) + '-' +
-             (d.getDate() > 9 ? d.getDate() : '0' + d.getDate()) +
-             ' ' +
-             (d.getHours() > 9 ? d.getHours() : '0' + d.getHours()) +
-             ':' +
-             (d.getMinutes() > 9 ? d.getMinutes() : '0' + d.getMinutes()) +
-             ':' +
-             (d.getSeconds() > 9 ? d.getSeconds() : '0' + d.getSeconds())
+        return (
+          d.getFullYear() +
+          '-' +
+          (d.getMonth() + 1 > 9 ? d.getMonth() + 1 : '0' + (d.getMonth() + 1)) +
+          '-' +
+          (d.getDate() > 9 ? d.getDate() : '0' + d.getDate()) +
+          ' ' +
+          (d.getHours() > 9 ? d.getHours() : '0' + d.getHours()) +
+          ':' +
+          (d.getMinutes() > 9 ? d.getMinutes() : '0' + d.getMinutes()) +
+          ':' +
+          (d.getSeconds() > 9 ? d.getSeconds() : '0' + d.getSeconds())
+        )
       }
     }
   },
@@ -153,18 +166,22 @@ const columns = [
     title: '开始时间',
     dataIndex: 'startTime',
     width: '12%',
-    customRender: (text) => {
+    customRender: text => {
       if (text) {
         const d = new Date(text)
-        return d.getFullYear() + '-' +
-             ((d.getMonth() + 1) > 9 ? d.getMonth() + 1 : '0' + (d.getMonth() + 1)) + '-' +
-             (d.getDate() > 9 ? d.getDate() : '0' + d.getDate()) +
-             ' ' +
-             (d.getHours() > 9 ? d.getHours() : '0' + d.getHours()) +
-             ':' +
-             (d.getMinutes() > 9 ? d.getMinutes() : '0' + d.getMinutes()) +
-             ':' +
-             (d.getSeconds() > 9 ? d.getSeconds() : '0' + d.getSeconds())
+        return (
+          d.getFullYear() +
+          '-' +
+          (d.getMonth() + 1 > 9 ? d.getMonth() + 1 : '0' + (d.getMonth() + 1)) +
+          '-' +
+          (d.getDate() > 9 ? d.getDate() : '0' + d.getDate()) +
+          ' ' +
+          (d.getHours() > 9 ? d.getHours() : '0' + d.getHours()) +
+          ':' +
+          (d.getMinutes() > 9 ? d.getMinutes() : '0' + d.getMinutes()) +
+          ':' +
+          (d.getSeconds() > 9 ? d.getSeconds() : '0' + d.getSeconds())
+        )
       }
     }
   },
@@ -172,18 +189,22 @@ const columns = [
     title: '结束时间',
     dataIndex: 'endTime',
     width: '12%',
-    customRender: (text) => {
+    customRender: text => {
       if (text) {
         const d = new Date(text)
-        return d.getFullYear() + '-' +
-             ((d.getMonth() + 1) > 9 ? d.getMonth() + 1 : '0' + (d.getMonth() + 1)) + '-' +
-             (d.getDate() > 9 ? d.getDate() : '0' + d.getDate()) +
-             ' ' +
-             (d.getHours() > 9 ? d.getHours() : '0' + d.getHours()) +
-             ':' +
-             (d.getMinutes() > 9 ? d.getMinutes() : '0' + d.getMinutes()) +
-             ':' +
-             (d.getSeconds() > 9 ? d.getSeconds() : '0' + d.getSeconds())
+        return (
+          d.getFullYear() +
+          '-' +
+          (d.getMonth() + 1 > 9 ? d.getMonth() + 1 : '0' + (d.getMonth() + 1)) +
+          '-' +
+          (d.getDate() > 9 ? d.getDate() : '0' + d.getDate()) +
+          ' ' +
+          (d.getHours() > 9 ? d.getHours() : '0' + d.getHours()) +
+          ':' +
+          (d.getMinutes() > 9 ? d.getMinutes() : '0' + d.getMinutes()) +
+          ':' +
+          (d.getSeconds() > 9 ? d.getSeconds() : '0' + d.getSeconds())
+        )
       }
     }
   },
@@ -199,16 +220,8 @@ const columns = [
     title: '状态',
     dataIndex: 'state',
     width: '8%',
-    customRender: text => {
-      if (text === '0') {
-        return '待审批'
-      } else if (text === '1') {
-        return '审批通过'
-      } else if (text === '2') {
-        return '审批不通过'
-      } else if (text === '3') {
-        return '撤销'
-      }
+    scopedSlots: {
+      customRender: 'other1'
     }
   },
   {
@@ -253,7 +266,19 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   methods: {
-    ...mapActions('home', ['getTeachersLeave']),
+    ...mapActions('home', ['getTeachersLeave', 'exportTeaLea']),
+    exportClick() {
+      this.exportTeaLea({
+        schoolCode: this.userInfo.schoolCode,
+        name: '教职工请假',
+        userName: this.searchObj.userName ? this.searchObj.userName : undefined,
+        state: this.searchObj.state ? this.searchObj.state : undefined,
+        endTime: this.searchObj.endTime ? this.searchObj.endTime : undefined,
+        startTime: this.searchObj.startTime ? this.searchObj.startTime : undefined,
+        outSchool: this.searchObj.outSchool ? this.searchObj.outSchool : undefined,
+        orgCode: this.orgCode ? this.orgCode : undefined
+      })
+    },
     async showList(searchObj = this.searchObj) {
       const req = {
         ...this.pageList,
@@ -273,7 +298,6 @@ export default {
       this.showList(this.searchObj)
     },
     searchForm(values) {
-      console.log(values)
       this.searchObj.userName = values.userName
       this.searchObj.startTime = values.rangeTime ? this.$tools.getDateTime(values.rangeTime[0]) : ''
       this.searchObj.endTime = values.rangeTime ? this.$tools.getDateTime(values.rangeTime[1]) : ''
@@ -298,7 +322,7 @@ export default {
     margin-right: 10px;
     width: 200px;
   }
-  .page-right{
+  .page-right {
     width: calc(100% - 210px);
   }
 }

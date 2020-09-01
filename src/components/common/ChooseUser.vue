@@ -12,12 +12,12 @@
       <a-col>
         <span>姓名/工号：</span>
         <a-input v-model="keyword" style="width: 120px;margin-right: 10px" placeholder="请输入姓名" />
-        <a-button type="primary" @click="getUserList">查询</a-button>
+        <a-button type="primary" @click="getUserList(chooseType !== '')">查询</a-button>
       </a-col>
     </a-row>
     <div class="choose-user qui-fx">
       <div class="org-box">
-        <org-tree @select="select"></org-tree>
+        <org-tree @select="select" @defaultCode="defaultCode" :type="type"></org-tree>
       </div>
       <div class="qui-fx-ver qui-fx-f1">
         <table-list
@@ -29,8 +29,8 @@
           :columns="columns"
           @clickRow="clickRow"
           @selectAll="selectAll"
-          :table-list="userList">
-        </table-list>
+          :table-list="userList"
+        ></table-list>
         <page-num
           :jumper="false"
           v-model="pageList"
@@ -38,7 +38,8 @@
           :mar-bot="0"
           size="small"
           :total="total"
-          @change-page="getUserList"></page-num>
+          @change-page="changePage"
+        ></page-num>
       </div>
       <div class="user-box qui-fx-ver">
         <div class="title qui-fx-jsb">
@@ -46,7 +47,7 @@
           <span>{{ totalList.length }}人</span>
         </div>
         <div class="qui-fx-f1" style="overflow: auto">
-          <ul>
+          <ul style="padding-left:0">
             <li v-for="(item, index) in totalList" :key="item.id" class="qui-fx-jsb">
               <span>{{ item.userName }}</span>
               <a-tag @click="delUser(item.id, index)" color="#f50">删除</a-tag>
@@ -119,6 +120,10 @@ export default {
       type: String,
       default: ''
     },
+    type: {
+      type: String,
+      default: ''
+    },
     value: {
       type: Boolean,
       default: false
@@ -128,25 +133,36 @@ export default {
       default: () => {
         return []
       }
+    },
+    teacherList: {
+      type: Array,
+      default: () => {
+        return []
+      }
+    },
+    managerList: {
+      type: Array,
+      default: () => {
+        return []
+      }
     }
   },
   computed: {
-    ...mapState('home', [
-      'schoolCode'
-    ]),
+    ...mapState('home', ['schoolCode', 'eduCode']),
     status: {
-      get () {
+      get() {
         return this.value
       },
-      set () {
+      set() {
         this.$emit('input', false)
       }
     }
   },
-  data () {
+  data() {
     return {
       keyword: '',
       confirmLoading: false,
+      orgCode: '',
       chooseList: [],
       pageList: {
         page: 1,
@@ -155,10 +171,14 @@ export default {
       total: 0,
       columns,
       userList: [],
-      totalList: []
+      totalList: [],
+      code: ''
     }
   },
-  async mounted () {
+  created() {
+    this.code = this.type === 'edu' ? this.eduCode : this.schoolCode
+  },
+  async mounted() {
     if (this.chooseType === 'attendance') {
       const res = await $ajax.get({
         url: `${hostEnv.lz_attendance}/attendance/group/bind/user/query`,
@@ -172,16 +192,16 @@ export default {
         this.totalList.push({
           userCode: item.userCode,
           userName: item.userName,
-          id: item.id
+          id: item.userCode
         })
       })
-      this.getUserList()
+      this.getUserList(true)
     } else if (this.chooseType === 'door') {
       const res = await $ajax.post({
         url: `${hostEnv.zx_door}/setting/rule/user/list`,
         params: {
           pageNum: 1,
-          pageSize: 500,
+          pageSize: 5000,
           ruleGroupCode: this.bindObj.ruleGroupCode,
           schoolCode: this.bindObj.schoolCode,
           userGroupCode: this.bindObj.userGroupCode
@@ -191,52 +211,186 @@ export default {
       users.forEach(item => {
         this.chooseList.push(item.userCode)
         this.totalList.push({
-          id: item.id,
+          id: item.userCode,
           userCode: item.userCode,
           userName: item.userName
         })
       })
-      this.getUserList()
+      this.getUserList(true)
+    } else if (this.chooseType === 'organize') {
+      const res = await $ajax.get({
+        url: `${hostEnv.ljj_user_center}/userjob/query/by/schoolcode/and/jobcode`,
+        params: {
+          pageNum: 1,
+          pageSize: 5000,
+          schoolCode: this.bindObj.eduCode,
+          jobCode: this.bindObj.jobCode
+        }
+      })
+      const users = res.data
+      console.log(users)
+      users.forEach(item => {
+        this.chooseList.push(item.userCode)
+        this.totalList.push({
+          id: item.userCode,
+          userCode: item.userCode,
+          userName: item.userName
+        })
+      })
+      this.getUserList(true)
+    } else if (this.chooseType === 'school') {
+      const res = await $ajax.get({
+        url: `${hostEnv.ljj_user_center}/userjob/query/by/schoolcode/and/jobcode`,
+        params: {
+          pageNum: 1,
+          pageSize: 5000,
+          schoolCode: this.bindObj.schoolCode,
+          jobCode: this.bindObj.jobCode
+        }
+      })
+      const users = res.data
+      console.log(users)
+      users.forEach(item => {
+        this.chooseList.push(item.userCode)
+        this.totalList.push({
+          id: item.userCode,
+          userCode: item.userCode,
+          userName: item.userName
+        })
+      })
+      this.getUserList(true)
+    } else if (this.chooseType === 'dorm') {
+      const res = await $ajax.postJsonQuery({
+        url: `${hostEnv.ljj_dorm}/dorm/staff/building/list`,
+        params: {
+          page: 1,
+          size: 5000,
+          buildingCode: this.bindObj.buildingCode,
+          schoolCode: this.bindObj.schoolCode
+        }
+      })
+      const users = res.data.list
+      users.forEach(item => {
+        this.chooseList.push(item.staffCode)
+        this.totalList.push({
+          id: item.id,
+          userCode: item.staffCode,
+          userName: item.staffName
+        })
+      })
+      this.getUserList(true)
+    } else if (this.chooseType === 'ncov') {
+      this.pageList.size = 5000
+      const res = await $ajax.get({
+        url: `${hostEnv.lz_ncov}/epidemic/group/bind/user/query`,
+        params: {
+          groupCode: this.bindObj.groupCode
+        }
+      })
+      const users = res.data
+      users.forEach(item => {
+        this.chooseList.push(item.userCode)
+        this.totalList.push({
+          id: item.userCode,
+          userCode: item.userCode,
+          userName: item.userName
+        })
+      })
+      this.getUserList(true)
+    } else if (this.chooseType === 'common') {
+      this.teacherList.forEach(item => {
+        this.chooseList.push(item.userCode || item.key)
+        this.totalList.push({
+          id: item.userCode || item.key,
+          userCode: item.userCode || item.key,
+          userName: item.userName || item.label
+        })
+      })
+      this.getUserList(true)
+    } else if (this.chooseType === 'class') {
+      const res = await $ajax.get({
+        url: `${hostEnv.zk_moral}/appraise/item/user/list/${this.bindObj.groupCode}`
+      })
+      const users = res.data
+      users.forEach(item => {
+        this.chooseList.push(item.userCode)
+        this.totalList.push({
+          id: item.userCode,
+          userCode: item.userCode,
+          userName: item.userName
+        })
+      })
+      this.getUserList(true)
     } else {
       this.getUserList()
     }
+    this.managerList.forEach(item => {
+      this.chooseList.push(item.userCode)
+      this.totalList.push({
+        ...item,
+        id: item.userCode
+      })
+    })
+    this.getUserList()
   },
   methods: {
-    async getUserList () {
+    changePage() {
+      if (!this.chooseType) {
+        this.getUserList(false)
+      } else {
+        this.getUserList(true)
+      }
+    },
+    async getUserList(type = false) {
       const res = await $ajax.post({
         url: `${hostEnv.lz_user_center}/userinfo/teacher/user/queryTeacherInfo`,
         params: {
-          orgCode: this.orgCode || null,
+          orgCode: this.orgCode,
           keyword: this.keyword,
-          schoolCode: this.schoolCode,
+          schoolCode: this.code,
           ...this.pageList
         }
       })
       this.userList = res.data.list.map(item => {
+        let id = item.id
+        if (type) id = item.userCode
+        if (type && this.chooseType === 'rule') {
+          id = item.id
+        }
         return {
           ...item,
-          id: item.id
+          id
         }
       })
       this.total = res.data.total
     },
-    select (item) {
+    defaultCode(item) {
+      this.orgCode = item.code[0]
+    },
+    select(item) {
       this.pageList.page = 1
       this.orgCode = item.code
-      this.getUserList()
+      if (this.chooseType) {
+        this.getUserList(true)
+      } else {
+        this.getUserList()
+      }
     },
-    reset () {
+    reset() {
       this.confirmLoading = false
       this.$emit('input', false)
     },
-    error () {
+    error() {
       this.confirmLoading = false
     },
-    delUser (id, index) {
+    delUser(id, index) {
+      console.log('id', id)
+      console.log('index', index)
       this.totalList.splice(index, 1)
+      console.log(this.chooseList.indexOf(id))
       this.chooseList.splice(this.chooseList.indexOf(id), 1)
     },
-    selectAll (item, type) {
+    selectAll(item, type) {
       if (type) {
         this.totalList = this.totalList.concat(item)
       } else {
@@ -249,13 +403,18 @@ export default {
       }
     },
     // 监听选中或取消
-    clickRow (item, type) {
+    clickRow(item, type) {
       if (type) {
         if (this.isCheck) {
           this.totalList.push({
             id: item.id,
             userCode: item.userCode,
-            userName: item.userName
+            userName: item.userName,
+            orgCode: item.orgCode,
+            orgName: item.orgName,
+            photoUrl: item.photoUrl,
+            sex: item.sex,
+            mobile: item.mobile
           })
         } else {
           this.totalList = [item]
@@ -265,13 +424,12 @@ export default {
         this.totalList.splice(index, 1)
       }
     },
-    submitOk () {
+    submitOk() {
       if (this.totalList.length === 0 && this.bindId === -1) {
         this.$message.warning('请选择人员')
         return
       }
       this.confirmLoading = true
-      console.log(this.totalList)
       this.$emit('submit', this.totalList)
     }
   }
@@ -282,7 +440,7 @@ export default {
 .choose-user {
   height: 600px;
   .org-box {
-    width: 200px
+    width: 200px;
   }
   .user-box {
     border: 1px #f5f5f5 solid;
@@ -290,10 +448,10 @@ export default {
     width: 200px;
     .title {
       padding: 0 10px;
-      background-color:#f5f5f5;
+      background-color: #f5f5f5;
       height: 41px;
       line-height: 41px;
-      border-bottom: 1px #f5f5f5 solid
+      border-bottom: 1px #f5f5f5 solid;
     }
     li {
       border-bottom: 1px #f5f5f5 solid;

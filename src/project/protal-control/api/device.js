@@ -12,7 +12,7 @@ const deviceApi = {
   updateDeviceList: '/device/info/updateDeviceInfo#post', // 更新设备列表
   getDeviceGroupList: '/device/group/info/queryDeviceGroupInfos#post', // 获取设备组列表
   addDeviceGroup: '/device/group/info/addDeviceGroupInfo#post', // 新增设备组
-  delDevice: '/device/info/delDeviceInfo#postQuery#post', // 删除设备
+  delDevice: '/device/info/delDeviceInfo#postJsonQuery', // 删除设备
   deviceGroupDetail: '/device/group/info/detailDeviceGroupInfo#get', // 获取设备组详情
   updateDeviceGroup: '/device/group/info/updateDeviceGroupInfo#post', // 更新设备组
   delDeviceGroup: '/device/group/info/delDeviceGroupInfo#del', // 删除设备组

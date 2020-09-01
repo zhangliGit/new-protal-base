@@ -2,6 +2,8 @@
 import { RouteView } from '../layouts'
 const VisitorRecord = resolve => require(['../views/visitorManage/VisitorRecord.vue'], resolve)
 const VisitorSet = resolve => require(['../views/visitorManage/VisitorSet.vue'], resolve)
+const VisitorAccess = resolve => require(['../views/visitorManage/visitorAccess.vue'], resolve)
+const DataView = resolve => require(['../views/visitorManage/DataView.vue'], resolve)
 const visitor = {
   path: '/visitorRecord',
   name: 'visitorRecord',
@@ -24,6 +26,22 @@ const visitor = {
       component: VisitorSet,
       meta: {
         title: '访客设置'
+      }
+    },
+    {
+      path: '/visitorAccess',
+      name: 'visitorAccess',
+      component: VisitorAccess,
+      meta: {
+        title: '被访权限'
+      }
+    },
+    {
+      path: '/DataView',
+      name: 'DataView',
+      component: DataView,
+      meta: {
+        title: '实时看板'
       }
     }
   ]

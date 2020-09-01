@@ -1,6 +1,10 @@
 <template>
   <div class="page-layout qui-fx-ver">
-    <search-form is-reset @search-form="searchForm" :search-label="searchLabel"></search-form>
+    <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
+      <div slot="left">
+        <a-button icon="export" class="export-btn" @click="exportClick">导出</a-button>
+      </div>
+    </search-form>
     <a-drawer
       width="400"
       title="详情"
@@ -10,33 +14,44 @@
       :visible="detailTag"
     >
       <p>访客姓名：{{ recordDetail.visitorName }}</p>
-      <p>访客电话：{{ recordDetail.visitorMobile }}</p>
+      <p>访客手机号：{{ recordDetail.visitorMobile }}</p>
       <p>来访事由：{{ recordDetail.causeName }}</p>
-      <p v-if="recordDetail.inTime!=null">进入时间：{{getDateTime(recordDetail.inTime)}}</p>
-      <p v-else>进入时间：{{getDateTime(recordDetail.accessStartTime)}}</p>
-      <p>预计离开时间：{{ getDateTime(recordDetail.accessEndTime)}}</p>
-      <p v-if="recordDetail.outTime!=null">签离时间：{{getDateTime(recordDetail.outTime)}}</p>
-      <p v-else>签离时间：{{getDateTime(recordDetail.accessEndTime)}}</p>
+      <p>审批状态：{{ recordDetail.state }}</p>
+      <p>
+        访问状态：{{ recordDetail.visitState == '0' ? '待访问' : recordDetail.visitState == '1' ? '在访' : '签离' }}
+      </p>
+      <p>预计到达时间：{{ getDateTime(recordDetail.accessStartTime) }}</p>
+      <p v-if="recordDetail.inTime != null">进入时间：{{ getDateTime(recordDetail.inTime) }}</p>
+      <p v-else>通行开始时间：{{ getDateTime(recordDetail.accessStartTime) }}</p>
+      <p v-if="recordDetail.outTime != null">签离时间：{{ getDateTime(recordDetail.outTime) }}</p>
+      <p v-else>通行结束时间：{{ getDateTime(recordDetail.accessEndTime) }}</p>
       <p>来访时长：{{ recordDetail.duration }}</p>
       <p>进入地点：{{ recordDetail.inPlace }}</p>
-      <p>签离地点：{{ recordDetail.outPlace }}</p>
+      <p>离开地点：{{ recordDetail.outPlace }}</p>
+      <p>被访人类型：{{ recordDetail.respondentType == '1' ? '教职工' : '学生' }}</p>
       <p>被访人姓名：{{ recordDetail.respondentName }}</p>
-      <p>被访人类型：{{ recordDetail.respondentType =='1'?'学生' : '教职工' }}</p>
-      <p>被访人手机号：{{ recordDetail.resMobile }}</p>
-      <p>组织机构：教务处</p>
-      <p>审批状态：{{ recordDetail.state}}</p>
-      <p>访问状态：{{(recordDetail.visitState=='0' ? '待访问' : (recordDetail.visitState=='1'?'在访':'签离'))}}</p>
+      <p>组织/班级:{{ recordDetail.orgName }}/{{ recordDetail.gradeName }}{{ recordDetail.clazzName }}</p>
     </a-drawer>
-    <table-list :page-list="pageList" :columns="columns" :table-list="recordList">
+    <table-list isZoom :page-list="pageList" :columns="columns" :table-list="recordList">
       <template v-slot:actions="action">
         <a-tooltip placement="topLeft" title="详情">
-          <a-button
-            size="small"
-            class="detail-action-btn"
-            icon="ellipsis"
-            @click="goDetail(action.record)"
-          ></a-button>
+          <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="goDetail(action.record)"></a-button>
         </a-tooltip>
+      </template>
+      <template v-slot:other3="action">
+        <a-tag color="#D3D3D3" v-if="action.record.state == '0'">待审批</a-tag>
+        <a-tag color="#108ee9" v-if="action.record.state == '1'">同意</a-tag>
+        <a-tag color="#e80000" v-if="action.record.state == '2'">不同意</a-tag>
+        <a-tag color="#FF0000" v-if="action.record.state == '3'">撤销</a-tag>
+        <a-tag color="#DCDCDC" v-if="action.record.state == '4'">失效</a-tag>
+      </template>
+      <template v-slot:other4="action">
+        <a-tag color="#D3D3D3" v-if="action.record.visitState == '0'">待访问</a-tag>
+        <a-tag color="#1E90FF" v-if="action.record.visitState == '1'">在访</a-tag>
+        <a-tag color="#FF0000" v-if="action.record.visitState == '2'">签离</a-tag>
+      </template>
+      <template v-slot:other5="action">
+        <div>{{ action.record.inTime ? action.record.inTime : action.record.accessStartTime | gmtToDate }}</div>
       </template>
     </table-list>
     <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
@@ -47,7 +62,6 @@ import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import SearchForm from '@c/SearchForm'
 import PageNum from '@c/PageNum'
-import Tools from '@u/tools'
 const searchLabel = [
   {
     value: 'keyword',
@@ -67,7 +81,6 @@ const searchLabel = [
   },
   {
     list: [
-      // 选择列表项，select控件必传
       {
         key: '',
         val: '全部'
@@ -140,12 +153,12 @@ const columns = [
     width: '8%'
   },
   {
-    title: '访客电话',
+    title: '访客手机号',
     dataIndex: 'visitorMobile',
     width: '10%'
   },
   {
-    title: '底照',
+    title: '访客照片',
     dataIndex: 'registPhoto',
     width: '10%',
     scopedSlots: {
@@ -159,10 +172,9 @@ const columns = [
   },
   {
     title: '进入时间',
-    dataIndex: 'inTime',
     width: '8%',
-    customRender: text => {
-      return Tools.getDate(text)
+    scopedSlots: {
+      customRender: 'other5'
     }
   },
   {
@@ -181,44 +193,27 @@ const columns = [
     width: '10%',
     customRender: text => {
       if (text === 1) {
-        return '学生'
-      } else {
         return '教职工'
+      } else if (text === 2) {
+        return '学生'
       }
     }
   },
   {
     title: '审批状态',
-    dataIndex: 'state',
     width: '8%',
-    customRender: text => {
-      if (text === 0) {
-        return '待审批'
-      } else if (text === 1) {
-        return '同意'
-      } else if (text === 2) {
-        return '不同意'
-      } else if (text === 3) {
-        return '撤销'
-      } else {
-        return '失效'
-      }
+    scopedSlots: {
+      customRender: 'other3'
     }
   },
   {
     title: '访问状态',
-    dataIndex: 'visitState',
     width: '8%',
-    customRender: text => {
-      if (text === 0) {
-        return '待访问'
-      } else if (text === 1) {
-        return '在访'
-      } else {
-        return '签离'
-      }
+    scopedSlots: {
+      customRender: 'other4'
     }
   },
+
   {
     title: '详情',
     key: 'action',
@@ -246,7 +241,18 @@ export default {
         size: 20
       },
       recordList: [],
-      recordDetail: {}
+      recordDetail: {},
+      searchList: {
+        pageNum: '',
+        pageSize: '',
+        schoolCode: ''
+      },
+      keyword: '',
+      state: '',
+      visitState: '',
+      accessType: '',
+      inStartTime: '',
+      inEndTime: ''
     }
   },
   computed: {
@@ -256,15 +262,25 @@ export default {
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getappointList', 'getappointDetail']),
-    async showList(searchObj = {}) {
-      const req = {
-        pageNum: this.pageList.page,
-        pageSize: this.pageList.size,
+    ...mapActions('home', ['getappointList', 'getappointDetail', 'downAppoint']),
+    exportClick() {
+      this.downAppoint({
         schoolCode: this.userInfo.schoolCode,
-        ...searchObj
-      }
-      const res = await this.getappointList(req)
+        keyword: this.keyword ? this.keyword : undefined,
+        visitState: this.visitState ? this.visitState : undefined,
+        accessType: this.accessType ? this.accessType : undefined,
+        inStartTime: this.inStartTime ? this.inStartTime : undefined,
+        inEndTime: this.inEndTime ? this.inEndTime : undefined,
+        name: '访客记录',
+        state: this.state
+      })
+    },
+    async showList(searchObj = {}) {
+      this.searchList.pageNum = this.pageList.page
+      this.searchList.pageSize = this.pageList.size
+      this.searchList.schoolCode = this.userInfo.schoolCode
+      this.searchList = Object.assign(this.searchList, searchObj)
+      const res = await this.getappointList(this.searchList)
       this.recordList = res.data.list
       this.total = res.data.total
     },
@@ -275,13 +291,13 @@ export default {
       }
       const res = await this.getappointDetail(req)
       this.recordDetail = res.data
-      if (this.recordDetail.state == 0) {
+      if (this.recordDetail.state === 0) {
         this.recordDetail.state = '待审批'
-      } else if (this.recordDetail.state == 1) {
+      } else if (this.recordDetail.state === 1) {
         this.recordDetail.state = '同意'
-      } else if (this.recordDetail.state == 2) {
+      } else if (this.recordDetail.state === 2) {
         this.recordDetail.state = '不同意'
-      } else if (this.recordDetail.state == 3) {
+      } else if (this.recordDetail.state === 3) {
         this.recordDetail.state = '撤销'
       } else {
         this.recordDetail.state = '失效'
@@ -289,13 +305,19 @@ export default {
     },
     searchForm(values) {
       this.pageList.page = 1
+      this.keyword = values.keyword
+      this.state = values.state
+      this.visitState = values.visitState
+      this.accessType = values.accessType
+      this.inStartTime = values.rangeTime[0]
+      this.inEndTime = values.rangeTime[1]
       const searchObj = {
-        keyword: values.keyword,
-        state: values.state,
-        visitState: values.visitState,
-        accessType: values.accessType,
-        inStartTime: values.rangeTime[0],
-        inEndTime: values.rangeTime[1]
+        keyword: this.keyword,
+        state: this.state,
+        visitState: this.visitState,
+        accessType: this.accessType,
+        inStartTime: this.inStartTime,
+        inEndTime: this.inEndTime
       }
       this.showList(searchObj)
     },

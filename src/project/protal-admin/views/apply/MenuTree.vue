@@ -8,8 +8,7 @@
       defaultExpandAll
       draggable
       @drop="onDrop"
-    >
-    </a-tree>
+    ></a-tree>
   </div>
 </template>
 
@@ -17,7 +16,7 @@
 import { mapActions } from 'vuex'
 export default {
   name: 'MenuTree',
-  data () {
+  data() {
     return {
       treeData: [],
       gradeId: '',
@@ -27,7 +26,7 @@ export default {
       plateformType: ''
     }
   },
-  mounted () {
+  mounted() {
     this.applyId = this.$route.query.id
     this.plateformType = this.$route.query.plateformType
     this.initMenu()
@@ -35,7 +34,7 @@ export default {
   methods: {
     ...mapActions('home', ['getBindMenu', 'updateBindMenu']),
     // 节点拖拽
-    onDrop (info) {
+    onDrop(info) {
       const dragNode = info.dragNode.dataRef
       const dropNode = info.node.dataRef
       const dropPos = info.node.pos.split('-')
@@ -60,9 +59,9 @@ export default {
         })
       })
     },
-    onExpand () {},
+    onExpand() {},
     // 点击节点
-    select (obj, tree) {
+    select(obj, tree) {
       if (obj.length === 0) {
         this.$emit('select', [])
       }
@@ -77,7 +76,7 @@ export default {
       }
       this.$emit('select', selectObj)
     },
-    async initMenu () {
+    async initMenu() {
       const req = {
         appId: this.applyId,
         plateformType: this.plateformType
@@ -90,7 +89,7 @@ export default {
         this.treeData = []
       }
     },
-    filtersData (record) {
+    filtersData(record) {
       return {
         title: record.name,
         key: record.id,
@@ -105,10 +104,10 @@ export default {
 </script>
 
 <style lang="less" scoped>
-  .menu-tree {
-    width: 200px;
-    min-height: 400px;
-    max-height: 500px;
-    overflow-y: auto
-  }
+.menu-tree {
+  width: 200px;
+  min-height: 400px;
+  max-height: 500px;
+  overflow-y: auto;
+}
 </style>

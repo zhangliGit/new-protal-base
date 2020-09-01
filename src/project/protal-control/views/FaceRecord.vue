@@ -1,18 +1,13 @@
 <template>
   <div class="device-list page-layout qui-fx-ver">
-    <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
-    </search-form>
-    <table-list
-      is-zoom
-      :page-list="pageList"
-      :columns="faceRecordColumns"
-      :table-list="identifyList">
+    <search-form is-reset @search-form="searchForm" :search-label="searchLabel"> </search-form>
+    <table-list is-zoom :page-list="pageList" :columns="faceRecordColumns" :table-list="identifyList">
       <template v-slot:actions="action">
         <a-tooltip placement="topLeft" title="编辑">
-          <a-button size="small" class="edit-action-btn" icon="form" ></a-button>
+          <a-button size="small" class="edit-action-btn" icon="form"></a-button>
         </a-tooltip>
         <a-tooltip placement="topLeft" title="删除">
-          <a-button size="small" class="del-action-btn" icon="delete" ></a-button>
+          <a-button size="small" class="del-action-btn" icon="delete"></a-button>
         </a-tooltip>
       </template>
     </table-list>
@@ -32,12 +27,6 @@ const searchLabel = [
     type: 'input',
     label: '姓名',
     placeholder: '请输入姓名'
-  },
-  {
-    list: [],
-    value: 'controlGroupCode',
-    type: 'select',
-    label: '控制组'
   }
 ]
 export default {
@@ -48,11 +37,9 @@ export default {
     PageNum
   },
   computed: {
-    ...mapState('home', [
-      'schoolCode'
-    ])
+    ...mapState('home', ['schoolCode'])
   },
-  data () {
+  data() {
     return {
       total: 0,
       searchLabel,
@@ -70,26 +57,8 @@ export default {
     }
   },
   methods: {
-    ...mapActions('home', [
-      'getIdentify',
-      'getControlGroupList'
-    ]),
-    getGroupList () {
-      this.getControlGroupList({
-        schoolCode: this.schoolCode,
-        ...this.pageList
-      }).then(res => {
-        if (res.data.list === 0) return
-        const data = res.data.list.map(el => {
-          return {
-            key: el.controlGroupCode,
-            val: el.controlGroupName
-          }
-        })
-        this.searchLabel[1].list = [...[{ key: '', val: '全部' }], ...data]
-      })
-    },
-    showTableList () {
+    ...mapActions('home', ['getIdentify', 'getControlGroupList']),
+    showTableList() {
       this.getIdentify({
         ...this.pageList,
         ...this.searchText,
@@ -100,18 +69,15 @@ export default {
         this.total = res.data.total
       })
     },
-    searchForm (values) {
+    searchForm(values) {
       this.searchText = values
       this.showTableList()
     }
   },
-  mounted () {
+  mounted() {
     this.showTableList()
-    this.getGroupList()
   }
 }
-
 </script>
 
-<style lang="less" scoped>
-</style>
+<style lang="less" scoped></style>

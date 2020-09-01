@@ -14,6 +14,7 @@ const homeApi = {
   getStudentLeaveDetail: '/student/leave/detailById#getUrl' // 学生请假详情
 }
 for (const val in homeApi) {
-  homeApi[val] = `${hostEnv.zk_leave}${homeApi[val]}`
+  homeApi[val] = `${hostEnv.ljj_attendance}${homeApi[val]}`
+  // homeApi[val] = `${hostEnv.zk_leave}${homeApi[val]}`
 }
 export default homeApi

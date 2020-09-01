@@ -5,11 +5,21 @@
       <search-form
         isReset
         @search-form="searchForm"
-        :search-label="searchLabel"></search-form>
+        :search-label="searchLabel">
+        <div slot="left">
+          <a-button icon="export" class="export-btn" @click="exportClick">导出</a-button>
+        </div>
+      </search-form>
       <table-list
         :page-list="pageList"
         :columns="columns"
         :table-list="recordList">
+        <template v-slot:other1="record">
+          <a-tag :color="$tools.color(record.record.onState)" >{{ record.record.onState | onState }}</a-tag>
+        </template>
+        <template v-slot:other2="record">
+          <a-tag :color="$tools.color(record.record.offState)" >{{ record.record.offState | onState }}</a-tag>
+        </template>
         <template v-slot:actions="action">
           <a-tag
             color="#ccc"
@@ -36,6 +46,7 @@ import PageNum from '@c/PageNum'
 import RecordDetail from './RecordDetail'
 import RecordChange from './RecordChange'
 import columns from '../../assets/js/table/studentRecord'
+import hostEnv from '@config/host-env'
 const searchLabel = [
   {
     value: 'searchKey', // 表单属性
@@ -116,7 +127,7 @@ export default {
   data () {
     return {
       searchLabel,
-      pageList: {
+      searchList: {
         classCode: '',
         endDay: '',
         gradeCode: '',
@@ -124,7 +135,9 @@ export default {
         onStatue: '',
         schoolCode: '',
         searchKey: '',
-        startDay: '',
+        startDay: ''
+      },
+      pageList: {
         page: 1,
         size: 20
       },
@@ -139,39 +152,51 @@ export default {
     ])
   },
   mounted () {
-    this.pageList.schoolCode = this.userInfo.schoolCode
+    this.searchList.schoolCode = this.userInfo.schoolCode
     this.showList()
   },
   methods: {
     ...mapActions('home', [
-      'getStudentRecord'
+      'getStudentRecord', 'exportStuAttRec'
     ]),
+    exportClick() {
+      const url = `${hostEnv.ljj_attendance}/student/static/record/list/export?schoolCode=${this.userInfo.schoolCode}&startDay=${this.searchList.startDay}&endDay=${this.searchList.endDay}&searchKey=${this.searchList.searchKey}&schoolYearId=${this.searchList.schoolYearId}&gradeCode=${this.searchList.gradeCode}&classCode=${this.searchList.classCode}&onStatue=${this.searchList.onStatue}&offStatue=${this.searchList.offStatue}`
+      console.log(url)
+      window.open(url)
+      /* this.exportStuAttRec({
+        ...this.searchList,
+        ...this.pageList,
+        name: '学生考勤-考勤记录'
+      }) */
+    },
     async showList () {
-      const res = await this.getStudentRecord(this.pageList)
+      this.searchList = Object.assign(this.searchList, this.pageList)
+      const res = await this.getStudentRecord(this.searchList)
       this.recordList = res.data.list
       this.total = res.data.total
     },
     select (item) {
-      console.log(item) // { name: '', code: ''}
-      this.pageList.schoolYearId = item.schoolYearId
-      this.pageList.gradeCode = item.gradeCode
-      this.pageList.classCode = item.classCode
+      this.pageList.page = 1
+      this.pageList.size = 20
+      this.searchList.schoolYearId = item.schoolYearId
+      this.searchList.gradeCode = item.gradeCode
+      this.searchList.classCode = item.classCode
       this.showList()
     },
     searchForm (values) {
-      this.pageList.startDay = values.rangeTime[0]
-      this.pageList.endDay = values.rangeTime[1]
-      this.pageList = Object.assign(this.pageList, values)
+      this.pageList.page = 1
+      this.pageList.size = 20
+      this.searchList.startDay = values.rangeTime[0]
+      this.searchList.endDay = values.rangeTime[1]
+      this.searchList = Object.assign(this.searchList, values)
       this.showList()
     },
     checkDetail (record) {
-      console.log('checkDetail+++', record)
       this.$refs.recordDetail.recordId = record.id
       this.$refs.recordDetail.showList()
       this.$refs.recordDetail.dialogTag = true
     },
     changeDetail (record) {
-      console.log('changeDetail+++', record)
       this.$refs.recordChange.recordId = record.id
       this.$refs.recordChange.dialogTag = true
     }

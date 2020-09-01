@@ -2,8 +2,24 @@
   <div class="page-layout qui-fx">
     <org-tree @select="select"></org-tree>
     <div class="qui-fx-f1 qui-fx-ver">
-      <search-form isReset @search-form="searchForm" :search-label="searchLabel"></search-form>
+      <search-form isReset @search-form="searchForm" :search-label="searchLabel">
+        <div slot="left">
+          <a-button icon="export" class="export-btn" @click="exportClick">导出</a-button>
+        </div>
+      </search-form>
       <table-list :page-list="pageList" :columns="columns" :table-list="recordList">
+        <template v-slot:other1="record">
+          <a-tag color="#71d5a1">{{ record.record.normalCount }}</a-tag>
+        </template>
+        <template v-slot:other2="record">
+          <a-tag color="#ff9900">{{ record.record.lateCount }}</a-tag>
+        </template>
+        <template v-slot:other3="record">
+          <a-tag color="#fa3534">{{ record.record.earlyCount }}</a-tag>
+        </template>
+        <template v-slot:other4="record">
+          <a-tag color="#fab6b6">{{ record.record.noRecord }}</a-tag>
+        </template>
         <template v-slot:actions="action">
           <div>
             <a-tooltip placement="topLeft" title="详情">
@@ -29,6 +45,7 @@ import SearchForm from '@c/SearchForm'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
 import columns from '../../assets/js/table/teacherStatistics'
+import hostEnv from '@config/host-env'
 const searchLabel = [
   {
     value: 'searchKey', // 表单属性
@@ -53,12 +70,14 @@ export default {
   data() {
     return {
       searchLabel,
-      pageList: {
+      searchList: {
         endDay: '',
         orgCode: '',
         schoolCode: '',
         searchKey: '',
-        startDay: '',
+        startDay: ''
+      },
+      pageList: {
         page: 1,
         size: 20
       },
@@ -73,32 +92,49 @@ export default {
     ])
   },
   async mounted() {
-    this.pageList.schoolCode = this.userInfo.schoolCode
+    this.searchList.schoolCode = this.userInfo.schoolCode
     // this.pageList.orgCode = this.userInfo.schoolCode
-    this.pageList.orgCode = ''
+    this.searchList.orgCode = ''
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getTeacherStatistics']),
+    ...mapActions('home', ['getTeacherStatistics', 'exportTeaAtt']),
+    exportClick() {
+      const url = `${hostEnv.ljj_attendance}/teacher/static/list/export?schoolCode=${this.userInfo.schoolCode}&startDay=${this.searchList.startDay}&endDay=${this.searchList.endDay}&searchKey=${this.searchList.searchKey}&orgCode=${this.searchList.orgCode}`
+      console.log(url)
+      window.open(url)
+      /* this.exportTeaAtt({
+        schoolCode: this.userInfo.schoolCode,
+        searchKey: this.searchList.searchKey ? this.searchList.searchKey : undefined,
+        startDay: this.searchList.startDay ? this.searchList.startDay : undefined,
+        endDay: this.searchList.endDay ? this.searchList.endDay : undefined,
+        orgCode: this.pageList.orgCode ? this.pageList.orgCode : this.userInfo.schoolCode,
+        ...this.searchList,
+        ...this.pageList,
+        name: '教职工考勤-考勤统计'
+      }) */
+    },
     async showList() {
-      this.pageList.schoolCode = this.userInfo.schoolCode
-      const res = await this.getTeacherStatistics(this.pageList)
+      this.searchList = Object.assign(this.searchList, this.pageList)
+      const res = await this.getTeacherStatistics(this.searchList)
       this.recordList = res.data.list
       this.total = res.data.total
     },
     select(item) {
-      console.log(item) // { name: '', code: ''}
+      this.pageList.page = 1
+      this.pageList.size = 20
       this.pageList.orgCode = item.code
       this.showList()
     },
     searchForm(values) {
-      this.pageList.startDay = values.rangeTime[0]
-      this.pageList.endDay = values.rangeTime[1]
-      this.pageList = Object.assign(this.pageList, values)
+      this.pageList.page = 1
+      this.pageList.size = 20
+      this.searchList.startDay = values.rangeTime[0]
+      this.searchList.endDay = values.rangeTime[1]
+      this.searchList = Object.assign(this.searchList, values)
       this.showList()
     },
     detail(record) {
-      console.log('checkDetial+++', record)
       this.$router.push({
         path: '/teacherStatistics/detail',
         query: {

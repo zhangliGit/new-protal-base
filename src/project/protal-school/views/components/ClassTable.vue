@@ -42,8 +42,11 @@
       <template slot="editClassTeacher" slot-scope="text, record">
         <slot name="editClassTeachers" :record="record"></slot>
       </template>
-      <template slot="totalNum" slot-scope="text, record">
-        <slot name="totalNums" :record="record"></slot>
+      <template slot="totalNum1" slot-scope="text, record">
+        <slot name="totalNum1s" :record="record"></slot>
+      </template>
+      <template slot="totalNum2" slot-scope="text, record">
+        <slot name="totalNum2s" :record="record"></slot>
       </template>
     </a-table>
   </div>

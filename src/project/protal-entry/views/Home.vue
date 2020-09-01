@@ -1,22 +1,15 @@
 <template>
-  <div class="home page-layout bg-fff">
-  </div>
+  <div class="home page-layout bg-fff"></div>
 </template>
 
 <script>
 export default {
   name: 'Home',
-  components: {
+  components: {},
+  data() {
+    return {}
   },
-  data () {
-    return {
-    }
-  },
-  mounted () {
-  },
-  methods: {
-  }
+  mounted() {},
+  methods: {}
 }
 </script>
-<style lang="less" scoped>
-</style>

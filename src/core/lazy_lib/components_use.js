@@ -1,4 +1,3 @@
-
 /* eslint-disable */
 /**
  * 该文件是为了按需加载，剔除掉了一些不需要的框架组件。
@@ -14,6 +13,8 @@ import {
   InputNumber,
   Button,
   Switch,
+  Timeline,
+  TimelineItem,
   Radio,
   Checkbox,
   Select,
@@ -56,6 +57,8 @@ Vue.use(Input)
 Vue.use(InputNumber)
 Vue.use(Button)
 Vue.use(Switch)
+Vue.use(Timeline)
+Vue.use(TimelineItem)
 Vue.use(Radio)
 Vue.use(Checkbox)
 Vue.use(Select)

@@ -21,6 +21,18 @@ import hostEnv from '@config/host-env'
 export default {
   name: 'GradeTree',
   props: {
+    isOnlyNewSchoolYear: {
+      type: Boolean,
+      default: false
+    },
+    isChoose: {
+      type: Boolean,
+      default: false
+    },
+    school: {
+      type: String,
+      default: ''
+    }
   },
   data () {
     return {
@@ -69,7 +81,7 @@ export default {
     },
     async initMenu () {
       const req = {
-        schoolCode: this.schoolCode
+        schoolCode: this.school ? this.school : this.schoolCode
       }
       const res = await $ajax.postForm({
         url: `${hostEnv.lz_user_center}/schoolYearSemester/list`,
@@ -100,20 +112,24 @@ export default {
         isNewYear: true
       }
       this.defaultSelectedKeys = [this.gradeList[0].id]
-      this.treeData = this.gradeList
-        .map(item => {
-          return {
-            title: item.schoolYear + '学年',
-            code: item.id,
-            key: item.id,
-            schoolYearId: item.id
-          }
-        })
-      /* this.onLoadData({
-        dataRef: {
-          schoolYearId: this.treeData[0].code
-        }
-      }) */
+      if (this.isOnlyNewSchoolYear) {
+        this.treeData = [{
+          title: this.gradeList[0].schoolYear + '学年',
+          code: this.gradeList[0].id,
+          key: this.gradeList[0].id,
+          schoolYearId: this.gradeList[0].id
+        }]
+      } else {
+        this.treeData = this.gradeList
+          .map(item => {
+            return {
+              title: item.schoolYear + '学年',
+              code: item.id,
+              key: item.id,
+              schoolYearId: item.id
+            }
+          })
+      }
       this.$emit('select', selectObj)
     },
     async onLoadData (treeNode) {
@@ -123,7 +139,7 @@ export default {
           return
         }
         const req = {
-          schoolCode: this.schoolCode
+          schoolCode: this.school ? this.school : this.schoolCode
         }
         $ajax.postForm({
           url: `${hostEnv.lz_user_center}/grade/manage/list`,
@@ -133,7 +149,7 @@ export default {
             return {
               title: item.name,
               schoolYearId: treeNode.dataRef.schoolYearId,
-              isLeaf: false,
+              isLeaf: this.isChoose,
               gradeCode: item.code
             }
           })
@@ -170,7 +186,6 @@ export default {
 
 <style lang="less" scoed>
   .grade-tree {
-    width: 200px;
     min-height: 400px;
     max-height: 800px;
     overflow-y: auto

@@ -4,7 +4,7 @@
       @mouseover="showTip(index)"
       v-for="(pic, index) in fileList"
       :key="pic.id"
-      class="qui-fx qui-fx-ac-jc"
+      class="qui-fx qui-fx-ac-jc mar-t10"
       :style="{position: 'relative', marginRight: '10px', backgroundColor: '#fff', padding: '18px', border: '1px dashed #ccc', height: fileInfo.h || 120 + 'px', width: fileInfo.w || 120 + 'px'}">
       <div @mouseleave="showTip()" class="showTip qui-fx-ac-jc" v-if="currentIndex === index">
         <div>
@@ -15,9 +15,10 @@
       <img :src="pic.url" style="width: 80px; height: 80px" alt="">
     </div>
     <a-upload
+      :multiple="true"
       name="fileList"
       listType="picture-card"
-      class="avatar-uploader"
+      class="avatar-uploader mar-t10"
       :showUploadList="false"
       :action="reqUrl"
       :beforeUpload="beforeUpload"
@@ -134,6 +135,7 @@ export default {
         getBase64(info.file.originFileObj, (imageUrl) => {
           this.fileList.push({
             uid: info.file.uid,
+            uname: info.file.name,
             url: Array.isArray(info.file.response.data) ? info.file.response.data[0].url : info.file.response.data.url
           })
           this.uploadTag = false
@@ -147,6 +149,9 @@ export default {
   /deep/ .ant-upload.ant-upload-select-picture-card > .ant-upload {
     padding: 0px !important;
   }
+  /deep/ .ant-upload-picture-card-wrapper{
+    width: auto;
+  }
   .showTip {
     position: absolute;
     z-index: 9;
@@ -159,5 +164,8 @@ export default {
       padding: 0 8px;
       font-size: 18px;
     }
+  }
+  .upload-file{
+    flex-wrap: wrap;
   }
 </style>

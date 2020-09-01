@@ -1,7 +1,12 @@
 <template>
   <div class="header-top">
-    <submit-form ref="form" @submit-form="submitForm" title="修改密码" v-model="formStatus" :form-data="formData">
-    </submit-form>
+    <submit-form
+      ref="form"
+      @submit-form="submitForm"
+      title="修改密码"
+      v-model="formStatus"
+      :form-data="formData"
+    ></submit-form>
     <a-row type="flex" justify="space-between">
       <a-col style="font-size: 18px">
         <a-icon
@@ -16,9 +21,13 @@
             <a-icon v-if="this.schoolList.length > 1" type="caret-down" style="float: right; margin-top: 6px" />
           </span>
           <a-menu v-if="this.schoolList.length > 1" slot="overlay" style="background-color: #31384b; min-width: 200px">
-            <a-menu-item @click="switchSchool(list)" v-for="list in schoolList" :key="list.id" style="color: #999">
-              {{ list.name }}
-            </a-menu-item>
+            <a-menu-item
+              @click="switchSchool(index, true)"
+              v-for="(list, index) in schoolList"
+              :key="list.id"
+              style="color: #999"
+              >{{ list.schoolName }}</a-menu-item
+            >
           </a-menu>
         </a-dropdown>
       </a-col>
@@ -27,7 +36,7 @@
           <div class="qui-fx-ac user-block">
             <span>{{ userName }}</span>
             <div class="user-icon">
-              <img :src="userPic" alt="" />
+              <img :src="userPic" alt />
             </div>
           </div>
           <a-menu slot="overlay" style="background-color: #31384b; min-width: 120px">
@@ -42,6 +51,7 @@
 </template>
 
 <script>
+import eventBus from '@u/eventBus'
 import { mapState, mapMutations } from 'vuex'
 import SubmitForm from '@c/SubmitForm'
 import userIcon from '@a/img/user-icon.png'
@@ -75,7 +85,6 @@ const formData = [
 ]
 export default {
   name: 'HeaderTop',
-  props: {},
   components: {
     UserMenu,
     SubmitForm
@@ -84,58 +93,62 @@ export default {
     ...mapState('home', ['isEntryApp', 'slideTag'])
   },
   data() {
-    const loginInfo = JSON.parse(window.sessionStorage.getItem('loginInfo') || JSON.stringify({}))
+    const loginInfo = JSON.parse(window.sessionStorage.getItem('loginType') || JSON.stringify({}))
     return {
       formStatus: false,
       formData,
-      schoolList: [],
+      schoolList: [
+        {
+          schoolName: '平安校园云平台',
+          schoolCode: ''
+        }
+      ],
       userName: loginInfo.userName || '管理员',
       userPic: loginInfo.photoUrl || userIcon,
-      currentName: '云平台管理端'
+      currentName: window.sessionStorage.getItem('currentName') || '平安校园云平台'
     }
   },
-  mounted() {
-    const { accountType, schoolName, schoolCode } = JSON.parse(
-      window.sessionStorage.getItem('loginInfo') || JSON.stringify({})
-    )
-    /**
-     * @des 账号类型
-     */
-    if (accountType && accountType === 1) {
-      this.schoolList = [
-        {
-          id: 1,
-          name: '云平台管理端'
-        }
-      ]
-    } else {
-      this.schoolList = [
-        {
-          id: schoolCode,
-          name: schoolName
-        }
-      ]
-    }
-    this.currentName = this.schoolList[0].name
-  },
+  mounted() {},
   methods: {
     ...mapMutations('home', ['updateState']),
+    // 绑定学校
+    bindSchool(data) {
+      this.schoolList = data
+      this.switchSchool(0)
+    },
+    // 切换学校
+    switchSchool(index, tag = false) {
+      if (this.isEntryApp && !tag) {
+        return
+      }
+      if (this.isEntryApp) {
+        this.goConsole()
+      }
+      const { id } = JSON.parse(window.sessionStorage.getItem('loginType'))
+      const userType = JSON.parse(window.sessionStorage.getItem('loginType')).userTypes[index].userType
+      window.sessionStorage.setItem('currentName', this.schoolList[index].schoolName)
+      this.currentName = window.sessionStorage.getItem('currentName')
+      window.sessionStorage.setItem('loginInfo', JSON.stringify(this.schoolList[index]))
+      eventBus.$emit('login')
+      this.$emit('changeMenu', this.schoolList[index].schoolCode, userType, id)
+    },
     changePass() {
       this.formStatus = true
     },
     submitForm({ oldPassword, newPassword, confirmPassword }) {
       if (newPassword !== confirmPassword) {
         this.$message.warning('两次输入的新密码不一致')
+        this.$refs.form.error()
         return
       }
-      const loginInfo = JSON.stringify({ id: '' })
+      const loginType = JSON.stringify({ id: '' })
       $ajax
         .postQuery({
           url: `${hostEnv.lz_user_center}/userinfo/user/login/update/password`,
           params: {
             oldPassword,
             newPassword,
-            userId: JSON.parse(window.sessionStorage.getItem('loginInfo') || loginInfo).id
+            userId: JSON.parse(window.sessionStorage.getItem('loginType') || loginType).id
           }
         })
         .then(res => {
@@ -145,9 +158,6 @@ export default {
         .catch(e => {
           this.$refs.form.error()
         })
-    },
-    switchSchool(item) {
-      this.currentName = item.name
     },
     goConsole() {
       this.updateState({
@@ -178,8 +188,8 @@ export default {
         })
         .then(res => {
           this.$message.success('注销成功')
-          window.localStorage.removeItem('loginInfo')
-          window.localStorage.removeItem('protal-entry')
+          window.sessionStorage.clear()
+          window.localStorage.clear()
           this.$tools.goNext(() => {
             if (process.env.NODE_ENV === 'production') {
               window.location.href = '/login'

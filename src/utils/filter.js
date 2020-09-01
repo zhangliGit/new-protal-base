@@ -98,6 +98,14 @@ const filters = {
         ':' +
         (d.getMinutes() > 9 ? d.getMinutes() : '0' + d.getMinutes())
       )
+    } else if (type === 6) {
+      return (
+        (d.getHours() > 9 ? d.getHours() : '0' + d.getHours()) +
+        ':' +
+        (d.getMinutes() > 9 ? d.getMinutes() : '0' + d.getMinutes()) +
+        ':' +
+        (d.getSeconds() > 9 ? d.getSeconds() : '0' + d.getSeconds())
+      )
     }
   },
   getSiteCategory: val => {
@@ -114,6 +122,15 @@ const filters = {
       return '其他'
     }
   },
+  getStudentStatus: val => {
+    if (val === '1' || val === '4') {
+      return '在读'
+    } else if (val === '2') {
+      return '休学'
+    } else if (val === '3') {
+      return '退学'
+    }
+  },
   getApprovalState: val => {
     if (val === '0') {
       return '待审批'
@@ -123,6 +140,8 @@ const filters = {
       return '审批不通过'
     } else if (val === '3') {
       return '撤销'
+    } else if (val === '4') {
+      return '审批中'
     }
   },
   getWeekDay: val => {
@@ -142,6 +161,131 @@ const filters = {
     } else if (week === 1) {
       return '周日'
     }
+  },
+  getWeek: val => {
+    const week = parseInt(val)
+    if (week === 2) {
+      return '周一'
+    } else if (week === 3) {
+      return '周二'
+    } else if (week === 4) {
+      return '周三'
+    } else if (week === 5) {
+      return '周四'
+    } else if (week === 6) {
+      return '周五'
+    } else if (week === 7) {
+      return '周六'
+    } else if (week === 1) {
+      return '周日'
+    }
+  },
+  getWeeks: val => {
+    val = val.map(el => {
+      if (el === '1') {
+        return '周日'
+      } else if (el === '2') {
+        return '周一'
+      } else if (el === '3') {
+        return '周二'
+      } else if (el === '4') {
+        return '周三'
+      } else if (el === '5') {
+        return '周四'
+      } else if (el === '6') {
+        return '周五'
+      } else if (el === '7') {
+        return '周六'
+      }
+    }).join(',')
+    return val
+  },
+  onState: text => {
+    if (text === 1) {
+      return '迟到'
+    } else if (text === 2) {
+      return '早退'
+    } else if (text === 3 || text === 6) {
+      return '缺卡'
+    } else if (text === 4) {
+      return '请假'
+    } else if (text === 5) {
+      return '正常'
+    } else if (text === 7) {
+      return '缺勤'
+    }
+  },
+  pState: val => {
+    if (val === '0') {
+      return '未开始'
+    } else if (val === '1') {
+      return '进行中'
+    } else {
+      return '已结束'
+    }
+  },
+  getSex: val => {
+    const text = parseInt(val)
+    if (text === 1) {
+      return '男'
+    } else if (text === 2) {
+      return '女'
+    } else {
+      return '未知'
+    }
+  },
+  getDorm: val => {
+    const text = parseInt(val)
+    if (text === 0) {
+      return '走读'
+    } else if (text === 1) {
+      return '住读'
+    } else {
+      return '未知'
+    }
+  },
+  getSourceDanger: val => {
+    const text = parseInt(val)
+    if (parseInt(text) === 1) {
+      return '隐患排查'
+    } else if (parseInt(text) === 2) {
+      return '日常巡查'
+    } else if (parseInt(text) === 3) {
+      return '专项检查'
+    } else if (parseInt(text) === 4) {
+      return '社会监督'
+    }
+  },
+  getDangerLevel: val => {
+    const text = parseInt(val)
+    if (parseInt(text) === 1) {
+      return '低风险'
+    } else if (parseInt(text) === 2) {
+      return '一般风险'
+    } else if (parseInt(text) === 3) {
+      return '较大风险'
+    } else if (parseInt(text) === 4) {
+      return '重大风险'
+    }
+  },
+  getDangerState: val => {
+    const text = parseInt(val)
+    if (parseInt(text) === 1) {
+      return '已上报'
+    } else if (parseInt(text) === 2) {
+      return '已指派'
+    } else if (parseInt(text) === 3) {
+      return '已处理'
+    } else if (parseInt(text) === 4) {
+      return '已验收'
+    } else if (parseInt(text) === 5) {
+      return '已撤销'
+    }
+  },
+  getSimpleText: html => {
+    var re1 = new RegExp(/<img.src\s=\s*(.?)[^>]?>/g)
+    var msg = html.replace(re1, '')
+    return msg
   }
 }
 

@@ -73,6 +73,7 @@ export default {
   margin: 8px 0 10px 0;
   ul {
     margin-bottom: 0px;
+    list-style: none;
   }
   .line {
     font-weight: bold;
@@ -80,6 +81,7 @@ export default {
 }
 .address-list {
   height: 38px;
+  padding-left: 0px;
   li {
     float: left;
     height: 38px;

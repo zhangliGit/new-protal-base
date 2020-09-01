@@ -15,7 +15,20 @@ const homeApi = {
   getTeaRecordStatic: '/teacher/static/index#get', // 教师考勤统计
   getStuRecordStatic: '/student/static/index#get' // 学生考勤统计
 }
+const exportApi = {
+  exportTeaAtt: '/teacher/static/list/export#post', // 教师考勤统计导出
+  exportStuAtt: '/student/static/list/export#post', // 学生考勤统计导出
+  exportStuAttRec: '/student/static/record/list/export#post' // 学生考勤记录导出
+}
 for (const val in homeApi) {
   homeApi[val] = `${hostEnv.lz_attendance}${homeApi[val]}`
 }
-export default homeApi
+for (const val in exportApi) {
+  exportApi[val] = `${hostEnv.ljj_attendance}${exportApi[val]}`
+}
+export default {
+  ...homeApi,
+  ...exportApi,
+  exportTeaLea: `${hostEnv.zk_leave}/teacher/leave/export#export`, // 教职工请假导出
+  exportStuLea: `${hostEnv.zk_leave}/student/leave/export#export` // 学生请假导出
+}

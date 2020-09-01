@@ -3,12 +3,17 @@
  */
 
 import Vue from 'vue'
+import baseData from './base-data'
 import autoImg from '@a/img/auto_app.png'
 const vm = new Vue({})
 
 const Tools = {
+  // 深拷贝数据
+  deepClone(data) {
+    return JSON.parse(JSON.stringify(data))
+  },
   // 根据时间戳获取日期
-  getDate(t) {
+  getDate(t, type) {
     const d = new Date(t)
     const time =
       d.getFullYear() +
@@ -22,11 +27,36 @@ const Tools = {
       (d.getMinutes() > 9 ? d.getMinutes() : '0' + d.getMinutes()) +
       ':' +
       (d.getSeconds() > 9 ? d.getSeconds() : '0' + d.getSeconds())
-    return time
+    if (type === 1) {
+      return time.substring(0, 10)
+    } else if (type === 2) {
+      return time.substring(11, 19)
+    } else if (type === 3) {
+      return time.substring(0, 7)
+    } else if (type === 4) {
+      return time.substr(11, 5)
+    } else if (type === 5) {
+      return time.substr(0, 19)
+    } else {
+      return time
+    }
   },
   // 根据日期获取时间撮
-  getDateTime (date) {
+  getDateTime(date) {
     return new Date(date.replace(/-/g, '/'))
+  },
+  // html图片转换格式的方法
+  dataURLToBlob(dataurl) {
+    // console.log(dataurl)
+    const arr = dataurl.split(',')
+    const mime = arr[0].match(/:(.*?);/)[1]
+    const bstr = atob(arr[1])
+    let n = bstr.length
+    const u8arr = new Uint8Array(n)
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n)
+    }
+    return new Blob([u8arr], { type: mime })
   },
   // 设置table滚动高度
   setScroll(id) {
@@ -72,89 +102,215 @@ const Tools = {
       }
     })
   },
-  // 获取性别
-  getSex(text) {
-    const sex = parseInt(text)
-    if (sex === 1) {
-      return '男'
-    } else if (sex === 2) {
-      return '女'
-    } else {
-      return '未知'
-    }
-  },
-  // 审批状态
-  getState (text) {
-    if (text === '0') {
-      return '待审批'
-    } else if (text === '1') {
-      return '审批通过'
-    } else if (text === '2') {
-      return '审批不通过'
-    } else if (text === '3') {
-      return '撤销'
-    }else if (text === '4') {
-      return '失效'
-    }
-  },
   // 加载图片错误处理
   errorImg(event, img) {
     event.target.src = img || autoImg
   },
-  // 控制组类型
-  controlTypeName(type) {
-    let name
-    switch (parseInt(type)) {
-      case 1:
-        name = '进控制组'
-        break
-      case 2:
-        name = '出控制组'
-        break
-      case 3:
-        name = '数据采集控制组'
-        break
-      default:
-        name = '暂无类型'
-        break
+  color(text) {
+    if (text === 1) {
+      return '#ff9900'
+    } else if (text === 2) {
+      return '#fa3534'
+    } else if (text === 3 || text === 6) {
+      return '#c76c4a'
+    } else if (text === 4) {
+      return '#a0cfff'
+    } else if (text === 5) {
+      return '#71d5a1'
+    } else if (text === 7) {
+      return '#fab6b6'
     }
-    return name
   },
-  // 设备组类型
-  deviceTypeName(type) {
-    let name
-    switch (parseInt(type)) {
-      case 1:
-        name = '相机'
-        break
-      case 2:
-        name = '面板机'
-        break
-      case 3:
-        name = '其他'
-        break
-      default:
-        name = '其他'
-        break
+  userType(text) {
+    text = parseInt(text)
+    if (text === 1) {
+      return '超级管理员'
+    } else if (text === 2) {
+      return '管理员'
+    } else if (text === 4) {
+      return '教职工'
+    } else if (text === 8) {
+      return '学生'
+    } else if (text === 16) {
+      return '家长'
+    } else if (text === 32) {
+      return '访客'
     }
-    return name
   },
-  // 业务类型类型
-  busTypeName(type) {
-    let name
-    switch (parseInt(type)) {
-      case 1:
-        name = '数据回写'
-        break
-      case 2:
-        name = '数据效验'
-        break
-      default:
-        name = '其他'
-        break
+  getCardStatus(text) {
+    text = parseInt(text)
+    if (text === 0) {
+      return '正常'
+    } else if (text === -1) {
+      return '未发卡'
+    } else if (text === 1) {
+      return '已挂失'
+    } else if (text === 2) {
+      return '已销卡'
     }
-    return name
-  }
+  },
+  getApprovalColor(text) {
+    if (parseInt(text) === 0 || text === '未开始') {
+      return '#87d068'
+    } else if (parseInt(text) === 1 || text === '使用中') {
+      return '#2db7f5'
+    } else if (parseInt(text) === 2) {
+      return '#f50'
+    } else if (parseInt(text) === 3 || text === '已失效') {
+      return '#ccc'
+    } else if (parseInt(text) === 4 || text === '审批中') {
+      return '#006400'
+    }
+  },
+  relationship(text) {
+    text = parseInt(text)
+    if (text === 1) {
+      return '爸爸'
+    } else if (text === 2) {
+      return '妈妈'
+    } else if (text === 3) {
+      return '爷爷'
+    } else if (text === 4) {
+      return '奶奶'
+    } else {
+      return '其他'
+    }
+  },
+  stateType(text) {
+    text = parseInt(text)
+    if (text === 0) {
+      return '待处理'
+    } else if (text === 1) {
+      return '处理中'
+    } else if (text === 2) {
+      return '未同意'
+    } else if (text === 3) {
+      return '已修复'
+    } else if (text === 4) {
+      return '未修复'
+    } else if (text === 5) {
+      return '已处理'
+    } else {
+      return '已撤回'
+    }
+  },
+  stateTypeColor(text) {
+    text = parseInt(text)
+    if (parseInt(text) === 0) {
+      return '#778899'
+    } else if (parseInt(text) === 1) {
+      return '#2db7f5'
+    } else if (parseInt(text) === 2) {
+      return '#A52A2A'
+    } else if (parseInt(text) === 3) {
+      return '#8FBC8F'
+    } else if (parseInt(text) === 4) {
+      return '#f50'
+    } else if (parseInt(text) === 5) {
+      return '#87d068'
+    } else {
+      return '#A9A9A9'
+    }
+  },
+  getType(text) {
+    text = parseInt(text)
+    if (text === 0) {
+      return '待审批'
+    } else if (text === 1) {
+      return '待发放'
+    } else if (text === 2) {
+      return '已退回'
+    } else if (text === 3) {
+      return '已发放'
+    }
+  },
+  stateColor(text) {
+    text = parseInt(text)
+    if (parseInt(text) === 0) {
+      return '#108ee9'
+    } else if (parseInt(text) === 1) {
+      return '#2db7f5'
+    } else if (parseInt(text) === 2) {
+      return '#f50'
+    } else if (parseInt(text) === 3) {
+      return ' #87d068'
+    }
+  },
+  appStateType(text) {
+    text = parseInt(text)
+    if (text === 1) {
+      return '待审批'
+    } else if (text === 2) {
+      return '已同意'
+    } else if (text === 3) {
+      return '未同意'
+    } else if (text === 4) {
+      return '已撤回'
+    }
+  },
+  appState(text) {
+    text = parseInt(text)
+    if (parseInt(text) === 1) {
+      return '#108ee9'
+    } else if (parseInt(text) === 2) {
+      return '#87d068'
+    } else if (parseInt(text) === 3) {
+      return '#2db7f5'
+    } else if (parseInt(text) === 4) {
+      return ' #f50'
+    }
+  },
+  sourceDanger(text) {
+    text = parseInt(text)
+    if (parseInt(text) === 1) {
+      return '隐患排查'
+    } else if (parseInt(text) === 2) {
+      return '日常巡查'
+    } else if (parseInt(text) === 3) {
+      return '专项检查'
+    } else if (parseInt(text) === 4) {
+      return '社会监督'
+    }
+  },
+  dangerLevel(text) {
+    text = parseInt(text)
+    if (parseInt(text) === 1) {
+      return '低风险'
+    } else if (parseInt(text) === 2) {
+      return '一般风险'
+    } else if (parseInt(text) === 3) {
+      return '较大风险'
+    } else if (parseInt(text) === 4) {
+      return '重大风险'
+    }
+  },
+  dangerState(text) {
+    text = parseInt(text)
+    if (parseInt(text) === 1) {
+      return '已上报'
+    } else if (parseInt(text) === 2) {
+      return '已指派'
+    } else if (parseInt(text) === 3) {
+      return '已处理'
+    } else if (parseInt(text) === 4) {
+      return '已验收'
+    } else if (parseInt(text) === 5) {
+      return '已撤销'
+    }
+  },
+  stAte(text) {
+    text = parseInt(text)
+    if (text === 0) {
+      return '待审批'
+    } else if (text === 1) {
+      return '待发放'
+    } else if (text === 2) {
+      return '已退回'
+    } else if (text === 3) {
+      return '已发放'
+    }
+  },
+  ...baseData
 }
 
 export default Tools

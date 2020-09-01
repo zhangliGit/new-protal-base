@@ -14,7 +14,7 @@ const homeApi = {
   // getMenuList: '/menu/list#get', // 菜单库列表
   // delMenu: '/menu/delete#get', // 菜单库删除
   // addMenu: '/menu/addOrUpdate#post', // 菜单库添加
-  getApply: '/app/manage/list#get', // 应用库列表
+  getApply: '/app/manage/list#post', // 应用库列表
   delApply: '/app/manage/delete/#getWithPara', // 应用库删除
   addApply: '/app/manage/add#post', // 应用库添加
   updateApply: '/app/manage/update#post', // 应用库修改
@@ -46,6 +46,7 @@ const homeApi = {
   getPanel: '/panel/list#get' // 面板机列表
 }
 for (const val in homeApi) {
-  homeApi[val] = `${hostEnv.zx_protal}${homeApi[val]}`
+  homeApi[val] = `${hostEnv.lz_protal}${homeApi[val]}`
+  // homeApi[val] = `${hostEnv.zx_protal}${homeApi[val]}`
 }
 export default homeApi

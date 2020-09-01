@@ -1,22 +1,20 @@
 <template>
   <div class="set-group page-layout qui-fx-ver">
-    <choose-control
-      ref="chooseUser"
-      is-check
-      v-model="userTag"
-      @submit="chooseUser"
-      :schoolCode="userInfo.schoolCode"
-      title="添加考勤设备控制组">
-    </choose-control>
+    <down-record v-if="recordTag" :device-sn="bussCode" buss-code="KQGLXT" v-model="recordTag"></down-record>
     <a-form :form="form" :style="{ maxHeight: maxHeight }">
       <a-form-item label="考勤组名称" :label-col="{ span: 3 }" :wrapper-col="{ span: 15 }">
         <a-input
           placeholder="请输入考勤组名称"
-          maxLength="15"
+          maxlength="15"
           v-decorator="['name', {initialValue: groupName, rules: [{ required: true, message: '请输入考勤组名称' }] }]"
         />
       </a-form-item>
-      <a-form-item label="考勤时间" :label-col="{ span: 3 }" :wrapper-col="{ span: 15 }" :required="true">
+      <a-form-item
+        label="考勤时间"
+        :label-col="{ span: 3 }"
+        :wrapper-col="{ span: 15 }"
+        :required="true"
+      >
         <a-table
           :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
           :columns="columns"
@@ -26,62 +24,62 @@
           class="table"
         >
           <template slot="action" slot-scope="text, record">
-            <div class="action qui-fx-jsa qui-fx-ac" v-for="(item, i) in record.accessTimeList" :key="i">
+            <div
+              class="action qui-fx-jsa qui-fx-ac"
+              v-for="(item, i) in record.accessTimeList"
+              :key="i"
+            >
               <template>
-                <a-time-picker format="HH:mm" :defaultValue="moment(item.startTime, 'HH:mm')" @change="(val,dateStrings)=>changeTime(val,dateStrings,'startTime',record.id, i)" />
+                <a-time-picker
+                  format="HH:mm"
+                  :defaultValue="moment(item.startTime, 'HH:mm')"
+                  @change="(val,dateStrings)=>changeTime(val,dateStrings,'startTime',record.id, i)"
+                />
                 <span>至</span>
-                <a-time-picker format="HH:mm" :disabledHours="(val)=>getDisabledHours(val,record.id, i)" :disabledMinutes="(val)=>getDisabledMinutes(val,record.id, i)" :defaultValue="moment(item.endTime, 'HH:mm')" @change="(val,dateStrings)=>changeTime(val,dateStrings,'endTime',record.id, i)" />
+                <a-time-picker
+                  format="HH:mm"
+                  :disabledHours="(val)=>getDisabledHours(val,record.id, i)"
+                  :disabledMinutes="(val)=>getDisabledMinutes(val,record.id, i)"
+                  :defaultValue="moment(item.endTime, 'HH:mm')"
+                  @change="(val,dateStrings)=>changeTime(val,dateStrings,'endTime',record.id, i)"
+                />
               </template>
             </div>
           </template>
         </a-table>
       </a-form-item>
-      <a-form-item label="考勤设备" :label-col="{ span: 3 }" :wrapper-col="{ span: 18 }" :required="true">
-        <div>
-          <a-button type="primary" @click="userTag = true">
-            添加控制组
-          </a-button>
-          <div>
-            <div v-for="(item, i) in groupList" :key="i" class="control-list">
-              <delete-tag @delTag="delControl(i)" :tag-info="item"></delete-tag>
-            </div>
-          </div>
-        </div>
-      </a-form-item>
-      <!-- <a-form-item label="特殊日期" :label-col="{ span: 3 }" :wrapper-col="{ span: 18 }" :required="true">
-        <a-button type="primary" style="margin-bottom:10px">
-          从校历选择
-        </a-button>
-        <a-table
-          :rowKey="record => record.id"
-          :columns="dateColumns"
-          :dataSource="dateData"
-          :bordered="true"
-          :pagination="false"
-          class="table"
+      <a-form-item
+        label="考勤设备"
+        :label-col="{ span: 3 }"
+        :wrapper-col="{ span: 18 }"
+        :required="true"
+      >
+        <device-list
+          :table-list="groupList"
+          :columns="type === 'teacher' ? deviceColumns : stuDeviceColumns"
+          :page-list="pageList"
+          :chooseType="chooseType"
+          :bind-code="groupId"
+          :schoolCode="userInfo.schoolCode"
+          @groupList="addGroup"
+          @showData="showData"
+          @getRecordList="getRecordList"
         >
-          <template slot="index" slot-scope="text, record, index">{{ index | getPageIndex(pageList) }}</template>
-          <template slot="action" slot-scope="text, record">
-            <template>
-              <a-tooltip placement="topLeft" title="删除">
-                <a-button
-                  size="small"
-                  @click="delDate(record)"
-                  icon="delete"
-                  style="margin-right: 5px; background: #ff4949; color:#fff"
-                ></a-button>
-              </a-tooltip>
-            </template>
+          <template v-slot:actions="action">
+            <div>
+              <a-switch
+                :defaultChecked="action.record.status"
+                checked-children="上学考勤"
+                un-checked-children="放学考勤"
+                v-model="action.record.inOrOut"
+              />
+            </div>
           </template>
-        </a-table>
-      </a-form-item> -->
+        </device-list>
+      </a-form-item>
       <a-form-item :wrapper-col="{ span: 15, offset: 3 }">
-        <a-button style="margin-right:50px;" @click="cancle">
-          取消
-        </a-button>
-        <a-button type="primary" @click="handleSubmit">
-          保存
-        </a-button>
+        <a-button style="margin-right:50px;" @click="cancle">取消</a-button>
+        <a-button type="primary" @click="handleSubmit">保存</a-button>
       </a-form-item>
     </a-form>
   </div>
@@ -89,12 +87,13 @@
 
 <script>
 import moment from 'moment'
-import DeleteTag from '@c/DeleteTag'
 import { mapState, mapActions } from 'vuex'
-import ChooseControl from '@c/ChooseControl'
+import DownRecord from '@c/DownRecord'
+import { Switch } from 'ant-design-vue'
 import addImg from '../../assets/img/add.png'
 import deleteImg from '../../assets//img/delete.png'
 import deleImg from '../../assets/img/dele.png'
+import DeviceList from '@c/DeviceList'
 const columns = [
   {
     title: '工作日',
@@ -110,65 +109,99 @@ const columns = [
     }
   }
 ]
-const dateColumns = [
+
+const deviceColumns = [
   {
     title: '序号',
-    width: '10%',
-    align: 'center',
+    width: '15%',
     scopedSlots: {
       customRender: 'index'
-    }
+    },
+    align: 'center'
   },
   {
-    title: '类型',
-    align: 'center',
-    width: '10%',
-    dataIndex: 'type',
-    customRender: text => {
-      return text === 1 ? '放假' : '不放假'
-    }
+    title: '安装位置',
+    dataIndex: 'snapSite',
+    width: '28%',
+    align: 'center'
   },
   {
-    title: '日期',
-    align: 'center',
-    dataIndex: 'dateTime',
-    width: '20%'
-  },
-  {
-    title: '备注',
-    align: 'center',
-    dataIndex: 'remark',
-    width: '20%'
-  },
-  {
-    title: '变更类型',
-    align: 'center',
-    dataIndex: 'changeType',
+    title: '设备名称',
+    dataIndex: 'deviceName',
     width: '20%',
+    align: 'center'
+  },
+  {
+    title: '设备类型',
+    dataIndex: 'deviceType',
+    width: '15%',
     customRender: text => {
-      return text === 1 ? '考勤' : '不考勤'
-    }
+      return parseInt(text) === 1 ? '相机' : '面板机'
+    },
+    align: 'center'
   },
   {
     title: '操作',
-    align: 'center',
-    width: '10%',
+    width: '12%',
     scopedSlots: {
       customRender: 'action'
     }
   }
 ]
+const stuDeviceColumns = [
+  {
+    title: '序号',
+    width: '15%',
+    scopedSlots: {
+      customRender: 'index'
+    },
+    align: 'center'
+  },
+  {
+    title: '安装位置',
+    dataIndex: 'snapSite',
+    width: '25%',
+    align: 'center'
+  },
+  {
+    title: '设备名称',
+    dataIndex: 'deviceName',
+    width: '25%',
+    align: 'center'
+  },
+  {
+    title: '设备类型',
+    dataIndex: 'deviceType',
+    width: '15%',
+    customRender: text => {
+      return parseInt(text) === 1 ? '相机' : '面板机'
+    },
+    align: 'center'
+  },
+  {
+    title: '用途',
+    dataIndex: 'id',
+    width: '20%',
+    scopedSlots: {
+      customRender: 'action'
+    },
+    align: 'center'
+  }
+]
 export default {
   name: 'SetGroup',
   components: {
-    DeleteTag,
-    ChooseControl
+    DeviceList,
+    ASwitch: Switch,
+    DownRecord
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
   data() {
     return {
+      recordTag: false,
+      bussCode: '',
       moment,
       userTag: false,
       maxHeight: 0,
@@ -176,7 +209,8 @@ export default {
       deleImg,
       deleteImg,
       columns,
-      dateColumns,
+      deviceColumns,
+      stuDeviceColumns,
       dateData: [],
       data: [
         {
@@ -226,22 +260,26 @@ export default {
       selectedRowKeys: [],
       pageList: {
         page: 1,
-        size: 20
+        size: 9999
       },
       form: this.$form.createForm(this),
       groupList: [],
       groupId: '',
+      chooseType: '',
       detailData: null,
-      groupName: ''
+      groupName: '',
+      type: ''
     }
   },
   created() {
     this.maxHeight = window.screen.height - 280 + 'px'
-    this.groupId = this.$route.query.id
-    if (this.$route.query.type === 'student') {
+    this.groupId = this.$route.query.id ? this.$route.query.id.toString() : ''
+    this.type = this.$route.query.type
+    if (this.type === 'student') {
       this.columns[1].title = '上学时间一放学时间'
     }
     if (this.groupId) {
+      this.chooseType = 'attendance'
       this.showData()
     } else {
       this.data.forEach(ele => {
@@ -249,57 +287,39 @@ export default {
       })
     }
   },
-  filters: {
-    // 获取表格索引
-    getPageIndex: (val, obj) => {
-      if (JSON.stringify(obj) === '{}') {
-        return val + 1
-      } else {
-        return (obj.page - 1) * obj.size + val + 1
-      }
-    }
-  },
-  async mounted() {
-    /* this.showList() */
-  },
+  async mounted() {},
   methods: {
     ...mapActions('home', ['addAccess', 'getAccessDetail', 'updateAccess']),
-    /*     async showList() {  //校历
-      const req = {
-        systemCode: this.userInfo.schoolCode,
-        systemName: this.userInfo.schoolName
-      }
-      const res = await this.getSchoolDate(req)
-      this.dateData = res.data.list
-    }, */
-    // 考勤组表单回填
-    async showData() {
-      console.log(this.groupId)
-      const req = {
-        groupId: this.groupId
-      }
-      const res = await this.getAccessDetail(req)
-      if (!res.data) {
-        return
-      }
-      this.detailData = res.data
-      console.log(this.detailData)
-      this.groupName = res.data.groupName
-      res.data.controllerGroups.forEach(ele => {
-        this.groupList.push({
-          name: ele.name,
-          code: ele.code
-        })
+    // 获取下发记录
+    getRecordList(record) {
+      this.bussCode = record.deviceSn
+      this.recordTag = true
+    },
+    // 表单回填
+    async showData(value) {
+      if (!value) return
+      this.detailData = value
+      this.groupName = value.groupName
+      this.groupList = value.controllerGroups
+      this.groupList.map(ele => {
+        ele.snapSite = ele.address
+        ele.deviceType = ele.type
+        ele.status = ele.inOrOut === '1'
+        ele.inOrOut = ele.inOrOut === '1'
       })
       this.data.forEach(ele => {
         ele.accessTimeList = [{ startTime: '00:00', endTime: '00:00', canAdd: true }]
       })
-      res.data.rules.forEach(item => {
+      value.rules.forEach(item => {
         this.selectedRowKeys.push(parseInt(item.dayName))
         if (item.dayName === '1') {
           this.data[6].accessTimeList[0] = { startTime: item.startTime, endTime: item.endTime, canAdd: true }
         } else {
-          this.data[parseInt(item.dayName) - 2].accessTimeList[0] = { startTime: item.startTime, endTime: item.endTime, canAdd: true }
+          this.data[parseInt(item.dayName) - 2].accessTimeList[0] = {
+            startTime: item.startTime,
+            endTime: item.endTime,
+            canAdd: true
+          }
         }
       })
       console.log(this.selectedRowKeys)
@@ -321,7 +341,6 @@ export default {
             this.$message.warning('请添加考勤设备')
             return
           }
-          // console.log(this.data[0].accessTimeList[0].startTime.format('YYYY-MM-DD HH:mm:ss'))
           const rules = []
           const weeks = []
           this.selectedRowKeys.forEach(item => {
@@ -343,7 +362,10 @@ export default {
           let result = true
           console.log(rules)
           rules.forEach(eve => {
-            if ((parseInt(eve.startTime.split(':')[0]) * 60 + parseInt(eve.startTime.split(':')[1])) > (parseInt(eve.endTime.split(':')[0]) * 60 + parseInt(eve.endTime.split(':')[1]))) {
+            if (
+              parseInt(eve.startTime.split(':')[0]) * 60 + parseInt(eve.startTime.split(':')[1]) >
+              parseInt(eve.endTime.split(':')[0]) * 60 + parseInt(eve.endTime.split(':')[1])
+            ) {
               result = false
             }
           })
@@ -351,15 +373,25 @@ export default {
             this.$message.warning('考勤开始时间不能晚于结束时间')
             return
           }
+          const deviceGroups = []
+          this.groupList.forEach(ele => {
+            deviceGroups.push({
+              address: ele.snapSite,
+              deviceName: ele.deviceName,
+              deviceSn: ele.deviceSn,
+              inOrOut: this.type === 'teacher' ? null : ele.inOrOut ? '1' : '2',
+              type: ele.deviceType
+            })
+          })
           const req = {
-            controllerGroups: this.groupList,
+            deviceGroups,
             groupName: values.name,
             rules,
             schoolCode: this.userInfo.schoolCode,
-            type: this.$route.query.type === 'teacher' ? 1 : 2
+            type: this.type === 'teacher' ? 1 : 2
           }
           console.log(req)
-          const path = this.$route.query.type === 'teacher' ? '/teacherAccessSet' : '/studentAttendanceSet'
+          const path = this.type === 'teacher' ? '/teacherAccessSet' : '/studentAttendanceSet'
           if (this.groupId) {
             req.id = this.groupId
             this.updateAccess(req).then(res => {
@@ -379,14 +411,14 @@ export default {
         }
       })
     },
-    changeTime (val, dateStrings, type, id, index) {
+    changeTime(val, dateStrings, type, id, index) {
       if (type === 'startTime') {
         this.data[id].accessTimeList[index].startTime = dateStrings
       } else {
         this.data[id].accessTimeList[index].endTime = dateStrings
       }
     },
-    getDisabledHours (val, id, index) {
+    getDisabledHours(val, id, index) {
       const hours = []
       const time = this.data[id].accessTimeList[index].startTime
       const timeArr = time.split(':')
@@ -395,7 +427,7 @@ export default {
       }
       return hours
     },
-    getDisabledMinutes (selectedHour, id, index) {
+    getDisabledMinutes(selectedHour, id, index) {
       const time = this.data[id].accessTimeList[index].startTime
       const timeArr = time.split(':')
       const minutes = []
@@ -406,20 +438,19 @@ export default {
       }
       return minutes
     },
-    // 添加考勤设备
-    chooseUser (value) {
-      this.userTag = false
-      this.$refs.chooseUser.reset()
-      this.groupList = []
-      value.forEach(ele => {
-        this.groupList.push({
-          name: ele.controlGroupName,
-          id: ele.id,
-          code: ele.controlGroupCode,
-          type: ele.controlGroupType
+    // 添加测温设备
+    addGroup(value) {
+      this.groupList.forEach(ele => {
+        value.forEach(item => {
+          if (ele.deviceSn === item.id) {
+            item.inOrOut = ele.inOrOut
+          }
         })
       })
       console.log(this.groupList)
+      this.$nextTick(() => {
+        this.groupList = value
+      })
     },
     // 考勤日期选择
     onSelectChange(selectedRowKeys) {
@@ -430,10 +461,6 @@ export default {
     addAccessTime(index, key) {
       this.data[key].accessTimeList.push({ startTime: null, endTime: null })
     },
-    // 移除考勤设备
-    delControl(index) {
-      this.groupList.splice(index, 1)
-    },
     // 删除特殊日期
     delDate(record) {
       this.$tools.delTip('确定删除吗?', () => {
@@ -441,7 +468,7 @@ export default {
       })
     },
     cancle() {
-      const path = this.$route.query.type === 'teacher' ? '/teacherAccessSet' : '/studentAttendanceSet'
+      const path = this.type === 'teacher' ? '/teacherAccessSet' : '/studentAttendanceSet'
       this.$router.push({ path })
     }
   }
@@ -453,6 +480,10 @@ export default {
   background: #fff;
   padding-top: 20px;
   overflow: auto;
+  .table {
+    max-height: 300px;
+    overflow: auto;
+  }
   .action {
     margin: 5px 0;
     span {

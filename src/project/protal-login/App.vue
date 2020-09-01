@@ -1,47 +1,55 @@
 <template>
-  <div class="protal-login">
-    <div class="protal-logo"></div>
+  <div class="protal-login" :style="{ ...styles }">
+    <div class="protal-logo" style="cursor: pointer" @click="goSite">
+      <img :src="logoUrl" alt />
+    </div>
     <div class="protal-dialog">
-      <div class="title">全品平安校园云平台</div>
+      <div class="title">{{ title }}</div>
       <div class="protal-box">
         <a-tabs v-model="autoKey">
           <a-tab-pane tab="密码登录" key="1">
             <div class="padd">
-              <div class="tip-error"><img v-if="tipLogin" :src="tipError" alt="" />{{ tipLogin }}</div>
+              <div class="tip-error">
+                <img v-if="tipLogin" :src="tipError" alt />
+                {{ tipLogin }}
+              </div>
               <div class="input-text" style="margin-top: 28px">
                 <a-input @change="tipLogin = ''" placeholder="请输入账号" v-model="userName">
-                  <img slot="addonBefore" src="./img/user.png" alt="" />
+                  <img slot="addonBefore" src="./img/user.png" alt />
                 </a-input>
               </div>
               <div class="input-text">
                 <a-input type="password" @change="tipLogin = ''" placeholder="请输入密码" v-model="userPass">
-                  <img slot="addonBefore" src="./img/pwd.png" alt="" />
+                  <img slot="addonBefore" src="./img/pwd.png" alt />
                 </a-input>
               </div>
-              <a-button class="login-btn" type="primary" @click="accountLogin" :loading="loadingOne">{{
-                loginText
-              }}</a-button>
+              <a-button class="login-btn" type="primary" @click="accountLogin" :loading="loadingOne">
+                {{ loginText }}
+              </a-button>
               <a-row style="margin-top: 30px">
                 <a-col :span="12" style="text-align: left">
                   <a-checkbox :checked="isCheck" @change="onChange">记住账号</a-checkbox>
                 </a-col>
-                <a-col :span="12" style="text-align: right"> </a-col>
+                <a-col :span="12" style="text-align: right"></a-col>
               </a-row>
             </div>
           </a-tab-pane>
           <a-tab-pane tab="验证码登录" key="2">
             <div class="padd">
-              <div class="tip-error"><img v-if="tipMsg" :src="tipError" alt="" />{{ tipMsg }}</div>
+              <div class="tip-error">
+                <img v-if="tipMsg" :src="tipError" alt />
+                {{ tipMsg }}
+              </div>
               <div class="input-text" style="margin-top: 28px">
                 <a-input @change="tipMsg = ''" placeholder="请输入手机号" v-model="phoneNum">
-                  <img slot="addonBefore" src="./img/phone.png" style="width: 16px; height: 16px" alt="" />
+                  <img slot="addonBefore" src="./img/phone.png" style="width: 16px; height: 16px" alt />
                 </a-input>
               </div>
               <div class="input-text">
                 <a-row>
                   <a-col :span="16">
                     <a-input @change="tipMsg = ''" placeholder="请输入验证码" v-model="phoneCode">
-                      <img slot="addonBefore" src="./img/pwd.png" alt="" />
+                      <img slot="addonBefore" src="./img/pwd.png" alt />
                     </a-input>
                   </a-col>
                   <a-col :span="8">
@@ -59,9 +67,15 @@
         </a-tabs>
       </div>
     </div>
+    <div class="footer" v-if="isFooter">
+      Copyright © 2018—2019 武汉全品教育科技有限公司版权所有
+      <a href="http://www.beian.miit.gov.cn/" target="_blank">京ICP备15050178号-2</a>
+    </div>
   </div>
 </template>
 <script>
+import logo from './img/logo.png'
+import logoCommon from './img/logo-hushan.png'
 import $ajax from '@u/ajax-serve'
 import tipError from './img/tip.png'
 import hostEnv from '@config/host-env'
@@ -69,7 +83,15 @@ export default {
   name: 'App',
   components: {},
   data() {
+    const imgUrl = process.env.VUE_APP_URL === 'prod' ? 'bg.png' : 'bg-common.png'
     return {
+      styles: {
+        background: 'url(' + require('./img/' + imgUrl) + ') no-repeat center center',
+        backgroundSize: '100% 100%'
+      },
+      logoUrl: process.env.VUE_APP_URL === 'prod' ? logo : logoCommon,
+      isFooter: false,
+      title: '智慧平安校园云平台',
       tipError,
       tipLogin: '',
       tipMsg: '',
@@ -101,6 +123,10 @@ export default {
   },
   mounted() {
     this.ConfigEnv = process.env.NODE_ENV
+    if (process.env.VUE_APP_URL === 'prod') {
+      this.isFooter = true
+      this.title = '全品平安校园云平台'
+    }
     const rememberInfo = window.localStorage.getItem('isRemember')
     if (rememberInfo) {
       this.userName = JSON.parse(rememberInfo).userName
@@ -110,6 +136,9 @@ export default {
     }
   },
   methods: {
+    goSite() {
+      window.open('http://canpointlive.com')
+    },
     changePass(event) {
       this.tipLogin = ''
     },
@@ -163,34 +192,39 @@ export default {
       }
       this.loadingTwo = true
       this.loginText = '登录中...'
-      $ajax
-        .postQuery(
-          {
-            url: `${hostEnv.lz_user_center}/userinfo/user/login/mobile`,
-            params: {
-              mobile: this.phoneNum,
-              captchaCode: this.phoneCode
-            }
-          },
-          false
-        )
-        .then(res => {
-          this.loadingTwo = false
-          this.loginText = '登录成功'
-          window.sessionStorage.removeItem('protal-entry')
-          window.sessionStorage.setItem('loginInfo', JSON.stringify(res.data))
-          setTimeout(() => {
-            if (this.ConfigEnv === 'development') {
-              window.location.href = './protal-entry.html'
-            } else {
-              window.location.href = '/home'
-            }
-          }, 300)
-        })
-        .catch(res => {
-          this.loadingTwo = false
-          this.loginText = '登录'
-        })
+      try {
+        $ajax
+          .postQuery(
+            {
+              url: `${hostEnv.lz_user_center}/userinfo/user/login/mobile`,
+              params: {
+                mobile: this.phoneNum.trim(),
+                captchaCode: this.phoneCode.trim()
+              }
+            },
+            false
+          )
+          .then(res => {
+            this.loadingTwo = false
+            this.loginText = '登录成功'
+            window.sessionStorage.removeItem('protal-entry')
+            window.sessionStorage.setItem('loginType', JSON.stringify(res.data))
+            setTimeout(() => {
+              if (this.ConfigEnv === 'development') {
+                window.location.href = './protal-entry.html'
+              } else {
+                window.location.href = '/home'
+              }
+            }, 300)
+          })
+          .catch(res => {
+            this.loadingTwo = false
+            this.loginText = '登录'
+          })
+      } catch (err) {
+        this.loadingTwo = false
+        this.loginText = '登录'
+      }
     },
     accountLogin() {
       if (this.userName === '') {
@@ -203,39 +237,44 @@ export default {
       }
       this.loginText = '登录中...'
       this.loadingOne = true
-      $ajax
-        .postQuery(
-          {
-            url: `${hostEnv.lz_user_center}/userinfo/user/login/password`,
-            params: {
-              userName: this.userName,
-              password: this.userPass
-            }
-          },
-          false
-        )
-        .then(res => {
-          this.loadingOne = false
-          this.loginText = '登录成功'
-          if (this.isCheck) {
-            window.localStorage.setItem('isRemember', JSON.stringify({ userName: this.userName }))
-          } else {
-            window.localStorage.removeItem('isRemember')
-          }
-          window.sessionStorage.removeItem('protal-entry')
-          window.sessionStorage.setItem('loginInfo', JSON.stringify(res.data))
-          setTimeout(() => {
-            if (this.ConfigEnv === 'development') {
-              window.location.href = './protal-entry.html'
+      try {
+        $ajax
+          .postQuery(
+            {
+              url: `${hostEnv.lz_user_center}/userinfo/user/login/password`,
+              params: {
+                userName: this.userName.trim(),
+                password: this.userPass.trim()
+              }
+            },
+            false
+          )
+          .then(res => {
+            this.loadingOne = false
+            this.loginText = '登录成功'
+            if (this.isCheck) {
+              window.localStorage.setItem('isRemember', JSON.stringify({ userName: this.userName }))
             } else {
-              window.location.href = '/home'
+              window.localStorage.removeItem('isRemember')
             }
-          }, 300)
-        })
-        .catch(e => {
-          this.loadingOne = false
-          this.loginText = '登录'
-        })
+            window.sessionStorage.removeItem('protal-entry')
+            window.sessionStorage.setItem('loginType', JSON.stringify(res.data))
+            setTimeout(() => {
+              if (this.ConfigEnv === 'development') {
+                window.location.href = './protal-entry.html'
+              } else {
+                window.location.href = '/home'
+              }
+            }, 300)
+          })
+          .catch(e => {
+            this.loadingOne = false
+            this.loginText = '登录'
+          })
+      } catch (err) {
+        this.loadingOne = false
+        this.loginText = '登录'
+      }
     },
     onChange(event) {
       this.isCheck = event.target.checked
@@ -265,7 +304,6 @@ export default {
   position: absolute;
   width: 100%;
   height: 100%;
-  background: #0f054c url('./img/bg.png') no-repeat;
   background-size: cover;
   z-index: 99;
   .protal-logo {
@@ -277,7 +315,11 @@ export default {
     width: 138px;
     height: 37px;
     z-index: 88;
-    background: url('./img/logo.png') no-repeat;
+    img {
+      width: 138px;
+      height: 37px;
+      display: block;
+    }
   }
   /deep/ .ant-tabs-nav-container {
     font-size: 16px !important;
@@ -341,6 +383,22 @@ export default {
     background-color: #4d4cac;
     color: #fff;
     height: 36px;
+  }
+}
+.footer {
+  position: fixed;
+  height: 40px;
+  line-height: 40px;
+  z-index: 99;
+  bottom: 0px;
+  width: 100%;
+  left: 0px;
+  font-size: 12px;
+  color: #999;
+  text-align: center;
+  a {
+    color: #666;
+    padding-left: 10px;
   }
 }
 </style>

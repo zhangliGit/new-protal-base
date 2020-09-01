@@ -15,21 +15,8 @@ import {
   LocaleProvider,
   message
 } from 'ant-design-vue'
-const ComList = [
-  Row,
-  Col,
-  Icon,
-  Form,
-  Input,
-  Button,
-  Layout,
-  Dropdown,
-  Modal,
-  Menu,
-  LocaleProvider,
-  message
-]
-const install = (Vue) => {
+const ComList = [Row, Col, Icon, Form, Input, Button, Layout, Dropdown, Modal, Menu, LocaleProvider, message]
+const install = Vue => {
   ComList.forEach(item => {
     Vue.use(item)
   })

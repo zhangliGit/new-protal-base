@@ -17,18 +17,14 @@
         <a-button type="primary" icon="plus" @click="addApp(0)">新增应用</a-button>
       </div>
     </search-form>
-    <table-list
-      is-zoom
-      :page-list="pageList"
-      v-model="chooseList"
-      :columns="columns"
-      :table-list="userList"
-    >
+    <table-list is-zoom :page-list="pageList" v-model="chooseList" :columns="columns" :table-list="userList">
       <template v-slot:totalNums="totalNum">
         <div
-          :class="['table-total-num',{'num-cursor': totalNum.record.platform !== 1}]"
+          :class="['table-total-num', { 'num-cursor': totalNum.record.platform !== 1 }]"
           @click="schoolDetail(totalNum.record)"
-        >{{ totalNum.record.platform === 1 ? '平台' : totalNum.record.schoolSum }}</div>
+        >
+          {{ totalNum.record.platform === 1 ? '平台' : totalNum.record.schoolSum }}
+        </div>
       </template>
       <template v-slot:actions="action">
         <a-tooltip placement="topLeft" title="详情">
@@ -36,16 +32,11 @@
             size="small"
             class="detail-action-btn"
             icon="ellipsis"
-            @click.stop="goDetial('/apply/detail',action)"
+            @click.stop="goDetial('/apply/detail', action)"
           ></a-button>
         </a-tooltip>
         <a-tooltip placement="topLeft" title="编辑">
-          <a-button
-            size="small"
-            class="edit-action-btn"
-            icon="form"
-            @click.stop="addApp(1, action)"
-          ></a-button>
+          <a-button size="small" class="edit-action-btn" icon="form" @click.stop="addApp(1, action)"></a-button>
         </a-tooltip>
         <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="delApp(action)">
           <template slot="title">您确定删除吗?</template>
@@ -56,21 +47,9 @@
       </template>
     </table-list>
     <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
-    <a-drawer
-      title="关联学校列表"
-      :width="720"
-      placement="right"
-      :closable="true"
-      @close="onClose"
-      :visible="visible"
-    >
+    <a-drawer title="关联学校列表" :width="720" placement="right" :closable="true" @close="onClose" :visible="visible">
       <div v-if="visible" class="qui-fx-ver" style="height: 650px">
-        <table-list
-          overFlow
-          :page-list="schoolList"
-          :columns="schoolColumns"
-          :table-list="schoolData"
-        ></table-list>
+        <table-list overFlow :page-list="schoolList" :columns="schoolColumns" :table-list="schoolData"></table-list>
         <page-num v-model="schoolList" :total="schoolTotal" @change-page="schoolApply"></page-num>
       </div>
     </a-drawer>
@@ -128,30 +107,30 @@ const columns = [
   {
     title: '应用名称',
     dataIndex: 'appName',
-    width: '12%'
+    width: '20%'
   },
-  {
-    title: '应用路径',
-    dataIndex: 'linkUrl',
-    width: '10%'
-  },
+  // {
+  //   title: '应用路径',
+  //   dataIndex: 'linkUrl',
+  //   width: '10%'
+  // },
   {
     title: '业务地址',
     dataIndex: 'bussUrl',
-    width: '15%'
+    width: '25%'
   },
-  {
-    title: '终端类型',
-    dataIndex: 'plateformType',
-    width: '8%',
-    customRender: text => {
-      if (text === 1) {
-        return '手机'
-      } else {
-        return 'PC'
-      }
-    }
-  },
+  // {
+  //   title: '终端类型',
+  //   dataIndex: 'plateformType',
+  //   width: '8%',
+  //   customRender: text => {
+  //     if (text === 1) {
+  //       return '手机'
+  //     } else {
+  //       return 'PC'
+  //     }
+  //   }
+  // },
   {
     title: 'logo',
     dataIndex: 'logoUrl',

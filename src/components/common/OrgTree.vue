@@ -25,7 +25,18 @@ export default {
     return {
       noData: false,
       orgData: [],
-      defaultKey: []
+      defaultKey: [],
+      code: ''
+    }
+  },
+  props: {
+    type: {
+      type: String,
+      default: ''
+    },
+    school: {
+      type: String,
+      default: ''
     }
   },
   components: {
@@ -33,22 +44,29 @@ export default {
   },
   computed: {
     ...mapState('home', [
-      'schoolCode'
+      'schoolCode', 'eduCode'
     ])
   },
-  mounted () {
+  created () {
+    this.code = this.type === 'edu' ? this.eduCode : this.schoolCode
+    if (this.school) {
+      this.code = this.school
+    }
     this.showList()
   },
   methods: {
     select (selectedKeys, info) {
       this.$emit('select', {
         name: info.node.title,
-        code: info.node.eventKey
+        code: info.node.eventKey,
+        treeData: this.orgData,
+        pos: info.node.pos,
+        id: info.selectedNodes[0] ? info.selectedNodes[0].data.props.id : this.orgData[0].id
       })
     },
     async showList () {
       const res = await $ajax.get({
-        url: `${hostEnv.lz_user_center}/school/org/getSchoolRoot/${this.schoolCode}`
+        url: `${hostEnv.lz_user_center}/school/org/getSchoolRoot/${this.code}`
       })
       if (res.data === null || res.data.length === 0) {
         this.noData = true
@@ -58,6 +76,7 @@ export default {
       }
       const data = this.newOrgData([res.data])
       this.defaultKey = [data[0].key]
+      this.$emit('defaultCode', { code: this.defaultKey, name: data[0].title })
       this.orgData = data
     },
     // 深层递归
@@ -79,9 +98,9 @@ export default {
 <style lang="less" scoed>
   .grade-tree {
     padding: 0 10px;
-    width: 200px;
-    min-height: 400px;
-    max-height: 600px;
+    width: 240px;
+    min-height: 600px;
+    max-height: 650px;
     overflow-y: auto
   }
 </style>

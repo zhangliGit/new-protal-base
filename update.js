@@ -1,32 +1,38 @@
 /**
- * @Description 更新组件文件目录
+ *
+ * @Description 上传公共组件文件到服务器
  * @Author 张立
- * @Created 2019-08-15
+ *
  */
-var request = require('request')
-var fs = require('fs')
-var adm_zip = require('adm-zip')
-const path = 'src/components/common'
-/*
- * url 网络文件地址
- * filename 文件名
- * callback 回调函数
- */
-
-function downloadFile (uri, filename, callback, msg) {
-  var stream = fs.createWriteStream(filename)
-  console.log('\x1b[32m', '*************************************', '\n')
-  console.log('\x1b[32m', '您正在更新' + msg + '文件, 请耐心等待...', '\n')
-  console.log('\x1b[32m', '*************************************', '\n')
-  request(uri).pipe(stream).on('close', callback)
+const request = require('request')
+const path = require('path')
+const fs = require('fs')
+const AdmZip = require('adm-zip')
+var zip = new AdmZip()
+zip.addLocalFolder('src/components/common')
+zip.writeZip('vue-web-component.zip')
+console.log('\x1b[32m', '*************************************', '\n')
+console.log('\x1b[32m', '你正在上传web组件压缩包, 请耐心等待...', '\n')
+console.log('\x1b[32m', '*************************************', '\n')
+let total = 1
+const time = setInterval(() => {
+  console.log(total++)
+}, 1000)
+var url = 'http://192.168.2.247:8090/upload-web'
+var formData = {
+  file: fs.createReadStream(path.resolve(__dirname, 'vue-web-component.zip'))
 }
-
-var fileUrl = 'http://192.168.2.247:10031/vue-web-component'
-var filename = `${path}.zip`
-downloadFile(fileUrl, filename, function () {
-  var unzip = new adm_zip(`${path}.zip`)
-  unzip.extractAllTo(path, /* overwrite */ true)
-  // 删除压缩包
-  fs.unlink(`${path}.zip`, function () {})
-  console.log('\x1b[32m', '更新完毕', '\n')
-}, 'vue-web组件库')
+request.post(
+  {
+    url: url,
+    formData: formData
+  },
+  function(error, response, body) {
+    if (!error && response.statusCode === 200) {
+      // 删除压缩包
+      fs.unlink('vue-web-component.zip', function() {})
+      console.log('上传成功')
+      clearInterval(time)
+    }
+  }
+)

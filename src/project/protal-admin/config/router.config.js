@@ -1,12 +1,17 @@
 // eslint-disable-next-line
 import { BasicLayout, RouteView } from '../layouts'
 import consumer from './consumer'
-import operation from './operation'
+import appManage from './appManage'
 import apply from './apply'
+import subject from './subject'
 const InstituteManage = resolve => require(['../views/institute/InstituteManage.vue'], resolve)
 const InstituteDetail = resolve => require(['../views/institute/InstituteDetail.vue'], resolve)
 const PanelDetail = resolve => require(['../views/operation/PanelDetail.vue'], resolve)
 const SchoolCalendar = resolve => require(['../views/calendar/schoolCalendar.vue'], resolve)
+const BureauManage = resolve => require(['../views/bureau/BureauManage.vue'], resolve)
+const BureauDetail = resolve => require(['../views/bureau/BureauDetail.vue'], resolve)
+const Notice = resolve => require(['../views/notice/Notice.vue'], resolve)
+const AddNotice = resolve => require(['../views/notice/AddNotice.vue'], resolve)
 export const asyncRouterMap = [
   {
     path: '/',
@@ -15,29 +20,56 @@ export const asyncRouterMap = [
     meta: {
       title: '首页'
     },
-    redirect: '/menuManage',
+    redirect: '/pcMenu',
     children: [
+      appManage,
       apply,
-
       {
-        path: '/institute',
-        name: 'institute',
-        component: InstituteManage,
+        path: '/ins',
+        name: 'ins',
+        component: RouteView,
         meta: {
           title: '机构管理'
-        }
-      },
-      {
-        path: '/institute/detail',
-        name: 'instituteDetail',
-        component: InstituteDetail,
-        meta: {
-          title: '机构详情',
-          isHide: true
-        }
+        },
+        children: [
+          {
+            path: '/institute',
+            name: 'institute',
+            component: InstituteManage,
+            meta: {
+              title: '学校机构'
+            }
+          },
+          {
+            path: '/bureau',
+            name: 'bureau',
+            component: BureauManage,
+            meta: {
+              title: '局端机构'
+            }
+          },
+          {
+            path: '/institute/detail',
+            name: 'instituteDetail',
+            component: InstituteDetail,
+            meta: {
+              title: '机构详情',
+              isHide: true
+            }
+          },
+          {
+            path: '/bureau/detail',
+            name: 'bureauDetail',
+            component: BureauDetail,
+            meta: {
+              title: '机构详情',
+              isHide: true
+            }
+          }
+        ]
       },
       consumer,
-      // operation,
+      subject,
       {
         path: '/calendar',
         name: 'calendar',
@@ -52,6 +84,23 @@ export const asyncRouterMap = [
         component: PanelDetail,
         meta: {
           title: '应用编辑',
+          isHide: true
+        }
+      },
+      {
+        path: '/notice',
+        name: 'notice',
+        component: Notice,
+        meta: {
+          title: '通知公告'
+        }
+      },
+      {
+        path: '/notice/add',
+        name: 'noticeAdd',
+        component: AddNotice,
+        meta: {
+          title: '公告操作',
           isHide: true
         }
       }

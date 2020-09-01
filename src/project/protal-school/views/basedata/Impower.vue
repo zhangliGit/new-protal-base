@@ -4,31 +4,35 @@
       is-check
       ref="form"
       v-if="userTag"
+      chooseType="rule"
       v-model="userTag"
       @submit="submit"
-      title="添加用户">
-    </choose-user>
+      title="添加用户"
+    ></choose-user>
     <no-data msg="暂无用户列表" v-if="false">
       <div slot="btn">
-        <a-button type="primary" @click="dialogTag = true"><a-icon type="plus" />添加用户</a-button>
+        <a-button type="primary" @click="dialogTag = true">
+          <a-icon type="plus" />添加用户
+        </a-button>
       </div>
     </no-data>
     <div v-else class="qui-fx-ver qui-fx-f1">
       <search-form isReset @search-form="searchForm" :search-label="searchLabel">
         <div slot="left">
-          <a-button type="primary" @click="userTag = true"><a-icon type="plus" />添加用户</a-button>
+          <a-button type="primary" @click="userTag = true">
+            <a-icon type="plus" />添加用户
+          </a-button>
         </div>
       </search-form>
-      <table-list
-        is-zoom
-        :page-list="pageList"
-        :columns="columns"
-        :table-list="userList">
+      <table-list is-zoom :page-list="pageList" :columns="columns" :table-list="userList">
         <template v-slot:actions="action">
-          <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="deleteUser(action.record)">
-            <template slot="title">
-              您确定删除吗?
-            </template>
+          <a-popconfirm
+            placement="left"
+            okText="确定"
+            cancelText="取消"
+            @confirm="deleteUser(action.record)"
+          >
+            <template slot="title">您确定删除吗?</template>
             <a-tooltip placement="topLeft" title="删除">
               <a-button size="small" class="del-action-btn" icon="delete"></a-button>
             </a-tooltip>
@@ -72,7 +76,7 @@ const columns = [
     title: '性别',
     dataIndex: 'sex',
     width: '10%',
-    customRender: (text) => {
+    customRender: text => {
       return Tools.getSex(text)
     }
   },
@@ -134,7 +138,7 @@ export default {
     ChooseUser,
     SearchForm
   },
-  data () {
+  data() {
     return {
       userTag: false,
       title: '新增应用',
@@ -152,14 +156,12 @@ export default {
   computed: {
     ...mapState('home', ['userInfo'])
   },
-  mounted () {
+  mounted() {
     this.showList()
   },
   methods: {
-    ...mapActions('home', [
-      'getRoleUserList', 'addRoleUser', 'deleteRoleUser'
-    ]),
-    submit (value) {
+    ...mapActions('home', ['getRoleUserList', 'addRoleUser', 'deleteRoleUser']),
+    submit(value) {
       if (value.length > 0) {
         const req = {
           roleId: this.$route.query.id,
@@ -169,18 +171,20 @@ export default {
             return ele.id
           })
         }
-        this.addRoleUser(req).then(res => {
-          this.$message.success('添加成功')
-          this.$tools.goNext(() => {
-            this.showList(this.keyWord)
-            this.$refs.form.reset()
+        this.addRoleUser(req)
+          .then(res => {
+            this.$message.success('添加成功')
+            this.$tools.goNext(() => {
+              this.showList(this.keyWord)
+              this.$refs.form.reset()
+            })
           })
-        }).catch(() => {
-          this.$refs.form.error()
-        })
+          .catch(() => {
+            this.$refs.form.error()
+          })
       }
     },
-    onSelect (value) {
+    onSelect(value) {
       this.searchKey = value
       if (value === 'teaname') {
         this.searchTitle = '请输入教职工姓名'
@@ -190,14 +194,14 @@ export default {
         this.searchTitle = '请输入工号'
       }
     },
-    searchForm (values) {
+    searchForm(values) {
       this.keyWord = values.keyWord
       this.showList(values.keyWord)
     },
-    submitForm (values) {
+    submitForm(values) {
       console.log(values)
     },
-    async deleteUser (record) {
+    async deleteUser(record) {
       const req = {
         ...this.userInfo,
         roleId: this.$route.query.id,
@@ -209,7 +213,7 @@ export default {
         this.showList(this.keyWord)
       })
     },
-    async showList (keyWord = '') {
+    async showList(keyWord = '') {
       const req = {
         ...this.pageList,
         ...this.userInfo,
@@ -233,16 +237,16 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-.impower{
-  .action{
-    div{
+.impower {
+  .action {
+    div {
       cursor: pointer;
-      img{
+      img {
         width: 20px;
         height: 20px;
       }
-      span{
-        font-size:12px;
+      span {
+        font-size: 12px;
       }
     }
   }

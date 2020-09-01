@@ -1,6 +1,6 @@
 <template>
   <div class="page-layout qui-fx-ver">
-    <org-manage></org-manage>
+    <org-manage type="school"></org-manage>
   </div>
 </template>
 

@@ -1,5 +1,16 @@
 <template>
-  <div class="page-layout qui-fx-ver">
+  <div class="page-layout qui-fx-ver qui-fx-f1">
+    <bind-apply
+      ref="bindApply"
+      :plateformType="plateformType"
+      :category="defaultActiveKey"
+      :schoolInfo="schoolInfo"
+      :bindList="bindList"
+      :visible="visible"
+      v-if="visible"
+      @update="update"
+      @close="close"
+    ></bind-apply>
     <submit-form
       ref="form"
       @submit-form="submitForm"
@@ -7,17 +18,17 @@
       v-model="formStatus"
       :form-data="formData"
     ></submit-form>
-    <div class="bg-fff padd-l10 padd-r10" style="height:185px">
+    <div class="bg-fff padd-l10 padd-r10">
       <detail-show :detail-info="detailInfo" :title="infoTitle"></detail-show>
     </div>
-    <div class="qui-fx-f1 mar-t10 bg-fff padd-l10 padd-r10">
-      <a-tabs defaultActiveKey="1" @change="callback">
+    <div class="qui-fx-f1 mar-t10 padd-l10 padd-r10">
+      <a-tabs default-active-key="1" @change="callback">
         <a-tab-pane tab="pc端应用" key="1">
           <div class="app-list">
             <no-data v-if="applyList.length === 0" msg="暂无关联应用~"></no-data>
             <div
               v-else
-              :class="['qui-fx-ac-jc app-check',{'app-choose':item.check}]"
+              :class="['qui-fx-ac-jc app-check', { 'app-choose': item.check }]"
               v-for="(item, index) in applyList"
               :key="item.id"
               @click="appClick('1', index)"
@@ -31,11 +42,15 @@
           </div>
         </a-tab-pane>
         <a-tab-pane tab="移动端应用" key="2">
+          <a-radio-group v-model="typeKey" button-style="solid">
+            <a-radio-button value="04">教职工</a-radio-button>
+            <a-radio-button value="05">家长</a-radio-button>
+          </a-radio-group>
           <div class="app-list">
             <no-data v-if="mobileList.length === 0" msg="暂无关联应用~"></no-data>
             <div
               v-else
-              :class="['qui-fx-ac-jc app-check',{'app-choose':item.check}]"
+              :class="['qui-fx-ac-jc app-check', { 'app-choose': item.check }]"
               v-for="(item, index) in mobileList"
               :key="item.id"
               @click="appClick('2', index)"
@@ -81,14 +96,6 @@
         </a-tooltip>
       </a-tabs>
     </div>
-    <bind-apply
-      ref="bindApply"
-      :schoolInfo="schoolInfo"
-      :bindList="applyList"
-      :visible="visible"
-      @update="update"
-      @close="close"
-    ></bind-apply>
   </div>
 </template>
 
@@ -98,7 +105,6 @@ import TableList from '@c/TableList'
 import SubmitForm from '@c/SubmitForm'
 import NoData from '@c/NoData'
 import DetailShow from '@c/DetailShow'
-import mixins from '@u/mixins'
 import BindApply from './BindApply'
 const userColumns = [
   {
@@ -159,9 +165,10 @@ export default {
     DetailShow,
     BindApply
   },
-  mixins: [mixins],
   data() {
     return {
+      typeKey: '04',
+      defaultActiveKey: '03',
       note: '1',
       chooseList: [],
       userColumns,
@@ -173,6 +180,7 @@ export default {
       instituteId: '',
       detailInfo: [],
       infoTitle: '基本信息',
+      bindList: [],
       applyList: [],
       mobileList: [],
       schoolInfo: {},
@@ -182,12 +190,26 @@ export default {
       plateformType: '2'
     }
   },
+  watch: {
+    typeKey(n) {
+      this.defaultActiveKey = n
+      this.getMobileList(n)
+    }
+  },
   mounted() {
     this.instituteId = this.$route.query.id
     this.showInstitute(this.instituteId)
   },
   methods: {
-    ...mapActions('home', ['schoolDetail', 'queryApply', 'unbindApply', 'addAdmin', 'getAdmin', 'updateAdmin']),
+    ...mapActions('home', [
+      'searchBindApp',
+      'schoolDetail',
+      'queryApply',
+      'delBindApp',
+      'addAdmin',
+      'getAdmin',
+      'updateAdmin'
+    ]),
     appClick(type, index) {
       if (type === '1') {
         this.applyList[index].check = !this.applyList[index].check
@@ -204,9 +226,11 @@ export default {
     },
     showDrawer() {
       this.visible = true
-      this.$refs.bindApply.searchValue = ''
-      this.$refs.bindApply.chooseList = []
-      this.$refs.bindApply.applyGetList(this.plateformType)
+      if (this.plateformType === '2') {
+        this.bindList = this.applyList
+      } else {
+        this.bindList = this.mobileList
+      }
     },
     update() {
       this.visible = false
@@ -245,7 +269,7 @@ export default {
         },
         {
           key: '创建时间',
-          val: this.getDateTime(res.data.createTime, 1)
+          val: this.$tools.getDate(res.data.createTime)
         },
         {
           key: '学校地址',
@@ -263,14 +287,24 @@ export default {
     },
     // 已关联的应用
     async showList() {
-      const web = await this.queryApply({ schoolCode: this.schoolInfo.schoolCode, plateformType: '2' })
+      const web = await this.searchBindApp({ schoolCode: this.schoolInfo.schoolCode, plateformType: '2' })
       this.applyList = web.data.list.map(el => {
         return {
           ...el,
           check: false
         }
       })
-      const mobile = await this.queryApply({ schoolCode: this.schoolInfo.schoolCode, plateformType: '1' })
+      this.getMobileList(this.typeKey)
+    },
+    // 获取移动端管理应用
+    async getMobileList(category) {
+      const mobile = await this.searchBindApp({
+        schoolCode: this.schoolInfo.schoolCode,
+        plateformType: '1',
+        category: category,
+        page: 1,
+        size: 100
+      })
       this.mobileList = mobile.data.list.map(el => {
         return {
           ...el,
@@ -286,7 +320,8 @@ export default {
       }
     },
     callback(key) {
-      this.plateformType = key === '1' ? '2' : '1'
+      this.plateformType = parseInt(key) === 1 ? '2' : '1'
+      this.defaultActiveKey = parseInt(key) === 1 ? '03' : this.typeKey
       this.activeTab = key
     },
     tabAdd() {
@@ -330,7 +365,7 @@ export default {
         plateformType: this.plateformType,
         schoolCode: this.schoolInfo.schoolCode
       }
-      this.unbindApply(req).then(res => {
+      this.delBindApp(req).then(res => {
         this.$message.success('操作成功')
         this.$tools.goNext(() => {
           this.showList()
@@ -342,7 +377,6 @@ export default {
 </script>
 <style lang="less" scoped>
 .app-list {
-  max-height: 80vh;
   overflow: auto;
 }
 .app-check {

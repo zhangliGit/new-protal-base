@@ -9,10 +9,11 @@ const Site = resolve => require(['../views/basedata/Site.vue'], resolve)
 const Teachers = resolve => require(['../views/basedata/Teachers.vue'], resolve)
 const BulkImport = resolve => require(['../views/basedata/BulkImport.vue'], resolve)
 const Subject = resolve => require(['../views/basedata/Subject.vue'], resolve)
+const SubjectTeacher = resolve => require(['../views/basedata/SubjectTeacher.vue'], resolve)
 const Students = resolve => require(['../views/basedata/Students.vue'], resolve)
 const StudentDetail = resolve => require(['../views/basedata/StudentDetail.vue'], resolve)
 const ClassDetail = resolve => require(['../views/basedata/ClassDetail.vue'], resolve)
-
+const Post = resolve => require(['../views/basedata/Post.vue'], resolve)
 const basedata = [
   {
     path: '/organ',
@@ -63,6 +64,15 @@ const basedata = [
     }
   },
   {
+    path: '/basedata/subjectTeacher',
+    name: 'subjectTeacher',
+    component: SubjectTeacher,
+    meta: {
+      title: '教师详情',
+      isHide: true
+    }
+  },
+  {
     path: '/site',
     name: 'site',
     component: Site,
@@ -84,6 +94,14 @@ const basedata = [
     component: Role,
     meta: {
       title: '角色管理'
+    }
+  },
+  {
+    path: '/Post',
+    name: 'Post',
+    component: Post,
+    meta: {
+      title: '职务管理'
     }
   },
   {

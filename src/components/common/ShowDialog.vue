@@ -1,6 +1,7 @@
 <template>
   <a-modal
     :width="width"
+    :height="height"
     :title="title"
     v-model="status"
     :maskClosable="false"
@@ -8,9 +9,7 @@
   >
     <slot></slot>
     <template slot="footer">
-      <a-button key="submit" type="primary" :loading="loading" @click="handleOk">
-        {{ onText }}
-      </a-button>
+      <a-button key="submit" type="primary" :loading="loading" @click="handleOk">{{ onText }}</a-button>
     </template>
   </a-modal>
 </template>
@@ -20,6 +19,10 @@ export default {
   name: 'ShowDialog',
   props: {
     width: {
+      type: String,
+      default: '500px'
+    },
+    height: {
       type: String,
       default: '500px'
     },
@@ -38,21 +41,21 @@ export default {
   },
   computed: {
     status: {
-      get () {
+      get() {
         return this.value
       },
-      set (val) {
+      set(val) {
         this.$emit('input', false)
       }
     }
   },
-  data () {
+  data() {
     return {
       loading: false
     }
   },
   methods: {
-    handleOk () {
+    handleOk() {
       this.status = false
       this.$emit('submit')
     }
@@ -60,6 +63,4 @@ export default {
 }
 </script>
 
-<style lang="less">
-
-</style>
+<style lang="less"></style>
