@@ -1,7 +1,16 @@
 <template>
   <div class="page-layout qui-fx-ver">
-    <search-form is-reset @search-form="searchForm" :search-label="searchLabel"></search-form>
-    <table-list :page-list="pageList" :columns="columns" :table-list="recordList"></table-list>
+    <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
+      <div slot="left">
+        <a-button icon="export" class="export-btn" @click="exportClick">导出</a-button>
+      </div>
+    </search-form>
+    <table-list isZoom :page-list="pageList" :columns="columns" :table-list="recordList">
+      <template v-slot:other3="action">
+        <a-tag color="#87d068" v-if="action.record.accessType == '1'">进</a-tag>
+        <a-tag color="#666666" v-if="action.record.accessType == '2'">出</a-tag>
+      </template>
+    </table-list>
     <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
   </div>
 </template>
@@ -40,14 +49,6 @@ const searchLabel = [
         val: '全部'
       },
       {
-        key: 1,
-        val: '超级管理员'
-      },
-      {
-        key: 2,
-        val: '管理员'
-      },
-      {
         key: 4,
         val: '教职工'
       },
@@ -70,6 +71,12 @@ const searchLabel = [
     scopedSlots: {
       customRender: 'other5'
     }
+  },
+  {
+    value: 'accessPlace', // 表单属性
+    type: 'input', // 表单类型
+    label: '出入地点', // 表单label值
+    placeholder: '请输入出入地点' // 表单默认值(非必选字段)
   },
   {
     list: [
@@ -162,12 +169,19 @@ const columns = [
     dataIndex: 'accessPlace',
     width: '8%'
   },
+  // {
+  //   title: '出入类型',
+  //   dataIndex: 'accessType',
+  //   width: '8%',
+  //   customRender: text => {
+  //     return parseInt(text) === 1 ? '进' : '出'
+  //   }
+  // },
   {
     title: '出入类型',
-    dataIndex: 'accessType',
     width: '8%',
-    customRender: text => {
-      return parseInt(text) === 1 ? '进' : '出'
+    scopedSlots: {
+      customRender: 'other3'
     }
   },
   {
@@ -211,7 +225,17 @@ export default {
         page: 1,
         size: 20
       },
-      recordList: []
+      recordList: [],
+      searchList: {
+        pageNum: '',
+        pageSize: '',
+        schoolCode: ''
+      },
+      keyword: '',
+      userType: '',
+      accessType: '',
+      startTime: '',
+      endTime: ''
     }
   },
   computed: {
@@ -221,26 +245,42 @@ export default {
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getrecordList']),
-    async showList(searchObj = {}) {
-      const req = {
-        pageNum: this.pageList.page,
-        pageSize: this.pageList.size,
+    ...mapActions('home', ['getrecordList', 'downRecord']),
+    exportClick() {
+      this.downRecord({
         schoolCode: this.userInfo.schoolCode,
-        ...searchObj
-      }
-      const res = await this.getrecordList(req)
+        keyword: this.keyword,
+        userType: this.userType,
+        accessType: this.accessType,
+        startTime: this.startTime,
+        endTime: this.endTime,
+        name: '出入记录'
+      })
+    },
+    async showList(searchObj = {}) {
+      this.searchList.pageNum = this.pageList.page
+      this.searchList.pageSize = this.pageList.size
+      this.searchList.schoolCode = this.userInfo.schoolCode
+      this.searchList = Object.assign(this.searchList, searchObj)
+      const res = await this.getrecordList(this.searchList)
       this.recordList = res.data.list
       this.total = res.data.total
     },
     searchForm(values) {
       this.pageList.pageNum = 1
+      this.keyword = values.keyword
+      this.userType = values.userType
+      this.accessType = values.accessType
+      this.accessPlace = values.accessPlace
+      this.startTime = values.rangeTime[0]
+      this.endTime = values.rangeTime[1]
       const searchObj = {
-        keyword: values.keyword,
-        userType: values.userType,
-        accessType: values.accessType,
-        startTime: values.rangeTime[0],
-        endTime: values.rangeTime[1]
+        accessPlace: this.accessPlace,
+        keyword: this.keyword,
+        userType: this.userType,
+        accessType: this.accessType,
+        startTime: this.startTime,
+        endTime: this.endTime
       }
       this.showList(searchObj)
     }

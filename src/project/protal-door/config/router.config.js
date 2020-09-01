@@ -1,12 +1,13 @@
 // eslint-disable-next-line
-import { BasicLayout } from '../layouts'
+import {
+  BasicLayout
+} from '../layouts'
 import visitor from './visitor'
 import accessSet from './accessSet'
-import system from './system'
 const AccessRecord = resolve => require(['../views/AccessRecord.vue'], resolve)
+const DeviceManage = resolve => require(['../views/DeviceManage.vue'], resolve)
 
-export const asyncRouterMap = [
-  {
+export const asyncRouterMap = [{
     path: '/',
     name: 'index',
     component: BasicLayout,
@@ -14,8 +15,7 @@ export const asyncRouterMap = [
       title: '门禁管理'
     },
     redirect: '/accessRecord',
-    children: [
-      {
+    children: [{
         path: '/accessRecord',
         name: 'accessRecord',
         component: AccessRecord,
@@ -25,7 +25,14 @@ export const asyncRouterMap = [
       },
       visitor,
       accessSet,
-      system
+      {
+        path: '/deviceManage',
+        name: 'deviceManage',
+        component: DeviceManage,
+        meta: {
+          title: '设备管理'
+        }
+      }
     ]
   },
   {

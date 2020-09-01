@@ -40,13 +40,11 @@ const localData = window.localStorage.getItem(projectName) || JSON.stringify({})
 const getState = (state, val) => {
   return JSON.parse(localData)[state] || val
 }
-const autoData = JSON.stringify({
-  schoolCode: 'CANPOINT'
-})
 const home = {
   namespaced: true,
   state: {
-    schoolCode: JSON.parse(window.sessionStorage.getItem('loginInfo') || autoData).schoolCode
+    loginType: JSON.parse(window.sessionStorage.getItem('loginType')),
+    schoolCode: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolCode
   },
   actions: {
     ...actions

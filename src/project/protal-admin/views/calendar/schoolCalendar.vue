@@ -1,6 +1,6 @@
 <template>
   <div class="page-layout qui-fx-ver">
-    <calendar-detail  v-model="userTag"  title="查看校历"></calendar-detail>
+    <calendar-detail v-model="userTag" title="查看校历"></calendar-detail>
     <submit-form
       ref="form"
       @submit-form="submitForm"
@@ -13,8 +13,13 @@
     </div>
     <table-list is-zoom :page-list="pageList" :columns="columns" :table-list="userList">
       <template v-slot:actions="action">
-          <a-tooltip placement="topLeft" title="查看校历">
-          <a-button @click="goDetail(action)" size="small" class="detail-action-btn" icon="ellipsis"></a-button>
+        <a-tooltip placement="topLeft" title="查看校历">
+          <a-button
+            @click="goDetail(action)"
+            size="small"
+            class="detail-action-btn"
+            icon="ellipsis"
+          ></a-button>
         </a-tooltip>
         <a-tooltip placement="topLeft" title="编辑">
           <a-button
@@ -202,7 +207,8 @@ export default {
     ...mapState('home', ['schoolCode'])
   },
   mounted() {
-    this.showList(), this.yearList()
+    this.showList()
+    this.yearList()
   },
   methods: {
     ...mapActions('home', [

@@ -40,19 +40,14 @@ const localData = window.localStorage.getItem(projectName) || '{}'
 const getState = (state, val) => {
   return JSON.parse(localData)[state] || val
 }
-const autoData = JSON.stringify({
-  schoolCode: '123456',
-  schoolName: '武汉中学',
-  userName: '张三'
-})
 const home = {
   namespaced: true,
   state: {
-    schoolCode: JSON.parse(window.sessionStorage.getItem('loginInfo') || autoData).schoolCode,
+    schoolCode: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolCode,
     userInfo: getState('userInfo', {
-      schoolCode: JSON.parse(window.sessionStorage.getItem('loginInfo') || autoData).schoolCode,
-      schoolName: JSON.parse(window.sessionStorage.getItem('loginInfo') || autoData).schoolName,
-      userName: JSON.parse(window.sessionStorage.getItem('loginInfo') || autoData).userName
+      schoolCode: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolCode,
+      schoolName: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolName,
+      userName: JSON.parse(window.sessionStorage.getItem('loginInfo')).userName
     })
   },
   actions: {

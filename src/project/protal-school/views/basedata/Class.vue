@@ -6,19 +6,21 @@
       v-if="userTag"
       v-model="userTag"
       @submit="chooseTeacher"
-      title="添加班主任">
-    </choose-user>
+      title="添加班主任"
+    ></choose-user>
     <submit-form
       ref="form"
       @submit-form="submitForm"
       :title="title"
       v-model="formStatus"
       :form-data="formData"
-      @classRoom="addClassRoom">
-    </submit-form>
+      @classRoom="addClassRoom"
+    ></submit-form>
     <no-data msg="暂无班级" v-if="false">
       <div slot="btn">
-        <a-button type="primary" @click="addClass(0)"> <a-icon type="plus" />添加班级</a-button>
+        <a-button type="primary" @click="addClass(0)">
+          <a-icon type="plus" />添加班级
+        </a-button>
       </div>
     </no-data>
     <div class="qui-fx qui-fx-jsb" style="width:100%" v-else>
@@ -40,18 +42,26 @@
           :page-list="pageList"
           v-model="chooseList"
           :columns="columns"
-          :table-list="classList">
+          :table-list="classList"
+        >
           <template v-slot:editClassRooms="editClassRoom" v-if="isNewYear">
             <div class="qui-fx">
-              <span class="tab-add" v-if="editClassRoom.record.placeName===''" @click.stop="addClass(3, editClassRoom.record)">
+              <span
+                class="tab-add"
+                v-if="editClassRoom.record.placeName === ''"
+                @click.stop="addClass(3, editClassRoom.record)"
+              >
                 <a-tag color="green">添加</a-tag>
               </span>
               <span v-else>
                 {{ editClassRoom.record.placeName }}
-                <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm.stop="untie(0,editClassRoom.record)">
-                  <template slot="title">
-                    您确定解绑吗?
-                  </template>
+                <a-popconfirm
+                  placement="left"
+                  okText="确定"
+                  cancelText="取消"
+                  @confirm.stop="untie(0, editClassRoom.record)"
+                >
+                  <template slot="title">您确定解绑吗?</template>
                   <a-tooltip placement="topLeft" title="解绑">
                     <a-icon class="mouse mar-l10" type="unlock" />
                   </a-tooltip>
@@ -59,20 +69,28 @@
               </span>
             </div>
           </template>
-          <template v-slot:editClassRooms="editClassRoom" v-else>
-            {{ editClassRoom.record.placeName }}
-          </template>
+          <template
+            v-slot:editClassRooms="editClassRoom"
+            v-else
+          >{{ editClassRoom.record.placeName }}</template>
           <template v-slot:editClassTeachers="editClassTeacher" v-if="isNewYear">
             <div class="qui-fx">
-              <span class="tab-add" v-if="editClassTeacher.record.teacherName===''" @click.stop="addClass(4, editClassTeacher.record)">
+              <span
+                class="tab-add"
+                v-if="editClassTeacher.record.teacherName === ''"
+                @click.stop="addClass(4, editClassTeacher.record)"
+              >
                 <a-tag color="green">添加</a-tag>
               </span>
               <span v-else>
                 {{ editClassTeacher.record.teacherName }}
-                <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm.stop="untie(1,editClassTeacher.record)">
-                  <template slot="title">
-                    您确定解绑吗?
-                  </template>
+                <a-popconfirm
+                  placement="left"
+                  okText="确定"
+                  cancelText="取消"
+                  @confirm.stop="untie(1, editClassTeacher.record)"
+                >
+                  <template slot="title">您确定解绑吗?</template>
                   <a-tooltip placement="topLeft" title="解绑">
                     <a-icon class="mouse mar-l10" type="unlock" />
                   </a-tooltip>
@@ -80,23 +98,47 @@
               </span>
             </div>
           </template>
-          <template v-slot:editClassTeachers="editClassTeacher" v-else>
-            {{ editClassTeacher.record.teacherName }}
+          <template
+            v-slot:editClassTeachers="editClassTeacher"
+            v-else
+          >{{ editClassTeacher.record.teacherName }}</template>
+          <template v-slot:totalNum1s="totalNum1">
+            <div
+              class="table-total-num"
+              @click.stop="goDetail('/basedata/classDetail', totalNum1.record, '1')"
+            >{{ totalNum1.record.count }}</div>
           </template>
-          <template v-slot:totalNums="totalNum">
-            <div class="table-total-num" @click.stop="goDetail('/basedata/classDetail',totalNum.record)">{{ totalNum.record.count }}</div>
+          <template v-slot:totalNum2s="totalNum2">
+            <div
+              class="table-total-num"
+              @click.stop="goDetail('/basedata/classDetail', totalNum2.record, '2')"
+            >{{ totalNum2.record.teacherTotal ? totalNum2.record.teacherTotal : 0 }}</div>
           </template>
           <template v-slot:actions="action">
             <a-tooltip placement="topLeft" title="详情">
-              <a-button size="small" class="detail-action-btn" icon="ellipsis" @click.stop="goDetail('/basedata/classDetail',action.record)"></a-button>
+              <a-button
+                size="small"
+                class="detail-action-btn"
+                icon="ellipsis"
+                @click.stop="goDetail('/basedata/classDetail', action.record)"
+              ></a-button>
             </a-tooltip>
             <a-tooltip placement="topLeft" title="编辑" v-if="isNewYear">
-              <a-button size="small" class="edit-action-btn" icon="form" @click.stop="addClass(1, action.record)"></a-button>
+              <a-button
+                size="small"
+                class="edit-action-btn"
+                icon="form"
+                @click.stop="addClass(1, action.record)"
+              ></a-button>
             </a-tooltip>
-            <a-popconfirm v-if="isNewYear" placement="left" okText="确定" cancelText="取消" @confirm.stop="deleteList(1,action.record)">
-              <template slot="title">
-                您确定删除吗?
-              </template>
+            <a-popconfirm
+              v-if="isNewYear"
+              placement="left"
+              okText="确定"
+              cancelText="取消"
+              @confirm.stop="deleteList(1, action.record)"
+            >
+              <template slot="title">您确定删除吗?</template>
               <a-tooltip placement="topLeft" title="删除">
                 <a-button size="small" class="del-action-btn" icon="delete"></a-button>
               </a-tooltip>
@@ -152,10 +194,17 @@ const columns = [
     scopedSlots: { customRender: 'editClassTeacher' }
   },
   {
-    title: '学生人数',
+    title: '班级学生人数',
     width: '10%',
     scopedSlots: {
-      customRender: 'totalNum'
+      customRender: 'totalNum1'
+    }
+  },
+  {
+    title: '任课教师人数',
+    width: '10%',
+    scopedSlots: {
+      customRender: 'totalNum2'
     }
   },
   {
@@ -220,7 +269,6 @@ const formDatas = [
     label: '班级数量',
     placeholder: '请输入数字'
   }
-
 ]
 const roomData = [
   {
@@ -242,7 +290,7 @@ export default {
     NoData,
     ChooseUser
   },
-  data () {
+  data() {
     return {
       detailImg,
       editImg,
@@ -280,15 +328,21 @@ export default {
   computed: {
     ...mapState('home', ['userInfo'])
   },
-  created () {
+  created() {
     this.getGrade()
   },
   methods: {
     ...mapActions('home', [
-      'getClassList', 'getGradeList', 'addNewClass', 'addClassList', 'deleteTheClass', 'editTheClass', 'addPlace'
+      'getClassList',
+      'getGradeList',
+      'addNewClass',
+      'addClassList',
+      'deleteTheClass',
+      'editTheClass',
+      'addPlace'
     ]),
     // 获取学年年级
-    async getGrade () {
+    async getGrade() {
       this.formData[0].list = []
       this.formDatas[0].list = []
       this.gradeList = []
@@ -306,11 +360,11 @@ export default {
       })
     },
     // 添加场地
-    addClassRoom (val) {
+    addClassRoom(val) {
       this.placeName = val
     },
     // 选中年级
-    select (item) {
+    select(item) {
       console.log(item)
       this.schoolYear = item.title
       this.schoolYearId = item.schoolYearId
@@ -332,7 +386,7 @@ export default {
       this.showList(req)
     },
     // 模糊查询
-    searchForm (values) {
+    searchForm(values) {
       this.teacherName = values.teacherName
       const req = {
         ...this.pageList,
@@ -345,7 +399,7 @@ export default {
       this.showList(req)
     },
     // 翻页
-    showMore () {
+    showMore() {
       const req = {
         ...this.pageList,
         ...this.userInfo,
@@ -357,7 +411,7 @@ export default {
       this.showList(req)
     },
     // 提交
-    submitForm (values) {
+    submitForm(values) {
       console.log(values)
       if (this.type === 0) {
         this.gradeName = this.gradeList.filter(ele => ele.key === values.gradeName)[0].val
@@ -369,22 +423,24 @@ export default {
           gradeName: this.gradeName
         }
         console.log(req)
-        this.addNewClass(req).then(res => {
-          this.$message.success('添加成功')
-          this.$tools.goNext(() => {
-            const data = {
-              ...this.pageList,
-              ...this.userInfo,
-              schoolYearId: this.schoolYearId,
-              gradeCode: this.gradeCode,
-              classCode: this.classCode
-            }
-            this.showList(data)
-            this.$refs.form.reset()
+        this.addNewClass(req)
+          .then(res => {
+            this.$message.success('添加成功')
+            this.$tools.goNext(() => {
+              const data = {
+                ...this.pageList,
+                ...this.userInfo,
+                schoolYearId: this.schoolYearId,
+                gradeCode: this.gradeCode,
+                classCode: this.classCode
+              }
+              this.showList(data)
+              this.$refs.form.reset()
+            })
           })
-        }).catch(() => {
-          this.$refs.form.error()
-        })
+          .catch(() => {
+            this.$refs.form.error()
+          })
       } else if (this.type === 1) {
         const req = {
           ...this.userInfo,
@@ -397,22 +453,24 @@ export default {
           placeId: this.record.placeId
         }
         console.log(req)
-        this.editTheClass(req).then(res => {
-          this.$message.success('编辑成功')
-          this.$tools.goNext(() => {
-            const data = {
-              ...this.pageList,
-              ...this.userInfo,
-              schoolYearId: this.schoolYearId,
-              gradeCode: this.gradeCode,
-              classCode: this.classCode
-            }
-            this.showList(data)
-            this.$refs.form.reset()
+        this.editTheClass(req)
+          .then(res => {
+            this.$message.success('编辑成功')
+            this.$tools.goNext(() => {
+              const data = {
+                ...this.pageList,
+                ...this.userInfo,
+                schoolYearId: this.schoolYearId,
+                gradeCode: this.gradeCode,
+                classCode: this.classCode
+              }
+              this.showList(data)
+              this.$refs.form.reset()
+            })
           })
-        }).catch(() => {
-          this.$refs.form.error()
-        })
+          .catch(() => {
+            this.$refs.form.error()
+          })
       } else if (this.type === 2) {
         this.gradeName = this.gradeList.filter(ele => ele.key === values.gradeName)[0].val
         const req = {
@@ -423,22 +481,24 @@ export default {
           gradeName: this.gradeName
         }
         console.log(req)
-        this.addClassList(req).then(res => {
-          this.$message.success('添加成功')
-          this.$tools.goNext(() => {
-            const data = {
-              ...this.pageList,
-              ...this.userInfo,
-              schoolYearId: this.schoolYearId,
-              gradeCode: this.gradeCode,
-              classCode: this.classCode
-            }
-            this.showList(data)
-            this.$refs.form.reset()
+        this.addClassList(req)
+          .then(res => {
+            this.$message.success('添加成功')
+            this.$tools.goNext(() => {
+              const data = {
+                ...this.pageList,
+                ...this.userInfo,
+                schoolYearId: this.schoolYearId,
+                gradeCode: this.gradeCode,
+                classCode: this.classCode
+              }
+              this.showList(data)
+              this.$refs.form.reset()
+            })
           })
-        }).catch(() => {
-          this.$refs.form.error()
-        })
+          .catch(() => {
+            this.$refs.form.error()
+          })
       } else if (this.type === 3) {
         const req = {
           id: this.record.id,
@@ -447,26 +507,28 @@ export default {
           schoolYearId: this.schoolYearId
         }
         console.log(req)
-        this.addPlace(req).then(res => {
-          this.$message.success('绑定成功')
-          this.$tools.goNext(() => {
-            const data = {
-              ...this.pageList,
-              ...this.userInfo,
-              schoolYearId: this.schoolYearId,
-              gradeCode: this.gradeCode,
-              classCode: this.classCode
-            }
-            this.showList(data)
-            this.$refs.form.reset()
+        this.addPlace(req)
+          .then(res => {
+            this.$message.success('绑定成功')
+            this.$tools.goNext(() => {
+              const data = {
+                ...this.pageList,
+                ...this.userInfo,
+                schoolYearId: this.schoolYearId,
+                gradeCode: this.gradeCode,
+                classCode: this.classCode
+              }
+              this.showList(data)
+              this.$refs.form.reset()
+            })
           })
-        }).catch(() => {
-          this.$refs.form.error()
-        })
+          .catch(() => {
+            this.$refs.form.error()
+          })
       }
     },
     // 编辑添加
-    addClass (type, record) {
+    addClass(type, record) {
       this.formStatus = true
       if (type === 1) {
         this.title = '编辑班级'
@@ -498,7 +560,7 @@ export default {
       }
     },
     // 解绑
-    untie (type, record) {
+    untie(type, record) {
       console.log(type, record)
       const req = {
         ...this.userInfo,
@@ -510,28 +572,31 @@ export default {
         schoolYearId: this.schoolYearId
       }
       console.log(req)
-      this.addPlace(req).then(res => {
-        this.$message.success('解绑成功')
-        this.$tools.goNext(() => {
-          const data = {
-            ...this.pageList,
-            ...this.userInfo,
-            schoolYearId: this.schoolYearId,
-            gradeCode: this.gradeCode,
-            classCode: this.classCode
-          }
-          this.showList(data)
-          this.$refs.form.reset()
+      this.addPlace(req)
+        .then(res => {
+          this.$message.success('解绑成功')
+          this.$tools.goNext(() => {
+            const data = {
+              ...this.pageList,
+              ...this.userInfo,
+              schoolYearId: this.schoolYearId,
+              gradeCode: this.gradeCode,
+              classCode: this.classCode
+            }
+            this.showList(data)
+            this.$refs.form.reset()
+          })
         })
-      }).catch(() => {
-        this.$refs.form.error()
-      })
+        .catch(() => {
+          this.$refs.form.error()
+        })
     },
     // 绑定班主任
-    chooseTeacher (value) {
+    chooseTeacher(value) {
       console.log(value)
       const req = {
-        ...this.userInfo,
+        schoolCode: this.userInfo.schoolCode,
+        schoolId: this.userInfo.schoolId,
         id: this.record.id,
         teacherName: value[0].userName,
         teacherId: value[0].id,
@@ -539,25 +604,27 @@ export default {
         schoolYearId: this.schoolYearId
       }
       console.log(req)
-      this.addPlace(req).then(res => {
-        this.$message.success('绑定成功')
-        this.$tools.goNext(() => {
-          const data = {
-            ...this.pageList,
-            ...this.userInfo,
-            schoolYearId: this.schoolYearId,
-            gradeCode: this.gradeCode,
-            classCode: this.classCode
-          }
-          this.showList(data)
-          this.$refs.chooseForm.reset()
+      this.addPlace(req)
+        .then(res => {
+          this.$message.success('绑定成功')
+          this.$tools.goNext(() => {
+            const data = {
+              ...this.pageList,
+              ...this.userInfo,
+              schoolYearId: this.schoolYearId,
+              gradeCode: this.gradeCode,
+              classCode: this.classCode
+            }
+            this.showList(data)
+            this.$refs.chooseForm.reset()
+          })
         })
-      }).catch(() => {
-        this.$refs.chooseForm.error()
-      })
+        .catch(() => {
+          this.$refs.chooseForm.error()
+        })
     },
     // 查询班级列表
-    async showList (req) {
+    async showList(req) {
       const res = await this.getClassList(req)
       if (!res.data.list) {
         this.classList = []
@@ -567,7 +634,7 @@ export default {
       this.total = res.data.total
     },
     // 删除班级
-    async deleteList (type, record) {
+    async deleteList(type, record) {
       let ids = []
       if (type) {
         ids = [record.id]
@@ -608,65 +675,76 @@ export default {
       }
     },
     // 选中列表项
-    clickRow (id) {
+    clickRow(id) {
       console.log(id)
     },
     // 详情
-    goDetail (path, record) {
-      this.$router.push({ path, query: { id: record.id, schoolYear: this.schoolYear, schoolYearId: record.schoolYearId, classCode: record.classCode, gradeCode: record.gradeCode, isNewYear: this.isNewYear ? '1' : '0' } })
+    goDetail(path, record, type = '1') {
+      this.$router.push({
+        path,
+        query: {
+          id: record.id,
+          schoolYear: this.schoolYear,
+          schoolYearId: record.schoolYearId,
+          classCode: record.classCode,
+          gradeCode: record.gradeCode,
+          isNewYear: this.isNewYear ? '1' : '0',
+          type
+        }
+      })
     }
   }
 }
 </script>
 <style lang="less" scoped>
-.class{
+.class {
   height: 100%;
   background: #fff;
-  .left{
+  .left {
     padding: 10px;
   }
-  .table-total-num{
+  .table-total-num {
     cursor: pointer;
   }
-  .right{
+  .right {
     border-left: 1px solid @bor-color;
     padding: 0 0 0 10px;
-    .action{
-      div{
+    .action {
+      div {
         cursor: pointer;
         margin: 4px 30px 0 0;
-        img{
+        img {
           width: 20px;
           height: 20px;
         }
-        span{
-          font-size:12px;
+        span {
+          font-size: 12px;
         }
       }
     }
   }
 }
-.modal{
+.modal {
   padding: 0 40px;
-  .line{
+  .line {
     margin-bottom: 20px;
   }
-  .title{
+  .title {
     font-size: 14px;
     font-weight: bold;
     margin-right: 20px;
     min-width: 70px;
   }
-  .download{
-    color:#6882da;
+  .download {
+    color: #6882da;
     cursor: pointer;
   }
-  /deep/ .ant-upload-list-item-info{
+  /deep/ .ant-upload-list-item-info {
     padding: 0 22px 0 4px;
   }
 }
-.tab-add{
+.tab-add {
   cursor: pointer;
-  color:#6882da;
+  color: #6882da;
 }
 </style>

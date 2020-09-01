@@ -4,20 +4,28 @@
       <grade-tree @select="select"></grade-tree>
     </div>
     <div class="qui-fx-f1 qui-fx-ver">
-      <search-form @search-form="searchForm" :search-label="searchLabel"></search-form>
+      <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
+        <div slot="left">
+          <a-button icon="plus" class="add-btn" @click="addApp">上报</a-button>
+          <a-button icon="export" class="export-btn" @click="downFile">导出</a-button>
+        </div>
+      </search-form>
       <table-list :page-list="pageList" :columns="columns" :table-list="userList">
         <template v-slot:actions="action">
           <a-tooltip placement="topLeft" title="查看健康档案">
-            <a-button
-              size="small"
-              class="detail-action-btn"
-              icon="ellipsis"
-              @click="detail(action.record)"
-            ></a-button>
+            <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="detail(action.record)"></a-button>
           </a-tooltip>
+        </template>
+        <template v-slot:other4="action">
+          <div>{{ action.record.gradeName }}{{ action.record.className }}</div>
+        </template>
+        <template v-slot:other5="action">
+          <div v-if="action.record.enableFever === false">{{ action.record.enableFever ? '发热' : '未发热' }}</div>
+          <a-tag color="#e80000" v-else>{{ action.record.enableFever ? '发热' : '未发热' }}</a-tag>
         </template>
       </table-list>
       <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
+      <add-Reports ref="addWhite" :title="title" @updata="showList"></add-Reports>
     </div>
   </div>
 </template>
@@ -27,8 +35,11 @@ import { mapState, mapActions } from 'vuex'
 import hostEnv from '@/config/host-env'
 import TableList from '@c/TableList'
 import SearchForm from '@c/SearchForm'
-import GradeClass from '@c/GradeTree'
+import GradeTree from '@c/GradeTree'
 import PageNum from '@c/PageNum'
+import Tools from '@u/tools'
+import AddReports from '../component/AddReports'
+
 const searchLabel = [
   {
     value: 'userName',
@@ -43,17 +54,17 @@ const searchLabel = [
         val: '全部'
       },
       {
-        key: 1,
-        val: '异常'
+        key: 'false',
+        val: '未发热'
       },
       {
-        key: 2,
-        val: '正常'
+        key: 'true',
+        val: '发热'
       }
     ],
-    value: 'mark02',
+    value: 'enableFever',
     type: 'select',
-    label: '健康状态'
+    label: '状态'
   },
   {
     value: 'rangeTime',
@@ -75,16 +86,30 @@ const columns = [
     width: '8%'
   },
   {
-    title: '人员类型',
-    dataIndex: 'userType',
-    width: '7%',
+    title: '性别',
+    dataIndex: 'sex',
+    width: '8%',
     customRender: text => {
-      if (text === 1) {
-        return '教职工'
+      if (text === '1') {
+        return '男'
+      } else if (text === '2') {
+        return '女'
       } else {
-        return '学生'
+        return '未知'
       }
     }
+  },
+  {
+    title: '班级',
+    width: '8%',
+    scopedSlots: {
+      customRender: 'other4'
+    }
+  },
+  {
+    title: '学号',
+    dataIndex: 'workNo',
+    width: '8%'
   },
   {
     title: '温度',
@@ -92,95 +117,41 @@ const columns = [
     width: '8%'
   },
   {
-    title: '上报区间',
-    dataIndex: 'timeInterval',
-    width: '8%',
-    customRender: text => {
-      if (text === 1) {
-        return '上午'
-      } else {
-        return '下午'
-      }
-    }
-  },
-  {
     title: '发热状态',
-    dataIndex: 'feverMark',
     width: '8%',
-    customRender: text => {
-      if (text === 1) {
-        return '发热'
-      } else {
-        return '未发热'
-      }
-    }
-  },
-  {
-    title: '附带症状',
-    dataIndex: 'symptoms',
-    width: '8%',
-    customRender: text => {
-     if (text === 'FL001') {
-        return '乏力'
-      } else if(text === 'YT001') {
-        return '咽痛'
-      }else if(text === 'KS001'){
-        return '咳嗽'
-      }
-    }
-  },
-  {
-    title: '是否异常 ',
-    dataIndex: 'mark02',
-    width: '8%',
-    customRender: text => {
-      if (text === 1) {
-        return '异常'
-      } else {
-        return '正常'
-      }
-    }
-  },
-  {
-    title: '是否接触疫情人员 ',
-    dataIndex: 'mark01',
-    width: '8%',
-    customRender: text => {
-      if (text === 1) {
-        return '是'
-      } else {
-        return '否'
-      }
+    scopedSlots: {
+      customRender: 'other5'
     }
   },
   {
     title: '上报人',
-    dataIndex: 'reportPersonName',
+    dataIndex: 'upReporter',
+    width: '8%'
+  },
+  {
+    title: '上报地点',
+    dataIndex: 'upReportAddress',
     width: '8%'
   },
   {
     title: '上报时间',
-    dataIndex: 'reportTime',
+    dataIndex: 'upTime',
     width: '10%',
     customRender: text => {
-      return (
-        new Date(text).getFullYear() +
-        '-' +
-        (new Date(text).getMonth() + 1 > 9 ? new Date(text).getMonth() + 1 : '0' + (new Date(text).getMonth() + 1)) +
-        '-' +
-        (new Date(text).getDate() > 9 ? new Date(text).getDate() : '0' + new Date(text).getDate()) +
-        ' ' +
-        (new Date(text).getHours() > 9 ? new Date(text).getHours() : '0' + new Date(text).getHours()) +
-        ':' +
-        (new Date(text).getMinutes() > 9 ? new Date(text).getMinutes() : '0' + new Date(text).getMinutes()) +
-        ':' +
-        (new Date(text).getSeconds() > 9 ? new Date(text).getSeconds() : '0' + new Date(text).getSeconds())
-      )
+      return Tools.getDate(text)
+    }
+  },
+  {
+    title: '抓拍照片',
+    dataIndex: 'snacpUrl',
+    width: '8%',
+    scopedSlots: {
+      customRender: 'snapPic'
     }
   },
   {
     title: '操作',
-    width: '5%',
+    width: '10%',
     scopedSlots: {
       customRender: 'action'
     }
@@ -192,7 +163,8 @@ export default {
     GradeTree,
     TableList,
     SearchForm,
-    PageNum
+    PageNum,
+    AddReports
   },
   data() {
     return {
@@ -201,13 +173,17 @@ export default {
       total: 0,
       pageList: {
         page: 1,
-        size: 20,
-        userType: '2',
+        size: 20
+      },
+      searchList: {
+        userType: '8',
         schoolCode: '',
         gradeCode: '',
-        classCode: ''
+        classCode: '',
+        schoolYearId: ''
       },
-      userList: []
+      userList: [],
+      title: '上报疫情'
     }
   },
   computed: {
@@ -215,27 +191,69 @@ export default {
   },
   mounted() {},
   methods: {
-    ...mapActions('home', ['getReportInfoList']),
+    ...mapActions('home', ['getReportInfoList', 'addReport']),
+    addApp() {
+      this.$refs.addWhite.temperature = ''
+      this.$refs.addWhite.className = ''
+      this.$refs.addWhite.workNo = ''
+      this.title = '上报疫情'
+      this.$refs.addWhite.addVisible = true
+    },
     select(item) {
-      this.gradeCode = item.gradeCode
-      this.classCode = item.classCode
+      this.pageList.page = 1
+      this.pageList.size = 20
+      this.searchList.gradeCode = item.gradeCode
+      this.searchList.classCode = item.classCode
+      this.searchList.schoolYearId = item.schoolYearId
       this.showList()
     },
     async showList(searchObj = {}) {
-      this.pageList.schoolCode = this.userInfo.orgCode
-      this.pageList.gradeCode = this.gradeCode
-      this.pageList.classCode = this.classCode
-      const res = await this.getReportInfoList({ ...this.pageList, ...searchObj })
-      this.userList = res.result.list
-      this.total = res.result.totalCount
+      this.searchList.schoolCode = this.userInfo.schoolCode
+      this.searchList = Object.assign(this.searchList, this.pageList, searchObj)
+      const res = await this.getReportInfoList(this.searchList)
+      this.userList = res.data.list
+      this.total = res.data.total
+    },
+    // downFile() {
+    //   this.schoolCode = this.userInfo.schoolCode
+    //   window.open(
+    //     `${hostEnv.lz_ncov}/day/record/download/8?schoolCode=${this.schoolCode}&startDate=${this.startDate}&endDate=${this.endDate}&userName=${this.endDate}`
+    //   )
+    // },
+    downFile () {
+      var url = `${hostEnv.ljj_ncov}/day/record/download`
+      var xhr = new XMLHttpRequest()
+      xhr.open('POST', url, true) // 也可以使用POST方式，根据接口
+      xhr.responseType = 'blob'
+      xhr.onload = function () {
+        if (this.status === 200) {
+          var content = this.response
+          var aTag = document.createElement('a')
+          var blob = new Blob([content])
+          var headerName = xhr.getResponseHeader('Content-disposition')
+          var fileName = decodeURIComponent(headerName).substring(20)
+          aTag.download = fileName
+          aTag.href = URL.createObjectURL(blob)
+          aTag.click()
+          URL.revokeObjectURL(blob)
+        }
+      }
+      const req = {
+        ...this.searchList,
+        startDate: this.startDate,
+        endDate: this.endDate
+      }
+      xhr.send(JSON.stringify(req))
     },
     searchForm(values) {
       this.pageList.page = 1
+      this.startDate = values.rangeTime[0]
+      this.endDate = values.rangeTime[1]
       const searchObj = {
         userName: values.userName,
-        mark02: values.mark02,
-        startTime: values.rangeTime['0'],
-        endTime: values.rangeTime['1']
+        enableFever: values.enableFever,
+        startDate: values.rangeTime[0],
+        endDate: values.rangeTime[1]
       }
       this.showList(searchObj)
     },
@@ -244,8 +262,7 @@ export default {
         path: '/component/detail',
         query: {
           id: record.userCode,
-          userType: record.userType,
-          userName: record.userName
+          userType: '8'
         }
       })
     }
@@ -256,5 +273,11 @@ export default {
 .page-left {
   background: #fff;
   margin-right: 10px;
+}
+.grade-tree {
+  /* width: 200px; */
+  min-height: 400px;
+  max-height: 800px;
+  overflow-y: auto;
 }
 </style>

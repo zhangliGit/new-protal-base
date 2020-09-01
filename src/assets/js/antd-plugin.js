@@ -32,9 +32,16 @@ import {
   message,
   upload,
   Cascader,
-  Drawer
+  Drawer,
+  Calendar,
+  TreeSelect,
+  Timeline,
+  Collapse,
+  Switch,
+  Divider
 } from 'ant-design-vue'
 const ComList = [
+  Divider,
   Alert,
   Skeleton,
   InputNumber,
@@ -65,7 +72,12 @@ const ComList = [
   message,
   upload,
   Cascader,
-  Drawer
+  Drawer,
+  Calendar,
+  TreeSelect,
+  Timeline,
+  Collapse,
+  Switch
 ]
 const install = (Vue) => {
   ComList.forEach(item => {
@@ -73,6 +85,7 @@ const install = (Vue) => {
   })
   Vue.prototype.$message = message
   Vue.prototype.$Modal = Modal
+  Vue.prototype.$confirm = Modal.confirm
 }
 
 export default {

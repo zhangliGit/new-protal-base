@@ -1,7 +1,7 @@
 <template>
   <a-modal
     width="1200px"
-    :title="title"
+    title="绑定设备"
     v-model="status"
     @ok="submitOk"
     :maskClosable="false"
@@ -10,21 +10,21 @@
   >
     <a-row type="flex" justify="start" style="margin-bottom: 15px;">
       <a-col>
-        <span>控制组名称：</span>
-        <a-input v-model="keyword" style="width: 120px;margin-right: 20px" placeholder="请输入控制组名称" />
+        <span>设备名称：</span>
+        <a-input v-model="keyword" style="width: 120px;margin-right: 20px" placeholder="请输入设备名称" />
       </a-col>
       <a-col>
-        <span>控制组类型：</span>
-        <a-select v-model="contorlType" style="width: 120px;margin-right: 20px">
-          <a-select-option v-for="(item,i) in typeList" :key="i" :value="item.key">{{ item.val }}</a-select-option>
+        <span>设备类型：</span>
+        <a-select v-model="deviceType" style="width: 120px;margin-right: 20px">
+          <a-select-option v-for="(item, i) in typeList" :key="i" :value="item.key">{{ item.val }}</a-select-option>
         </a-select>
       </a-col>
       <a-col>
-        <a-button type="primary" @click="getStudentList">查询</a-button>
+        <a-button type="primary" @click="getStudentList(chooseType !== '')">查询</a-button>
         <a-button type="default" @click="resetBtn">重置</a-button>
       </a-col>
     </a-row>
-    <div class="choose-user qui-fx" >
+    <div class="choose-user qui-fx">
       <div class="qui-fx-ver qui-fx-f1">
         <table-list
           is-check
@@ -32,10 +32,41 @@
           :scroll-h="500"
           :page-list="pageList"
           v-model="chooseList"
-          :columns="columns"
+          :columns="
+            chooseType === 'door'
+              ? doorColumns
+              : chooseType === 'device'
+              ? dormColumns
+              : chooseType === 'doorGroup'
+              ? doorGroupColumns
+              : columns
+          "
           @clickRow="clickRow"
           @selectAll="selectAll"
-          :table-list="userList">
+          :table-list="userList"
+        >
+          <template v-slot:other1="other1">
+            <div>
+              <a-switch
+                @click.native.stop
+                @change="inOrOutCilck($event, other1.record)"
+                checked-children="出"
+                un-checked-children="进"
+                v-model="other1.record.inOrOut"
+              />
+            </div>
+          </template>
+          <template v-slot:other2="other2">
+            <div>
+              <a-switch
+                @click.native.stop
+                @change="controlTypeCilck($event, other2.record)"
+                checked-children="是"
+                un-checked-children="否"
+                v-model="other2.record.controlType"
+              />
+            </div>
+          </template>
         </table-list>
         <page-num
           :jumper="false"
@@ -44,7 +75,8 @@
           :mar-bot="0"
           size="small"
           :total="total"
-          @change-page="getStudentList"></page-num>
+          @change-page="changePage(false)"
+        ></page-num>
       </div>
       <div class="user-box qui-fx-ver">
         <div class="title qui-fx-jsb">
@@ -53,8 +85,8 @@
         </div>
         <div class="qui-fx-f1" style="overflow: auto">
           <ul>
-            <li v-for="(item, index) in totalList" :key="item.id" class="qui-fx-jsb">
-              <span>{{ item.controlGroupName }}</span>
+            <li v-for="(item, index) in totalList" :key="item.id" class="qui-fx-jsb qui-fx-ac">
+              <span>{{ item.deviceName }}</span>
               <a-tag @click="delUser(item.id, index)" color="#f50">删除</a-tag>
             </li>
           </ul>
@@ -66,46 +98,217 @@
 
 <script>
 import PageNum from '@c/PageNum'
+import { Switch } from 'ant-design-vue'
 import TableList from '@c/TableList'
 import $ajax from '@u/ajax-serve'
 import hostEnv from '@config/host-env'
-const columns = [
+const doorGroupColumns = [
   {
     title: '序号',
-    width: '20%',
+    width: '10%',
     scopedSlots: {
       customRender: 'index'
     }
   },
   {
-    title: '控制组名称',
-    dataIndex: 'controlGroupName',
+    title: '设备名称',
+    dataIndex: 'deviceName',
     width: '20%'
   },
   {
-    title: '控制组编码',
-    dataIndex: 'controlGroupCode',
-    width: '20%'
-  },
-  {
-    title: '控制组类型',
-    dataIndex: 'controlGroupType',
-    width: '20%',
-    customRender: (text) => {
-      return text === 1 ? '进控制组' : text === 2 ? '出控制组' : '数据采集控制组'
+    title: '设备类型',
+    dataIndex: 'deviceType',
+    width: '10%',
+    customRender: text => {
+      return parseInt(text) === 1 ? '相机' : '面板机'
     }
   },
   {
-    title: '备注',
-    dataIndex: 'photoUrl',
+    title: '安装位置',
+    dataIndex: 'snapSite',
     width: '20%'
+  },
+  {
+    title: '设备IP',
+    dataIndex: 'deviceIp',
+    width: '10%'
+  },
+  {
+    title: '设备状态',
+    dataIndex: 'deviceStatus',
+    width: '10%',
+    customRender: text => {
+      return parseInt(text) === 1 ? '在线' : '离线'
+    }
+  },
+  {
+    title: '控制类型',
+    dataIndex: 'inOrOut',
+    width: '10%',
+    customRender: text => {
+      return parseInt(text) === 1 ? '进' : '出'
+    }
+  } /* ,
+  {
+    title: '是否校门门禁',
+    dataIndex: 'controlType',
+    width: '10%',
+    customRender: text => {
+      return parseInt(text) === 1 ? '是' : '否'
+    }
+  } */
+]
+
+const columns = [
+  {
+    title: '序号',
+    width: '10%',
+    scopedSlots: {
+      customRender: 'index'
+    }
+  },
+  {
+    title: '设备名称',
+    dataIndex: 'deviceName',
+    width: '30%'
+  },
+  {
+    title: '设备类型',
+    dataIndex: 'deviceType',
+    width: '10%',
+    customRender: text => {
+      return parseInt(text) === 1 ? '相机' : '面板机'
+    }
+  },
+  {
+    title: '安装位置',
+    dataIndex: 'snapSite',
+    width: '25%'
+  },
+  {
+    title: '设备IP',
+    dataIndex: 'deviceIp',
+    width: '15%'
+  },
+  {
+    title: '设备状态',
+    dataIndex: 'deviceStatus',
+    width: '10%',
+    customRender: text => {
+      return parseInt(text) === 1 ? '在线' : '离线'
+    }
+  }
+]
+const doorColumns = [
+  {
+    title: '序号',
+    width: '10%',
+    scopedSlots: {
+      customRender: 'index'
+    }
+  },
+  {
+    title: '设备名称',
+    dataIndex: 'deviceName',
+    width: '20%'
+  },
+  {
+    title: '设备类型',
+    dataIndex: 'deviceType',
+    width: '10%',
+    customRender: text => {
+      return parseInt(text) === 1 ? '相机' : '面板机'
+    }
+  },
+  {
+    title: '安装位置',
+    dataIndex: 'snapSite',
+    width: '20%'
+  },
+  {
+    title: '设备IP',
+    dataIndex: 'deviceIp',
+    width: '10%'
+  },
+  {
+    title: '设备状态',
+    dataIndex: 'deviceStatus',
+    width: '10%',
+    customRender: text => {
+      return parseInt(text) === 1 ? '在线' : '离线'
+    }
+  },
+  {
+    title: '控制类型',
+    dataIndex: 'inOrOut',
+    width: '10%',
+    scopedSlots: {
+      customRender: 'other1'
+    }
+  },
+  {
+    title: '是否校门门禁',
+    dataIndex: 'controlType',
+    width: '10%',
+    scopedSlots: {
+      customRender: 'other2'
+    }
+  }
+]
+const dormColumns = [
+  {
+    title: '序号',
+    width: '10%',
+    scopedSlots: {
+      customRender: 'index'
+    }
+  },
+  {
+    title: '设备名称',
+    dataIndex: 'deviceName',
+    width: '20%'
+  },
+  {
+    title: '设备类型',
+    dataIndex: 'deviceType',
+    width: '15%',
+    customRender: text => {
+      return parseInt(text) === 1 ? '相机' : '面板机'
+    }
+  },
+  {
+    title: 'SN码',
+    dataIndex: 'deviceSn',
+    width: '15%'
+  },
+  {
+    title: '状态',
+    dataIndex: 'deviceStatus',
+    width: '10%',
+    customRender: text => {
+      return parseInt(text) === 1 ? '在线' : '离线'
+    }
+  },
+  {
+    title: '安装位置',
+    dataIndex: 'snapSite',
+    width: '15%'
+  },
+  {
+    title: '控制类型',
+    dataIndex: 'inOrOut',
+    width: '10%',
+    scopedSlots: {
+      customRender: 'other1'
+    }
   }
 ]
 export default {
-  name: 'ChooseStudent',
+  name: 'ChooseControl',
   components: {
     PageNum,
-    TableList
+    TableList,
+    ASwitch: Switch
   },
   props: {
     isAll: {
@@ -113,6 +316,10 @@ export default {
       default: false
     },
     schoolCode: {
+      type: String,
+      default: ''
+    },
+    groupCode: {
       type: String,
       default: ''
     },
@@ -128,33 +335,56 @@ export default {
       type: Boolean,
       default: false
     },
+    bindList: {
+      type: Array,
+      default: () => {
+        return []
+      }
+    },
     isCheck: {
       type: Boolean,
       default: false
+    },
+    bindObj: {
+      type: Array,
+      default: () => {
+        return []
+      }
+    },
+    controlList: {
+      type: Array,
+      default: () => {
+        return []
+      }
+    },
+    chooseType: {
+      type: String,
+      default: ''
+    },
+    bindCode: {
+      type: String,
+      default: ''
     }
   },
   computed: {
     status: {
-      get () {
+      get() {
         return this.value
       },
-      set () {
+      set() {
         this.$emit('input', false)
       }
     }
   },
-  mounted () {
-    this.getStudentList()
-  },
-  data () {
+  data() {
     return {
       confirmLoading: false,
       chooseList: [],
       pageList: {
         page: 1,
-        size: 20
+        size: 40
       },
-      contorlType: '',
+      deviceType: '',
       typeList: [
         {
           key: '',
@@ -162,56 +392,225 @@ export default {
         },
         {
           key: 1,
-          val: '进控制组'
+          val: '相机'
         },
         {
           key: 2,
-          val: '出控制组'
-        },
-        {
-          key: 3,
-          val: '数据采集控制组'
+          val: '面板机'
         }
       ],
       keyword: '',
       total: 0,
       columns,
+      doorColumns,
+      dormColumns,
+      doorGroupColumns,
       userList: [],
       totalList: []
     }
   },
-  methods: {
-    async getStudentList () {
-      const res = await $ajax.post({
-        url: `${hostEnv.wxz_control}/control/group/info/queryControlGroupInfos`,
+  async mounted() {
+    if (this.chooseType === 'dorm') {
+      console.log('dorm')
+      this.bindObj.forEach(item => {
+        this.chooseList.push(item.controllerCode)
+        this.totalList.push({
+          id: item.controllerCode,
+          deviceSn: item.controllerCode,
+          deviceName: item.controllerName
+        })
+      })
+      this.getStudentList(true)
+    } else if (this.chooseType === 'ncov') {
+      this.pageList.size = 200
+      if (!this.bindCode) {
+        this.getStudentList()
+        return
+      }
+      const res = await $ajax.get({
+        url: `${hostEnv.lz_ncov}/epidemic/group/detail`,
         params: {
-          controlGroupName: this.keyword,
-          controlGroupType: this.contorlType,
-          schoolCode: this.schoolCode,
-          ...this.pageList
+          groupId: this.bindCode
         }
       })
-      this.userList = res.data.list
-      this.total = res.data.total
+      const users = res.data.controllerGroups
+      users.forEach(item => {
+        this.chooseList.push(item.deviceSn)
+        this.totalList.push({
+          id: item.deviceSn,
+          deviceSn: item.deviceSn,
+          deviceName: item.deviceName,
+          snapSite: item.snapSite,
+          deviceType: item.deviceType
+        })
+      })
+      this.getStudentList(true)
+    } else if (this.chooseType === 'attendance') {
+      // this.typeList = this.typeList.filter(item => {
+      //   return item.key !== 1
+      // })
+      if (!this.bindCode) {
+        this.getStudentList()
+        return
+      }
+      this.pageList.size = 200
+      const res = await $ajax.get({
+        url: `${hostEnv.lz_attendance}/attendance/group/detail`,
+        params: {
+          groupId: this.bindCode
+        }
+      })
+      const users = res.data.controllerGroups
+      users.forEach(item => {
+        this.chooseList.push(item.deviceSn)
+        this.totalList.push({
+          id: item.deviceSn,
+          deviceSn: item.deviceSn,
+          deviceName: item.deviceName,
+          snapSite: item.address,
+          deviceType: item.type
+        })
+      })
+      this.getStudentList(true)
+    } else if (this.chooseType === 'doorGroup') {
+      if (!this.groupCode) {
+        this.getStudentList()
+        return
+      }
+      this.pageList.size = 200
+      const res = await $ajax.get({
+        url: `${hostEnv.zx_door}/setting/rule/group/detail`,
+        params: {
+          schoolCode: this.schoolCode,
+          ruleGroupCode: this.groupCode
+        }
+      })
+      const users = res.data.controlGroupList
+      users.forEach(item => {
+        this.chooseList.push(item.controlGroupCode)
+        this.totalList.push({
+          id: item.controlGroupCode,
+          deviceSn: item.controlGroupCode,
+          deviceName: item.controlGroupName,
+          snapSite: item.snapSite,
+          deviceType: item.deviceType,
+          inOrOut: item.controlGroupType
+        })
+      })
+      this.getStudentList(true)
+    } else if (this.chooseType === 'common') {
+      this.controlList.forEach(item => {
+        this.chooseList.push(item.deviceSn)
+        this.totalList.push({
+          id: item.deviceSn,
+          deviceSn: item.deviceSn,
+          deviceName: item.deviceName
+        })
+      })
+      this.getStudentList(true)
+    } else {
+      this.getStudentList()
+    }
+  },
+  methods: {
+    changePage() {
+      if (!this.chooseType) {
+        this.getStudentList(false)
+      } else {
+        this.getStudentList(true)
+      }
     },
-    reset () {
+    async getStudentList(type = false) {
+      if (this.chooseType === 'doorGroup') {
+        const res = await $ajax.post({
+          url: `${hostEnv.zx_door}/setting/device/info/query`,
+          params: {
+            deviceName: this.keyword,
+            deviceType: this.deviceType,
+            schoolCode: this.schoolCode,
+            pageNum: this.pageList.page,
+            pageSize: this.pageList.size
+          }
+        })
+        this.userList = res.data.list.map(item => {
+          return {
+            ...item,
+            id: type ? item.deviceSn : item.id
+          }
+        })
+        this.total = res.data.total
+      } else {
+        const res = await $ajax.post({
+          url: `${hostEnv.wxz_control}/device/info/queryDeviceInfos`,
+          params: {
+            deviceName: this.keyword,
+            deviceType: this.deviceType,
+            schoolCode: this.schoolCode,
+            ...this.pageList
+          }
+        })
+        /* const quchongList = res.data.list.filter(item => {
+          return (
+            this.bindList.findIndex(it => {
+              return item.deviceSn === it.deviceSn
+            }) === -1
+          )
+        }) */
+        this.userList = res.data.list.map(item => {
+          if (this.chooseType === 'door' || this.chooseType === 'device') {
+            item.inOrOut = false
+            item.controlType = false
+          }
+          return {
+            ...item,
+            id: type ? item.deviceSn : item.id
+          }
+        })
+        if (this.chooseType === 'attendance') {
+          this.userList = this.userList.filter(item => {
+            return item.deviceType === 2
+          })
+        }
+        this.total = res.data.total
+      }
+    },
+    inOrOutCilck(value, e) {
+      const index = this.totalList.findIndex(list => list.id === e.id)
+      if (index !== -1) {
+        this.totalList[index].inOrOut = value
+      }
+    },
+    controlTypeCilck(value, e) {
+      const index = this.totalList.findIndex(list => list.id === e.id)
+      if (index !== -1) {
+        this.totalList[index].controlType = value
+      }
+    },
+    reset() {
+      if (this.chooseType === 'door' || this.chooseType === 'device') {
+        this.chooseList = []
+        this.totalList = []
+        this.userList.forEach(ele => {
+          ele.inOrOut = false
+          ele.controlType = false
+        })
+      }
       this.confirmLoading = false
       this.$emit('input', false)
     },
     resetBtn() {
       this.keyword = ''
-      this.contorlType = ''
-      this.getStudentList()
+      this.deviceType = ''
+      this.getStudentList(this.chooseType !== '')
     },
-    error () {
+    error() {
       this.confirmLoading = false
     },
-    delUser (id, index) {
+    delUser(id, index) {
       this.totalList.splice(index, 1)
       this.chooseList.splice(this.chooseList.indexOf(id), 1)
     },
-    selectAll (item, type) {
-      console.log(item)
+    selectAll(item, type) {
       if (type) {
         this.totalList = this.totalList.concat(item)
       } else {
@@ -224,22 +623,45 @@ export default {
       }
     },
     // 监听选中或取消
-    clickRow (item, type) {
+    clickRow(item, type) {
+      console.log(item)
       if (type) {
-        this.totalList.push(item)
+        if (this.isCheck) {
+          this.totalList.push({
+            controlType: item.controlType,
+            id: item.id,
+            deviceSn: item.deviceSn,
+            deviceName: item.deviceName,
+            snapSite: item.snapSite,
+            deviceType: item.deviceType,
+            deviceIp: item.deviceIp,
+            inOrOut: item.inOrOut,
+            schoolCode: item.schoolCode,
+            deviceStatus: item.deviceStatus,
+            deviceId: item.deviceId
+          })
+          console.log(this.totalList)
+        } else {
+          this.totalList = [item]
+        }
       } else {
         const index = this.totalList.findIndex(list => list.id === item.id)
         this.totalList.splice(index, 1)
       }
     },
-    submitOk () {
+    submitOk() {
       if (this.totalList.length === 0) {
-        this.$message.warning('请选择控制组')
+        this.$message.warning('请选择设备')
         return
       }
       this.confirmLoading = true
+      if (this.chooseType === 'door' || this.chooseType === 'device') {
+        this.totalList.forEach(ele => {
+          ele.inOrOut = ele.inOrOut ? 2 : 1
+          ele.controlType = ele.controlType ? 1 : 0
+        })
+      }
       this.$emit('submit', this.totalList)
-      this.reset()
     }
   }
 }
@@ -249,7 +671,7 @@ export default {
 .choose-user {
   height: 600px;
   .org-box {
-    width: 200px
+    width: 200px;
   }
   .user-box {
     border: 1px #f5f5f5 solid;
@@ -257,10 +679,10 @@ export default {
     width: 200px;
     .title {
       padding: 0 10px;
-      background-color:#f5f5f5;
+      background-color: #f5f5f5;
       height: 41px;
       line-height: 41px;
-      border-bottom: 1px #f5f5f5 solid
+      border-bottom: 1px #f5f5f5 solid;
     }
     li {
       border-bottom: 1px #f5f5f5 solid;

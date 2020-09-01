@@ -1,58 +1,110 @@
 <template>
   <div class="student-detail page-layout qui-fx-ver">
-    <div class="tit">
-      <p class="qui-fx qui-fx-ac">基本信息</p>
-    </div>
+    <a-tabs default-active-key="1">
+      <a-tab-pane key="1" tab="基本信息">
+      </a-tab-pane>
+    </a-tabs>
     <div class="top">
       <div class="qui-fx-ver">
         <p class="info qui-fx">
-          <span>学年：2018-2019学年</span>
-          <span>姓名：张思</span>
-          <span>学号：2900080123</span>
-          <span>年级：一年级</span>
-          <span>班级：1班</span>
-          <span>入学年份：2019</span>
-          <span>性别：男</span>
-          <span>卡号：40012058545</span>
+          <span>学年： {{ year }}学年</span>
+          <span>姓名： {{ studentInfo.userName }}</span>
+          <span>学号： {{ studentInfo.workNo }}</span>
+          <span>年级： {{ studentInfo.gradeName }}</span>
+          <span>班级： {{ studentInfo.className }}</span>
+          <span>入学年份： {{ studentInfo.admissionTime }}</span>
+          <span>性别： {{ studentInfo.sex | getSex() }}</span>
+          <span>走住读类型： {{ studentInfo.hasDorm | getDorm() }}</span>
         </p>
         <p class="phone qui-fx">
           <span class="qui-fx-ac">人脸：</span>
-          <a-popover placement="right" v-for="i in 3" :key="i">
+          <a-popover placement="right">
             <template slot="content">
-              <img src="http://canpoint.oss-cn-beijing.aliyuncs.com/2019/11/11/168f2f964c8c48b09fc0be10dc9d9025.jpg" style="max-width: 200px; max-height: 220px; display: block;" alt="">
+              <img :src="studentInfo.photoUrl" style="max-width: 200px; max-height: 220px; display: block;" alt="">
             </template>
-            <img src="http://canpoint.oss-cn-beijing.aliyuncs.com/2019/11/11/168f2f964c8c48b09fc0be10dc9d9025.jpg" style="max-width: 50px; max-height: 50px; display: block;" alt="">
+            <img :src="studentInfo.photoUrl" style="max-width: 80px; max-height: 80px; display: block;" alt="">
           </a-popover>
         </p>
-        <span>备注：安全回家</span>
+        <span>备注： {{ studentInfo.remark }}</span>
       </div>
     </div>
-    <div class="tit">
-      <p class="qui-fx qui-fx-ac">学生家长</p>
-    </div>
-    <div class="content qui-fx-ver qui-fx-f1">
-      <div class="add qui-fx-je qui-fx-ac">
-        <span>设置主要家长：</span>
-        <a-select placeholder="请选择" style="width: 100px" @change="parentChange">
-          <a-select-option v-for="i in 6" :key="i" :value="i">
-            家长{{ i }}
-          </a-select-option>
-        </a-select>
-        <a-button style="margin-left:20px" type="primary" @click="save">保存</a-button>
-      </div>
-      <div class="table qui-fx-ver qui-fx-f1">
-        <table-list
-          :columns="columns"
-          :table-list="parentsList">
-        </table-list>
-      </div>
-    </div>
+    <a-tabs default-active-key="1" @change="tabChange" v-model="tabValue">
+      <a-tab-pane key="1" tab="学生家长">
+        <div class="content qui-fx-ver qui-fx-f1">
+          <div class="table qui-fx-ver qui-fx-f1">
+            <table-list
+              :columns="columns"
+              :table-list="parentsList">
+              <template v-slot:other1="other1">
+                <div>
+                  <a-switch
+                    :disabled="other1.record.hasMainParent"
+                    @click.native.stop
+                    @change="changeMain($event,other1.record)"
+                    v-model="other1.record.hasMainParent"
+                  />
+                </div>
+              </template>
+            </table-list>
+          </div>
+        </div>
+      </a-tab-pane>
+      <a-tab-pane key="2" tab="异动记录">
+        <div class="content qui-fx-ver qui-fx-f1">
+          <!-- <div class="qui-fx-jsb mar-b10">
+            <div class="qui-fx">
+              <div v-if="!changeTag">当前状态：{{ status | getStudentStatus }}</div>
+              <div v-else>变更状态：
+                <a-radio-group button-style="solid" v-model="status">
+                  <a-radio-button :value="item.key" v-for="item in statusList" :key="item.key">
+                    {{ item.name }}
+                  </a-radio-button>
+                </a-radio-group>
+              </div>
+            </div>
+            <div slot="btn">
+              <a-button type="primary" @click="changeStatus">{{ changeTitle }}</a-button>
+            </div>
+          </div> -->
+          <div class="table qui-fx-ver qui-fx-f1">
+            <table-list
+              :columns="changeColumns"
+              :table-list="changeList">
+              <template v-slot:other1="other1">
+                {{ other1.record.oldGradeName }}{{ other1.record.oldClassName }}
+              </template>
+              <template v-slot:other2="other2">
+                {{ other2.record.newGradeName }}{{ other2.record.newClassName }}
+              </template>
+            </table-list>
+          </div>
+        </div>
+      </a-tab-pane>
+      <a-tab-pane key="3" tab="调宿记录">
+        <div class="content qui-fx-ver qui-fx-f1">
+          <div class="table qui-fx-ver qui-fx-f1">
+            <table-list
+              :columns="dormColumns"
+              :table-list="dormList">
+              <template v-slot:other1="other1">
+                {{ other1.record.oldBuildingName }}{{ other1.record.oldFloorName }}{{ other1.record.oldRoomName }}
+              </template>
+              <template v-slot:other2="other2">
+                {{ other2.record.newBuildingName }}{{ other2.record.newFloorName }}{{ other2.record.newRoomName }}
+              </template>
+            </table-list>
+          </div>
+        </div>
+      </a-tab-pane>
+    </a-tabs>
   </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
+import { Switch } from 'ant-design-vue'
+import Tools from '@u/tools'
 const columns = [
   {
     title: '序号',
@@ -63,47 +115,270 @@ const columns = [
   },
   {
     title: '家长姓名',
-    dataIndex: 'userName',
+    dataIndex: 'parentName',
     width: '10%'
   },
   {
     title: '家长电话',
-    dataIndex: 'phone',
-    width: '10%'
+    dataIndex: 'mobile',
+    width: '20%'
   },
   {
     title: '亲属关系',
-    dataIndex: 'relation',
-    width: '10%'
+    dataIndex: 'relationship',
+    width: '20%',
+    customRender: text => {
+      return Tools.relationship(text)
+    }
   },
   {
     title: '注册时间',
-    dataIndex: 'birthday',
-    width: '10%'
+    dataIndex: 'createTime',
+    width: '20%',
+    customRender: text => {
+      return Tools.getDate(text, 1)
+    }
+  },
+  {
+    title: '是否主要家长',
+    dataIndex: 'hasMainParent',
+    width: '20%',
+    scopedSlots: {
+      customRender: 'other1'
+    }
   }
 ]
+const changeColumns = [
+  {
+    title: '序号',
+    width: '20%',
+    scopedSlots: {
+      customRender: 'index'
+    }
+  },
+  {
+    title: '异动类型',
+    dataIndex: 'type',
+    width: '20%',
+    customRender: text => {
+      switch (parseInt(text)) {
+        case 1:
+          return '入学'
+        case 2:
+          return '移出班级'
+        case 3:
+          return '加入班级'
+        case 4:
+          return '休学'
+        case 5:
+          return '退学'
+        case 6:
+          return '复学'
+        case 7:
+          return '升级'
+        case 8:
+          return '毕业'
+        case 9:
+          return '转班'
+      }
+    }
+  },
+  {
+    title: '异动前',
+    dataIndex: 'oldClassName',
+    width: '20%',
+    scopedSlots: {
+      customRender: 'other1'
+    }
+  },
+  {
+    title: '异动后',
+    dataIndex: 'newClassName',
+    width: '20%',
+    scopedSlots: {
+      customRender: 'other2'
+    }
+  },
+  {
+    title: '异动时间',
+    dataIndex: 'createTime',
+    width: '20%',
+    customRender: text => {
+      return Tools.getDate(text)
+    }
+  }/* ,
+  {
+    title: '操作人',
+    dataIndex: 'optName',
+    width: '15%'
+  } */
+]
+const dormColumns = [
+  {
+    title: '序号',
+    width: '20%',
+    scopedSlots: {
+      customRender: 'index'
+    }
+  },
+  {
+    title: '调宿类型',
+    dataIndex: 'status',
+    width: '20%',
+    customRender: text => {
+      switch (parseInt(text)) {
+        case 1:
+          return '入住'
+        case 2:
+          return '退宿'
+        case 3:
+          return '调宿'
+      }
+    }
+  },
+  {
+    title: '调宿前',
+    dataIndex: 'oldBuildingName',
+    width: '20%'
+  },
+  {
+    title: '调宿后',
+    dataIndex: 'newBuildingName',
+    width: '20%'
+  },
+  {
+    title: '调宿时间',
+    dataIndex: 'updateTime',
+    width: '20%',
+    customRender: text => {
+      return Tools.getDate(text)
+    }
+  }/* ,
+  {
+    title: '操作人',
+    dataIndex: 'optName',
+    width: '15%'
+  } */
+]
+const statusList = [
+  {
+    name: '在读',
+    key: '1'
+  },
+  {
+    name: '休学',
+    key: '2'
+  },
+  {
+    name: '退学',
+    key: '3'
+  },
+  {
+    name: '复学',
+    key: '4'
+  }
+]
+
 export default {
   name: 'StudentDetail',
   components: {
-    TableList
+    TableList,
+    ASwitch: Switch
+  },
+  computed: {
+    ...mapState('home', ['userInfo'])
   },
   data () {
     return {
+      changeTag: false,
+      changeTitle: '变更',
       columns,
+      changeColumns,
+      dormColumns,
+      userCode: '',
+      year: '',
       parentsList: [],
-      selectedParent: ''
+      changeList: [],
+      dormList: [],
+      selectedParent: '',
+      studentInfo: {},
+      childCode: '',
+      yearId: '',
+      status: '1',
+      tabValue: '1',
+      statusList
     }
   },
   mounted () {
-    this.showList()
+    this.userCode = this.$route.query.userCode
+    this.year = this.$route.query.year
+    this.yearId = this.$route.query.yearId
+    console.log(this.userCode)
+    this.showStudentInfo()
   },
   methods: {
     ...mapActions('home', [
-      'getIndex'
+      'queryStudentInfoById', 'queryParents', 'setParents', 'getChangeList', 'getDormChangeList'
     ]),
+    tabChange() {
+      console.log(this.tabValue)
+      this.showList()
+    },
+    /* changeStatus() {
+      if (this.changeTitle === '保存') {
+        if (this.status === '1' || this.status === '4') {
+          this.status = '1'
+          this.statusList = statusList.slice(0, 3)
+        } else if (this.status === '2') {
+          this.statusList = statusList.slice(1)
+        } else if (this.status === '3') {
+          this.statusList = statusList.slice(2)
+        }
+        console.log(this.status)
+      }
+      this.changeTitle = this.changeTitle === '变更' ? '保存' : '变更'
+      this.changeTag = !this.changeTag
+    }, */
+    changeMain(value, e) {
+      console.log(value, e)
+      this.parentsList.map(ele => {
+        ele.hasMainParent = false
+      })
+      const index = this.parentsList.findIndex(list => list.id === e.id)
+      if (index !== -1) {
+        this.parentsList[index].hasMainParent = value
+      }
+      const req = {
+        childCode: e.studentCode,
+        parentCode: e.parentCode
+      }
+      this.setParents(req).then(res => {
+        this.$message.success('设置成功')
+        this.$tools.goNext(() => {
+          this.showList()
+        })
+      })
+    },
+    async showStudentInfo() {
+      const res = await this.queryStudentInfoById({ userCode: this.userCode, schoolYearId: this.yearId })
+      this.studentInfo = res.data
+      this.childCode = res.data.userCode
+      this.showList()
+    },
     async showList () {
-      const res = await this.getIndex()
-      this.parentsList = res.data
+      if (this.tabValue === '1') {
+        const res = await this.queryParents({ childCode: this.childCode })
+        this.parentsList = res.data
+        this.parentsList.map(ele => {
+          ele.hasMainParent = ele.hasMainParent === '1'
+        })
+      } else if (this.tabValue === '2') {
+        const res = await this.getChangeList({ schoolCode: this.userInfo.schoolCode, userCode: this.userCode })
+        this.changeList = res.data
+      } else if (this.tabValue === '3') {
+        const res = await this.getDormChangeList({ schoolCode: this.userInfo.schoolCode, userCode: this.userCode })
+        this.dormList = res.data
+      }
     },
     parentChange (value) {
       this.selectedParent = value
@@ -132,21 +407,21 @@ export default {
   }
    .top{
     background: #fff;
-    border:1px solid #ddd;
-    padding: 20px;
-    margin-bottom: 20px;
-    font-weight: bold;
+    padding: 10px 20px;
+    margin-bottom: 10px;
     .info{
       margin-bottom: 20px;
+      flex-wrap: wrap;
       span{
         margin-right: 50px;
+        padding: 10px 0;
       }
     }
     .phone{
       margin-bottom: 20px;
       img{
-        width: 50px;
-        height: 50px;
+        width: 80px;
+        height: 80px;
         margin-right: 20px;
         border-radius: 4px;
       }
@@ -155,12 +430,7 @@ export default {
   .content{
     background: #fff;
     padding: 0 20px;
-    .add{
-      max-width: 1000px;
-      margin:10px 0;
-    }
     .table{
-      max-width: 1000px;
       margin-bottom: 20px;
     }
   }

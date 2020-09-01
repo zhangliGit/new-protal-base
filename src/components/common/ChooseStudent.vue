@@ -8,18 +8,41 @@
     :destroyOnClose="true"
     :confirmLoading="confirmLoading"
   >
-    <a-row type="flex" justify="end" style="margin-bottom: 15px; margin-right: 215px">
+    <a-row
+      type="flex"
+      justify="end"
+      style="margin-bottom: 15px"
+      :style="hasAdd ? 'margin-right:0' : 'margin-right:215px'"
+    >
       <a-col>
         <span>姓名/学号：</span>
         <a-input v-model="keyword" style="width: 120px;margin-right: 10px" placeholder="请输入关键字" />
-        <a-button type="primary" @click="getStudentList(false)">查询</a-button>
+        <span>性别：</span>
+        <a-select style="width: 120px;margin-right: 10px" v-model="sex">
+          <a-select-option value>全部</a-select-option>
+          <a-select-option value="1">男</a-select-option>
+          <a-select-option value="2">女</a-select-option>
+        </a-select>
+        <span>走住读类型：</span>
+        <a-select style="width: 120px;margin-right: 10px" v-model="hasDorm">
+          <a-select-option value>全部</a-select-option>
+          <a-select-option value="1">住读</a-select-option>
+          <a-select-option value="0">走读</a-select-option>
+        </a-select>
+        <a-button type="primary" @click="getStudentList(chooseType !== '')">查询</a-button>
+      </a-col>
+      <a-col v-if="hasAdd" style=" margin-left: 45px; line-height:35px;">
+        <span>
+          <a @click="newStudent">未找到学生?点击新建学生></a>
+        </span>
       </a-col>
     </a-row>
-    <div class="choose-user qui-fx" >
+    <div class="choose-user qui-fx">
       <grade-tree @select="select"></grade-tree>
       <div class="qui-fx-ver qui-fx-f1">
         <table-list
-          is-check
+          :is-check="isCheck"
+          :is-radio="isRadio"
           is-zoom
           :scroll-h="500"
           :page-list="pageList"
@@ -27,7 +50,15 @@
           :columns="columns"
           @clickRow="clickRow"
           @selectAll="selectAll"
-          :table-list="userList">
+          :table-list="userList"
+        >
+          <template v-slot:other1="other1">
+            <a-tag :color="parseInt(other1.record.hasDorm) === 1 ? '#87d068' : '#2db7f5'">
+              {{
+                $tools.hasDorm(other1.record.hasDorm)
+              }}
+            </a-tag>
+          </template>
         </table-list>
         <page-num
           :jumper="false"
@@ -36,7 +67,8 @@
           :mar-bot="0"
           size="small"
           :total="total"
-          @change-page="getStudentList(false)"></page-num>
+          @change-page="changePage"
+        ></page-num>
       </div>
       <div class="user-box qui-fx-ver">
         <div class="title qui-fx-jsb">
@@ -46,7 +78,7 @@
         <div class="qui-fx-f1" style="overflow: auto">
           <ul>
             <li v-for="(item, index) in totalList" :key="item.id" class="qui-fx-jsb">
-              <span>{{ item.userName }}</span>
+              <div>{{ item.userName }}</div>
               <a-tag @click="delUser(item.id, index)" color="#f50">删除</a-tag>
             </li>
           </ul>
@@ -74,14 +106,21 @@ const columns = [
   {
     title: '姓名',
     dataIndex: 'userName',
-    width: '20%'
+    width: '15%'
   },
   {
     title: '性别',
     dataIndex: 'sex',
-    width: '15%',
-    customRender: (text) => {
+    width: '10%',
+    customRender: text => {
       return parseInt(text) === 1 ? '男' : '女'
+    }
+  },
+  {
+    title: '走住读',
+    width: '15%',
+    scopedSlots: {
+      customRender: 'other1'
     }
   },
   {
@@ -92,7 +131,7 @@ const columns = [
   {
     title: '照片',
     dataIndex: 'photoUrl',
-    width: '30%',
+    width: '20%',
     scopedSlots: {
       customRender: 'photoPic'
     }
@@ -106,6 +145,10 @@ export default {
     GradeTree
   },
   props: {
+    noBind: {
+      type: Boolean,
+      default: false
+    },
     bindObj: {
       type: Object,
       default: () => {
@@ -135,22 +178,27 @@ export default {
     isCheck: {
       type: Boolean,
       default: false
+    },
+    hasAdd: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
-    ...mapState('home', [
-      'schoolCode'
-    ]),
+    ...mapState('home', ['schoolCode']),
     status: {
-      get () {
+      get() {
         return this.value
       },
-      set () {
+      set() {
         this.$emit('input', false)
       }
     }
   },
-  async mounted () {
+  async mounted() {
+    this.url = this.noBind
+      ? '/userinfo/student/user/queryNoClassStudentInfos'
+      : '/userinfo/student/user/queryStudentInfoList'
     if (this.chooseType === 'attendance') {
       const res = await $ajax.get({
         url: `${hostEnv.lz_attendance}/attendance/group/bind/user/query`,
@@ -169,10 +217,53 @@ export default {
       })
       this.getStudentList(true)
     } else if (this.chooseType === 'door') {
+      this.getDoorTotal(1)
+    } else if (this.chooseType === 'ncov') {
+      this.pageList.size = 500
+      const res = await $ajax.get({
+        url: `${hostEnv.lz_ncov}/epidemic/group/bind/user/query`,
+        params: {
+          groupCode: this.bindObj.groupCode
+        }
+      })
+      const users = res.data
+      users.forEach(item => {
+        this.chooseList.push(item.userCode)
+        this.totalList.push({
+          id: item.userCode,
+          userCode: item.userCode,
+          userName: item.userName
+        })
+      })
+      this.getStudentList(true)
+    } else {
+      this.getStudentList()
+    }
+  },
+  data() {
+    return {
+      confirmLoading: false,
+      chooseList: [],
+      pageList: {
+        page: 1,
+        size: 20
+      },
+      sex: '',
+      hasDorm: '',
+      keyword: '',
+      total: 0,
+      columns,
+      userList: [],
+      totalList: []
+    }
+  },
+  methods: {
+    // 获取门禁学生同行人数
+    async getDoorTotal(pageNum) {
       const res = await $ajax.post({
         url: `${hostEnv.zx_door}/setting/rule/user/list`,
         params: {
-          pageNum: 1,
+          pageNum: pageNum,
           pageSize: 500,
           ruleGroupCode: this.bindObj.ruleGroupCode,
           schoolCode: this.bindObj.schoolCode,
@@ -183,33 +274,26 @@ export default {
       users.forEach(item => {
         this.chooseList.push(item.userCode)
         this.totalList.push({
-          id: item.id,
+          id: item.userCode,
           userCode: item.userCode,
           userName: item.userName
         })
       })
-      this.getStudentList(true)
-    } else {
-      this.getStudentList()
-    }
-  },
-  data () {
-    return {
-      confirmLoading: false,
-      chooseList: [],
-      pageList: {
-        page: 1,
-        size: 20
-      },
-      keyword: '',
-      total: 0,
-      columns,
-      userList: [],
-      totalList: []
-    }
-  },
-  methods: {
-    async select (obj) {
+      if (pageNum === 1) {
+        this.getStudentList(true)
+      }
+      if (res.data.hasNextPage) {
+        this.getDoorTotal(++pageNum)
+      }
+    },
+    changePage() {
+      if (!this.chooseType) {
+        this.getStudentList(false)
+      } else {
+        this.getStudentList(true)
+      }
+    },
+    async select(obj) {
       this.treeObj = obj
       if (this.chooseType) {
         this.getStudentList(true)
@@ -217,11 +301,13 @@ export default {
         this.getStudentList(false)
       }
     },
-    async getStudentList (type = false) {
+    async getStudentList(type = false) {
       const res = await $ajax.post({
-        url: `${hostEnv.lz_user_center}/userinfo/student/user/queryStudentInfoList`,
+        url: `${hostEnv.lz_user_center}${this.url}`,
         params: {
+          hasDorm: this.hasDorm,
           keyword: this.keyword,
+          sex: this.sex,
           schoolCode: this.schoolCode,
           gradeId: this.treeObj.gradeCode,
           classId: this.treeObj.classCode,
@@ -237,18 +323,18 @@ export default {
       })
       this.total = res.data.total
     },
-    reset () {
+    reset() {
       this.confirmLoading = false
       this.$emit('input', false)
     },
-    error () {
+    error() {
       this.confirmLoading = false
     },
-    delUser (id, index) {
+    delUser(id, index) {
       this.totalList.splice(index, 1)
       this.chooseList.splice(this.chooseList.indexOf(id), 1)
     },
-    selectAll (item, type) {
+    selectAll(item, type) {
       if (type) {
         this.totalList = this.totalList.concat(item)
       } else {
@@ -261,25 +347,33 @@ export default {
       }
     },
     // 监听选中或取消
-    clickRow (item, type) {
+    clickRow(item, type) {
       if (type) {
-        this.totalList.push({
-          id: item.id,
-          userCode: item.userCode,
-          userName: item.userName
-        })
+        if (this.isCheck) {
+          this.totalList.push({
+            id: item.id,
+            userCode: item.userCode,
+            userName: item.userName,
+            hasDorm: item.hasDorm
+          })
+        } else {
+          this.totalList = [item]
+        }
       } else {
         const index = this.totalList.findIndex(list => list.id === item.id)
         this.totalList.splice(index, 1)
       }
     },
-    submitOk () {
+    submitOk() {
       if (this.totalList.length === 0 && this.bindId === -1) {
         this.$message.warning('请选择人员')
         return
       }
       this.confirmLoading = true
       this.$emit('submit', this.totalList)
+    },
+    newStudent() {
+      this.$emit('toAdd', true)
     }
   }
 }
@@ -289,7 +383,7 @@ export default {
 .choose-user {
   height: 600px;
   .org-box {
-    width: 200px
+    width: 200px;
   }
   .user-box {
     border: 1px #f5f5f5 solid;
@@ -297,10 +391,10 @@ export default {
     width: 200px;
     .title {
       padding: 0 10px;
-      background-color:#f5f5f5;
+      background-color: #f5f5f5;
       height: 41px;
       line-height: 41px;
-      border-bottom: 1px #f5f5f5 solid
+      border-bottom: 1px #f5f5f5 solid;
     }
     li {
       border-bottom: 1px #f5f5f5 solid;

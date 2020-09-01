@@ -1,5 +1,13 @@
 <template>
   <div class="qui-fx-f1" id="tableList">
+    <choose-user
+      is-radio
+      ref="chooseForm"
+      v-if="userTag"
+      v-model="userTag"
+      @submit="chooseTeacher"
+      title="添加部门主管">
+    </choose-user>
     <submit-form ref="form" @submit-form="submitForm" :title="title" v-model="formStatus" :form-data="formData">
     </submit-form>
     <a-skeleton style="padding: 0 15px;" v-if="orgData.length === 0 && !noData" active :paragraph="{rows: 10}" />
@@ -15,19 +23,37 @@
       style="background-color: #fff"
       :scroll="{y: this.$tools.setScroll('tableList')}"
       :rowKey="(record) => record.id">
-      <template slot="actions" slot-scope="record">
+      <template slot="other" slot-scope="text, other">
+        <div class="qui-fx">
+          <span class="tab-add" v-if="!other.dutyPersonName" @click.stop="addCharge(other)">
+            <a-tag color="green">添加</a-tag>
+          </span>
+          <span v-else>
+            {{ other.dutyPersonName }}
+            <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm.stop="unit(other)">
+              <template slot="title">
+                您确定解绑吗?
+              </template>
+              <a-tooltip placement="topLeft" title="解绑">
+                <a-icon class="mouse mar-l10" type="unlock" />
+              </a-tooltip>
+            </a-popconfirm>
+          </span>
+        </div>
+      </template>
+      <template slot="actions" slot-scope="actions">
         <a-tooltip placement="topLeft" title="新增子级">
-          <a-button size="small" class="add-action-btn" icon="plus" @click="addOrg(false, record)"></a-button>
+          <a-button size="small" class="add-action-btn" icon="plus" @click="addOrg(false, actions)"></a-button>
         </a-tooltip>
         <a-tooltip placement="topLeft" title="编辑">
-          <a-button size="small" class="edit-action-btn" icon="form" @click="addOrg(true, record)"></a-button>
+          <a-button size="small" class="edit-action-btn" icon="form" @click="addOrg(true, actions)"></a-button>
         </a-tooltip>
-        <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="del(record)">
+        <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="del(actions)">
           <template slot="title">
             您确定删除吗?
           </template>
           <a-tooltip placement="topLeft" title="删除">
-            <a-button v-if="record.parentId" size="small" class="del-action-btn" icon="delete"></a-button>
+            <a-button v-if="actions.parentId" size="small" class="del-action-btn" icon="delete"></a-button>
           </a-tooltip>
         </a-popconfirm>
       </template>
@@ -36,6 +62,7 @@
 
 </template>
 <script>
+import ChooseUser from '@c/ChooseUser'
 import NoData from './NoData'
 import $ajax from '@u/ajax-serve'
 import { mapState } from 'vuex'
@@ -130,11 +157,26 @@ export default {
     ASwitch: Switch,
     ATooltip: Tooltip,
     SubmitForm,
-    NoData
+    NoData,
+    ChooseUser
+  },
+  props: {
+    type: {
+      type: String,
+      default: ''
+    },
+    school: {
+      type: String,
+      default: ''
+    },
+    readOnly: {
+      type: Boolean,
+      default: false
+    }
   },
   computed: {
     ...mapState('home', [
-      'schoolCode'
+      'schoolCode', 'eduCode'
     ])
   },
   data () {
@@ -145,19 +187,35 @@ export default {
       orgData: [],
       columns,
       formData,
-      formStatus: false
+      formStatus: false,
+      userTag: false,
+      record: null,
+      code: ''
     }
   },
   async mounted () {
     /**
      * @description 获取组织机构根节点
      */
+    this.code = this.type === 'edu' ? this.eduCode : this.schoolCode
+    if (this.type === 'school') {
+      this.columns[1].title = '主管'
+      this.columns[1].dataIndex = 'code'
+      this.columns[1].scopedSlots = { customRender: 'other' }
+    }
+    if (this.school) {
+      this.code = this.school
+    }
+    if (this.readOnly) {
+      this.columns.splice(3, 1)
+    }
     this.showList()
+    console.log(this.code)
   },
   methods: {
     async showList () {
       const res = await $ajax.get({
-        url: `${hostEnv.lz_user_center}/school/org/getSchoolRoot/${this.schoolCode}`
+        url: `${hostEnv.lz_user_center}/school/org/getSchoolRoot/${this.code}`
       })
       if (res.data === null || res.data.length === 0) {
         this.noData = true
@@ -196,7 +254,7 @@ export default {
     async submitForm (values) {
       try {
         const params = {
-          schoolCode: this.schoolCode,
+          schoolCode: this.code,
           valid: 1,
           ...values,
           parentId: this.parentId
@@ -227,6 +285,49 @@ export default {
         url: `${hostEnv.lz_user_center}/school/org/delete/${record.id}`
       })
       this.$message.success('删除成功')
+      this.$tools.goNext(() => {
+        this.showList()
+      })
+    },
+    // 编辑添加主管
+    addCharge (record) {
+      console.log(record)
+      this.record = record
+      this.userTag = true
+    },
+    // 解绑
+    untie (record) {
+      console.log(record)
+    },
+    // 绑定主管
+    async chooseTeacher (value) {
+      console.log(value)
+      await $ajax.postForm({
+        url: `${hostEnv.lz_user_center}/school/org/savedutyPerson`,
+        params: {
+          dutyPersonCode: value[0].userCode,
+          dutyPersonName: value[0].userName,
+          schoolCode: this.schoolCode,
+          code: this.record.code
+        }
+      })
+      this.$message.success('添加成功')
+      this.$refs.chooseForm.reset()
+      this.$tools.goNext(() => {
+        this.showList()
+      })
+    },
+    async unit(record) {
+      await $ajax.postForm({
+        url: `${hostEnv.lz_user_center}/school/org/savedutyPerson`,
+        params: {
+          dutyPersonCode: '',
+          dutyPersonName: '',
+          schoolCode: this.schoolCode,
+          code: record.code
+        }
+      })
+      this.$message.success('解绑成功')
       this.$tools.goNext(() => {
         this.showList()
       })

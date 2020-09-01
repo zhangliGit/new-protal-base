@@ -5,6 +5,7 @@
       is-check
       v-if="userTag"
       v-model="userTag"
+      :chooseType="chooseType"
       :schoolCode="userInfo.schoolCode"
       @submit="chooseUser"
       title="添加控制组"
@@ -13,6 +14,7 @@
       <a-tab-pane tab="来访事由" key="1" forceRender>
         <div>
           <a-input
+            maxlength="10"
             v-model="causeName"
             style="width: 300px; margin-right: 10px;"
             placeholder="请输入来访事由进行录入"
@@ -23,12 +25,7 @@
           <table-list :columns="columns" :table-list="reasonList">
             <template v-slot:actions="action">
               <div>
-                <a-popconfirm
-                  placement="left"
-                  okText="确定"
-                  cancelText="取消"
-                  @confirm="del(action.record)"
-                >
+                <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="del(action.record)">
                   <template slot="title">您确定删除吗?</template>
                   <a-tooltip placement="topLeft" title="删除">
                     <a-button size="small" class="del-action-btn" icon="delete"></a-button>
@@ -41,33 +38,137 @@
       </a-tab-pane>
       <a-tab-pane tab="通行权限" key="2" forceRender>
         <a-row>
-          <a-col style="font-size: 14px; font-weight: bold; margin-bottom: 20px">可通行门禁：</a-col>
-          <a-col>
-            <no-data msg="暂未设置可通行门禁" v-if="controlList.length === 0"></no-data>
-            <div v-for="(item, i) in controlList" :key="i" class="control-list">
-              <delete-tag @delTag="delControl(item)" :tag-info="item"></delete-tag>
+          <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
+            <div slot="left">
+              <a-button
+                style="margin-top: 5px; margin-right: 10px"
+                v-if="autoKey === '2'"
+                slot="tabBarExtraContent"
+                icon="plus"
+                class="add-btn"
+                @click="userTag = true"
+                >绑定设备</a-button
+              >
             </div>
+          </search-form>
+          <a-col>
+            <table-list :page-list="pageList" :columns="columnss" :table-list="groupList">
+              <template v-slot:actions="action">
+                <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="delControl(action.record)">
+                  <template slot="title">您确定解绑吗?</template>
+                  <a-tooltip placement="topLeft" title="解绑">
+                    <a-button size="small" class="del-action-btn" icon="delete"></a-button>
+                  </a-tooltip>
+                </a-popconfirm>
+              </template>
+            </table-list>
           </a-col>
         </a-row>
       </a-tab-pane>
-      <a-button
-        style="margin-top: 5px; margin-right: 10px"
-        v-if="autoKey === '2'"
-        slot="tabBarExtraContent"
-        type="primary"
-        @click="userTag = true"
-      >添加控制组</a-button>
     </a-tabs>
   </div>
 </template>
-
 <script>
-import NoData from '@c/NoData'
-import DeleteTag from '@c/DeleteTag'
 import TableList from '@c/TableList'
 import ChooseControl from '@c/ChooseControl'
 import { mapState, mapActions } from 'vuex'
+import SearchForm from '@c/SearchForm'
 import Tools from '@u/tools'
+const searchLabel = [
+  {
+    value: 'deviceName',
+    type: 'input',
+    label: '设备名称',
+    placeholder: '输入设备名称'
+  },
+  {
+    value: 'snapSite',
+    type: 'input',
+    label: '安装位置',
+    placeholder: '输入安装位置'
+  },
+  {
+    list: [
+      {
+        key: '',
+        val: '全部'
+      },
+      {
+        key: 1,
+        val: '相机'
+      },
+      {
+        key: 2,
+        val: '面板机'
+      }
+    ],
+    value: 'deviceType',
+    type: 'select',
+    label: '设备类型'
+  },
+  {
+    list: [
+      {
+        key: '',
+        val: '全部'
+      },
+      {
+        key: 1,
+        val: '进'
+      },
+      {
+        key: 2,
+        val: '出'
+      }
+    ],
+    value: 'inOrOut',
+    type: 'select',
+    label: '控制类型'
+  }
+]
+const columnss = [
+  {
+    title: '序号',
+    width: '15%',
+    scopedSlots: {
+      customRender: 'index'
+    }
+  },
+  {
+    title: '安装位置',
+    dataIndex: 'snapSite',
+    width: '15%'
+  },
+  {
+    title: '设备名称',
+    dataIndex: 'deviceName',
+    width: '30%'
+  },
+  {
+    title: '设备类型',
+    dataIndex: 'deviceType',
+    width: '14%',
+    customRender: text => {
+      return parseInt(text) === 1 ? '相机' : '面板机'
+    }
+  },
+  {
+    title: '控制类型',
+    dataIndex: 'inOrOut',
+    width: '14%',
+    customRender: text => {
+      return parseInt(text) === 1 ? '进' : '出'
+    }
+  },
+  {
+    title: '操作',
+    key: 'action',
+    width: '15%',
+    scopedSlots: {
+      customRender: 'action'
+    }
+  }
+]
 const columns = [
   {
     title: '序号',
@@ -94,17 +195,18 @@ export default {
   name: 'VisitorSet',
   components: {
     TableList,
-    DeleteTag,
-    NoData,
-    ChooseControl
+    ChooseControl,
+    SearchForm
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
   data() {
     return {
+      searchLabel,
       autoKey: '1',
       columns,
+      columnss,
       causeName: '',
       controlList: [],
       reasonList: [],
@@ -115,8 +217,13 @@ export default {
         page: 1,
         size: 20
       },
-      total: 0
+      total: 0,
+      groupList: [],
+      chooseType: ''
     }
+  },
+  created() {
+    this.chooseType = 'doorGroup'
   },
   mounted() {
     this.showReason()
@@ -129,7 +236,7 @@ export default {
       'getcauseList',
       'addcontrolgroup',
       'delcontrolgroup',
-      'getcontrolgroupList'
+      'getcontrolgroupsList'
     ]),
     async showReason() {
       const req = {
@@ -167,26 +274,31 @@ export default {
         this.showReason()
       })
     },
-    async showControl() {
+    async showControl(searchObj = {}) {
       const req = {
         pageNum: this.pageList.page,
         pageSize: this.pageList.size,
         schoolCode: this.userInfo.schoolCode,
-        userGroupCode: this.userGroupCode
+        ...searchObj
       }
-      const res = await this.getcontrolgroupList(req)
+      const res = await this.getcontrolgroupsList(req)
+      this.groupList = res.data.list
       this.total = res.data.total
-      this.controlList = res.data.list.map(item => {
-        return {
-          name: item.controlGroupName,
-          ...item
-        }
-      })
+    },
+    searchForm(values) {
+      this.pageList.pageNum = 1
+      const searchObj = {
+        deviceName: values.deviceName,
+        snapSite: values.snapSite,
+        inOrOut: values.inOrOut,
+        deviceType: values.deviceType
+      }
+
+      this.showControl(searchObj)
     },
     async delControl(record) {
-      await this.delcontrolgroup({
-        id: record.id
-      })
+      this.del = [record.id]
+      await this.delcontrolgroup(this.del)
       this.$message.success('删除成功')
       this.$tools.goNext(() => {
         this.showControl()
@@ -194,14 +306,18 @@ export default {
     },
     async chooseUser(value) {
       this.controlArr = []
+      this.$refs.chooseUser.reset()
       value.forEach(ele => {
         this.controlArr.push({
-          controlGroupName: ele.controlGroupName,
-          id: ele.id,
-          controlGroupCode: ele.controlGroupCode,
-          controlGroupType: ele.controlGroupType,
-          schoolCode:ele.schoolCode,
-          userGroupCode:this.userGroupCode
+          controlType: ele.controlType,
+          deviceIp: ele.deviceIp,
+          deviceName: ele.deviceName,
+          deviceSn: ele.deviceSn,
+          deviceStatus: ele.deviceStatus,
+          deviceType: ele.deviceType,
+          inOrOut: ele.inOrOut,
+          schoolCode: ele.schoolCode,
+          snapSite: ele.snapSite
         })
       })
       try {
@@ -210,8 +326,7 @@ export default {
         this.$tools.goNext(() => {
           this.showControl()
         })
-      } catch(err) {
-      }
+      } catch (err) {}
     }
   }
 }

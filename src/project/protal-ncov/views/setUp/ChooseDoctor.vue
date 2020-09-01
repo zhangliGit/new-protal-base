@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    width="900px"
+    width="1200px"
     :title="title"
     v-model="status"
     @ok="submitOk"
@@ -10,16 +10,20 @@
   >
     <a-row type="flex" justify="end" style="margin-bottom: 15px; margin-right: 215px">
       <a-col>
-        <span>姓名：</span>
-        <a-input style="width: 120px;margin-right: 10px" placeholder="请输入姓名" v-model="searchValue" />
-        <a-button type="primary" @click="search">查询</a-button>
+        <span>姓名/工号：</span>
+        <a-input v-model="keyword" style="width: 120px;margin-right: 10px" placeholder="请输入姓名" />
+        <a-button type="primary" @click="getUserList(false)">查询</a-button>
       </a-col>
     </a-row>
     <div class="choose-user qui-fx">
+      <div class="org-box">
+        <org-tree @select="select"></org-tree>
+      </div>
       <div class="qui-fx-ver qui-fx-f1">
         <table-list
-          is-check
-          :scroll-h="0"
+          :is-check="isCheck"
+          :is-radio="isRadio"
+          :scroll-h="500"
           :page-list="pageList"
           v-model="chooseList"
           :columns="columns"
@@ -34,7 +38,7 @@
           :mar-bot="0"
           size="small"
           :total="total"
-          @change-page="showList"
+          @change-page="getUserList(true)"
         ></page-num>
       </div>
       <div class="user-box qui-fx-ver">
@@ -58,11 +62,14 @@
 <script>
 import PageNum from '@c/PageNum'
 import TableList from '@c/TableList'
-import { mapState, mapActions } from 'vuex'
+import OrgTree from '@c/OrgTree'
+import $ajax from '@u/ajax-serve'
+import { mapState } from 'vuex'
+import hostEnv from '@config/host-env'
 const columns = [
   {
     title: '序号',
-    width: '10%',
+    width: '20%',
     scopedSlots: {
       customRender: 'index'
     }
@@ -70,40 +77,39 @@ const columns = [
   {
     title: '姓名',
     dataIndex: 'userName',
-    width: '20%'
-  },
-  {
-    title: '性别',
-    dataIndex: 'gender',
-    width: '10%',
-    customRender: text => {
-      if (text === '1') {
-        return '男'
-      } else if (text === '2') {
-        return '女'
-      } else {
-        return '未知'
-      }
-    }
+    width: '15%'
   },
   {
     title: '手机号',
-    dataIndex: 'phone',
-    width: '25%'
+    dataIndex: 'mobile',
+    width: '30%'
   },
   {
     title: '工号',
     dataIndex: 'workNo',
-    width: '25%'
+    width: '30%'
   }
 ]
 export default {
-  name: 'ChooseDoctor',
+  name: 'ChooseUser',
   components: {
     PageNum,
-    TableList
+    TableList,
+    OrgTree
   },
   props: {
+    chooseType: {
+      type: String,
+      default: ''
+    },
+    isRadio: {
+      type: Boolean,
+      default: false
+    },
+    isCheck: {
+      type: Boolean,
+      default: false
+    },
     title: {
       type: String,
       default: ''
@@ -111,10 +117,16 @@ export default {
     value: {
       type: Boolean,
       default: false
+    },
+    checkData: {
+      type: Array,
+      default: () => {
+        return []
+      }
     }
   },
   computed: {
-    ...mapState('home', ['userInfo']),
+    ...mapState('home', ['schoolCode']),
     status: {
       get() {
         return this.value
@@ -126,27 +138,61 @@ export default {
   },
   data() {
     return {
+      keyword: '',
       confirmLoading: false,
       chooseList: [],
       pageList: {
         page: 1,
-        size: 20,
-        userType: '1'
+        size: 20
       },
       total: 0,
       columns,
       userList: [],
-      totalList: [],
-      searchValue: ''
+      totalList: []
     }
   },
+  async mounted() {
+    const res = await $ajax.get({
+      url: `${hostEnv.lz_ncov}/school/doctor/detail/${this.schoolCode}`
+    })
+    const users = res.data
+    users.forEach(item => {
+      this.chooseList.push(item.userCode)
+      this.totalList.push({
+        userCode: item.userCode,
+        userName: item.userName,
+        id: item.id
+      })
+    })
+    this.getUserList(true)
+  },
   methods: {
-    ...mapActions('home', ['getreportList']),
-    async showList() {
-      this.pageList.schoolCode = this.userInfo.orgCode
-      const userData = await this.getreportList(this.pageList)
-      this.total = userData.result.totalCount
-      this.userList = userData.result.list
+    async getUserList(type) {
+      const res = await $ajax.post({
+        url: `${hostEnv.lz_user_center}/userinfo/teacher/user/queryTeacherInfo`,
+        params: {
+          orgCode: this.orgCode || null,
+          keyword: this.keyword,
+          schoolCode: this.schoolCode,
+          ...this.pageList
+        }
+      })
+      this.userList = res.data.list.map(item => {
+        return {
+          ...item,
+          id: type ? item.userCode : item.id
+        }
+      })
+      this.total = res.data.total
+    },
+    select(item) {
+      this.pageList.page = 1
+      this.orgCode = item.code
+      if (this.chooseType) {
+        this.getUserList(true)
+      } else {
+        this.getUserList()
+      }
     },
     reset() {
       this.confirmLoading = false
@@ -174,23 +220,27 @@ export default {
     // 监听选中或取消
     clickRow(item, type) {
       if (type) {
-        this.totalList.push(item)
+        if (this.isCheck) {
+          this.totalList.push({
+            id: item.id,
+            userCode: item.userCode,
+            userName: item.userName
+          })
+        } else {
+          this.totalList = [item]
+        }
       } else {
         const index = this.totalList.findIndex(list => list.id === item.id)
         this.totalList.splice(index, 1)
       }
     },
     submitOk() {
-      if (this.totalList.length === 0) {
+      if (this.totalList.length === 0 && this.bindId === -1) {
         this.$message.warning('请选择人员')
         return
       }
       this.confirmLoading = true
       this.$emit('submit', this.totalList)
-    },
-    search() {
-      this.pageList.userName = this.searchValue
-      this.showList()
     }
   }
 }
@@ -198,7 +248,7 @@ export default {
 
 <style lang="less" scoped>
 .choose-user {
-  height: 500px;
+  height: 600px;
   .org-box {
     width: 200px;
   }

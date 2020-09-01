@@ -3,38 +3,36 @@ import { BasicLayout } from '../layouts'
 import reportManage from './reportManage'
 import healthManage from './healthManage'
 import organize from './organize'
-const Home = resolve => require(['../views/Home.vue'], resolve)
-const DailyReport = resolve => require(['../views/dailyReport/DailyReport.vue'], resolve)
+import dailyReport from './dailyReport'
+import set from './setGroup'
+const View = resolve => require(['../views/Home.vue'], resolve)
 const SetUp = resolve => require(['../views/setUp/SetUp.vue'], resolve)
+const TemPlan = resolve => require(['../views/temPlan/temPlan.vue'], resolve)
 
 export const asyncRouterMap = [
   {
     path: '/',
     name: 'index',
     component: BasicLayout,
-    meta: { title: '系统首页' },
-    redirect: '/home',
+    meta: {
+      title: '系统首页'
+    },
+    redirect: '/view',
     children: [
       {
-        path: '/home',
-        name: 'home',
-        component: Home,
+        path: '/view',
+        name: 'view',
+        component: View,
         meta: {
           title: '疫情预览',
           icon: 'bar-chart'
         }
       },
-      {
-        path: '/dailyReport',
-        name: 'dailyReport',
-        component: DailyReport,
-        meta: {
-          title: '疫情日报',
-          icon: 'calendar'
-        }
-      },
+      dailyReport,
       reportManage,
       healthManage,
+      organize,
+      set,
       {
         path: '/setUp',
         name: 'setUp',
@@ -44,7 +42,15 @@ export const asyncRouterMap = [
           icon: 'menu-fold'
         }
       },
-      organize
+      {
+        path: '/temPlan',
+        name: 'temPlan',
+        component: TemPlan,
+        meta: {
+          title: '测温计划',
+          icon: 'menu-fold'
+        }
+      }
     ]
   },
   {

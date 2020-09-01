@@ -1,15 +1,23 @@
 /* eslint-disable space-infix-ops */
 <template>
   <div class="students page-layout qui-fx">
-    <sub-form ref="form" @submit-form="submitForm" :title="title" v-model="formStatus" :form-data="formData">
+    <sub-form
+      ref="form"
+      @submit-form="submitForm"
+      :title="title"
+      v-model="formStatus"
+      :form-data="formData"
+    >
       <div slot="upload" class="qui-fx qui-fx-ac">
-        <upload-multi is-check :length="1" v-model="fileList" :fileInfo="fileInfo" ></upload-multi>
+        <upload-multi is-check :length="1" v-model="fileList" type="face" :fileInfo="fileInfo"></upload-multi>
         <span style="font-size:12px;margin-left:10px;">大小20到100kB，像素400x400到800x800，格式仅jpg</span>
       </div>
     </sub-form>
     <no-data msg="暂无学生" v-if="false">
       <div slot="btn">
-        <a-button type="primary" @click="addStudents(0)"> <a-icon type="plus" />添加学生</a-button>
+        <a-button type="primary" @click="addStudents(0)">
+          <a-icon type="plus" />添加学生
+        </a-button>
       </div>
     </no-data>
     <div class="qui-fx qui-fx-jsb" style="width:100%; " v-else>
@@ -30,13 +38,24 @@
           :page-list="pageList"
           v-model="chooseList"
           :columns="columns"
-          :table-list="studentsList">
+          :table-list="studentsList"
+        >
           <template v-slot:actions="action" v-if="isNewYear">
-            <!--             <a-tooltip placement="topLeft" title="详情">
-              <a-button size="small" class="detail-action-btn" icon="ellipsis" @click.stop="goLead('/basedata/stusentsDetail',action.record)"></a-button>
-            </a-tooltip> -->
+            <a-tooltip placement="topLeft" title="详情">
+              <a-button
+                size="small"
+                class="detail-action-btn"
+                icon="ellipsis"
+                @click.stop="goLead('/basedata/stusentsDetail',action.record)"
+              ></a-button>
+            </a-tooltip>
             <a-tooltip placement="topLeft" title="编辑">
-              <a-button size="small" class="edit-action-btn" icon="form" @click.stop="addStudents(1, action.record)"></a-button>
+              <a-button
+                size="small"
+                class="edit-action-btn"
+                icon="form"
+                @click.stop="addStudents(1, action.record)"
+              ></a-button>
             </a-tooltip>
             <!-- <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="deleteList(action.record)">
               <template slot="title">
@@ -45,7 +64,12 @@
               <a-tooltip placement="topLeft" title="删除">
                 <a-button size="small" class="del-action-btn" icon="delete"></a-button>
               </a-tooltip>
-            </a-popconfirm> -->
+            </a-popconfirm>-->
+          </template>
+          <template v-slot:other1="other1">
+            <a-tag
+              :color="other1.record.hasDorm === '1' ? '#87d068' : other1.record.hasDorm === '0' ? '#2db7f5' : 'purple'"
+            >{{ other1.record.hasDorm === '1' ? '住读' : other1.record.hasDorm === '0' ? '走读' : '未知' }}</a-tag>
           </template>
         </table-list>
         <page-num v-model="pageList" :total="total" @change-page="showMore"></page-num>
@@ -62,7 +86,7 @@ import NoData from '@c/NoData'
 import PageNum from '@c/PageNum'
 import SubForm from '../components/SubForm'
 import SearchForm from '@c/SearchForm'
-import UploadMulti from '@c/UploadMulti'
+import UploadMulti from '@c/UploadFace'
 import ShowDialog from '@c/ShowDialog'
 import Tools from '@u/tools'
 const columns = [
@@ -74,9 +98,17 @@ const columns = [
     }
   },
   {
-    title: '学生姓名',
+    title: '姓名',
     dataIndex: 'userName',
     width: '10%'
+  },
+  {
+    title: '性别',
+    dataIndex: 'sex',
+    width: '10%',
+    customRender: text => {
+      return Tools.getSex(text)
+    }
   },
   {
     title: '学号',
@@ -86,27 +118,25 @@ const columns = [
   {
     title: '年级',
     dataIndex: 'gradeName',
-    width: '10%'
-  },
-  {
-    title: '班级',
-    dataIndex: 'className',
-    width: '10%'
+    width: '15%',
+    customRender: (text, record) => {
+      return `${record.gradeName}${record.className}`
+    }
   },
   {
     title: '入学年份',
     dataIndex: 'admissionTime',
     width: '10%',
-    customRender: (text) => {
+    customRender: text => {
       return new Date(text).getFullYear()
     }
   },
   {
-    title: '性别',
-    dataIndex: 'sex',
+    title: '走住读类型',
+    dataIndex: 'hasDorm',
     width: '10%',
-    customRender: (text) => {
-      return Tools.getSex(text)
+    scopedSlots: {
+      customRender: 'other1'
     }
   },
   {
@@ -120,7 +150,7 @@ const columns = [
 ]
 const searchLabel = [
   {
-    value: 'keywords',
+    value: 'keyword',
     initValue: '',
     type: 'selectInput',
     selectType: [
@@ -134,6 +164,44 @@ const searchLabel = [
       }
     ],
     placeholder: '请输入'
+  },
+  {
+    list: [
+      {
+        key: '',
+        val: '全部'
+      },
+      {
+        key: 1,
+        val: '住读'
+      },
+      {
+        key: 0,
+        val: '走读'
+      }
+    ],
+    value: 'hasDorm',
+    type: 'select',
+    label: '走住读类型'
+  },
+  {
+    list: [
+      {
+        key: '',
+        val: '全部'
+      },
+      {
+        key: 1,
+        val: '有照片'
+      },
+      {
+        key: 0,
+        val: '无照片'
+      }
+    ],
+    value: 'hasPhoto',
+    type: 'select',
+    label: '有无照片'
   }
 ]
 const formData = [
@@ -173,9 +241,21 @@ const formData = [
     placeholder: '请输入学生学号'
   },
   {
-    type: 'upload',
-    label: '人脸照片',
-    placeholder: '请上传人脸照片'
+    value: 'hasDorm',
+    initValue: [],
+    list: [
+      {
+        key: 1,
+        val: '住读'
+      },
+      {
+        key: 0,
+        val: '走读'
+      }
+    ],
+    type: 'select',
+    label: '走住读类型',
+    placeholder: '请选择走住读类型'
   },
   {
     value: 'admissionTime',
@@ -183,10 +263,17 @@ const formData = [
     list: [
       { key: new Date().getFullYear() + 1, val: new Date().getFullYear() + 1 },
       { key: new Date().getFullYear(), val: new Date().getFullYear() },
-      { key: new Date().getFullYear() - 1, val: new Date().getFullYear() - 1 } ],
+      { key: new Date().getFullYear() - 1, val: new Date().getFullYear() - 1 }
+    ],
     type: 'select',
     label: '入学年份',
     placeholder: '请选择入学年份'
+  },
+  {
+    type: 'upload',
+    label: '人脸照片',
+    required: false,
+    placeholder: '请上传人脸照片'
   },
   {
     value1: 'grade',
@@ -230,7 +317,7 @@ export default {
     NoData,
     ShowDialog
   },
-  data () {
+  data() {
     return {
       dialogTag: false,
       confirmLoading: false,
@@ -264,26 +351,34 @@ export default {
       gradeCode: '',
       classCode: '',
       isNewYear: true,
-      userId: ''
+      userId: '',
+      keyObj: {}
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
-  created () {
+  created() {
     this.getGrade()
-    this.formData[5].firstChange = this.firstChange
-    this.formData[5].secondChange = this.secondChange
+    this.formData[6].firstChange = this.firstChange
+    this.formData[6].secondChange = this.secondChange
   },
-  mounted () {
-  },
+  mounted() {},
   methods: {
     ...mapActions('home', [
-      'getClassList', 'withoutClassStudent', 'studentUpdate', 'getGradeList', 'studentList', 'addStudent', 'detailClassStudent', 'changeClass', 'deleteClassStudent'
+      'getClassList',
+      'withoutClassStudent',
+      'studentUpdate',
+      'getGradeList',
+      'studentList',
+      'addStudent',
+      'detailClassStudent',
+      'changeClass',
+      'deleteClassStudent'
     ]),
     // 获取年级
-    async getGrade () {
-      this.formData[5].firstList = []
+    async getGrade() {
+      this.formData[6].firstList = []
       const req = {
         schoolCode: this.userInfo.schoolCode
       }
@@ -293,12 +388,12 @@ export default {
       }
       if (res.data.list.length > 0) {
         res.data.list.forEach(ele => {
-          this.formData[5].firstList.push({ key: ele.code, val: ele.name })
+          this.formData[6].firstList.push({ key: ele.code, val: ele.name })
           this.gradeList.push({ key: ele.code, val: ele.name })
         })
       }
     },
-    select (item) {
+    select(item) {
       this.schoolYear = item.title
       this.schoolYearId = item.schoolYearId
       this.gradeCode = item.gradeCode
@@ -310,44 +405,43 @@ export default {
         schoolYearId: item.schoolYearId,
         gradeId: item.gradeCode || '',
         classId: item.classCode || '',
-        keyword: this.keywords
+        ...this.keyObj
       }
       console.log(req)
       this.showList(req)
-      this.columns[8] = this.isNewYear ? {
-        title: '操作',
-        width: '20%',
-        scopedSlots: {
-          customRender: 'action'
+      this.columns[9] = this.isNewYear
+        ? {
+          title: '操作',
+          width: '10%',
+          scopedSlots: {
+            customRender: 'action'
+          }
         }
-      } : {}
+        : {}
     },
-    submit () {
+    submit() {
       this.confirmLoading = true
       setTimeout(() => {
         this.dialogTag = false
         this.confirmLoading = false
       }, 2000)
     },
-    searchForm (values) {
+    searchForm(values) {
       console.log(values)
-      this.keywords = values.keywords
+      this.keywords = values.keyword
+      this.keyObj = values
       const req = {
         ...this.pageList,
         schoolCode: this.userInfo.schoolCode,
         schoolYearId: this.schoolYearId,
         gradeId: this.gradeCode || '',
         classId: this.classCode || '',
-        keyword: this.keywords
+        ...values
       }
       this.showList(req)
     },
-    submitForm (values) {
-      if (this.fileList.length === 0) {
-        this.$message.error('人脸照片不能为空')
-        this.$refs.form.error()
-        return
-      }
+    submitForm(values) {
+      values.hasDorm = values.hasDorm === '住读' ? '1' : values.hasDorm === '走读' ? '0' : values.hasDorm
       const req = {
         ...values,
         schoolCode: this.userInfo.schoolCode,
@@ -364,26 +458,29 @@ export default {
         req.userId = this.userId
         res = this.studentUpdate(req)
       }
-      res.then(() => {
-        this.keywords = ''
-        this.$message.success(this.type === 0 ? '添加成功' : '编辑成功')
-        this.$tools.goNext(() => {
-          const data = {
-            ...this.pageList,
-            schoolCode: this.userInfo.schoolCode,
-            schoolYearId: this.schoolYearId,
-            gradeId: this.gradeCode || '',
-            classId: this.classCode || ''
-          }
-          this.showList(data)
-          this.$refs.form.reset()
-          this.fileList = []
+      res
+        .then(() => {
+          this.keywords = ''
+          this.$message.success(this.type === 0 ? '添加成功' : '编辑成功')
+          this.$tools.goNext(() => {
+            const data = {
+              ...this.pageList,
+              schoolCode: this.userInfo.schoolCode,
+              schoolYearId: this.schoolYearId,
+              gradeId: this.gradeCode || '',
+              classId: this.classCode || '',
+              ...this.keyObj
+            }
+            this.showList(data)
+            this.$refs.form.reset()
+            this.fileList = []
+          })
         })
-      }).catch(() => {
-        this.$refs.form.error()
-      })
+        .catch(() => {
+          this.$refs.form.error()
+        })
     },
-    addStudents (type, record) {
+    addStudents(type, record) {
       this.formStatus = true
       if (type) {
         console.log(record)
@@ -391,21 +488,22 @@ export default {
         this.formData = this.$tools.fillForm(formData, record)
         this.fileList = record.photoUrl ? [{ url: record.photoUrl }] : []
         this.userId = record.id
+        this.formData[3].initValue = record.hasDorm === '1' ? '住读' : '走读'
         this.formData[4].initValue = new Date(record.admissionTime).getFullYear()
-        this.formData[5].disabled = true
-        this.formData[5].initValue1 = record.gradeName ? [record.gradeName] : ['请选择']
-        this.formData[5].initValue2 = record.className ? [record.className] : ['请选择']
-        console.log(this.formData[5].initValue2)
+        this.formData[6].disabled = true
+        this.formData[6].initValue1 = record.gradeName ? [record.gradeName] : ['请选择']
+        this.formData[6].initValue2 = record.className ? [record.className] : ['请选择']
+        console.log(this.formData[6].initValue2)
         this.type = 1
       } else {
         this.title = '添加学生'
         this.formData = formData
         this.fileList = []
-        this.formData[5].disabled = false
+        this.formData[6].disabled = false
         this.type = 0
       }
     },
-    async showList (req) {
+    async showList(req) {
       const res = await this.studentList(req)
       if (!res.data.list) {
         this.studentsList = []
@@ -414,18 +512,18 @@ export default {
       this.studentsList = res.data.list
       this.total = res.data.total
     },
-    showMore () {
+    showMore() {
       const req = {
         ...this.pageList,
         schoolCode: this.userInfo.schoolCode,
         schoolYearId: this.schoolYearId,
         gradeId: this.gradeCode || '',
         classId: this.classCode || '',
-        keyword: this.keywords
+        ...this.keyObj
       }
       this.showList(req)
     },
-    deleteList (type, record) {
+    deleteList(type, record) {
       if (type) {
       } else {
         if (this.chooseList.length === 0) {
@@ -433,18 +531,21 @@ export default {
         }
       }
     },
-    clickRow (id) {
+    clickRow(id) {
       console.log(id)
     },
-    goLead (path, record) {
+    goLead(path, record) {
       if (record) {
-        this.$router.push({ path, query: { id: record.id } })
+        this.$router.push({
+          path,
+          query: { userCode: record.userCode, year: this.schoolYear, yearId: this.schoolYearId }
+        })
       } else {
         this.$router.push({ path, query: { type: 'students' } })
       }
     },
-    async firstChange (value) {
-      this.formData[5].secondList = []
+    async firstChange(value) {
+      this.formData[6].secondList = []
       this.classList = []
       console.log(value)
       if (value === undefined) {
@@ -455,7 +556,8 @@ export default {
       this.gradeId = this.gradeList[value].key
       const req = {
         schoolCode: this.userInfo.schoolCode,
-        gradeCode: this.gradeList[value].key
+        gradeCode: this.gradeList[value].key,
+        schoolYearId: this.schoolYearId
       }
       const res = await this.getClassList(req)
       if (!res.data) {
@@ -463,13 +565,13 @@ export default {
       }
       if (res.data.list.length > 0) {
         res.data.list.forEach(ele => {
-          this.formData[5].secondList.push({ key: ele.id, val: ele.className })
+          this.formData[6].secondList.push({ key: ele.id, val: ele.className })
           this.classList.push({ key: ele.id, val: ele.className })
         })
         this.secondChange(0)
       }
     },
-    secondChange (value) {
+    secondChange(value) {
       if (value === undefined) {
         this.secondChange(0)
         return
@@ -480,48 +582,47 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-.students{
+.students {
   background: #fff;
   height: 100%;
-  .left{
+  .left {
     padding: 10px;
   }
-  .right{
+  .right {
     padding: 0 10px;
     border-left: 1px solid @bor-color;
-    .action{
-      div{
+    .action {
+      div {
         cursor: pointer;
         margin: 4px 30px 0 0;
-        img{
+        img {
           width: 20px;
           height: 20px;
         }
-        span{
-          font-size:12px;
+        span {
+          font-size: 12px;
         }
       }
     }
   }
 }
-.modal{
+.modal {
   padding: 0 40px;
-  .line{
+  .line {
     margin-bottom: 20px;
   }
-  .title{
+  .title {
     font-size: 14px;
     font-weight: bold;
     margin-right: 20px;
     min-width: 70px;
   }
-  .download{
-    color:#6882da;
+  .download {
+    color: #6882da;
     cursor: pointer;
   }
-  /deep/ .ant-upload-list-item-info{
+  /deep/ .ant-upload-list-item-info {
     padding: 0 22px 0 4px;
   }
 }
-
 </style>

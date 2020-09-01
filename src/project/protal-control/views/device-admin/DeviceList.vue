@@ -7,35 +7,39 @@
         @submit-form="submitForm"
         :title="title"
         v-model="formStatus"
-        :device-info="deviceInfo">
-      </add-device>
+        :device-info="deviceInfo"
+      ></add-device>
     </div>
     <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
       <div slot="left">
         <a-button type="primary" @click="addDevice(false, {}, '新增设备')" icon="plus">新增设备</a-button>
       </div>
-      <div slot="right">
-      </div>
+      <div slot="right"></div>
     </search-form>
-    <table-list
-      :page-list="pageList"
-      :columns="deviceColumns"
-      :table-list="deviceList">
+    <table-list :page-list="pageList" :columns="deviceColumns" :table-list="deviceList">
       <template v-slot:actions="action">
         <a-tooltip placement="topLeft" title="编辑">
-          <a-button size="small" class="edit-action-btn" icon="form" @click="addDevice(true, action.record, '编辑设备')"></a-button>
+          <a-button
+            size="small"
+            class="edit-action-btn"
+            icon="form"
+            @click="addDevice(true, action.record, '编辑设备')"
+          ></a-button>
         </a-tooltip>
-        <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="delList(action.record)">
-          <template slot="title">
-            您确定删除吗?
-          </template>
+        <a-popconfirm
+          placement="left"
+          okText="确定"
+          cancelText="取消"
+          @confirm="delList(action.record)"
+        >
+          <template slot="title">您确定删除吗?</template>
           <a-tooltip placement="topLeft" title="删除">
             <a-button size="small" class="del-action-btn" icon="delete"></a-button>
           </a-tooltip>
         </a-popconfirm>
       </template>
     </table-list>
-    <page-num v-model="pageList" :total="total"></page-num>
+    <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
   </div>
 </template>
 
@@ -100,7 +104,7 @@ export default {
     AddDevice,
     PageNum
   },
-  data () {
+  data() {
     return {
       isSn: false,
       title: '',
@@ -122,21 +126,14 @@ export default {
     }
   },
   computed: {
-    ...mapState('home', [
-      'schoolCode'
-    ])
+    ...mapState('home', ['schoolCode'])
   },
-  mounted () {
+  mounted() {
     this.showList()
   },
   methods: {
-    ...mapActions('home', [
-      'getDeviceList',
-      'addDeviceList',
-      'delDevice',
-      'updateDeviceList'
-    ]),
-    async showList () {
+    ...mapActions('home', ['getDeviceList', 'addDeviceList', 'delDevice', 'updateDeviceList']),
+    async showList() {
       const res = await this.getDeviceList({
         schoolCode: this.schoolCode,
         ...this.pageList,
@@ -145,7 +142,7 @@ export default {
       this.deviceList = res.data.list
       this.total = res.data.total
     },
-    addDevice (type, record, msg) {
+    addDevice(type, record, msg) {
       this.isEdit = type
       this.title = msg
       this.formStatus = true
@@ -159,26 +156,28 @@ export default {
       }
       this.deviceInfo = record
     },
-    submitForm (values) {
+    submitForm(values) {
       if (this.isEdit) {
         values.id = this.id
       }
       values.schoolCode = this.schoolCode
-      this[this.funName](values).then(res => {
-        this.$message.success('操作成功')
-        this.$refs.form.reset()
-        this.$tools.goNext(() => {
-          this.showList()
+      this[this.funName](values)
+        .then(res => {
+          this.$message.success('操作成功')
+          this.$refs.form.reset()
+          this.$tools.goNext(() => {
+            this.showList()
+          })
         })
-      }).catch(() => {
-        this.$refs.form.error()
-      })
+        .catch(() => {
+          this.$refs.form.error()
+        })
     },
-    searchForm (values) {
+    searchForm(values) {
       this.searchText = values
       this.showList()
     },
-    delList ({ id }) {
+    delList({ id }) {
       this.delDevice({
         id
       }).then(res => {

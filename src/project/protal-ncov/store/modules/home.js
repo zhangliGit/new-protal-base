@@ -21,12 +21,14 @@ for (const key in apiList) {
   const url = apiList[key].split('#')[0]
   const type = apiList[key].split('#')[1]
   const isLoad = apiList[key].split('#')[2] === undefined
-  actions[key] = async function({ commit, state }, params = {}) {
+  actions[key] = async function ({
+    commit,
+    state
+  }, params = {}) {
     // 是否显示加载提示
     const reqType = type === 'getUrl' ? 'get' : type
     const isGetUrl = type === 'getUrl'
-    const res = await $ajax[reqType](
-      {
+    const res = await $ajax[reqType]({
         url: isGetUrl || type === 'del' ? url + '/' + params : url,
         params: isGetUrl ? {} : params
       },
@@ -35,17 +37,21 @@ for (const key in apiList) {
     return resultBack(res)
   }
 }
-const projectName = 'yq_admin' // 此处写项目名作为存储值，避免不同项目冲突
+const projectName = 'protal-ncov' // 此处写项目名作为存储值，避免不同项目冲突
 const localData = window.localStorage.getItem(projectName) || '{}'
 const getState = (state, val) => {
   return JSON.parse(localData)[state] || val
 }
+
 const home = {
   namespaced: true,
   state: {
-    systemName: getState('systemName', '管理平台'),
+    schoolCode: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolCode,
     userInfo: getState('userInfo', {
-      manageName: '超级管理员'
+      schoolCode: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolCode,
+      schoolId: JSON.parse(window.sessionStorage.getItem('loginInfo')).id,
+      userName: JSON.parse(window.sessionStorage.getItem('loginType')).userName,
+      schoolName: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolName
     })
   },
   actions: {
@@ -57,7 +63,11 @@ const home = {
      * @param { key } state属性
      * @param { data } 存在的数据
      */
-    updateState(state, { key, data, isLocal = true }) {
+    updateState(state, {
+      key,
+      data,
+      isLocal = true
+    }) {
       if (isLocal) {
         const localData = JSON.parse(localStorage.getItem(projectName) || '{}')
         localData[key] = data

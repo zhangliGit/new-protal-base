@@ -9,6 +9,6 @@ const homeApi = {
   getApp: '/role/manage/menu/multiple/tree/list#get' // 根据用户id获取菜单权限
 }
 for (const val in homeApi) {
-  homeApi[val] = `${hostEnv.zx_protal}${homeApi[val]}`
+  homeApi[val] = `${hostEnv.lz_protal}${homeApi[val]}`
 }
 export default homeApi

@@ -6,7 +6,8 @@ const BusinessLogColumns = [
       customRender: 'index'
     },
     width: '5%'
-  }, {
+  },
+  {
     title: '姓名',
     dataIndex: 'userName',
     width: '6%'
@@ -15,7 +16,7 @@ const BusinessLogColumns = [
     title: '性别',
     dataIndex: 'gender',
     width: '5%',
-    customRender: (text) => {
+    customRender: text => {
       return Tools.getSex(text)
     }
   },
@@ -23,28 +24,14 @@ const BusinessLogColumns = [
     title: '人员类型',
     dataIndex: 'personType',
     width: '8%',
-    customRender: (text) => {
-      if (text === '1') {
-        return '超级管理员'
-      } else if (text === '2') {
-        return '管理员'
-      } else if (text === '') {
-        return '学生'
-      } else if (text === '4') {
-        return '教职工'
-      } else if (text === '16') {
-        return '家长'
-      } else if (text === '32') {
-        return '访客'
-      } else {
-        return '陌生人'
-      }
+    customRender: text => {
+      return Tools.getPersonType(text)
     }
   },
   {
     title: '设备名称',
     dataIndex: 'deviceName',
-    width: '7%'
+    width: '18%'
   },
   {
     title: '抓拍位置',
@@ -52,27 +39,18 @@ const BusinessLogColumns = [
     width: '8%'
   },
   {
-    title: '控制组',
-    dataIndex: 'controlGroupName',
-    width: '11%'
-  },
-  {
     title: '进出标识',
     dataIndex: 'inOrOut',
     width: '7%',
-    customRender: (text) => {
-      if (text === 1) {
-        return '进'
-      } else {
-        return '出'
-      }
+    customRender: text => {
+      return Tools.inOrOut(text)
     }
   },
   {
     title: '通过时间',
     dataIndex: 'recordTime',
     width: '8%',
-    customRender: (text) => {
+    customRender: text => {
       return Tools.getDate(text)
     }
   },
@@ -96,8 +74,8 @@ const BusinessLogColumns = [
     title: '状态',
     dataIndex: 'succMark',
     width: '5%',
-    customRender: (text) => {
-      if (text === 1) {
+    customRender: text => {
+      if (parseInt(text) === 1) {
         return '成功'
       } else {
         return '失败'

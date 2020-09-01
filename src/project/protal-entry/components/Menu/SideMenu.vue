@@ -1,22 +1,29 @@
 <template>
   <a-layout-sider
-    :class="['sider', isDesktop() ? null : 'shadow', theme, fixSiderbar ? 'ant-fixed-sidemenu' : null ]"
+    :class="['sider', isDesktop() ? null : 'shadow', theme, fixSiderbar ? 'ant-fixed-sidemenu' : null]"
     width="240px"
-    :trigger="null">
+    :trigger="null"
+  >
     <logo :slide-tag="slideTag" />
     <div class="qui-fx slide-height">
       <div class="system-list">
-        <ul :class="['slide-ul', {'anim-ul-show': animType}]" @mouseover="toggleSlide(1)" @mouseout="toggleSlide(0)">
+        <ul
+          :class="['slide-ul', { 'anim-ul-show': animType }]"
+          @mouseover="toggleSlide(1)"
+          @mouseout="toggleSlide(0)"
+        >
           <li v-for="(module, index) in menuList" :key="index" class="qui-fx-ac">
-            <img :src="module.icon" style="width: 24px; height: 24px; display: block; margin-left: 7px" alt="">
-            <span @click="changeModule(index)">{{ module.name.substring(0, 10) }}</span>
+            <img
+              :src="module.icon"
+              style="width: 24px; height: 24px; display: block; margin-left: 7px"
+              alt
+            />
+            <span @click="changeModule(index)">{{ module.name.substring(0, 10).split('#')[0] }}</span>
           </li>
         </ul>
       </div>
       <div class="qui-fx-f1 qui-fx-ver">
-        <div class="current-system">
-          {{ systemName }}
-        </div>
+        <div class="current-system">{{ systemName.split('#')[0] }}</div>
         <div class="qui-fx-f1" style="overflow: auto">
           <a-menu
             v-if="appList.length > 0"
@@ -24,11 +31,18 @@
             :defaultOpenKeys="defaultOpenKeys"
             :selectedKeys="menuIndex"
             @click="onClick"
-            style="width: 190px">
+            style="width: 190px"
+          >
             <template v-for="menu in appList">
-              <a-menu-item v-if="!menu.children || menu.children.length === 0" :key="menu.id">{{ menu.name }}</a-menu-item>
+              <a-menu-item
+                v-if="!menu.children || menu.children.length === 0"
+                :key="menu.id"
+              >{{ menu.name }}</a-menu-item>
               <a-sub-menu v-else :key="menu.id" :title="menu.name">
-                <a-menu-item v-for="subItem in menu.children" :key="subItem.id">{{ subItem.name }}</a-menu-item>
+                <a-menu-item
+                  v-for="subItem in menu.children"
+                  :key="subItem.id"
+                >{{ subItem.name.split('-')[0] }}</a-menu-item>
               </a-sub-menu>
             </template>
           </a-menu>
@@ -65,25 +79,19 @@ export default {
     }
   },
   computed: {
-    ...mapState('home', [
-      'isEntryApp',
-      'slideTag',
-      'appIndex',
-      'menuList',
-      'menuIndex'
-    ]),
-    systemName () {
+    ...mapState('home', ['isEntryApp', 'slideTag', 'appIndex', 'menuList', 'menuIndex']),
+    systemName() {
       return this.menuList[this.appIndex] ? this.menuList[this.appIndex].name : ''
     }
   },
-  data () {
+  data() {
     return {
       defaultOpenKeys: [],
       appList: [],
       animType: 0
     }
   },
-  mounted () {
+  mounted() {
     /**
      * 刷新当前界面加载
      */
@@ -94,10 +102,29 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('home', [
-      'updateState'
-    ]),
-    changeModule (index) {
+    ...mapMutations('home', ['updateState']),
+    /**
+     * @description 点击左侧模块列表
+     */
+    changeModule(index) {
+      const currentMenu = this.menuList[index]
+      /**
+       * @des 校端看板
+       */
+      if (currentMenu.url && currentMenu.url.indexOf('school-view') > -1) {
+        window.open(
+          currentMenu.url +
+            '&schoolCode=' +
+            JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolCode +
+            '&schoolName=' +
+            JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolName
+        )
+        return
+      }
+      if (currentMenu.url && currentMenu.url.indexOf('http') > -1) {
+        window.open(currentMenu.url + '?id=' + JSON.parse(window.sessionStorage.getItem('loginInfo')).id)
+        return
+      }
       this.appList = []
       const item = this.menuList[index].children[0]
       this.animType = 0
@@ -142,88 +169,102 @@ export default {
         this.$emit('goSrc', path)
       }, 300)
     },
-    onClick (item) {
-      console.log(item)
+    /**
+     * @description 点击左侧菜单列表
+     */
+    onClick(item) {
       const { keyPath } = item
       this.goPath(keyPath)
-      /**
-       * 存储当前点击的菜单索引
-       */
-      this.updateState({
-        key: 'menuIndex',
-        data: keyPath
-      })
     },
-    goPath (keyPath) {
+    goPath(keyPath) {
       let path
       /**
        * 获取点击菜单url路径
        */
       if (keyPath.length > 1) {
-        path = this.menuList[this.appIndex].children.find(item => item.id === keyPath[1]).children.find(item => item.id === keyPath[0]).url
+        path = this.menuList[this.appIndex].children
+          .find(item => item.id === keyPath[1])
+          .children.find(item => item.id === keyPath[0]).url
       } else {
         path = this.menuList[this.appIndex].children.find(item => item.id === keyPath[0]).url
       }
+      if (path.indexOf('school-view') > -1) {
+        window.open(
+          path +
+            '&schoolCode=' +
+            JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolCode +
+            '&schoolName=' +
+            JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolName
+        )
+        return
+      }
+      /**
+       * @description 存储当前点击的菜单索引
+       */
+      this.updateState({
+        key: 'menuIndex',
+        data: keyPath
+      })
       this.$emit('goSrc', path)
     },
-    toggleSlide (type) {
+    toggleSlide(type) {
       this.animType = type
     },
-    onSelect (obj) {
+    onSelect(obj) {
       this.$emit('menuSelect', obj)
     }
   }
 }
 </script>
 <style lang="less" scoped>
-  .slide-height {
-    height: calc(100% - 50px);
-    background-color: #fff;
-    overflow: hidden;
-    border-right: 1px #f5f5f5 solid;
-  }
-  .system-list {
+.slide-height {
+  height: calc(100% - 50px);
+  background-color: #fff;
+  overflow: hidden;
+  border-right: 1px #f5f5f5 solid;
+}
+.system-list {
+  width: 50px;
+  position: relative;
+  .slide-ul {
+    top: 50px;
+    left: 0;
+    transition: all 0.3s ease;
+    position: fixed;
+    z-index: 99;
     width: 50px;
-    position: relative;
-    .slide-ul {
-      top: 50px;
-      left: 0;
-      transition: all .3s ease;
-      position: fixed;
-      z-index: 99;
-      width: 50px;
-      height: calc(100% - 50px);
-      color: @head-fff;
-      background: @head-color;
-      overflow: hidden;
-    }
-    .anim-ul-show {
-      width: 240px;
-      color:@des-color;
-    }
-    li {
-      width: 240px;
-      height: 50px;
-      line-height: 50px;
-      padding-left: 5px;
-      &:hover {
-        background-color: @main-color
-      }
-      i {
-        font-size: 16px;
-        padding-left: 12px;
-      }
-      span {
-        cursor: pointer;
-        padding-left: 30px;
-      }
-    }
+    height: calc(100% - 50px);
+    color: @head-fff;
+    background: @head-color;
+    overflow: hidden;
   }
-  .current-system {
+  .anim-ul-show {
+    width: 240px;
+    color: @des-color;
+  }
+  li {
+    width: 240px;
     height: 50px;
-    padding-left: 22px;
-    font-size: 16px;
     line-height: 50px;
-    border-bottom: 1px #f5f5f5 solid;
+    padding-left: 5px;
+    &:hover {
+      background-color: @main-color;
+    }
+    i {
+      font-size: 16px;
+      padding-left: 12px;
+    }
+    span {
+      cursor: pointer;
+      padding-left: 30px;
+    }
   }
+}
+.current-system {
+  height: 50px;
+  padding-left: 22px;
+  font-size: 16px;
+  line-height: 50px;
+  border-bottom: 1px #f5f5f5 solid;
+}
 </style>

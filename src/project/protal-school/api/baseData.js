@@ -76,6 +76,7 @@ const baseData3Api = {
 const baseData4Api = {
   // 教职工管理
   getTeacherList: '/userinfo/teacher/user/queryTeacherInfo#post', // 查询教职工列表
+  getTeacherOrg: '/userinfo/teacher/user/query/usertype#get', // 查询教职工组织机构
   detailInfo: '/userinfo/teacher/user/queryTeacherDetailInfo#post', // 获取教职工详细信息
   editTeacher: '/userinfo/teacher/user/update#post', // 更新教职工
   addTeacher: '/userinfo/teacher/user/add#post', // 新增教职工
@@ -88,11 +89,55 @@ const baseData4Api = {
   addStudent: '/userinfo/student/user/add#post', // 新增学生
   withoutClassStudent: '/userinfo/student/user/without/class#post', // 未分班学生
   studentList: '/userinfo/student/user/queryStudentInfoList#post', // 学生信息列表查询
+  // studentList: '/userinfo/student/user/queryNoClassStudentInfos#post', // 学生信息列表查询
   studentUpdate: '/userinfo/student/user/update#post', // 学生信息修改
   addStudents: '/userinfo/student/user/upload#post', // 批量导入学生
   downStudentsTemplate: '/userinfo/student/user/download/template#get' // 学生导入模板下载
 }
 
+const baseData5Api = {
+  queryParents: '/parent/children/queryParentChildCode#get', // 学生家长信息查询
+  setParents: '/parent/children/update#postQuery', // 主要家长设置
+  queryStudentInfoById: '/userinfo/student/user/queryStudentInfoByUserCode#get', // 根据ID查询学生信息
+
+  // 异动记录
+  getChangeList: '/change/record/query/by/userCode#get'
+}
+
+const baseData6Api = {
+  facePhoto: '/facePhoto#postForm' // 人脸图片校验
+}
+const baseData8Api = {
+  addUserjob: '/userjob/save/or/update#post', // 添加人员
+  getUserjob: '/userjob/query/by/schoolcode/and/jobcode#get'
+}
+const baseData7Api = {
+  // 学科管理
+  addSub: '/school/subject/add#post', // 添加学科信息
+  editSub: '/school/subject/update#post', // 根据id更新学科信息
+  getSubById: '/school/subject/detail#getUrl', // 根据id查询学科信息
+  getSubList: '/school/subject/list#post', // 查询学科列表
+  deleteSub: '/school/subject/delete#getUrl', // 根据id删除学科信息
+
+  // 学科教师管理
+  addSubTeacher: '/subject/teacher/add#post', // 添加学科教师
+  getSubTeacherList: '/subject/teacher/list#post', // 查询学科教师列表
+  deleteSubTeacher: '/subject/teacher/delete#post', // 根据id删除学科教师
+
+  // 班级教师管理
+  addClassTeacher: '/classInfo/subteacher/add#post', // 添加班级教师
+  getClassTeacherList: '/classInfo/subteacher/list#post', // 查询班级教师列表
+  deleteClassTeacher: '/classInfo/subteacher/delete#getUrl' // 根据id删除班级教师
+}
+const baseData9Api = {
+  // 职位管理
+  getJobList: '/edu/job/manage/queryjob/by/educode#get', // 根据机构编码查询岗位
+  addEduJob: '/edu/job/manage/add#post', // 职位新增
+  updateJob: '/edu/job/manage/update#post', // 职位更新
+  delJob: '/edu/job/manage/delete#delQuery', // 职位删除
+  addDefaultJob: '/edu/job/manage/addDefaultJob#postQuery', // 岗位预设
+  getQueryjob: '/edu/job/manage/queryjob/by/educode/and/definded#get' // 判断是否预设
+}
 for (const val in baseData1Api) {
   baseData1Api[val] = `${hostEnv.lz_user_center}${baseData1Api[val]}`
 }
@@ -100,17 +145,40 @@ for (const val in baseData2Api) {
   baseData2Api[val] = `${hostEnv.zk_school}${baseData2Api[val]}`
 }
 for (const val in baseData3Api) {
-  baseData3Api[val] = `${hostEnv.zx_protal}${baseData3Api[val]}`
+  baseData3Api[val] = `${hostEnv.lz_protal}${baseData3Api[val]}`
 }
 for (const val in baseData4Api) {
   baseData4Api[val] = `${hostEnv.lz_user_center}${baseData4Api[val]}`
+}
+
+for (const val in baseData5Api) {
+  baseData5Api[val] = `${hostEnv.ljj_user_center}${baseData5Api[val]}`
+}
+
+for (const val in baseData6Api) {
+  baseData6Api[val] = `${hostEnv.hpb_face}${baseData6Api[val]}`
+}
+for (const val in baseData7Api) {
+  baseData7Api[val] = `${hostEnv.zx_subject}${baseData7Api[val]}`
+}
+for (const val in baseData9Api) {
+  baseData9Api[val] = `${hostEnv.ljj_edu}${baseData9Api[val]}`
+}
+for (const val in baseData8Api) {
+  baseData8Api[val] = `${hostEnv.ljj_user_center}${baseData8Api[val]}`
 }
 
 const baseDataApi = {
   ...baseData1Api,
   ...baseData2Api,
   ...baseData3Api,
-  ...baseData4Api
+  ...baseData4Api,
+  ...baseData5Api,
+  ...baseData6Api,
+  ...baseData7Api,
+  ...baseData8Api,
+  ...baseData9Api,
+  getDormChangeList: `${hostEnv.ljj_dorm}/dorm/in/history/dorm/change/record#postQuery` // 调宿记录
 }
 
 export default baseDataApi

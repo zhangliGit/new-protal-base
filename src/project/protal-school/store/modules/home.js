@@ -21,12 +21,14 @@ for (const key in apiList) {
   const url = apiList[key].split('#')[0]
   const type = apiList[key].split('#')[1]
   const isLoad = apiList[key].split('#')[2] === undefined
-  actions[key] = async function({ commit, state }, params = {}) {
+  actions[key] = async function ({
+    commit,
+    state
+  }, params = {}) {
     // 是否显示加载提示
     const reqType = type === 'getUrl' ? 'get' : type
     const isGetUrl = type === 'getUrl'
-    const res = await $ajax[reqType](
-      {
+    const res = await $ajax[reqType]({
         url: isGetUrl || type === 'del' ? url + '/' + params : url,
         params: isGetUrl ? {} : params
       },
@@ -40,17 +42,15 @@ const localData = window.localStorage.getItem(projectName) || '{}'
 const getState = (state, val) => {
   return JSON.parse(localData)[state] || val
 }
-const autoData = JSON.stringify({
-  schoolCode: '123456',
-  schoolId: '12'
-})
 const home = {
   namespaced: true,
   state: {
-    schoolCode: JSON.parse(window.sessionStorage.getItem('loginInfo') || autoData).schoolCode,
+    schoolCode: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolCode,
     userInfo: getState('userInfo', {
-      schoolCode: JSON.parse(window.sessionStorage.getItem('loginInfo') || autoData).schoolCode,
-      schoolId: JSON.parse(window.sessionStorage.getItem('loginInfo') || autoData).schoolId
+      schoolCode: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolCode,
+      schoolName: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolName,
+      schoolId: JSON.parse(window.sessionStorage.getItem('loginInfo')).id,
+      userCode: JSON.parse(window.sessionStorage.getItem('loginType')).userCode
     })
   },
   actions: {
@@ -62,7 +62,11 @@ const home = {
      * @param { key } state属性
      * @param { data } 存在的数据
      */
-    updateState(state, { key, data, isLocal = true }) {
+    updateState(state, {
+      key,
+      data,
+      isLocal = true
+    }) {
       if (isLocal) {
         const localData = JSON.parse(localStorage.getItem(projectName) || '{}')
         localData[key] = data

@@ -11,7 +11,9 @@
       title="添加考勤人员">
     </choose-user>
     <div class="qui-fx-jsb qui-fx-ac">
-      <div></div>
+      <div class="tips">
+        <span>说明：考勤组、考勤时间、考勤设备、考勤人员发生变更操作后，次日生效。</span>
+      </div>
       <div class="top-btn-group">
         <a-button icon="plus" type="primary" @click="addGroup(0)">添加考勤组</a-button>
       </div>
@@ -207,4 +209,9 @@ export default {
 }
 </script>
 <style lang="less" scoped>
+.tips{
+  font-size: 12px;
+  margin-left: 20px;
+  color: #909399;
+}
 </style>

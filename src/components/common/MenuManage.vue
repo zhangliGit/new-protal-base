@@ -7,20 +7,20 @@
       v-model="formStatus"
       :form-data="formData"
     >
-    <div slot="upload">
-      <upload-multi :length="1" v-model="fileList" :fileInfo="fileInfo"></upload-multi>
-    </div>
+      <div slot="upload">
+        <upload-multi :length="1" v-model="fileList" :fileInfo="fileInfo"></upload-multi>
+      </div>
     </submit-form>
     <a-button
       style="margin-top: 10px; margin-left: 5px;"
-      @click="addMenu(1, '新增菜单分类', {id: '', parentId: ''})"
+      @click="addMenu(1, '新增菜单分类', { id: '', parentId: '' })"
       icon="plus"
       class="add-btn"
     >新增菜单分类</a-button>
     <a-table
       style="background-color: #fff; margin-top: 20px; height: 400px;"
-      :scroll="{y: this.$tools.setScroll('tableList') - 50}"
-      :rowKey="(record) => record.id"
+      :scroll="{ y: this.$tools.setScroll('tableList') - 50 }"
+      :rowKey="record => record.id"
       :pagination="false"
       :columns="columns"
       :dataSource="menuList"
@@ -180,12 +180,12 @@ export default {
       columns,
       formData: formData,
       formStatus: false,
-      fileList: [], 
+      fileList: [],
       fileInfo: {
         tip: '上传图标',
         h: 120, // 高度
         w: 120 // 宽度
-      },
+      }
     }
   },
   async mounted() {
@@ -248,10 +248,12 @@ export default {
           this.formData[1].disabled = true
         } else {
           if (record.icon) {
-            this.fileList = [{
-              id: Math.floor(Math.random() * 10000),
-              url: record.icon
-            }]
+            this.fileList = [
+              {
+                id: Math.floor(Math.random() * 10000),
+                url: record.icon
+              }
+            ]
           }
           this.formData = this.$tools.fillForm([formData[0], formData[2], formData[3], formData[4]], record)
         }
@@ -268,14 +270,14 @@ export default {
       }
     },
     async submitForm(values) {
-      if (this.menuType === 2) {
-        if (this.fileList.length === 0) {
-          this.$message.warning('请上传图标')
-          this.$refs.form.error()
-          return
-        }
-        values.icon = this.fileList[0].url
-      }
+      // if (this.menuType === 2) {
+      //   if (this.fileList.length === 0) {
+      //     this.$message.warning('请上传图标')
+      //     this.$refs.form.error()
+      //     return
+      //   }
+      //   values.icon = this.fileList[0].url
+      // }
       const { menuName, icon = '', linkUrl, remark, isPlatform = 0 } = values
       try {
         // 编辑

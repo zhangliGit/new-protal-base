@@ -2,6 +2,9 @@ import { RouteView } from '../layouts'
 const ReportManageStu = resolve => require(['../views/reportManage/ReportManageStu.vue'], resolve)
 const ReportManageTea = resolve => require(['../views/reportManage/ReportManageTea.vue'], resolve)
 const ReportManageOther = resolve => require(['../views/reportManage/ReportManageOther.vue'], resolve)
+const ReportTemperatureTea = resolve => require(['../views/reportManage/ReportTemperatureTea.vue'], resolve)
+const ReportTemperatureStu = resolve => require(['../views/reportManage/ReportTemperatureStu.vue'], resolve)
+
 const menu = {
   path: '/reportManage',
   name: '/reportManage',
@@ -22,6 +25,15 @@ const menu = {
       }
     },
     {
+      path: '/ReportManageTea/ReportTemperatureTea',
+      name: 'reportTemperatureTea',
+      component: ReportTemperatureTea,
+      meta: {
+        title: '疫情上报'
+      },
+      hidden: true
+    },
+    {
       path: '/reportManageStu',
       name: 'reportManageStu',
       component: ReportManageStu,
@@ -29,6 +41,15 @@ const menu = {
         title: '学生',
         icon: 'folder-open'
       }
+    },
+    {
+      path: '/reportManageStu/ReportTemperatureStu',
+      name: 'reportTemperatureStu',
+      component: ReportTemperatureStu,
+      meta: {
+        title: '疫情上报'
+      },
+      hidden: true
     },
     {
       path: '/reportManageOther',

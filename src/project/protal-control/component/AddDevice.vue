@@ -9,13 +9,14 @@
     okText="提交"
     :confirmLoading="confirmLoading"
   >
-    <a-form
-      :form="form"
-    >
+    <a-form :form="form">
       <a-form-item label="设备名称" v-bind="formItemLayout">
         <a-input
           placeholder="请输入设备名称"
-          v-decorator="['deviceName', {initialValue: deviceInfo.deviceName, rules: [{ required: true, message: '请输入设备名称' }] }]"
+          v-decorator="[
+            'deviceName',
+            { initialValue: deviceInfo.deviceName, rules: [{ required: true, message: '请输入设备名称' }] }
+          ]"
         />
       </a-form-item>
       <a-form-item label="设备类型" v-bind="formItemLayout">
@@ -23,7 +24,7 @@
           @change="changeType"
           v-decorator="[
             'deviceType',
-            { initialValue: deviceInfo.deviceType, rules: [{ required: true, message: '请选择设备类型' }] },
+            { initialValue: deviceInfo.deviceType, rules: [{ required: true, message: '请选择设备类型' }] }
           ]"
           placeholder="请选择设备类型"
         >
@@ -35,17 +36,16 @@
           </a-select-option>
         </a-select>
       </a-form-item>
-      <a-form-item
-        label="设备SN码"
-        :label-col="{ span: 4 }"
-        :wrapper-col="{ span: 20 }"
-      >
+      <a-form-item label="设备SN码" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }">
         <a-row>
           <a-col :span="22">
             <a-input
               :disabled="isSn"
               placeholder="请输入设备SN码"
-              v-decorator="['deviceSn', { initialValue: deviceInfo.deviceSn, rules: [{ required: false, message: '请输入设备SN码' }] }]"
+              v-decorator="[
+                'deviceSn',
+                { initialValue: deviceInfo.deviceSn, rules: [{ required: false, message: '请输入设备SN码' }] }
+              ]"
             />
           </a-col>
           <a-col :span="2">
@@ -61,17 +61,54 @@
       <a-form-item label="IP地址" v-bind="formItemLayout">
         <a-input
           placeholder="请输入IP地址"
-          v-decorator="['deviceIp', { initialValue: deviceInfo.deviceIp, rules: [{ required: true, message: '请输入正确的ip地址' },{ pattern: rules['ip'], message: '请输入正确的ip地址'}] }]"
+          v-decorator="[
+            'deviceIp',
+            {
+              initialValue: deviceInfo.deviceIp,
+              rules: [
+                { required: true, message: '请输入正确的ip地址' },
+                { pattern: rules['ip'], message: '请输入正确的ip地址' }
+              ]
+            }
+          ]"
+        />
+      </a-form-item>
+      <a-form-item label="阈值" v-bind="formItemLayout">
+        <a-input-number
+          type="numberInput"
+          style="width: 500px"
+          placeholder="请输入60-99范围的识别阈值"
+          :min="60"
+          :max="99"
+          v-decorator="[
+            'threshold',
+            {
+              initialValue: deviceInfo.threshold,
+              rules: [{ required: true, message: '请输入60-99范围的识别阈值' }]
+            }
+          ]"
         />
       </a-form-item>
       <a-form-item label="安装位置" v-bind="formItemLayout">
         <a-input
           placeholder="请输入安装位置"
-          v-decorator="['snapSite', { initialValue: deviceInfo.snapSite, rules: [{ required: true, message: '请输入安装位置' }] }]"
+          v-decorator="[
+            'snapSite',
+            { initialValue: deviceInfo.snapSite, rules: [{ required: true, message: '请输入安装位置' }] }
+          ]"
         />
       </a-form-item>
       <a-form-item v-if="deviceType === 1" label="协议类型" v-bind="formItemLayout">
-        <a-radio-group @change="changeProtocol" v-decorator="['protocolType', {initialValue: deviceInfo.protocolType, rules: [{ required: deviceType === 1, message: '请选择协议类型' }]}]">
+        <a-radio-group
+          @change="changeProtocol"
+          v-decorator="[
+            'protocolType',
+            {
+              initialValue: deviceInfo.protocolType,
+              rules: [{ required: deviceType === 1, message: '请选择协议类型' }]
+            }
+          ]"
+        >
           <a-radio :value="1">
             rtsp
           </a-radio>
@@ -83,19 +120,34 @@
       <a-form-item v-if="deviceType === 1 && protocolType === 1" label="请求路径" v-bind="formItemLayout">
         <a-input
           placeholder="请输入请求路径"
-          v-decorator="['rtspUrl', { initialValue: deviceInfo.rtspUrl, rules: [{ required: deviceType === 1, message: '请输入请求路径' }] }]"
+          v-decorator="[
+            'rtspUrl',
+            { initialValue: deviceInfo.rtspUrl, rules: [{ required: deviceType === 1, message: '请输入请求路径' }] }
+          ]"
         />
       </a-form-item>
       <a-form-item v-if="deviceType === 1 && protocolType === 2" label="安全账号" v-bind="formItemLayout">
         <a-input
           placeholder="请输入安全账号"
-          v-decorator="['account', { initialValue: deviceInfo.account, rules: [{ required: deviceType === 1 && protocolType === 2, message: '请输入安全账号' }] }]"
+          v-decorator="[
+            'account',
+            {
+              initialValue: deviceInfo.account,
+              rules: [{ required: deviceType === 1 && protocolType === 2, message: '请输入安全账号' }]
+            }
+          ]"
         />
       </a-form-item>
       <a-form-item v-if="deviceType === 1 && protocolType === 2" label="请求密码" v-bind="formItemLayout">
         <a-input
           placeholder="请输入请求密码"
-          v-decorator="['pwd', { initialValue: deviceInfo.pwd, rules: [{ required: deviceType === 1 && protocolType === 2, message: '请输入请求密码' }] }]"
+          v-decorator="[
+            'pwd',
+            {
+              initialValue: deviceInfo.pwd,
+              rules: [{ required: deviceType === 1 && protocolType === 2, message: '请输入请求密码' }]
+            }
+          ]"
         />
       </a-form-item>
     </a-form>
@@ -106,8 +158,7 @@
 import moment from 'moment'
 export default {
   name: 'AddDevice',
-  components: {
-  },
+  components: {},
   props: {
     isSn: {
       type: Boolean,
@@ -130,34 +181,34 @@ export default {
   },
   computed: {
     status: {
-      get () {
+      get() {
         return this.value
       },
-      set () {
+      set() {
         this.$emit('input', false)
       }
     }
   },
-  data () {
+  data() {
     return {
       rules: {
-        'ip': /^((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3}$/
+        ip: /^((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3}$/
       },
       formData: {
-        'account': '',
+        account: '',
         // 'bindStatus': 0,
-        'deviceIp': '',
-        'deviceName': '',
-        'deviceSn': '',
+        deviceIp: '',
+        deviceName: '',
+        deviceSn: '',
         // 'deviceStatus': 0,
-        'deviceType': '',
-        'ext1': '',
-        'protocolType': '',
-        'pwd': '',
-        'remarks': '',
-        'rtspUrl': '',
-        'schoolCode': '',
-        'snapSite': ''
+        deviceType: '',
+        ext1: '',
+        protocolType: '',
+        pwd: '',
+        remarks: '',
+        rtspUrl: '',
+        schoolCode: '',
+        snapSite: ''
       },
       deviceType: this.deviceInfo.deviceType || '',
       protocolType: this.deviceInfo.protocolType || '',
@@ -170,23 +221,22 @@ export default {
       }
     }
   },
-  mounted () {
-  },
+  mounted() {},
   methods: {
-    reset () {
+    reset() {
       this.confirmLoading = false
       this.$emit('input', false)
     },
-    error () {
+    error() {
       this.confirmLoading = false
     },
-    changeType (value) {
+    changeType(value) {
       this.deviceType = value
     },
-    changeProtocol (event) {
+    changeProtocol(event) {
       this.protocolType = event.target.value
     },
-    submitOk (e) {
+    submitOk(e) {
       console.log(e)
       e.preventDefault()
       this.form.validateFields((err, values) => {
@@ -204,6 +254,4 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
-
-</style>
+<style lang="less" scoped></style>

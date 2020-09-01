@@ -1,13 +1,14 @@
 <template>
   <a-row
     class="pagination-com"
-    :style="{marginTop: marTop + 'px', marginBottom: marBot + 'px'}"
+    :style="{ marginTop: marTop + 'px', marginBottom: marBot + 'px' }"
     type="flex"
     justify="end"
     align="middle"
   >
     <span class="page-total">一共{{ total }}条</span>
     <a-pagination
+      :pageSizeOptions="pageSizeOptions"
       :pageSize.sync="value.size"
       :total="total"
       :current="value.page"
@@ -56,7 +57,8 @@ export default {
   },
   data() {
     return {
-      pageList: this.value
+      pageList: this.value,
+      pageSizeOptions: ['10', '20', '30', '40', '100', '200']
     }
   },
   mounted() {},

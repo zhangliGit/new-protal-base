@@ -3,6 +3,7 @@ import { RouteView } from '../layouts'
 const StudentAccess = resolve => require(['../views/AccessSet/StudentAccess.vue'], resolve)
 const TeacherAccess = resolve => require(['../views/AccessSet/TeacherAccess.vue'], resolve)
 const SetGroup = resolve => require(['../views/AccessSet/SetGroup.vue'], resolve)
+const DoorSet = resolve => require(['../views/AccessSet/DoorSet.vue'], resolve)
 const visitor = {
   path: '/accessSet',
   name: 'accessSet',
@@ -25,6 +26,14 @@ const visitor = {
       component: TeacherAccess,
       meta: {
         title: '教职工通行'
+      }
+    },
+    {
+      path: '/doorSet',
+      name: 'doorSet',
+      component: DoorSet,
+      meta: {
+        title: '门卫设置'
       }
     },
     {

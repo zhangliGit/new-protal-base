@@ -1,18 +1,13 @@
 <template>
   <a-layout class="qui-fx">
-    <div :class="['slide-left', {'slide-left-close': slideTag}]">
-      <side-menu
-        ref="slideMenu"
-        @goSrc="goSrc"
-        mode="inline"
-        :theme="navTheme"
-      ></side-menu>
+    <div :class="['slide-left', { 'slide-left-close': slideTag }]">
+      <side-menu ref="slideMenu" @goSrc="goSrc" mode="inline" :theme="navTheme"></side-menu>
     </div>
     <div class="qui-fx-f1 qui-fx-ver">
-      <header-top :school-list="schoolList"></header-top>
+      <header-top ref="headerTop" @changeMenu="getAppList"></header-top>
       <div class="qui-fx-f1 qui-fx">
         <basic-content v-if="!isEntryApp" @entryApp="entryApp"></basic-content>
-        <iframe v-if="isEntryApp" id="iframe-content" src="" frameborder="0" @error="alert('Failed')"></iframe>
+        <iframe v-if="isEntryApp" id="iframe-content" src frameborder="0"></iframe>
       </div>
     </div>
   </a-layout>
@@ -35,47 +30,71 @@ export default {
     BasicContent
   },
   computed: {
-    ...mapState('home', [
-      'isEntryApp',
-      'slideTag'
-    ])
+    ...mapState('home', ['isEntryApp', 'slideTag'])
   },
-  data () {
+  data() {
     return {
       routeAddress: [],
       schoolList: []
     }
   },
-  watch: {
-  },
-  async mounted () {
-    const { id, accountType, userType, schoolCode } = JSON.parse(window.sessionStorage.getItem('loginInfo') || { id: '485' })
-    if (accountType === 1 && userType === 1) {
+  watch: {},
+  async mounted() {
+    const { userTypes, accountType, id } = JSON.parse(window.sessionStorage.getItem('loginType'))
+    const isAdmin = userTypes.some(item => {
+      return item.userType === 1
+    })
+    if (accountType === 1 && isAdmin) {
       this.updateState({
         key: 'menuList',
         data: adminMenu
       })
+      this.getSchoolList(userTypes, list => {
+        list[0].id = id
+        window.sessionStorage.setItem('loginInfo', JSON.stringify(list[0]))
+        this.entryApp(0)
+      })
     } else {
+      this.getSchoolList(userTypes)
+    }
+  },
+  methods: {
+    ...mapActions('home', ['getApp', 'getSchoolInfo']),
+    ...mapMutations('home', ['updateState']),
+    // 获取所有登录账户的学校信息
+    getSchoolList(userTypes, call) {
+      const allList = []
+      userTypes.forEach((item, index) => {
+        allList.push(this.getSchoolInfo(item.schoolCode))
+      })
+      Promise.all(allList).then(res => {
+        const list = res.map(item => {
+          return item.data
+        })
+        if (call) {
+          call(list)
+        } else {
+          this.$refs.headerTop.bindSchool(list)
+        }
+      })
+    },
+    // 获取当前学校的菜单权限
+    async getAppList(schoolCode, userType, userId) {
       const res = await this.getApp({
         schoolCode,
         userType,
         plateformType: 2,
-        userId: id
+        userId
+      })
+      const resSort = res.data.sort((a, b) => {
+        return a.orderNum - b.orderNum
       })
       this.updateState({
         key: 'menuList',
-        data: res.data
+        data: resSort
       })
-    }
-  },
-  methods: {
-    ...mapActions('home', [
-      'getApp'
-    ]),
-    ...mapMutations('home', [
-      'updateState'
-    ]),
-    entryApp (index) {
+    },
+    entryApp(index) {
       /**
        * 设置进入应用和菜单展开状态值
        */
@@ -89,10 +108,12 @@ export default {
       })
       this.$refs.slideMenu.changeModule(index)
     },
-    goSrc (path) {
+    goSrc(path) {
       this.$nextTick(() => {
         if (process.env.NODE_ENV === 'production') {
-          document.querySelector('#iframe-content').src = `${window.location.origin}${path}`
+          const url = path.split('#/')
+          const urlPath = `${url[0]}/index.html#/${url[1]}`
+          document.querySelector('#iframe-content').src = `${window.location.origin}${urlPath}`
         } else {
           let params
           if (path.indexOf('pc-protal') > -1) {
@@ -100,6 +121,7 @@ export default {
           } else {
             params = path.split('#/')
           }
+          console.log(`${window.location.origin}${params[0]}.html#/${params[1]}`)
           document.querySelector('#iframe-content').src = `${window.location.origin}${params[0]}.html#/${params[1]}`
         }
       })
@@ -111,10 +133,10 @@ export default {
 <style lang="less">
 @import url('../../../components/global.less');
 
- #iframe-content {
-   width: 100%;
-   height: 100%;
- }
+#iframe-content {
+  width: 100%;
+  height: 100%;
+}
 .address-list {
   height: 35px;
   margin-top: 4px;
@@ -130,7 +152,7 @@ export default {
   }
 }
 .slide-left {
-  transition: width .3s ease;
+  transition: width 0.3s ease;
   width: 240px;
   overflow: hidden;
 }

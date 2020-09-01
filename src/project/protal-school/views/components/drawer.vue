@@ -134,22 +134,31 @@ export default {
     this.height = document.body.clientHeight - 250
     this.plateformType = '2'
     this.initMenu()
-    this.$tools.goNext(() => {
-      this.getRoleMenu(this.menuData)
-    })
+    setTimeout(() => {
+      this.getRoleMenu(this.menuData, 1)
+    }, 500)
+    // this.$tools.goNext(() => {
+    //   this.getRoleMenu(this.menuData)
+    //   this.showTag = true
+    // })
   },
   methods: {
     ...mapActions('home', [
       'getAppBySchool', 'getAppMenu', 'addRoleMenu', 'getRoleMenuList'
     ]),
     changeMenu (index) {
+      this.showTag = false
       this.plateformType = index
       this.checkedKeys = []
       this.finalCheck = []
       this.initMenu()
-      this.$tools.goNext(() => {
-        this.getRoleMenu(this.menuData)
-      })
+      setTimeout(() => {
+        this.getRoleMenu(this.menuData, 1)
+      }, 500)
+      // this.$tools.goNext(() => {
+      //   this.getRoleMenu(this.menuData)
+      //   this.showTag = true
+      // })
     },
     onCheck (checkedKeys, e) {
       this.finalCheck = checkedKeys.concat(e.halfCheckedKeys)
@@ -228,7 +237,7 @@ export default {
         vm.expandedKeys = vm.backupsExpandedKeys.slice()
       }
     },
-    async getRoleMenu (data) {
+    async getRoleMenu (data, type) {
       const req = {
         roleId: data.id,
         plateformType: this.plateformType
@@ -245,11 +254,15 @@ export default {
         this.checkedKeys = this.flatten(arr2).filter(ele => { return ele !== null })
         console.log(2222, this.checkedKeys)
       }
+      if (type) {
+        this.showTag = true
+      }
     },
     async initMenu () {
       const req = {
         schoolCode: this.userInfo.schoolCode,
-        plateformType: this.plateformType
+        plateformType: this.plateformType,
+        category: this.plateformType === '1' ? '04' : '03'
       }
       const res = await this.getAppBySchool(req)
       this.menuList = res.data.list
@@ -281,7 +294,7 @@ export default {
       })
       this.treeData = [...this.treeData]
       console.log(111, this.treeData)
-      this.showTag = true
+      // this.showTag = true
     },
     dealValue (item) {
       return {

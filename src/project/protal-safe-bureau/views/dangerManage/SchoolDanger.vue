@@ -1,0 +1,33 @@
+<template>
+  <div class="home page-layout bg-fff">
+    <a-tabs default-active-key="1" @change="callback">
+      <a-tab-pane key="1" tab="发现隐患">
+        <discover-danger></discover-danger>
+      </a-tab-pane>
+      <a-tab-pane key="2" tab="隐患督办" force-render>
+        <danger-supervision></danger-supervision>
+      </a-tab-pane></a-tabs>
+  </div>
+</template>
+
+<script>
+import DiscoverDanger from './DiscoverDanger'
+import DangerSupervision from './DangerSupervision'
+export default {
+  name: 'Home',
+  components: {
+    DiscoverDanger,
+    DangerSupervision
+  },
+  data() {
+    return {}
+  },
+  mounted() {},
+  methods: {
+    callback(key) {
+      // console.log(key)
+    }
+  }
+}
+</script>
+<style lang="less" scoped></style>

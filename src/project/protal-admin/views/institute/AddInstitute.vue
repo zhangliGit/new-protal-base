@@ -31,13 +31,13 @@
       </a-form-item>
       <!--复选框-->
       <a-form-item v-bind="formItemLayout" label="学段" required>
-        <a-checkbox-group v-model="checkedList" :disabled="disabled">
+        <a-checkbox-group v-model="checkedList" :disabled="disabled" @change="periodChange">
           <div class="qui-fx mar-b10">
             <div style="width:75px">
               <a-checkbox :style="radioStyle" :value="primary"> 小学 </a-checkbox>
             </div>
             <div style="width:275px">
-              <a-select v-model="primarySystem" allowClear :disabled="disabled">
+              <a-select v-model="primarySystem" :disabled="disabled">
                 <a-select-option v-for="item in primaryList" :key="item.key">{{ item.value }}</a-select-option>
               </a-select>
             </div>
@@ -47,7 +47,7 @@
               <a-checkbox :style="radioStyle" :value="middle"> 初中 </a-checkbox>
             </div>
             <div style="width:275px">
-              <a-select v-model="middleSystem" allowClear :disabled="disabled">
+              <a-select v-model="middleSystem" :disabled="disabled">
                 <a-select-option v-for="item in middleList" :key="item.key">{{ item.value }}</a-select-option>
               </a-select>
             </div>
@@ -57,12 +57,28 @@
               <a-checkbox :style="radioStyle" :value="high"> 高中 </a-checkbox>
             </div>
             <div style="width:275px">
-              <a-select v-model="highSystem" allowClear :disabled="disabled">
+              <a-select v-model="highSystem" :disabled="disabled">
                 <a-select-option v-for="item in highList" :key="item.key">{{ item.value }}</a-select-option>
               </a-select>
             </div>
           </div>
         </a-checkbox-group>
+      </a-form-item>
+      <a-form-item v-bind="formItemLayout" label="学校类型">
+        <a-radio-group
+          disabled
+          button-style="solid"
+          v-decorator="[
+            'schoolType',
+            { initialValue: appForm.schoolType }
+          ]">
+          <a-radio-button value="1"> 小学 </a-radio-button>
+          <a-radio-button value="2"> 初中 </a-radio-button>
+          <a-radio-button value="3"> 高中 </a-radio-button>
+          <a-radio-button value="4"> 九年制 </a-radio-button>
+          <a-radio-button value="6"> 十二年制 </a-radio-button>
+          <a-radio-button value="5"> 完全中学 </a-radio-button>
+        </a-radio-group>
       </a-form-item>
       <a-form-item v-bind="formItemLayout" label="地区">
         <a-cascader
@@ -137,7 +153,7 @@ export default {
         wrapperCol: { span: 20 }
       },
       appForm: {
-
+        schoolType: '1'
       },
       areaList: [],
       placeholder: '请选择地区',
@@ -173,13 +189,36 @@ export default {
       primary: '01',
       middle: '02',
       high: '03',
-      checkedList: []
+      checkedList: [],
+      defaultValue: '0'
     }
   },
   methods: {
     ...mapActions('home', [
       'getProvinces', 'getSubNodes', 'delSchool', 'addSchool', 'updateSchool'
     ]),
+    periodChange(e) {
+      if (e.length === 1) {
+        this.appForm.schoolType = e[0].substr(1, 2)
+      } else if (e.length === 2) {
+        const primary = e.indexOf('01') !== -1
+        const middle = e.indexOf('02') !== -1
+        const high = e.indexOf('03') !== -1
+        if (primary && middle) {
+          this.appForm.schoolType = '4'
+        } else if (high && middle) {
+          this.appForm.schoolType = '5'
+        } else {
+          this.appForm.schoolType = '1'
+          this.checkedList = ['01']
+        }
+      } else if (e.length === 3) {
+        this.appForm.schoolType = '6'
+      } else {
+        this.appForm.schoolType = '1'
+        this.checkedList = ['01']
+      }
+    },
     onChange (value, obj) {
       this.length = obj.length
       if (obj.length === 3) {
@@ -254,7 +293,9 @@ export default {
               this.confirmLoading = false
               this.status = false
               this.$message.success('操作成功')
-              this.$emit('update')
+              this.$tools.goNext(() => {
+                this.$emit('update')
+              })
             }).catch(() => {
               this.confirmLoading = false
             })
@@ -266,7 +307,9 @@ export default {
               this.confirmLoading = false
               this.status = false
               this.$message.success('操作成功')
-              this.$emit('update')
+              this.$tools.goNext(() => {
+                this.$emit('update')
+              })
             }).catch(() => {
               this.confirmLoading = false
             })

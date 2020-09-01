@@ -5,14 +5,15 @@
         <a-button icon="plus" type="primary" @click="addApp(0)">新增学校</a-button>
       </div>
       <template v-slot:area>
-        <a-form-item label="地区" >
+        <a-form-item label="地区">
           <a-cascader
             :options="areaList"
             @click.stop="onFocus"
             :loadData="loadData"
             placeholder="请选择地区"
-            v-decorator="[ 'value' ]"
-            changeOnSelect/>
+            v-decorator="['value']"
+            changeOnSelect
+          />
         </a-form-item>
       </template>
     </search-form>
@@ -21,16 +22,27 @@
       :page-list="pageList"
       v-model="chooseList"
       :columns="columns"
-      :table-list="userList">
+      :table-list="userList"
+    >
       <template v-slot:actions="action">
         <a-tooltip placement="topLeft" title="详情">
-          <a-button size="small" class="detail-action-btn" icon="ellipsis" @click.stop="goDetial('/institute/detail',action)"></a-button>
+          <a-button
+            size="small"
+            class="detail-action-btn"
+            icon="ellipsis"
+            @click.stop="goDetial('/institute/detail', action)"
+          ></a-button>
         </a-tooltip>
         <a-tooltip placement="topLeft" title="编辑">
-          <a-button size="small" class="edit-action-btn" icon="form" @click.stop="addApp(1, action)"></a-button>
+          <a-button
+            size="small"
+            class="edit-action-btn"
+            icon="form"
+            @click.stop="addApp(1, action)"
+          ></a-button>
         </a-tooltip>
         <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="del(action)">
-          <template slot="title"> 您确定删除吗? </template>
+          <template slot="title">您确定删除吗?</template>
           <a-tooltip placement="topLeft" title="删除">
             <a-button size="small" class="del-action-btn" icon="delete"></a-button>
           </a-tooltip>
@@ -65,7 +77,8 @@ const searchLabel = [
     placeholder: '请输入' // 表单默认值(非必选字段)
   },
   {
-    list: [ // 选择列表项，select控件必传
+    list: [
+      // 选择列表项，select控件必传
       {
         key: '',
         val: '全部'
@@ -105,7 +118,7 @@ const columns = [
     title: '学段',
     dataIndex: 'schoolStage',
     width: '10',
-    customRender: (text) => {
+    customRender: text => {
       const arr = text.split(',')
       const newArr = []
       for (let i = 0; i < arr.length; i++) {
@@ -159,7 +172,7 @@ export default {
     PageNum,
     AddInstitute
   },
-  data () {
+  data() {
     return {
       searchLabel,
       title: '新增学校',
@@ -190,19 +203,17 @@ export default {
       disabled: false
     }
   },
-  mounted () {
+  mounted() {
     this.showList()
   },
   methods: {
-    ...mapActions('home', [
-      'getSchool', 'delSchool', 'getProvinces', 'getSubNodes'
-    ]),
-    searchForm (values) {
+    ...mapActions('home', ['getSchool', 'delSchool', 'getProvinces', 'getSubNodes']),
+    searchForm(values) {
       values.areaCode = Array.isArray(values.value) ? values.value[values.value.length - 1] : ''
       this.pageList = Object.assign(this.pageList, values)
       this.showList()
     },
-    loadData (selectedOptions) {
+    loadData(selectedOptions) {
       const targetOption = selectedOptions[selectedOptions.length - 1]
       targetOption.loading = true
       this.getSubNodes(targetOption.id).then(res => {
@@ -216,7 +227,7 @@ export default {
         this.areaList = [...this.areaList]
       })
     },
-    onFocus (value) {
+    onFocus(value) {
       this.areaList = []
       this.isNotEdited = false
       this.getProvinces().then(res => {
@@ -228,23 +239,23 @@ export default {
         })
       })
     },
-    resetBtn () {
+    resetBtn() {
       this.form.resetFields()
       this.searchBtn()
     },
-    searchBtn (e) {
+    searchBtn(e) {
       if (e) e.preventDefault()
       this.form.validateFields((err, values) => {
         if (!err) {
           if (values.value && values.value.length > 0) {
-            values.areaCode = values.value[(values.value.length) - 1]
+            values.areaCode = values.value[values.value.length - 1]
           }
           this.pageList = Object.assign(this.pageList, values)
           this.showList()
         }
       })
     },
-    addApp (type, record) {
+    addApp(type, record) {
       this.$refs.addInstitute.status = true
       if (type) {
         this.$refs.addInstitute.appForm = record.record
@@ -268,12 +279,12 @@ export default {
         this.disabled = false
       }
     },
-    async showList () {
+    async showList() {
       const res = await this.getSchool(this.pageList)
       this.userList = res.data.list
       this.total = res.data.total
     },
-    goDetial (path, record) {
+    goDetial(path, record) {
       this.$router.push({
         path: path,
         query: {
@@ -281,7 +292,7 @@ export default {
         }
       })
     },
-    del (record) {
+    del(record) {
       this.delSchool(record.record.id).then(res => {
         this.$message.success('操作成功')
         this.$tools.goNext(() => {
@@ -292,5 +303,4 @@ export default {
   }
 }
 </script>
-<style lang="less" scoped>
-</style>
+<style lang="less" scoped></style>

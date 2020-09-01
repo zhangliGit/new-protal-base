@@ -24,22 +24,26 @@ export default {
       autoImg,
       appList: [
         {
+          id: '1000',
+          name: '项目模板',
+          url: 'protal-template'
+        },
+        {
           id: 0,
           name: '登录',
           url: 'protal-login'
         },
         {
-          id: 1,
-          name: '控制台',
-          url: 'protal-entry'
-        },
-        {
-          name: '管理端',
+          name: '运维端',
           url: 'protal-admin'
         },
         {
-          name: '学校端',
+          name: '学校基础数据',
           url: 'protal-school'
+        },
+        {
+          name: '局端基础数据',
+          url: 'protal-organize'
         },
         {
           name: '控制中心',
@@ -58,17 +62,61 @@ export default {
           url: 'protal-ncov'
         },
         {
-          name: '局端大屏',
-          url: 'organize-view'
+          name: '宿舍管理',
+          url: 'protal-dorm'
         },
         {
-          name: '人脸识别',
-          url: 'protal-face'
+          name: '电子班牌',
+          url: 'protal-class'
+        },
+        {
+          name: '一卡通',
+          url: 'protal-card'
+        },
+        {
+          name: '公共模块-信息发布',
+          url: 'protal-common'
+        },
+        /* {
+          name: '公共模块-场地预定',
+          url: 'protal-sitebooking'
+        }, */
+        {
+          name: '公共模块-OA办公',
+          url: 'protal-oa'
+        },
+        {
+          name: '校园安防-学校',
+          url: 'protal-safe-school'
+        },
+        {
+          name: '校园安防-局端',
+          url: 'protal-safe-bureau'
+        },
+        {
+          name: '一卡通消费',
+          url: 'protal-consumption'
         }
       ]
     }
   },
-  mounted() {},
+  mounted() {
+    // const loginInfo = {
+    //   id: 1267,
+    //   userCode: 'U14jynzusn1u80',
+    //   userName: '产品管理',
+    //   accountType: 4,
+    //   photoUrl: '',
+    //   userType: 2,
+    //   date: 1591666389492,
+    //   schoolCode: 'CANPOINTAI',
+    //   schoolId: 219,
+    //   schoolName: 'AI教育中心产品部',
+    //   eduCode: '',
+    //   token: 'e5431b6607f0cad9663b30a8c2eaf15a'
+    // }
+    // window.sessionStorage.setItem('loginInfo', JSON.stringify(loginInfo))
+  },
   methods: {
     goHtml(path) {
       window.location.href = `./${path}.html`
@@ -80,7 +128,7 @@ export default {
 <style lang="less">
 .protal-index {
   background: rgb(15, 13, 65);
-  background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(50,50,190,1) 0%, rgba(10,86,101,1) 70%);
+  background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(50, 50, 190, 1) 0%, rgba(10, 86, 101, 1) 70%);
   position: absolute;
   width: 100%;
   height: 100%;

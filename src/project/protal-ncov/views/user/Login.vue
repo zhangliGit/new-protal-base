@@ -1,13 +1,10 @@
 <template>
-  <div class="login">
-    <login type="school"></login>
-  </div>
+  <div class="login"></div>
 </template>
 
 <script>
-import Login from '@c/Login'
 export default {
-  components: { Login },
+  components: {},
   data() {
     return {}
   },
@@ -16,5 +13,4 @@ export default {
 }
 </script>
 
-<style lang="less">
-</style>
+<style lang="less"></style>

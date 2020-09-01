@@ -11,8 +11,9 @@
       title="添加适用人员">
     </choose-user>
     <div class="qui-fx-jsb qui-fx-ac">
-      <div>
-        <span style="font-size:12px;color:#999;margin-left: 10px">说明：未加入通行权限组的学校人员在任意时间不允许通行</span>
+      <div class="tips">
+        <div>说明：未加入通行权限组的学校人员在任意时间不允许通行；</div>
+        <div style="text-indent: 35px;">同一人员若在不同权限组绑定了同一个设备且通行时间不同，则通行时间取并集。</div>
       </div>
       <div class="top-btn-group">
         <a-button icon="plus" type="primary" @click="addGroup(0)">添加权限组</a-button>
@@ -229,4 +230,9 @@ export default {
 }
 </script>
 <style lang="less" scoped>
+.tips{
+  font-size: 12px;
+  margin-left: 20px;
+  color: #909399;
+}
 </style>

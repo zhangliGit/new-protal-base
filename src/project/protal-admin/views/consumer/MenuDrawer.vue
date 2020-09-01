@@ -113,7 +113,7 @@ export default {
     },
     // 根据学校查询应用以及应用下绑定的菜单
     async applyGet () {
-      const res = await this.queryApply({ plateformType: '2', schoolCode: this.schoolCode })
+      const res = await this.queryApply({ plateformType: '2', schoolCode: this.schoolCode, category: '01' })
       if (res.data.length !== 0) {
         this.treeData = res.data.list.map(item => {
           return {

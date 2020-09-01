@@ -9,13 +9,21 @@
       <div class="right qui-fx-ver qui-fx-f1">
         <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
           <div slot="left" class="left_">
-            <a-row class="tip-banner" style="position: absolute; z-index: 99; width: 500px; margin:-18px 0 0 10px">
-              <a-col :span="8">业务类型：{{ parseInt(kzValue.plateformType) === 1 ? '数据回写' : '识别校验' }}</a-col>
+            <a-row
+              class="tip-banner"
+              style="position: absolute; z-index: 99; min-width: 620px; margin:-18px 0 0 10px"
+            >
+              <a-col :span="6">业务类型：{{ parseInt(kzValue.plateformType) === 1 ? '数据回写' : '识别校验' }}</a-col>
               <a-col :span="16">业务地址：{{ kzValue.bussUrl || '' }}</a-col>
             </a-row>
           </div>
         </search-form>
-        <table-list :page-list="pageList" :columns="BusinessLogColumns" :table-list="businessList">
+        <table-list
+          isZoom
+          :page-list="pageList"
+          :columns="BusinessLogColumns"
+          :table-list="businessList"
+        >
           <template v-slot:actions="action">
             <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="resubmit(action)">
               <template slot="title">您确定重试吗?</template>
@@ -62,12 +70,6 @@ const searchLabel = [
     value: 'succMark',
     type: 'select',
     label: '状态'
-  },
-  {
-    list: [],
-    value: 'controlGroupCode',
-    type: 'select',
-    label: '控制组'
   }
 ]
 export default {
@@ -81,7 +83,7 @@ export default {
   computed: {
     ...mapState('home', ['schoolCode'])
   },
-  data () {
+  data() {
     return {
       total: 0,
       searchLabel,
@@ -101,46 +103,34 @@ export default {
     }
   },
   watch: {
-    kzValue (nVal, oVal) {
+    kzValue(nVal, oVal) {
       if (JSON.stringify(nVal) === JSON.stringify(oVal)) return
       this.recordList()
     }
   },
-  async mounted () {
+  async mounted() {
     this.getBussList({
       schoolCode: this.schoolCode
     }).then(res => {
-      this.tabList = res.data.map(item => {
-        return {
-          ...item,
-          key: item.appCode,
-          val: item.appName
-        }
-      })
-      if (res.data.length !== 0) {
-        this.kzValue = res.data[0]
+      this.tabList = res.data
+        .map(item => {
+          return {
+            ...(item || {}),
+            key: (item || {}).appCode,
+            val: (item || {}).appName
+          }
+        })
+        .filter(item => {
+          return item.bussUrl && item.bussUrl !== 'http://127.0.0.1'
+        })
+      if (this.tabList.length !== 0) {
+        this.kzValue = this.tabList[0]
       }
     })
-    this.getGroupList()
   },
   methods: {
     ...mapActions('home', ['getAllBusiness', 'getBussList', 'resubmitBussRecord', 'getControlGroupList']),
-    getGroupList () {
-      this.getControlGroupList({
-        schoolCode: this.schoolCode,
-        ...this.pageList
-      }).then(res => {
-        if (res.data.list === 0) return
-        const data = res.data.list.map(el => {
-          return {
-            key: el.controlGroupCode,
-            val: el.controlGroupName
-          }
-        })
-        this.searchLabel[2].list = [...[{ key: '', val: '全部' }], ...data]
-      })
-    },
-    recordList () {
+    recordList() {
       this.getAllBusiness({
         ...this.pageList,
         ...this.searchText,
@@ -151,11 +141,11 @@ export default {
         this.total = res.data.total
       })
     },
-    searchForm (values) {
+    searchForm(values) {
       this.searchText = values
       this.recordList()
     },
-    async resubmit (action) {
+    async resubmit(action) {
       this.resubmitBussRecord({
         ...this.pageList,
         ...this.searchText,
@@ -175,8 +165,8 @@ export default {
   width: 250px;
   background-color: #fff;
 }
+
 .qui-fx-f1 {
   padding-left: 10px;
 }
-
 </style>

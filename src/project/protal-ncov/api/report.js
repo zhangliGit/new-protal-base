@@ -6,14 +6,16 @@
 import hostEnv from '@/config/host-env'
 
 const reportApi = {
-  getLatestMedicalInfo: '/school/medicalinfo/getLatestMedicalInfo#postQuery', // 获取体检最新一条记录
-  updateInfo: '/school/medicalinfo/save#post', // 修改体检数据
-  getTemperatureData: '/school/reportinfo/getTemperatureData#postQuery', // 获取个人体温数据
-  getreportList: '/school/userinfo/getUserInfoList#post', // 人员信息查询
-  getReportInfoList: '/school/reportinfo/getReportInfoList#post', // 获取上报信息记录
-  getSymptomList: '/operate/symptomsinfo/list#get' // 获取症状信息列表
+  getReportInfoList: '/day/record/list#post', // 获取上报信息记录
+  addReport: '/day/record/add#post', // 手动上报温度
+  getarchivesList: '/archives/list#post', // 健康档案列表
+  //addArchives: '/archives/add#post', // 新增
+  // getarchivesDetail: '/archives/detail#get', // 获取健康详情
+  getReportInfo: '/day/record/user/detail#get', //查询个人的上报记录详情
+  getarchivesDetail: '/archives/detail#getUrl', // 获取档案详情
+  getTemperatureData: '/day/report/user/detail#get' // 个人体温走势
 }
 for (const val in reportApi) {
-  reportApi[val] = `${hostEnv.lz_ncov}${reportApi[val]}`
+  reportApi[val] = `${hostEnv.ljj_ncov}${reportApi[val]}`
 }
 export default reportApi

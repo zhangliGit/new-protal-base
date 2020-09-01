@@ -6,10 +6,13 @@
 import hostEnv from '@config/host-env'
 
 const recordApi = {
+  addDeviceInfo: '/setting/device/info/add#post', // 添加编辑设备
+  deleteDeviceInfo: '/setting/device/info/del#delete', // 删除设备
+  getDeviceList: '/setting/device/info/query#post', // 获取设备列表
   getrecordList: '/record/access/list#post', // 出入记录列表
   addRecord: '/record/access/add#post' // 添加出入记录
 }
 for (const val in recordApi) {
-  recordApi[val] = `${hostEnv.zx_door}${recordApi[val]}`
+  recordApi[val] = `${hostEnv.ljj_door}${recordApi[val]}`
 }
 export default recordApi
