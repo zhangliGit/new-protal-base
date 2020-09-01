@@ -1,5 +1,7 @@
 <template>
-  <a-modal width="800px" title="录入成绩" v-model="status" :maskClosable="false" :destroyOnClose="true"></a-modal>
+  <a-modal width="800px" title="录入成绩" v-model="status" :maskClosable="false" :destroyOnClose="true">
+    <div class="upload-title"></div>
+  </a-modal>
 </template>
 
 <script>
