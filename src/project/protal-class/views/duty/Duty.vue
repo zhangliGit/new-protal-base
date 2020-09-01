@@ -42,18 +42,12 @@
               </ul>
               <ul class="info-ul">
                 <li class="info-li" v-for="day in weekDays" :key="day.key" @click="addClass(day.key)">
-                  <template v-for="tag in ratedPersonList">
-                    <a-tag
-                      v-if="tag.weekDay === day.key"
-                      :key="tag.userId"
-                      :closable="closable"
-                      @click.stop="dutyClose(tag)"
-                      style="margin-top:15px"
-                    >
-                      <div class="info-img">
-                        <img v-if="!tag.photoUrl" :src="infoImg" alt="" />
-                        <img else :src="tag.photoUrl" alt="" />
-                      </div>
+                  <template v-for="tag in ratedPersonList" v-if="tag.weekDay === day.key">
+                    <div class="info-img ">
+                      <img v-if="!tag.photoUrl" :src="infoImg" alt="" />
+                      <img else :src="tag.photoUrl" alt="" />
+                    </div>
+                    <a-tag :key="tag.id" :closable="closable" :afterClose="() => dutyClose(tag)">
                       {{ tag.userName }}
                     </a-tag>
                   </template>
@@ -201,13 +195,7 @@ export default {
         this.$message.warning('先点击编辑')
         return
       }
-      // const index = this.ratedPersonList.findIndex(tag => {
-      //   return tag !== removedTag
-      // })
-      // this.ratedPersonList.splice(index, 1)
-      // this.studentsList.map(ele => {
-      //   ele.check = false
-      // })
+      console.log(removedTag)
       this.ratedPersonList = this.ratedPersonList.filter(tag => tag !== removedTag)
     },
     addDuty() {
@@ -404,7 +392,7 @@ li {
 .info-img {
   width: 50px;
   height: 50px;
-  // margin-left: 28.5%;
+  margin-left: 24.5%;
   margin-top: 7%;
   img {
     width: 100%;
@@ -412,14 +400,5 @@ li {
     border-radius: 50%;
     display: block;
   }
-}
-.ant-tag {
-  border: none;
-  background: transparent;
-}
-.ant-tag a:hover {
-  color: rgba(250, 249, 249, 0.65);
-  border: none;
-  background: transparent;
 }
 </style>
