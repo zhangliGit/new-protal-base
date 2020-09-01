@@ -98,7 +98,7 @@ export default {
               }
               const selectObj = {
                 typeName: this.gradeList[0].typeName,
-                materialTypeId: this.gradeList[0].id
+                // materialTypeId: this.gradeList[0].id
               }
               this.defaultExpandedKeys = [this.gradeList[0].id]
               this.defaultSelectedKeys = [res.data.list[0].id]
