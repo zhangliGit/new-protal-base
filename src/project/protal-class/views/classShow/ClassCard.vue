@@ -4,7 +4,7 @@
       <class-tree @select="select"></class-tree>
     </div>
     <div class="right qui-fx-ver">
-      <div class="tit" style="margin-top: 10px">
+      <div class="tit u-mar-t10">
         <p class="qui-fx qui-fx-ac">班级格言</p>
       </div>
       <a-input
@@ -23,13 +23,13 @@
         placeholder="请输入班级简介"
         v-model="areaText">
       </a-textarea>
-      <!-- <div class="tit" style="margin-bottom: 10px">
+      <div class="tit" style="margin-bottom: 10px">
         <p class="qui-fx qui-fx-ac">班级全家福</p>
       </div>
       <div class="qui-fx qui-fx-ac">
-        <upload-multi :length="1" v-model="fileList" :fileInfo="fileInfo" ></upload-multi>
-        <span style="font-size:12px;margin-left:10px;">说明：支持上JPG、PNG格式的图片，图片大小不得超过10M。</span>
-      </div> -->
+        <upload-video type="image" :length="1" v-model="fileList" :fileInfo="fileInfo" @delUpload="delUpload" ></upload-video>
+        <span class="u-mar-l10 u-font-01 u-tips-color">说明：支持上JPG、PNG格式的图片，图片大小不得超过10M。</span>
+      </div>
       <div class="button">
         <a-button type="primary" @click="save">
           保存
@@ -41,13 +41,14 @@
 </template>
 
 <script>
-import UploadMulti from '@c/UploadMulti'
+import UploadVideo from '@c/UploadVideo'
 import { mapActions, mapState } from 'vuex'
 import ClassTree from '@c/ClassTree'
+import hostEnv from '@config/host-env'
 export default {
   components: {
     ClassTree,
-    UploadMulti
+    UploadVideo
   },
   data () {
     return {
@@ -64,10 +65,14 @@ export default {
   computed: {
     ...mapState('home', ['userInfo'])
   },
-  mounted () {
+  created () {
+    this.fileInfo.url = `${hostEnv.zk_oa}/study/theme/file/uploadFile?schoolCode=${this.userInfo.schoolCode}`
   },
   methods: {
-    ...mapActions('home', ['getClassMotto', 'addClassMotto']),
+    ...mapActions('home', ['getClassMotto', 'addClassMotto', 'delFile']),
+    delUpload(id) {
+      this.delFile(id)
+    },
     // 选中年级
     select (item) {
       console.log(item)

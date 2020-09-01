@@ -28,9 +28,7 @@
                 @click.stop.prevent
                 :key="tag.userCode"
                 :closable="true"
-                @close.stop="() => userClose(tag)"
-                >{{ tag.userName }}</a-tag
-              >
+                @close.stop="() => userClose(tag)">{{ tag.userName }}</a-tag>
             </template>
           </div>
         </a-form-item>
