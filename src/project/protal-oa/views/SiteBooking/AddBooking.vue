@@ -507,7 +507,7 @@ export default {
             return
           }
           if (this.yzTime(this.timeList) === 2) {
-            this.$message.error('预定时间段重复，请重新选择')
+            this.$message.error('预订时间段重复，请重新选择')
             return
           }
           if (values.switch) {
@@ -600,7 +600,7 @@ export default {
             }
             console.log(req)
             this.addReserve(req).then(res => {
-              this.$message.success('预定成功')
+              this.$message.success('预订成功')
               this.$tools.goNext(() => {
                 this.$router.push({ path: '/siteBooking' })
               })
@@ -679,14 +679,14 @@ export default {
       }
       if (type === 'startTime') {
         if (parseInt(val.format('HH')) * 60 + parseInt(val.format('mm')) > 20 * 60) {
-          this.$message.warning('预定时间不能晚于20:00')
+          this.$message.warning('预订时间不能晚于20:00')
           this.timeList[index].startTime = moment('20:00', 'HH:mm')
         } else {
           this.timeList[index].startTime = val
         }
       } else {
         if (parseInt(val.format('HH')) * 60 + parseInt(val.format('mm')) > 20 * 60) {
-          this.$message.warning('预定时间不能晚于20:00')
+          this.$message.warning('预订时间不能晚于20:00')
           this.timeList[index].endTime = moment('20:00', 'HH:mm')
         } else {
           this.timeList[index].endTime = val
