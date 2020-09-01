@@ -74,53 +74,39 @@ const columns = [
     }
   },
   {
-    title: '姓名',
+    title: '荣誉名称',
     dataIndex: 'userName',
-    width: '10%'
+    width: '20%'
   },
   {
-    title: '性别',
-    dataIndex: 'sex',
-    width: '10%',
-    customRender: text => {
-      return Tools.getSex(text)
-    }
-  },
-  {
-    title: '学号',
-    dataIndex: 'workNo',
-    width: '10%'
-  },
-  {
-    title: '年级',
-    dataIndex: 'gradeName',
+    title: '获奖时间',
+    dataIndex: 'time',
     width: '15%',
-    customRender: (text, record) => {
-      return `${record.gradeName}${record.className}`
-    }
-  },
-  {
-    title: '入学年份',
-    dataIndex: 'admissionTime',
-    width: '10%',
     customRender: text => {
-      return new Date(text).getFullYear()
+      return Tools.getDate(text)
     }
   },
   {
-    title: '走住读类型',
-    dataIndex: 'hasDorm',
-    width: '10%',
-    scopedSlots: {
-      customRender: 'other1'
-    }
-  },
-  {
-    title: '人脸照片',
+    title: '获奖图片',
     dataIndex: 'photoUrl',
-    width: '10%',
+    width: '20%',
     scopedSlots: {
       customRender: 'photoPic'
+    }
+  },
+  {
+    title: '发布时间',
+    dataIndex: 'createTime',
+    width: '15%',
+    customRender: text => {
+      return Tools.getDate(text)
+    }
+  },
+  {
+    title: '操作',
+    width: '20%',
+    scopedSlots: {
+      customRender: 'action'
     }
   }
 ]
@@ -210,7 +196,7 @@ export default {
         this.areaText = res.data.introduce
       }
     },
-    deleteList(type, record) {
+    deleHonor(type, record) {
       if (type) {
       } else {
         if (this.chooseList.length === 0) {

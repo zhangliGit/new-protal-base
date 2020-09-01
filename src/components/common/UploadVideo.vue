@@ -1,20 +1,5 @@
 <template>
   <div class="upload-file qui-fx">
-    <div
-      @mouseover="showTip(index)"
-      v-for="(pic, index) in fileList"
-      :key="pic.id"
-      class="qui-fx qui-fx-ac-jc mar-t10"
-      :style="{position: 'relative', marginRight: '10px', backgroundColor: '#fff', padding: '18px', border: '1px dashed #ccc', height: fileInfo.h || 120 + 'px', width: fileInfo.w || 120 + 'px'}">
-      <div @mouseleave="showTip()" class="showTip qui-fx-ac-jc" v-if="currentIndex === index">
-        <div>
-          <a-icon type="eye" @click="show(pic)"></a-icon>
-          <a-icon type="delete" @click="del(pic)"></a-icon>
-        </div>
-      </div>
-      <video v-if="type === 'video'" :src="pic.url" style="width: 80px; height: 80px" />
-      <img v-else style="width: 80px; height: 80px" :src="pic.url" alt=""/>
-    </div>
     <a-upload
       :multiple="true"
       name="fileList"
@@ -22,15 +7,31 @@
       class="avatar-uploader mar-t10"
       :showUploadList="false"
       :action="reqUrl"
-      :accept="type === 'image' ? 'image/png, image/gif, image/jpeg, image/bmp, image/x-icon,image/jpg' : type === 'video' ? 'video/mp4' : ''"
+      :accept="type === 'image' ? 'image/png, image/jpg' : type === 'video' ? 'video/mp4' : ''"
       :beforeUpload="beforeUpload"
       @change="uploadPic"
     >
-      <div v-if="fileList.length < length" :style="{height: fileInfo.h || 120 + 'px', width: fileInfo.w || 120 + 'px'}" class="qui-fx-ac-jc">
+      <div v-if="fileList.length < length" :style="{height: fileInfo.h + 'px', width: fileInfo.w + 'px'}" class="qui-fx-ac-jc">
         <div><a-icon style="font-size: 20px" :type="uploadTag ? 'loading' : 'plus'" /></div>
         <div class="ant-upload-text">{{ fileInfo.tip }}</div>
       </div>
     </a-upload>
+    <div
+      @mouseover="showTip(index)"
+      v-for="(pic, index) in fileList"
+      :key="pic.id"
+      class="qui-fx qui-fx-ac-jc mar-t10"
+      :style="{position: 'relative', marginRight: '10px', backgroundColor: '#fff', padding: '18px', border: '1px dashed #ccc', height: fileInfo.h + 'px', width: fileInfo.w + 'px'}">
+      <div @mouseleave="showTip()" class="showTip qui-fx-ac-jc" v-if="currentIndex === index">
+        <div class="create-time" v-if="showTimeTag">{{ pic.createTime | gmtToDate() }}</div>
+        <div>
+          <a-icon type="eye" @click="show(pic)"></a-icon>
+          <a-icon type="delete" @click="del(pic)"></a-icon>
+        </div>
+      </div>
+      <video v-if="type === 'video'" :src="pic.url" :style="{height: (fileInfo.h - 40) + 'px', width: (fileInfo.w - 40) + 'px'}" />
+      <img v-else :style="{height: (fileInfo.h - 40)+ 'px', width: (fileInfo.w - 40) + 'px'}" :src="pic.url" alt=""/>
+    </div>
     <a-modal :visible="previewVisible" :footer="null" @cancel="previewVisible = false" width="800px">
       <div class="qui-fx-ac-jc">
         <video v-if="type === 'video'" :src="previewImage" controls object-fit="contain" :style="{maxHeight: videoHeight + 'px', maxWidth: '100%'}"></video>
@@ -50,6 +51,10 @@ export default {
     length: {
       type: Number,
       default: 1
+    },
+    showTimeTag: {
+      type: Boolean,
+      default: false
     },
     value: {
       type: Array,
@@ -82,6 +87,7 @@ export default {
   mounted () {
     this.reqUrl = this.fileInfo.url
     this.videoHeight = (document.body.clientHeight) * 0.8
+    console.log(this.fileInfo.h)
   },
   computed: {
     fileList: {
@@ -102,11 +108,13 @@ export default {
       this.previewImage = file.url
     },
     del (file) {
-      const index = this.fileList.findIndex(item => {
-        return item.uid === file.uid
+      this.$tools.delTip('确定删除吗?', () => {
+        const index = this.fileList.findIndex(item => {
+          return item.uid === file.uid
+        })
+        this.$emit('delUpload', this.fileList[index].id)
+        this.fileList.splice(index, 1)
       })
-      this.$emit('delUpload', this.fileList[index].id)
-      this.fileList.splice(index, 1)
     },
     beforeUpload (file) {
       const isLt100M = file.size / 1024 / 1024 < 100
@@ -138,9 +146,10 @@ export default {
           this.$message.warning(info.file.response.message)
           return
         }
-        this.fileList.push({
+        this.fileList.unshift({
           uid: info.file.uid,
           uname: info.file.name,
+          createTime: Array.isArray(info.file.response.data) ? info.file.response.data[0].createTime : info.file.response.data.createTime,
           id: Array.isArray(info.file.response.data) ? info.file.response.data[0].id : info.file.response.data.id,
           url: Array.isArray(info.file.response.data) ? info.file.response.data[0].url : info.file.response.data.url
         })
@@ -163,6 +172,11 @@ export default {
     width: 100%;
     height: 100%;
     background: rgba(0,0,0,.5);
+    .create-time{
+      position: absolute;
+      top: 10px;
+      color: #fff;
+    }
     i {
       cursor: pointer;
       color:#fff;

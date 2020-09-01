@@ -6,7 +6,7 @@
     <a-textarea
       allowClear
       :maxLength="2000"
-      :autoSize="{ minRows: 20, maxRows: 20 }"
+      :autoSize="{ minRows: 10, maxRows: 20 }"
       placeholder="请输入学校简介"
       v-model="areaText">
     </a-textarea>
@@ -48,8 +48,8 @@ export default {
       fileInfo: {
         url: '',
         tip: '上传图片',
-        height: 120,
-        width: 120
+        h: 120,
+        w: 120
       },
       fileList: []
     }

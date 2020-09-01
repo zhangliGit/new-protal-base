@@ -106,7 +106,7 @@ module.exports = {
       },
       '/ljj_user_center': {
         // target: 'http://192.168.1.125:11002/', // 柳继杰-局端基础数据
-        target: 'http://192.168.2.147:11002/', // 柳继杰-
+        target: 'http://192.168.2.242:11002/', // 柳继杰-
         changeOrigin: true,
         pathRewrite: {
           '^/ljj_user_center': ''
@@ -114,7 +114,7 @@ module.exports = {
       },
       '/ljj_edu': {
         // target: 'http://192.168.1.125:10050/', // 柳继杰-局端学校管理
-        target: 'http://192.168.2.147:10050/',
+        target: 'http://192.168.2.242:10050/',
         changeOrigin: true,
         pathRewrite: {
           '^/ljj_edu': ''
@@ -129,7 +129,7 @@ module.exports = {
         }
       },
       '/zk_school': {
-        target: 'http://192.168.2.147:10050/',
+        target: 'http://192.168.2.242:10050/',
         // target: 'http://192.168.1.23:10050/', //  张坤-学校管理
         changeOrigin: true,
         pathRewrite: {
@@ -145,14 +145,14 @@ module.exports = {
         }
       },
       '/zx_protal': {
-        target: 'http://192.168.2.147:10060/', // 朱旭-平台应用系统
+        target: 'http://192.168.2.242:10060/', // 朱旭-平台应用系统
         changeOrigin: true,
         pathRewrite: {
           '^/zx_protal': ''
         }
       },
       '/zx_subject': {
-        target: 'http://192.168.2.147:10050/',
+        target: 'http://192.168.2.242:10050/',
         // target: 'http://192.168.1.24:10050/', // 朱旭-平台-学校学科教师管理
         changeOrigin: true,
         pathRewrite: {
@@ -160,7 +160,7 @@ module.exports = {
         }
       },
       '/lz_protal': {
-        target: 'http://192.168.2.147:10060/', // 吕卓-平台应用系统
+        target: 'http://192.168.2.242:10060/', // 吕卓-平台应用系统
         // target: 'http://192.168.1.46:10060/', // 吕卓-平台应用系统
         changeOrigin: true,
         pathRewrite: {
@@ -182,7 +182,7 @@ module.exports = {
         }
       },
       '/zx_visitor': {
-        target: 'http://192.168.2.134:10160/', // 朱旭-访客系统
+        target: 'http://192.168.2.242:10160/', // 朱旭-访客系统
         changeOrigin: true,
         pathRewrite: {
           '^/zx_visitor': ''
@@ -190,7 +190,7 @@ module.exports = {
       },
       '/ljj_visitor': {
         // target: 'http://192.168.1.125:10160//', // 柳继杰-访客系统
-        target: 'http://192.168.2.134:10160/', // 柳继杰-访客系统
+        target: 'http://192.168.2.242:10160/', // 柳继杰-访客系统
         changeOrigin: true,
         pathRewrite: {
           '^/ljj_visitor': ''
@@ -204,15 +204,15 @@ module.exports = {
         }
       },
       '/ljj_attendance': {
-        // target: 'http://192.168.2.242:11004/', // 柳继杰-考勤
-        target: 'http://192.168.1.125:10054/', // 柳继杰-考勤
+        target: 'http://192.168.2.242:11004/', // 柳继杰-考勤
+        // target: 'http://192.168.1.125:10054/', // 柳继杰-考勤
         changeOrigin: true,
         pathRewrite: {
           '^/ljj_attendance': ''
         }
       },
       '/lz_user_center': {
-        target: 'http://192.168.2.147:11002/',
+        target: 'http://192.168.2.242:11002/',
         // target: 'http://192.168.1.125:11002/', // 吕卓-用户中心
         changeOrigin: true,
         pathRewrite: {
@@ -220,7 +220,7 @@ module.exports = {
         }
       },
       '/lz_ncov': {
-        target: 'http://192.168.2.147:11005/', // 吕卓-疫情防控
+        target: 'http://192.168.2.242:11005/', // 吕卓-疫情防控
         // target: 'http://192.168.1.23:11005/',
         changeOrigin: true,
         pathRewrite: {
@@ -269,7 +269,7 @@ module.exports = {
         }
       },
       '/ljj_admin': {
-        target: 'http://192.168.2.147:10050/', // 柳继杰-局端模块
+        target: 'http://192.168.2.242:10050/', // 柳继杰-局端模块
         changeOrigin: true,
         pathRewrite: {
           '^/ljj_admin': ''
@@ -307,7 +307,7 @@ module.exports = {
         }
       },
       '/ljj_ncov': {
-        target: 'http://192.168.2.147:11005/', // 柳继杰-测温计划
+        target: 'http://192.168.2.242:11005/', // 柳继杰-测温计划
         changeOrigin: true,
         pathRewrite: {
           '^/ljj_ncov': ''
