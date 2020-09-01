@@ -43,16 +43,6 @@ export const asyncRouterMap = [{
         }
       },
       {
-        path: '/childOne/detial',
-        name: 'childDetail',
-        component: ChildDetail,
-        meta: {
-          title: '界面详情',
-          isHide: true
-        },
-        hidden: true
-      },
-      {
         path: '/childTwo',
         name: 'childTwo',
         component: ChildTwo,

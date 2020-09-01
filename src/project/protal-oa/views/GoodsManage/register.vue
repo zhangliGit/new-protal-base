@@ -151,7 +151,8 @@ const formData = [
     initValue: '',
     type: 'input',
     label: '物品名称',
-    placeholder: '请输入2-10个字符(中英文)'
+    placeholder: '请输入2-10个字符(中英文)',
+    max: 10
   }
 ]
 export default {
@@ -220,6 +221,7 @@ export default {
     },
     addApp(type, record) {
       if (type === 2) {
+        this.formData[0].initValue = ''
         this.title = '添加物品'
         this.formData = this.formData
         this.type = 2
