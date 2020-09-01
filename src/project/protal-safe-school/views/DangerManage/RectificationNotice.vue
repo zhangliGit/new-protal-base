@@ -6,16 +6,23 @@
       </a-col>
     </a-row>
     <div class="img-box">
-      <img :src="url" alt="">
+      <pdf
+        ref="pdf"
+        :src="src">
+      </pdf>
     </div>
   </div>
 </template>
 
 <script>
+import hostEnv from '@config/host-env'
 import { mapActions } from 'vuex'
+import pdf from 'vue-pdf'
 export default {
   name: 'RectificationNotice',
-  components: {},
+  components: {
+    pdf
+  },
   computed: {
     status: {
       get() {
@@ -29,7 +36,8 @@ export default {
   data() {
     return {
       id: '',
-      url: ''
+      url: '',
+      src: ''
     }
   },
   created() {
@@ -37,54 +45,16 @@ export default {
     this._getDangerInfo()
   },
   methods: {
-    ...mapActions('home', ['getDangerInfo']),
+    ...mapActions('home', ['getDangerInfo', 'showFile']),
     async _getDangerInfo() {
       const res = await this.getDangerInfo(this.id)
-      console.log(res)
       this.url = res.data.notificationUrl || ''
+      this.src = `${hostEnv.zx_subject}/file/preview/doc?url=${this.url}`
+      console.log('aa', this.src)
     },
     exportClick() {
-      console.log(this.url)
-      window.open(this.url)
-      /* this.exportStuAttRec({
-        ...this.searchList,
-        ...this.pageList,
-        name: '学生考勤-考勤记录'
-      }) */
-    },
-    // 下载通知书
-    exportHazards(url1) {
-      var x = new XMLHttpRequest()
-      x.open('GET', url1, true)
-      x.responseType = 'blob'
-      x.onload = function(e) {
-        var url = window.URL.createObjectURL(x.response)
-        var a = document.createElement('a')
-        a.href = url
-        a.download = ''
-        a.click()
-      }
-      x.send()
-    },
-    downloadIamge(imgsrc, name) {
-      // 下载图片地址和图片名
-      var image = new Image()
-      // 解决跨域 Canvas 污染问题
-      image.setAttribute('crossOrigin', 'anonymous')
-      image.onload = function() {
-        var canvas = document.createElement('canvas')
-        canvas.width = image.width
-        canvas.height = image.height
-        var context = canvas.getContext('2d')
-        context.drawImage(image, 0, 0, image.width, image.height)
-        var url = canvas.toDataURL('image/png') // 得到图片的base64编码数据
-        var a = document.createElement('a') // 生成一个a元素
-        var event = new MouseEvent('click') // 创建一个单击事件
-        a.download = name || 'photo' // 设置图片名称
-        a.href = url // 将生成的URL设置为a.href属性
-        a.dispatchEvent(event) // 触发a的单击事件
-      }
-      image.src = imgsrc
+      const url = `${hostEnv.zx_subject}/file/downLoad/doc?url=${this.url}`
+      window.open(url)
     }
   }
 }

@@ -27,10 +27,35 @@
             ]"
           />
         </a-form-item>
+        <!--文本域-->
+        <a-form-item v-bind="formItemLayout" :label="item.label" v-if="item.type === 'textarea' && item.show">
+          <a-textarea
+            :placeholder="item.placeholder"
+            :read-only="item.readonly"
+            :disabled="item.disabled"
+            :autoSize="{ minRows: item.minRows, maxRows: item.maxRows }"
+            :allowClear="true"
+            v-decorator="[
+              item.value,
+              {
+                initialValue: item.initValue + '',
+                rules: [
+                  {
+                    len: item.len,
+                    max: item.max || 100,
+                    required: !item.hasOwnProperty('required') || item.required,
+                    message: item.placeholder
+                  },
+                  { pattern: item.regular ? rules[item.regular] : '', message: item.placeholder }
+                ]
+              }
+            ]"
+          />
+        </a-form-item>
         <!--数字文本框-->
-        <a-form-item v-bind="formItemLayout" :label="item.label" v-if="item.type === 'numberInput'">
+        <a-form-item v-bind="formItemLayout" :label="item.label" v-if="item.type === 'numberInput'" class="qui-fx-ver">
           <a-input-number
-            style="width: 100%"
+            :style="{ width: item.title ? '95% ' : '100%' }"
             :placeholder="item.placeholder"
             :read-only="item.readonly"
             :disabled="item.disabled"
@@ -44,10 +69,12 @@
               }
             ]"
           />
+          {{ item.title }}
         </a-form-item>
         <!--单选框-->
         <a-form-item v-bind="formItemLayout" :label="item.label" v-if="item.type === 'radio'">
           <a-radio-group
+            @change="onChange"
             :read-only="item.readonly"
             :disabled="item.disabled"
             buttonStyle="solid"
@@ -235,6 +262,9 @@ export default {
         name: this.query.name,
         query: this.query.query
       })
+    },
+    onChange(e) {
+      this.$emit('update', e)
     },
     submitOk(e) {
       e.preventDefault()

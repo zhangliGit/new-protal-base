@@ -1,12 +1,12 @@
 import { RouteView } from '../layouts'
-const DangerGroup = resolve => require(['../views/DangerManage/DangerGroup.vue'], resolve)
-const DangerClass = resolve => require(['../views/DangerManage/DangerClass.vue'], resolve)
-const DangerFind = resolve => require(['../views/DangerManage/DangerFind.vue'], resolve)
-const DangerSupervise = resolve => require(['../views/DangerManage/DangerSupervise.vue'], resolve)
-const AddFind = resolve => require(['../views/DangerManage/AddFind.vue'], resolve)
-const DangerDetail = resolve => require(['../views/DangerManage/DangerDetail.vue'], resolve)
-const DangerDeal = resolve => require(['../views/DangerManage/DangerDeal.vue'], resolve)
-const RectificationNotice = resolve => require(['../views/DangerManage/RectificationNotice.vue'], resolve)
+const DangerGroup = resolve => require(['../views/dangerManage/DangerGroup.vue'], resolve)
+const DangerClass = resolve => require(['../views/dangerManage/DangerClass.vue'], resolve)
+const DangerFind = resolve => require(['../views/dangerManage/DangerFind.vue'], resolve)
+const DangerSupervise = resolve => require(['../views/dangerManage/DangerSupervise.vue'], resolve)
+const AddFind = resolve => require(['../views/dangerManage/AddFind.vue'], resolve)
+const DangerDetail = resolve => require(['../views/dangerManage/DangerDetail.vue'], resolve)
+const DangerDeal = resolve => require(['../views/dangerManage/DangerDeal.vue'], resolve)
+const RectificationNotice = resolve => require(['../views/dangerManage/RectificationNotice.vue'], resolve)
 
 const danger = {
   path: '/danger',
