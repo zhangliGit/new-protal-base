@@ -5,11 +5,7 @@
         <a-button icon="export" class="export-btn" @click="exportClick">导出</a-button>
       </div>
     </search-form>
-    <table-list
-      is-zoom
-      :page-list="pageList"
-      :columns="columns"
-      :table-list="findList">
+    <table-list is-zoom :page-list="pageList" :columns="columns" :table-list="findList">
       <template v-slot:actions="action">
         <a-tooltip placement="topLeft" title="查看">
           <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="goDetail('3', action)"></a-button>
@@ -17,7 +13,11 @@
         <a-tooltip placement="topLeft" title="自查" v-if="action.record.state === '1'">
           <a-button size="small" class="user-action-btn" icon="form" @click="goDetail('1', action)"></a-button>
         </a-tooltip>
-        <a-tooltip placement="topLeft" title="审核" v-if="action.record.state === '2' && action.record.teamLeaderCode === userInfo.userCode">
+        <a-tooltip
+          placement="topLeft"
+          title="审核"
+          v-if="action.record.state === '2' && action.record.teamLeaderCode === userInfo.userCode"
+        >
           <a-button size="small" class="power-action-btn" icon="lock" @click="goDetail('2', action)"></a-button>
         </a-tooltip>
       </template>
@@ -130,7 +130,7 @@ const searchLabel = [
     label: '任务状态'
   },
   {
-    value: 'superviseUserName',
+    value: 'name',
     type: 'input',
     label: '任务姓名',
     placeholder: '请输入'
@@ -165,7 +165,14 @@ export default {
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getGroupDetail', 'getGroupClass', 'getSpecialTask', 'delDanger', 'assignDanger', 'transferDanger']),
+    ...mapActions('home', [
+      'getGroupDetail',
+      'getGroupClass',
+      'getSpecialTask',
+      'delDanger',
+      'assignDanger',
+      'transferDanger'
+    ]),
     async showList() {
       this.searchList.schoolCode = this.userInfo.schoolCode
       this.searchList = Object.assign(this.searchList, this.pageList)
@@ -187,7 +194,7 @@ export default {
       var xhr = new XMLHttpRequest()
       xhr.open('POST', url, true) // 也可以使用POST方式，根据接口
       xhr.responseType = 'blob'
-      xhr.onload = function () {
+      xhr.onload = function() {
         if (this.status === 200) {
           var content = this.response
           var aTag = document.createElement('a')

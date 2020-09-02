@@ -190,7 +190,7 @@
       </div>
       <a-form-item v-bind="formItemLayout" :style="{ textAlign: 'center' }">
         <a-button @click="cancel(query)">取消</a-button>
-        <a-button class="mar-l10" type="primary" @click="submitOk">保存</a-button>
+        <a-button class="mar-l10" type="primary" @click="submitOk" :loading="confirmLoading">保存</a-button>
       </a-form-item>
     </a-form>
   </div>

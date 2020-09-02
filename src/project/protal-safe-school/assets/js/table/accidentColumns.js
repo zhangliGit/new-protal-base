@@ -25,15 +25,7 @@ const accident = {
       dataIndex: 'level',
       width: '12%',
       customRender: text => {
-        if (text === '1') {
-          return '特大重大事故'
-        } else if (text === '2') {
-          return '重大事故'
-        } else if (text === '3') {
-          return '较大事故'
-        } else {
-          return '一般事故'
-        }
+        return $tools.accidentLevel(text)
       }
     },
     {
@@ -41,21 +33,7 @@ const accident = {
       dataIndex: 'type',
       width: '10%',
       customRender: text => {
-        if (text === '1') {
-          return '交通事故'
-        } else if (text === '2') {
-          return '踩踏事故'
-        } else if (text === '3') {
-          return '溺水事故'
-        } else if (text === '4') {
-          return '火灾事故'
-        } else if (text === '5') {
-          return '触电事故'
-        } else if (text === '6') {
-          return '校园伤害'
-        } else {
-          return '其它'
-        }
+        return $tools.accidentType(text)
       }
     },
     {
@@ -63,15 +41,7 @@ const accident = {
       dataIndex: 'nature',
       width: '10%',
       customRender: text => {
-        if (text === '1') {
-          return '责任事故'
-        } else if (text === '2') {
-          return '自然事故'
-        } else if (text === '3') {
-          return '技术事故'
-        } else {
-          return '其它'
-        }
+        return $tools.accidentNature(text)
       }
     },
     {
@@ -79,13 +49,7 @@ const accident = {
       dataIndex: 'status',
       width: '10%',
       customRender: text => {
-        if (text === '1') {
-          return '新填报'
-        } else if (text === '2') {
-          return '处理中'
-        } else if (text === '3') {
-          return '已结案'
-        }
+        return $tools.accidentStatus(text)
       }
     },
     {
@@ -121,7 +85,7 @@ const accident = {
           val: '已结案'
         }
       ],
-      value: 'state',
+      value: 'accidentStatus',
       type: 'select',
       label: '事故状态'
     },
@@ -132,7 +96,7 @@ const accident = {
     }
   ],
   formData: [{
-    value: 'address1',
+    value: 'content',
     initValue: '',
     type: 'textarea',
     label: '续报内容',

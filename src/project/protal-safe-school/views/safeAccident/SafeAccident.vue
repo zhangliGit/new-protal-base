@@ -8,13 +8,13 @@
     </search-form>
     <table-list :page-list="pageList" :columns="accident.columns" :table-list="accidentList">
       <template v-slot:other1="other1">
-        <a-tooltip placement="topLeft" title="续报">
+        <a-tooltip placement="topLeft" title="续报" v-if="other1.record.status !== '3'">
           <a-button size="small" class="edit-action-btn" icon="form" @click="modify(other1)"></a-button>
         </a-tooltip>
       </template>
       <template v-slot:actions="action">
         <a-tooltip placement="topLeft" title="查看">
-          <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="goDetail('3', action)"></a-button>
+          <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="goDetail(action)"></a-button>
         </a-tooltip>
       </template>
     </table-list>
@@ -74,7 +74,8 @@ export default {
       'getAccident',
       'delDanger',
       'assignDanger',
-      'transferDanger'
+      'transferDanger',
+      'reportAccident'
     ]),
     async showList() {
       this.searchList.schoolCode = this.userInfo.schoolCode
@@ -86,14 +87,14 @@ export default {
     searchForm(values) {
       this.pageList.page = 1
       this.pageList.size = 20
-      this.searchList.startDate = values.rangeTime ? `${values.rangeTime[0]} 00:00:00` : ''
-      this.searchList.endDate = values.rangeTime ? `${values.rangeTime[1]} 23:59:59` : ''
+      this.searchList.queryTimeFrom = values.rangeTime ? `${values.rangeTime[0]} 00:00:00` : ''
+      this.searchList.queryTimeTo = values.rangeTime ? `${values.rangeTime[1]} 23:59:59` : ''
       this.searchList = Object.assign(this.searchList, values)
       this.showList()
     },
     // 导出
     exportClick(type) {
-      const url = `${hostEnv.lz_safe}/specialTask/export`
+      const url = `${hostEnv.lz_safe}/accident/export`
       var xhr = new XMLHttpRequest()
       xhr.open('POST', url, true) // 也可以使用POST方式，根据接口
       xhr.responseType = 'blob'
@@ -117,30 +118,34 @@ export default {
         path: '/safeAccident/addAccident'
       })
     },
-    goDetail() {
+    goDetail(record) {
       this.$router.push({
-        path: '/safeAccident/accidentDetail'
+        path: '/safeAccident/accidentDetail',
+        query: {
+          id: record.record.id
+        }
       })
     },
     modify(record) {
+      this.accidentId = record.record.id
       this.formStatus = true
     },
     submitForm(values) {
       const req = {
-        appId: this.applyId,
-        menuType: '1',
-        plateformType: this.plateformType
+        type: '2',
+        accidentId: this.accidentId,
+        content: values.content,
+        userName: this.userInfo.userName,
+        userCode: this.userInfo.userCode
       }
-      this.addSysMenu({
-        ...values,
-        ...req
-      })
+      this.reportAccident(req)
         .then(res => {
           this.$refs.form.error()
           this.formStatus = false
           this.$message.success('操作成功')
           this.$tools.goNext(() => {
-            this.$refs.menuTree.initMenu()
+            this.showList()
+            this.$refs.form.reset()
           })
         })
         .catch(() => {

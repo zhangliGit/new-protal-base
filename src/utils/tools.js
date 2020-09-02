@@ -56,7 +56,9 @@ const Tools = {
     while (n--) {
       u8arr[n] = bstr.charCodeAt(n)
     }
-    return new Blob([u8arr], { type: mime })
+    return new Blob([u8arr], {
+      type: mime
+    })
   },
   // 设置table滚动高度
   setScroll(id) {
@@ -308,6 +310,62 @@ const Tools = {
       return '已退回'
     } else if (text === 3) {
       return '已发放'
+    }
+  },
+  // 事故等级
+  accidentLevel(text) {
+    text = parseInt(text)
+    if (text === 1) {
+      return '特大重大事故'
+    } else if (text === 2) {
+      return '重大事故'
+    } else if (text === 3) {
+      return '较大事故'
+    } else if (text === 4) {
+      return '一般事故'
+    }
+  },
+  // 事故性质
+  accidentNature(text) {
+    text = parseInt(text)
+    if (text === 1) {
+      return '责任事故'
+    } else if (text === 2) {
+      return '自然事故'
+    } else if (text === 3) {
+      return '技术事故'
+    } else if (text === 4) {
+      return '其它'
+    }
+  },
+  // 事故类型
+  accidentType(text) {
+    text = parseInt(text)
+    if (text === 1) {
+      return '交通事故'
+    } else if (text === 2) {
+      return '踩踏事故'
+    } else if (text === 3) {
+      return '溺水事故'
+    } else if (text === 4) {
+      return '火灾事故'
+    } else if (text === 5) {
+      return '触电事故'
+    } else if (text === 6) {
+      return '校园伤害'
+    } else if (text === 7) {
+      return '其它'
+    }
+  },
+  // 事故状态
+  accidentStatus(text) {
+    text = parseInt(text)
+    if (text === 1) {
+      return '新填报'
+    } else if (text === 2) {
+      return '处理中'
+    } else if (text === 3) {
+      return '已结案'
     }
   },
   ...baseData
