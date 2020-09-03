@@ -58,7 +58,6 @@ import $tools from '@u/tools'
 import img from '../../assets/img/ewm.png'
 import logo from '../../assets/img/logo.png'
 import QRCode from 'qrcodejs2'
-import hostEnv from '@config/host-env'
 const columns = [
   {
     title: '序号',

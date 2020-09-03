@@ -13,7 +13,7 @@
       @clickRow="clickRow"
       @selectAll="selectAll">
       <template v-slot:actions="action">
-        <div v-if="action.record.hasDel === '1'"> 系统预设 </div>
+        <div v-if="action.record.hasDel === '0'"> 系统预设 </div>
         <div v-else>
           <a-tooltip placement="topLeft" title="编辑">
             <a-button size="small" class="edit-action-btn" icon="form" @click.stop="add(1, action.record)"></a-button>
