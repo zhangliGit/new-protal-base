@@ -3,7 +3,7 @@
     <a-row type="flex" align="middle" style="margin-top: 20px">
       <a-col :span="3" class="qui-tx-r">计划名称：</a-col>
       <a-col :span="10">
-        <a-input placeholder="请输入计划名称" v-model="name" :readonly="isDetail" />
+        <a-input placeholder="请输入计划名称" v-model="name" :disabled="isDetail" />
       </a-col>
     </a-row>
     <a-row type="flex" align="middle" style="margin-top: 20px">
@@ -12,9 +12,7 @@
         <a-select v-model="gradeCode" style="width: 150px" :disabled="isDetail">
           <a-select-option value>请选择</a-select-option>
           <a-select-option :value="grade.code" v-for="grade in gradeList" :key="grade.code">
-            {{
-            grade.name
-            }}
+            {{ grade.name }}
           </a-select-option>
         </a-select>
       </a-col>

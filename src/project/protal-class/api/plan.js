@@ -18,7 +18,8 @@ const planApi = {
   savePlace: '/test/plan/room/addOrUpdate#post', // 考试计划保存场地
   bindTest: '/test/room/add#post', // 考试关联计划中的场地
   getBindPlace: '/test/room/getPlanRoomIds#getUrl', // 获取考试关联的场地
-  getPlanView: '/test/plan/getPlanView2#getUrl' // 获取考试计划预览
+  getPlanView: '/test/plan/getPlanView2#getUrl', // 获取考试计划预览
+  getScoreShow: '/test/score/getScoreByClassCode#post' // 查询班级或学生的考试成绩
   // getPlanView: '/test/plan/getPlanView#getUrl' // 获取考试计划预览
 }
 for (const val in planApi) {
