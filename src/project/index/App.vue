@@ -78,7 +78,7 @@ export default {
           url: 'protal-common'
         },
         /* {
-          name: '公共模块-场地预定',
+          name: '公共模块-场地预订',
           url: 'protal-sitebooking'
         }, */
         {

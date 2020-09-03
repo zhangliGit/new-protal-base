@@ -65,7 +65,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('home', ['addInspect', 'dangerDetail', 'updateInspect']),
+    ...mapActions('home', ['addInspect', 'dangerDetail', 'updateInspect', 'specialDangerDetail']),
     moment,
     handleClick(event) {
       event.stopPropagation()
