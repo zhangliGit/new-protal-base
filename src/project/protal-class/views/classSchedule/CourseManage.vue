@@ -501,13 +501,8 @@ export default {
           schoolYearId: this.schoolYearId,
           schoolCode: this.userInfo.schoolCode,
           userCode: this.chooseTree.teacherId
-<<<<<<< HEAD
         }
         this.verifyClass(req).then(res => {
-=======
-        } */
-        /* this.verifyClass(req).then((res) => {
->>>>>>> bd09e5ee27fbf01843c6c7489de4e131e584126e
           this.chooseCourseInfo[id] = {
             subjectName: this.chooseTree.courseName,
             subjectId: this.chooseTree.courseId,
