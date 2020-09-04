@@ -1,6 +1,11 @@
 <template>
   <div class="page-layout qui-fx-ver">
-    <upload-score v-model="uploadTag"></upload-score>
+    <upload-score
+      v-if="uploadTag"
+      :plan-id="planId"
+      :subject-name="subjectName"
+      v-model="uploadTag"
+    ></upload-score>
     <search-form isReset @search-form="searchForm" :search-label="searchLabel">
       <div slot="left">
         <a-button icon="plus" class="add-btn" @click="modify(0)">创建考试计划</a-button>
@@ -53,7 +58,11 @@
         <a-tag color="red" v-else>已结束</a-tag>
       </template>
       <template v-slot:other2="other2">
-        <a-tag v-if="other2.record.ifEnter === '1'" color="#2db7f5" @click="seeScore">查看成绩</a-tag>
+        <a-tag
+          v-if="other2.record.ifEnter === '1'"
+          color="#2db7f5"
+          @click="seeScore(other2.record)"
+        >查看成绩</a-tag>
         <div v-if="other2.record.ifEnter === '0'" class="u-content-color">未录入</div>
       </template>
       <template v-slot:other4="action">
@@ -178,8 +187,9 @@ export default {
   },
   data() {
     return {
+      planId: '',
       subjectName: [],
-      uploadTag: true,
+      uploadTag: false,
       timeList: [],
       columns,
       searchLabel,
@@ -283,13 +293,20 @@ export default {
     /**
      * @des 查看考试成绩
      */
-    seeScore() {
-      this.$router.push('/examPlan/scoreDetail')
+    seeScore(item) {
+      this.$router.push({
+        path: '/examPlan/scoreDetail',
+        query: {
+          planId: item.id
+        }
+      })
     },
     /**
      * @des 录入成绩
      */
-    uploadScore() {
+    uploadScore(item) {
+      this.subjectName = item.subjectName.split(',')
+      this.planId = item.id
       this.uploadTag = true
     }
   }

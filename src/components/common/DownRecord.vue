@@ -18,17 +18,24 @@
           :table-list="userList"
         >
           <template v-slot:other2="other2">
-            <a-tag :color="other2.record.opeType == 1 ? 'green' : 'red'">{{
+            <a-tag :color="other2.record.opeType == 1 ? 'green' : 'red'">
+              {{
               other2.record.opeType == 1 ? '新增' : '删除'
-            }}</a-tag>
+              }}
+            </a-tag>
           </template>
           <template v-slot:other1="other1">
-            <a-tag :color="other1.record.succStatus == 1 ? '#87d068' : '#f50'">{{
+            <a-tag :color="other1.record.succStatus == 1 ? '#87d068' : '#f50'">
+              {{
               other1.record.succStatus == 1 ? '成功' : '失败'
-            }}</a-tag>
+              }}
+            </a-tag>
           </template>
           <template v-slot:actions="action">
-            <a-tag v-if="parseInt(action.record.succStatus) !== 1" @click="againSend(action.record)">重发</a-tag>
+            <a-tag
+              v-if="parseInt(action.record.succStatus) !== 1"
+              @click="againSend(action.record)"
+            >重发</a-tag>
           </template>
         </table-list>
       </div>

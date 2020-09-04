@@ -10,7 +10,7 @@
       <div class="qui-fx-f1 box-scroll">
         <a-tabs default-active-key="1">
           <a-tab-pane key="1" tab="教师列表">
-            <div :style="{height: $tools.setScroll('courseManage') - 50 + 'px'}">
+            <div class="u-fx" :style="{ height: $tools.setScroll('courseManage') - 50 + 'px' }">
               <teacher-menu @select="selectTree"></teacher-menu>
             </div>
           </a-tab-pane>
@@ -52,15 +52,16 @@
               class="export-all-btn"
               style="margin: 0 10px 0 0;"
               @click="importClass"
-            >导入课表</a-button>
+              >导入课表</a-button
+            >
             <a-upload
-              v-else
+              v-if="false"
               style="width: 300px;"
               class="qui-fx-ac"
               :multiple="false"
               :showUploadList="false"
               name="file"
-              :data="{fileType: 'xls'}"
+              :data="{ fileType: 'xls' }"
               accept=".xls"
               :fileList="fileList"
               :withCredentials="true"
@@ -71,12 +72,9 @@
             </a-upload>
           </div>
           <div class="mar-t10">
-            <a-button
-              icon="download"
-              class="play-action-btn"
-              style="margin:0;"
-              @click="download(1)"
-            >下载导入模板</a-button>
+            <a-button icon="download" class="play-action-btn" style="margin:0;" @click="download(1)"
+              >下载导入模板</a-button
+            >
           </div>
         </div>
       </div>
@@ -88,20 +86,16 @@
         </ul>
         <div class="qui-fx-f1 qui-fx">
           <ul class="time-step qui-fx-ver">
-            <li class="qui-fx-ac-jc" :style="{flex: courseTime.morningNum}">早上</li>
-            <li class="qui-fx-ac-jc" :style="{flex: courseTime.forenoonNum}">上午</li>
-            <li class="qui-fx-ac-jc" :style="{flex: courseTime.afternoonNum}">下午</li>
-            <li class="qui-fx-ac-jc" :style="{flex: courseTime.nightNum}">晚上</li>
+            <li class="qui-fx-ac-jc" :style="{ flex: courseTime.morningNum }">早上</li>
+            <li class="qui-fx-ac-jc" :style="{ flex: courseTime.forenoonNum }">上午</li>
+            <li class="qui-fx-ac-jc" :style="{ flex: courseTime.afternoonNum }">下午</li>
+            <li class="qui-fx-ac-jc" :style="{ flex: courseTime.nightNum }">晚上</li>
           </ul>
           <ul class="class-step qui-fx-ver class-num">
             <li v-for="(i, index) in classNum" :key="i">第{{ index + 1 }}节</li>
           </ul>
           <div class="class-list qui-fx-ver qui-fx-f1">
-            <div
-              class="qui-fx-f1 qui-fx"
-              v-for="(i, index) in courseTime.morningNum"
-              :key="'1' + index"
-            >
+            <div class="qui-fx-f1 qui-fx" v-for="(i, index) in courseTime.morningNum" :key="'1' + index">
               <ul class="qui-fx qui-fx-f1">
                 <a-popover trigger="hover" v-for="(box, ind) in weekDays" :key="10 + ind">
                   <template slot="content">{{ contentHTML }}</template>
@@ -113,11 +107,7 @@
                 </a-popover>
               </ul>
             </div>
-            <div
-              class="qui-fx-f1 qui-fx"
-              v-for="(i, index) in courseTime.forenoonNum"
-              :key="'2' + index"
-            >
+            <div class="qui-fx-f1 qui-fx" v-for="(i, index) in courseTime.forenoonNum" :key="'2' + index">
               <ul class="qui-fx qui-fx-f1">
                 <a-popover trigger="hover" v-for="(box, ind) in weekDays" :key="20 + ind">
                   <template slot="content">{{ contentHTML }}</template>
@@ -129,33 +119,37 @@
                 </a-popover>
               </ul>
             </div>
-            <div
-              class="qui-fx-f1 qui-fx"
-              v-for="(i, index) in courseTime.afternoonNum"
-              :key="'3' + index"
-            >
+            <div class="qui-fx-f1 qui-fx" v-for="(i, index) in courseTime.afternoonNum" :key="'3' + index">
               <ul class="qui-fx qui-fx-f1">
                 <a-popover trigger="hover" v-for="(box, ind) in weekDays" :key="30 + ind">
                   <template slot="content">{{ contentHTML }}</template>
                   <li
-                    @click="addClass('class30' + (ind + 1) + (courseTime.morningNum + courseTime.forenoonNum + index + 1))"
+                    @click="
+                      addClass('class30' + (ind + 1) + (courseTime.morningNum + courseTime.forenoonNum + index + 1))
+                    "
                     :id="'class30' + (ind + 1) + (courseTime.morningNum + courseTime.forenoonNum + index + 1)"
                     class="qui-fx-f1 qui-fx-ac-jc"
                   ></li>
                 </a-popover>
               </ul>
             </div>
-            <div
-              class="qui-fx-f1 qui-fx"
-              v-for="(i, index) in courseTime.nightNum"
-              :key="'4' +index"
-            >
+            <div class="qui-fx-f1 qui-fx" v-for="(i, index) in courseTime.nightNum" :key="'4' + index">
               <ul class="qui-fx qui-fx-f1">
                 <a-popover trigger="hover" v-for="(box, ind) in weekDays" :key="40 + ind">
                   <template slot="content">{{ contentHTML }}</template>
                   <li
-                    @click="addClass('class40' + (ind + 1) + (courseTime.morningNum + courseTime.forenoonNum + courseTime.afternoonNum + index + 1))"
-                    :id="'class40' + (ind + 1) + (courseTime.morningNum + courseTime.forenoonNum + courseTime.afternoonNum + index + 1)"
+                    @click="
+                      addClass(
+                        'class40' +
+                          (ind + 1) +
+                          (courseTime.morningNum + courseTime.forenoonNum + courseTime.afternoonNum + index + 1)
+                      )
+                    "
+                    :id="
+                      'class40' +
+                        (ind + 1) +
+                        (courseTime.morningNum + courseTime.forenoonNum + courseTime.afternoonNum + index + 1)
+                    "
                     class="qui-fx-f1 qui-fx-ac-jc"
                   ></li>
                 </a-popover>
@@ -222,7 +216,7 @@ export default {
     const req = {
       schoolCode: this.userInfo.schoolCode
     }
-    this.getSchoolYear(req).then((res) => {
+    this.getSchoolYear(req).then(res => {
       if (!res.data) {
         return
       }
@@ -230,7 +224,7 @@ export default {
     })
     this.getClassNum({
       schoolCode: this.userInfo.schoolCode
-    }).then((res) => {
+    }).then(res => {
       if (!res.data) {
         this.$message.warning('请先设置课时')
         return
@@ -296,7 +290,7 @@ export default {
         method: 'post',
         url: `${hostEnv.zq_schedule}/class/schedule/import/excel?schoolCode=${this.userInfo.schoolCode}&classCode=${this.classCode}&schoolYearId=${this.schoolYearId}&placeId=${this.placeId}&placeName=${this.placeName}`,
         data: formData
-      }).then((res) => {
+      }).then(res => {
         if (res.data.code === 200) {
           console.log(res.data.data)
           if (typeof res.data.data === 'string') {
@@ -334,7 +328,7 @@ export default {
       }
       const res = await this.getGradeData(req)
       this.classesList = res.data.list
-      this.classesList.forEach((el) => {
+      this.classesList.forEach(el => {
         el.label = el.name
         el.value = el.code
         el.isLeaf = false
@@ -348,10 +342,10 @@ export default {
         schoolCode: this.userInfo.schoolCode,
         schoolYearId: this.schoolYearId
       }
-      this.getClassData(req).then((res) => {
+      this.getClassData(req).then(res => {
         targetOption.loading = false
         targetOption.children = res.data.list
-        targetOption.children.forEach((el) => {
+        targetOption.children.forEach(el => {
           el.label = el.className
           el.value = el.classCode
           el.isLeaf = true
@@ -383,16 +377,16 @@ export default {
         classCode: this.classCode,
         schoolCode: this.userInfo.schoolCode,
         schoolYearId: this.schoolYearId
-      }).then((res) => {
+      }).then(res => {
         const allClass = document.querySelector('.class-list').querySelectorAll('li')
-        allClass.forEach((item) => {
+        allClass.forEach(item => {
           item.innerHTML = ''
           item.style.background = '#fff'
         })
         if (!res.data) {
           return
         }
-        res.data.forEach((item) => {
+        res.data.forEach(item => {
           this.insertClass('class' + item.timeInterval + '0' + item.week + item.classNode, item)
         })
       })
@@ -410,7 +404,7 @@ export default {
     submitClass() {
       const allClass = document.querySelector('.class-list').querySelectorAll('li')
       const classScheduleList = []
-      allClass.forEach((item) => {
+      allClass.forEach(item => {
         if (item.innerHTML !== '') {
           classScheduleList.push({
             classCode: this.classCode,
@@ -429,7 +423,7 @@ export default {
         schoolYearId: this.schoolYearId,
         classScheduleList
       }
-      this.saveClassByTeacher(req).then((res) => {
+      this.saveClassByTeacher(req).then(res => {
         this.$message.success('排课成功')
         this.$tools.goNext(() => {
           this.isEdit = false
@@ -501,7 +495,7 @@ export default {
           schoolCode: this.userInfo.schoolCode,
           userCode: this.chooseTree.teacherId
         }
-        this.verifyClass(req).then((res) => {
+        this.verifyClass(req).then(res => {
           this.chooseCourseInfo[id] = {
             subjectName: this.chooseTree.courseName,
             subjectId: this.chooseTree.courseId,

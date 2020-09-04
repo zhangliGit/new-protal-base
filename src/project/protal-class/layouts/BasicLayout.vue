@@ -21,7 +21,6 @@
 
 <script>
 import { mixin, mixinDevice } from '@/utils/mixin'
-
 import RouteView from './RouteView'
 import SideMenu from '@/components/Menu/SideMenu'
 import HeaderTop from '@/components/GlobalHeader/HeaderTop'
@@ -39,7 +38,7 @@ export default {
   },
   data() {
     return {
-      isDev: true,
+      isDev: false,
       routeAddress: [],
       slideTag: false,
       menus: asyncRouterMap

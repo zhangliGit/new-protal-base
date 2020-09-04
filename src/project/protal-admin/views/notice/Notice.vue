@@ -1,6 +1,6 @@
 <template>
   <div class="page-layout qui-fx-ver notice">
-    <search-form @search-form="searchForm" :search-label="searchLabel">
+    <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
       <div slot="left">
         <a-button icon="plus" type="primary" @click="actionNotice">新增公告</a-button>
       </div>
@@ -13,7 +13,7 @@
       </template>
       <template v-slot:other2="other2">
         <div>
-          <div class="table-h u-te3 u-fx-ac" v-html="other2.record.content"></div>
+          <div class="table-h" v-html="other2.record.content"></div>
         </div>
       </template>
       <template v-slot:actions="action">
@@ -200,5 +200,6 @@ export default {
 <style lang="less" scoped>
 .table-h {
   height: 60px;
+  overflow: auto;
 }
 </style>

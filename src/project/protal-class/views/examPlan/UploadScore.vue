@@ -1,10 +1,21 @@
 <template>
-  <a-modal width="1000px" title="录入成绩" v-model="status" :maskClosable="false" :destroyOnClose="true">
-    <div class="upload-title">导入成绩文件（本地考试信息：高一一班高考模拟考试）</div>
+  <a-modal
+    width="1000px"
+    title="录入成绩"
+    v-model="status"
+    :maskClosable="false"
+    :destroyOnClose="true"
+  >
+    <div class="upload-title u-fx-jsb u-fx-ac">
+      <div>导入成绩文件（本地考试信息：高一一班高考模拟考试）</div>
+      <div>
+        <a-button type="primary" @click="downTem">模板下载</a-button>
+      </div>
+    </div>
     <div class="u-mar-t">
-      <a href="javascript:;" class="file"
-        >导入文件
-        <input @change="changeFile" type="file" name="" id="" />
+      <a href="javascript:;" class="file">
+        导入文件
+        <input @change="changeFile" type="file" name id />
       </a>
     </div>
     <div class="upload-title u-mar-t">导入信息（带*为必填项）</div>
@@ -14,25 +25,38 @@
           <div>{{ data.title }}</div>
           <div v-if="selectList.length > 0">
             <a-select v-model="data.value" style="width: 120px">
-              <a-select-option :value="item" v-for="(item, _ind) in selectList" :key="_ind">
-                {{ item }}
-              </a-select-option>
+              <a-select-option
+                :value="item"
+                v-for="(item, _ind) in selectList"
+                :key="_ind"
+              >{{ item }}</a-select-option>
             </a-select>
           </div>
         </li>
         <li class="u-fx-f1">
           <div>操作</div>
-          <div v-if="selectList.length > 0"><a-button type="primary">导入信息</a-button></div>
+          <div v-if="selectList.length > 0">
+            <a-button type="primary" @click="importScoreFile">导入信息</a-button>
+          </div>
         </li>
       </ul>
     </div>
-    <div class="upload-title u-mar-t">导入结果</div>
-    <table-list :columns="columns" :table-list="userList"> </table-list>
+    <div class="upload-title u-mar-t u-mar-b u-fx-ac u-fx-jsb">
+      <div>导入结果</div>
+      <div v-if="userList.length > 0">
+        <span>成功：{{ successNum }}</span>
+        <span class="u-padd-l u-type-error">失败：{{ failureNum }}</span>
+      </div>
+    </div>
+    <table-list :columns="columns" :table-list="userList"></table-list>
   </a-modal>
 </template>
 
 <script>
+import axios from 'axios'
+import hostEnv from '@config/host-env'
 import TableList from '@c/TableList'
+import { mapActions } from 'vuex'
 import XLSX from 'xlsx'
 const columns = [
   {
@@ -49,7 +73,7 @@ const columns = [
   },
   {
     title: '学号',
-    dataIndex: 'studentNo',
+    dataIndex: 'workNo',
     width: '20%'
   },
   {
@@ -69,6 +93,16 @@ export default {
     value: {
       type: Boolean,
       default: false
+    },
+    subjectName: {
+      type: Array,
+      default: () => {
+        return []
+      }
+    },
+    planId: {
+      type: Number,
+      default: 0
     }
   },
   components: {
@@ -86,6 +120,8 @@ export default {
   },
   data() {
     return {
+      successNum: 0,
+      failureNum: 0,
       columns,
       loading: false,
       userList: [],
@@ -102,25 +138,37 @@ export default {
         {
           title: '学号',
           value: ''
-        },
-        {
-          title: '数学',
-          value: ''
-        },
-        {
-          title: '英语',
-          value: ''
         }
       ]
     }
   },
+  mounted() {
+    const subjectName = this.subjectName.map(item => {
+      return {
+        title: item,
+        value: ''
+      }
+    })
+    this.dataList = this.dataList.concat(subjectName)
+  },
   methods: {
+    ...mapActions('home', ['addImportSetting']),
     handleOk() {
       this.status = false
       this.$emit('submit')
     },
+    /**
+     * @description 下载模块
+     */
+    downTem() {
+      window.location.href = `${hostEnv.zk_examplan}/test/score/downloadScoreTemplate?planId=${this.planId}`
+    },
+    /**
+     * @description 选择excle文件
+     */
     changeFile(e) {
       const _self = this
+      this.uploadFile = e.target.files[0]
       var files = e.target.files
       var fileReader = new FileReader()
       fileReader.onload = function(ev) {
@@ -146,6 +194,43 @@ export default {
       }
       // 以二进制方式打开文件
       fileReader.readAsBinaryString(files[0])
+    },
+    /**
+     * @description 提交成绩
+     */
+    async importScoreFile() {
+      const obj = {}
+      const params = JSON.parse(JSON.stringify(this.dataList))
+      params.splice(3, 0, {
+        title: 'planId',
+        value: this.planId
+      })
+      params.forEach(item => {
+        obj[item.title] = item.value
+      })
+      await this.addImportSetting(obj)
+      const formData = new FormData()
+      formData.append('file', this.uploadFile)
+      axios({
+        method: 'post',
+        url: `${hostEnv.zk_examplan}/test/score/importScore?planId=${this.planId}`,
+        data: formData
+      })
+        .then(res => {
+          if (res.data.code === 200) {
+            this.userList = res.data.data.datelist
+            if (this.userList.length > 0) {
+              this.successNum = res.data.data.successNum
+              this.failureNum = res.data.data.failureNum
+            }
+          } else {
+            this.$message.warning('导入成绩失败')
+          }
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message.warning('导入失败')
+        })
     }
   }
 }
