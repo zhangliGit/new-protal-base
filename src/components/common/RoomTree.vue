@@ -52,7 +52,7 @@ export default {
     ...mapState('home', ['schoolCode'])
   },
   mounted () {
-    this.maxHeight = window.screen.height - 280
+    this.maxHeight = window.screen.height - 340
     this.initMenu()
   },
   methods: {
