@@ -386,6 +386,7 @@ export default {
           schoolCode: this.userInfo.eduCode
         }).then(res => {
           this.org = res.data.orgCode
+          this.addOrgName = res.data.orgName
           this.formData[3].initValue = res.data.orgCode.split(',')
         })
         record.birthday = this.$tools.getDate(record.birthday, 1)

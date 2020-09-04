@@ -493,15 +493,22 @@ export default {
         if (!this.chooseTree.courseId) {
           return
         }
-        const req = {
+        this.chooseCourseInfo[id] = {
+          subjectName: this.chooseTree.courseName,
+          subjectId: this.chooseTree.courseId,
+          userName: this.chooseTree.title,
+          userCode: this.chooseTree.teacherId
+        }
+        this.addCouse(type, id, list)
+        /* const req = {
           timeInterval: id.substring(5, 6),
           week: id.substring(7, 8),
           classNode: id.substring(8, id.length),
           schoolYearId: this.schoolYearId,
           schoolCode: this.userInfo.schoolCode,
           userCode: this.chooseTree.teacherId
-        }
-        this.verifyClass(req).then((res) => {
+        } */
+        /* this.verifyClass(req).then((res) => {
           this.chooseCourseInfo[id] = {
             subjectName: this.chooseTree.courseName,
             subjectId: this.chooseTree.courseId,
@@ -509,7 +516,7 @@ export default {
             userCode: this.chooseTree.teacherId
           }
           this.addCouse(type, id, list)
-        })
+        }) */
       }
     }
   }
