@@ -8,6 +8,7 @@ const SchoolShow = resolve => require(['../views/schoolShow/SchoolShow.vue'], re
 const ClassAlbum = resolve => require(['../views/classShow/ClassAlbum.vue'], resolve)
 const ClassCard = resolve => require(['../views/classShow/ClassCard.vue'], resolve)
 const ClassHonor = resolve => require(['../views/classHonor/ClassHonor.vue'], resolve)
+const LostFound = resolve => require(['../views/lostFound/LostFound.vue'], resolve)
 const ClassNewspaper = resolve => require(['../views/classNewspaper/ClassNewspaper.vue'], resolve)
 const CountDown = resolve => require(['../views/countDown/CountDown.vue'], resolve)
 const Duty = resolve => require(['../views/duty/Duty.vue'], resolve)
@@ -107,6 +108,14 @@ export const asyncRouterMap = [
         component: Homework,
         meta: {
           title: '作业统计'
+        }
+      },
+      {
+        path: '/lostFound',
+        name: 'lostFound',
+        component: LostFound,
+        meta: {
+          title: '失物招领'
         }
       },
       {

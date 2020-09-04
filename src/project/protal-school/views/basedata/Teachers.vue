@@ -474,6 +474,7 @@ export default {
           schoolCode: this.userInfo.schoolCode
         }).then(res => {
           this.org = res.data.orgCode
+          this.addOrgName = res.data.orgName
           this.formData[3].initValue = res.data.orgCode.split(',')
           if (this.formData[3].initValue[0] === '') {
             this.formData[3].initValue[0] = this.userInfo.schoolCode
