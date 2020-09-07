@@ -27,8 +27,15 @@
         <p class="qui-fx qui-fx-ac">班级全家福</p>
       </div>
       <div class="qui-fx qui-fx-ac">
-        <upload-video type="image" :length="1" v-model="fileList" :fileInfo="fileInfo" @delUpload="delUpload" ></upload-video>
-        <span class="u-mar-l10 u-font-01 u-tips-color">说明：支持上JPG、PNG格式的图片，图片大小不得超过10M。</span>
+        <upload-video
+          type="image"
+          :length="1"
+          v-model="fileList"
+          :fileInfo="fileInfo"
+          @delUpload="delUpload"
+          :maxSize="10" >
+        </upload-video>
+        <span class="u-mar-l10 u-font-01 u-tips-color">说明：支持上传JPG、PNG格式的图片，图片大小不得超过10M。</span>
       </div>
       <div class="button">
         <a-button type="primary" @click="save">
@@ -72,7 +79,7 @@ export default {
   methods: {
     ...mapActions('home', ['getClassMotto', 'addClassMotto', 'delFile']),
     delUpload(id) {
-      this.delFile(id)
+      this.delFile(id || this.fileList[0].photoId)
     },
     // 选中年级
     select (item) {
@@ -91,9 +98,11 @@ export default {
       if (!res.data) {
         this.inputText = ''
         this.areaText = ''
+        this.fileList = []
       } else {
         this.inputText = res.data.motto
         this.areaText = res.data.introduce
+        this.fileList = res.data.photoUrl ? [{ url: res.data.photoUrl, id: res.data.photoId }] : []
       }
     },
     async save() {
@@ -110,8 +119,14 @@ export default {
         ...this.classInfo,
         motto: this.inputText,
         introduce: this.areaText,
-        schoolCode: this.userInfo.schoolCode
+        schoolCode: this.userInfo.schoolCode,
+        photoUrl: ''
       }
+      if (this.fileList.length > 0) {
+        req.photoUrl = this.fileList[0].url
+        req.photoId = this.fileList[0].id
+      }
+      console.log(req)
       if (this.addOrEditTag) {
         req.id = this.mottoId
       }

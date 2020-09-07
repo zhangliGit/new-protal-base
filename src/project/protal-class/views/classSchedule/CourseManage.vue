@@ -190,7 +190,7 @@ export default {
       chooseTree: {},
       isEdit: false, // 编辑状态
       tabPosition: 'class',
-      weekDays: ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'], // 每周上课天数
+      weekDays: [], // 每周上课天数
       classNum: 0, // 课程节数
       courseTime: {
         morningNum: 0,
@@ -232,6 +232,14 @@ export default {
       const data = res.data
       this.courseTime = data
       this.weekDays = data.week.split(',')
+      const index = this.weekDays.findIndex(list => {
+        return list === '1'
+      })
+      if (index !== -1) {
+        this.weekDays.splice(index, 1)
+        this.weekDays.push('1')
+      }
+      console.log(this.weekDays)
       this.classNum = data.morningNum + data.forenoonNum + data.afternoonNum + data.nightNum
     })
   },
