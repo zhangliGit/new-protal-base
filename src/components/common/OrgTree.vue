@@ -4,6 +4,7 @@
     <no-data v-if="noData" msg="暂无组织机构~"></no-data>
     <a-tree
       v-if="orgData.length > 0"
+      :style="{ maxHeight: maxHeight + 'px' }"
       @select="select"
       :treeData="orgData"
       :defaultExpandedKeys="defaultKey"
@@ -26,7 +27,8 @@ export default {
       noData: false,
       orgData: [],
       defaultKey: [],
-      code: ''
+      code: '',
+      maxHeight: 0
     }
   },
   props: {
@@ -100,7 +102,6 @@ export default {
     padding: 0 10px;
     width: 240px;
     min-height: 600px;
-    max-height: 650px;
     overflow-y: auto
   }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="page-layout bg-fff">
+  <div class="page-layout bg-fff qui-fx-ver">
     <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
       <!-- <template v-slot:area>
         <a-form-item>

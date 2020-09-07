@@ -100,8 +100,8 @@
                 <a-popover trigger="hover" v-for="(box, ind) in weekDays" :key="10 + ind">
                   <template slot="content">{{ contentHTML }}</template>
                   <li
-                    @click="addClass('class10' + (ind + 1) + (index + 1))"
-                    :id="'class10' + (ind + 1) + (index + 1)"
+                    @click="addClass('class10' + box + (index + 1))"
+                    :id="'class10' + box + (index + 1)"
                     class="qui-fx-f1 qui-fx-ac-jc"
                   ></li>
                 </a-popover>
@@ -112,8 +112,8 @@
                 <a-popover trigger="hover" v-for="(box, ind) in weekDays" :key="20 + ind">
                   <template slot="content">{{ contentHTML }}</template>
                   <li
-                    @click="addClass('class20' + (ind + 1) + (courseTime.morningNum + index + 1))"
-                    :id="'class20' + (ind + 1) + (courseTime.morningNum + index + 1)"
+                    @click="addClass('class20' + box + (courseTime.morningNum + index + 1))"
+                    :id="'class20' + box + (courseTime.morningNum + index + 1)"
                     class="qui-fx-f1 qui-fx-ac-jc"
                   ></li>
                 </a-popover>
@@ -125,9 +125,9 @@
                   <template slot="content">{{ contentHTML }}</template>
                   <li
                     @click="
-                      addClass('class30' + (ind + 1) + (courseTime.morningNum + courseTime.forenoonNum + index + 1))
+                      addClass('class30' + box + (courseTime.morningNum + courseTime.forenoonNum + index + 1))
                     "
-                    :id="'class30' + (ind + 1) + (courseTime.morningNum + courseTime.forenoonNum + index + 1)"
+                    :id="'class30' + box + (courseTime.morningNum + courseTime.forenoonNum + index + 1)"
                     class="qui-fx-f1 qui-fx-ac-jc"
                   ></li>
                 </a-popover>
@@ -141,13 +141,13 @@
                     @click="
                       addClass(
                         'class40' +
-                          (ind + 1) +
+                          box +
                           (courseTime.morningNum + courseTime.forenoonNum + courseTime.afternoonNum + index + 1)
                       )
                     "
                     :id="
                       'class40' +
-                        (ind + 1) +
+                        box +
                         (courseTime.morningNum + courseTime.forenoonNum + courseTime.afternoonNum + index + 1)
                     "
                     class="qui-fx-f1 qui-fx-ac-jc"
@@ -190,7 +190,7 @@ export default {
       chooseTree: {},
       isEdit: false, // 编辑状态
       tabPosition: 'class',
-      weekDays: ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'], // 每周上课天数
+      weekDays: [], // 每周上课天数
       classNum: 0, // 课程节数
       courseTime: {
         morningNum: 0,

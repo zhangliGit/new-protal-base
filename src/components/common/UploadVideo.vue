@@ -7,7 +7,7 @@
       class="avatar-uploader mar-t10"
       :showUploadList="false"
       :action="reqUrl"
-      :accept="type === 'image' ? 'image/png, image/jpg' : type === 'video' ? 'video/mp4' : ''"
+      :accept="type === 'image' ? 'image/*' : type === 'video' ? 'video/mp4' : ''"
       :beforeUpload="beforeUpload"
       @change="uploadPic"
     >
@@ -51,6 +51,10 @@ export default {
     length: {
       type: Number,
       default: 1
+    },
+    maxSize: {
+      type: Number,
+      default: 100
     },
     showTimeTag: {
       type: Boolean,
@@ -117,9 +121,9 @@ export default {
       })
     },
     beforeUpload (file) {
-      const isLt100M = file.size / 1024 / 1024 < 100
+      const isLt100M = file.size / 1024 / 1024 < this.maxSize
       if (!isLt100M) {
-        this.$message.error('大小必须小于100M')
+        this.$message.error(`大小必须小于${this.maxSize}M`)
       }
       if (this.type === 'video') {
         const isMp4 = file.type === 'video/mp4'
@@ -127,13 +131,6 @@ export default {
           this.$message.error('请上传mp4格式的视频文件')
         }
         return isMp4 && isLt100M
-      } else if (this.type === 'image') {
-        const isJpg = file.type === 'image/jpeg'
-        const isPng = file.type === 'image/png'
-        if (!isJpg && !isPng) {
-          this.$message.error('请上传图片格式的文件(jpg/png)')
-        }
-        return (isJpg || isPng) && isLt100M
       }
     },
     uploadPic (info) {
