@@ -1,6 +1,6 @@
 <template>
-  <div class="teacher-tree">
-    <a-skeleton v-if="treeData.length == 0 && !noData" active :paragraph="{rows: 10}" />
+  <div class="teacher-tree u-fx-f1">
+    <a-skeleton v-if="treeData.length == 0 && !noData" active :paragraph="{ rows: 10 }" />
     <no-data v-if="noData" msg="暂无数据~"></no-data>
     <a-tree
       v-if="treeData.length > 0"
@@ -34,7 +34,7 @@ export default {
   components: {
     NoData
   },
-  data () {
+  data() {
     return {
       noData: false,
       treeData: [],
@@ -44,20 +44,15 @@ export default {
     }
   },
   computed: {
-    ...mapState('home', [
-      'userInfo'
-    ])
+    ...mapState('home', ['userInfo'])
   },
-  mounted () {
+  mounted() {
     this.initMenu()
   },
   methods: {
-    ...mapActions('home', [
-      'getSubject',
-      'getTeacherList'
-    ]),
+    ...mapActions('home', ['getSubject', 'getTeacherList']),
     // 点击节点
-    select (obj, tree) {
+    select(obj, tree) {
       if (tree.selectedNodes.length === 0) return
       const selectObj = {
         key: tree.selectedNodes[0].key,
@@ -68,7 +63,7 @@ export default {
       }
       this.$emit('select', selectObj)
     },
-    initMenu () {
+    initMenu() {
       this.getSubject({
         ...this.userInfo,
         enable: '1'
@@ -118,8 +113,8 @@ export default {
         })
       })
     },
-    onLoadData (treeNode) {
-      return new Promise((resolve) => {
+    onLoadData(treeNode) {
+      return new Promise(resolve => {
         if (treeNode.dataRef.children) {
           resolve()
           return
@@ -139,7 +134,7 @@ export default {
             return {
               title: item.teacherName,
               teacherId: item.teacherCode,
-              key: (item.teacherCode + '&' + item.subjectCode) || '',
+              key: item.teacherCode + '&' + item.subjectCode || '',
               isLeaf: true,
               courseName: this.subList.filter(ele => {
                 return item.subjectCode === ele.subjectCode
@@ -156,10 +151,8 @@ export default {
 }
 </script>
 
-<style lang="less" scoed>
-.teacher-tree{
-  min-height: 600px;
-  max-height: 1000px;
-  overflow-y: auto
+<style lang="less" scoped>
+.teacher-tree {
+  overflow-y: auto;
 }
 </style>

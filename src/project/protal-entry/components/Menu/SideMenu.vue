@@ -7,17 +7,15 @@
     <logo :slide-tag="slideTag" />
     <div class="qui-fx slide-height">
       <div class="system-list">
-        <ul
-          :class="['slide-ul', { 'anim-ul-show': animType }]"
-          @mouseover="toggleSlide(1)"
-          @mouseout="toggleSlide(0)"
-        >
-          <li v-for="(module, index) in menuList" :key="index" class="qui-fx-ac">
-            <img
-              :src="module.icon"
-              style="width: 24px; height: 24px; display: block; margin-left: 7px"
-              alt
-            />
+        <ul :class="['slide-ul', { 'anim-ul-show': animType }]" @mouseover="toggleSlide(1)" @mouseout="toggleSlide(0)">
+          <li
+            v-for="(module, index) in menuList"
+            :key="index"
+            :class="['qui-fx-ac', { 'active-bg': appIndex === index }]"
+          >
+            <div :class="['app-img u-fx-ac']">
+              <img :src="module.icon" alt />
+            </div>
             <span @click="changeModule(index)">{{ module.name.substring(0, 10).split('#')[0] }}</span>
           </li>
         </ul>
@@ -34,15 +32,13 @@
             style="width: 190px"
           >
             <template v-for="menu in appList">
-              <a-menu-item
-                v-if="!menu.children || menu.children.length === 0"
-                :key="menu.id"
-              >{{ menu.name }}</a-menu-item>
+              <a-menu-item v-if="!menu.children || menu.children.length === 0" :key="menu.id">{{
+                menu.name
+              }}</a-menu-item>
               <a-sub-menu v-else :key="menu.id" :title="menu.name">
-                <a-menu-item
-                  v-for="subItem in menu.children"
-                  :key="subItem.id"
-                >{{ subItem.name.split('-')[0] }}</a-menu-item>
+                <a-menu-item v-for="subItem in menu.children" :key="subItem.id">{{
+                  subItem.name.split('-')[0]
+                }}</a-menu-item>
               </a-sub-menu>
             </template>
           </a-menu>
@@ -238,6 +234,19 @@ export default {
     background: @head-color;
     overflow: hidden;
   }
+  .app-img {
+    width: 50px;
+    height: 50px;
+    img {
+      margin-left: 14px;
+      width: 24px;
+      height: 24px;
+      display: block;
+    }
+  }
+  .active-bg {
+    background-color: @u-type-primary;
+  }
   .anim-ul-show {
     width: 240px;
     color: @des-color;
@@ -246,9 +255,8 @@ export default {
     width: 240px;
     height: 50px;
     line-height: 50px;
-    padding-left: 5px;
     &:hover {
-      background-color: @main-color;
+      background-color: @u-type-primary;
     }
     i {
       font-size: 16px;

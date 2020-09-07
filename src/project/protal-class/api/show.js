@@ -34,6 +34,12 @@ const showApi = {
   getTemList: '/welcome/model/temList#post', // 测温模式列表
   setTemSwitch: '/welcome/model/updateTemSwitch#putJson', // 批量编辑测温模式
 
+  getLostList: '/lost/and/found/list#post', // 矢物招领列表
+  editLost: '/lost/and/found/update#putJson', // 编辑矢物招领
+  addLost: '/lost/and/found/add#post', // 新增矢物招领
+  deleLost: '/lost/and/found/delete#delWithQuery', // 删除矢物招领
+  batchDeleLost: '/lost/and/found/batchDelete#delWithQuery', // 批量删除矢物招领
+
   getHomeworkList: '/homework/findHomeWork#post', // 作业统计列表
   exportHomework: '/homework/export#export' // 作业统计导出
 }
