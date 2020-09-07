@@ -282,6 +282,19 @@ const filters = {
       return '已撤销'
     }
   },
+  // 任务状态
+  taskStatus(text) {
+    text = parseInt(text)
+    if (text === 1) {
+      return '未检查'
+    } else if (text === 2) {
+      return '检查待审核'
+    } else if (text === 3) {
+      return '小组已审核'
+    } else if (text === 4) {
+      return '督查完成'
+    }
+  },
   getSimpleText: html => {
     var re1 = new RegExp(/<img.src\s=\s*(.?)[^>]?>/g)
     var msg = html.replace(re1, '')

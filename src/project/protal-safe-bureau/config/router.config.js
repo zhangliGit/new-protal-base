@@ -1,12 +1,19 @@
 // eslint-disable-next-line
 import {
-  BasicLayout
+  BasicLayout,
+  RouteView
 } from '../layouts'
 const SchoolDanger = resolve => require(['../views/dangerManage/SchoolDanger.vue'], resolve)
 const ReportDangers = resolve => require(['../views/dangerManage/ReportDangers.vue'], resolve)
 const ViewDangers = resolve => require(['../views/dangerManage/ViewDangers.vue'], resolve)
 const RectificationNotice = resolve => require(['../views/dangerManage/RectificationNotice.vue'], resolve)
 const EidtRectificationNotice = resolve => require(['../views/dangerManage/EidtRectificationNotice.vue'], resolve)
+const TaskRecord = resolve => require(['../views/specialInspection/TaskRecord.vue'], resolve)
+const CheckItem = resolve => require(['../views/specialInspection/CheckItem.vue'], resolve)
+const AddCheck = resolve => require(['../views/specialInspection/AddCheck.vue'], resolve)
+const Views = resolve => require(['../views/specialInspection/Views.vue'], resolve)
+const ViewsReport = resolve => require(['../views/specialInspection/ViewsReport.vue'], resolve)
+const SafetyIncident = resolve => require(['../views/safetyIncident/SafetyIncident.vue'], resolve)
 
 export const asyncRouterMap = [{
   path: '/',
@@ -60,6 +67,142 @@ export const asyncRouterMap = [{
         title: '编辑整改通知书',
         isHide: true
       }
+    },
+    {
+      path: '/specialInspection',
+      name: 'specialInspection',
+      component: RouteView,
+      meta: {
+        title: '专项检查'
+      },
+      children: [
+        {
+          path: '/taskRecord',
+          name: 'taskRecord',
+          component: TaskRecord,
+          meta: {
+            title: '任务记录'
+            // isHide: true
+          }
+        },
+        {
+          path: '/checkItem',
+          name: 'checkItem',
+          component: CheckItem,
+          meta: {
+            title: '检查项目'
+          }
+        },
+        {
+          path: '/specialInspection/addCheck',
+          name: 'addCheck',
+          component: AddCheck,
+          meta: {
+            title: '添加专项检查',
+            isHide: true
+          }
+        },
+        {
+          path: '/specialInspection/views',
+          name: 'views',
+          component: Views,
+          meta: {
+            title: '查看',
+            isHide: true
+          }
+        },
+        {
+          path: '/specialInspection/viewsReport',
+          name: 'viewsReport',
+          component: ViewsReport,
+          meta: {
+            title: '查看报告',
+            isHide: true
+          }
+        }
+        // {
+        //   path: '/specialInspection/views',
+        //   name: 'views',
+        //   component: Views,
+        //   meta: {
+        //     title: '查看',
+        //     isHide: true
+        //   }
+        // },
+
+      ]
+    },
+    {
+      path: '/safetyIncident',
+      name: 'safetyIncident',
+      component: SafetyIncident,
+      meta: {
+        title: '安全事故'
+      }
+    },
+    {
+      path: '/safetyTask',
+      name: 'safetyTask',
+      component: RouteView,
+      meta: {
+        title: '安全任务'
+      },
+      children: [
+        {
+          path: '/taskIssuance',
+          name: 'taskIssuance',
+          component: TaskRecord,
+          meta: {
+            title: '任务下发'
+            // isHide: true
+          }
+        },
+        {
+          path: '/taskTemplate',
+          name: 'taskTemplate',
+          component: CheckItem,
+          meta: {
+            title: '任务模板'
+          }
+        },
+        {
+          path: '/specialInspection/addCheck',
+          name: 'addCheck',
+          component: AddCheck,
+          meta: {
+            title: '添加专项检查',
+            isHide: true
+          }
+        },
+        {
+          path: '/specialInspection/views',
+          name: 'views',
+          component: Views,
+          meta: {
+            title: '查看',
+            isHide: true
+          }
+        },
+        {
+          path: '/specialInspection/viewsReport',
+          name: 'viewsReport',
+          component: ViewsReport,
+          meta: {
+            title: '查看报告',
+            isHide: true
+          }
+        }
+        // {
+        //   path: '/specialInspection/views',
+        //   name: 'views',
+        //   component: Views,
+        //   meta: {
+        //     title: '查看',
+        //     isHide: true
+        //   }
+        // },
+
+      ]
     }
   ]
 },
