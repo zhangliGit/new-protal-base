@@ -1,11 +1,6 @@
 <template>
   <div class="page-layout qui-fx-ver">
-    <upload-score
-      v-if="uploadTag"
-      :plan-id="planId"
-      :subject-name="subjectName"
-      v-model="uploadTag"
-    ></upload-score>
+    <upload-score v-if="uploadTag" :plan-id="planId" :subject-name="subjectName" v-model="uploadTag"></upload-score>
     <search-form isReset @search-form="searchForm" :search-label="searchLabel">
       <div slot="left">
         <a-button icon="plus" class="add-btn" @click="modify(0)">创建考试计划</a-button>
@@ -30,12 +25,7 @@
             @click.stop="modify(1, action.record.id)"
           ></a-button>
         </a-tooltip>
-        <a-popconfirm
-          placement="left"
-          okText="确定"
-          cancelText="取消"
-          @confirm.stop="del(action.record.id)"
-        >
+        <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm.stop="del(action.record.id)">
           <template slot="title">您确定删除吗?</template>
           <a-tooltip placement="topLeft" title="删除">
             <a-button
@@ -46,11 +36,7 @@
             ></a-button>
           </a-tooltip>
         </a-popconfirm>
-        <a-tag
-          v-if="action.record.state === '2'"
-          color="#2db7f5"
-          @click="uploadScore(action.record)"
-        >录入成绩</a-tag>
+        <a-tag v-if="action.record.state === '2'" color="#2db7f5" @click="uploadScore(action.record)">录入成绩</a-tag>
       </template>
       <template v-slot:other1="other1">
         <a-tag color="blue" v-if="parseInt(other1.record.state) === 0">未开始</a-tag>
@@ -58,11 +44,7 @@
         <a-tag color="red" v-else>已结束</a-tag>
       </template>
       <template v-slot:other2="other2">
-        <a-tag
-          v-if="other2.record.ifEnter === '1'"
-          color="#2db7f5"
-          @click="seeScore(other2.record)"
-        >查看成绩</a-tag>
+        <a-tag v-if="other2.record.ifEnter === '1'" color="#2db7f5" @click="seeScore(other2.record)">查看成绩</a-tag>
         <div v-if="other2.record.ifEnter === '0'" class="u-content-color">未录入</div>
       </template>
       <template v-slot:other4="action">

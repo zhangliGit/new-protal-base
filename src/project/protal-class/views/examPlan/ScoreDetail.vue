@@ -53,18 +53,6 @@ const columns = [
     title: '学号',
     dataIndex: 'workNo',
     width: '15%'
-  },
-  {
-    title: '语文',
-    dataIndex: 'yuwen'
-  },
-  {
-    title: '数学',
-    dataIndex: 'shuxue'
-  },
-  {
-    title: '总分',
-    dataIndex: 'score'
   }
 ]
 export default {
@@ -84,18 +72,38 @@ export default {
         userName: '',
         workNo: ''
       },
-      searchLabel
+      searchLabel,
+      subjectName: []
     }
   },
   created() {},
   mounted() {
     this.planId = this.$route.query.planId
+    this._getSubjectByPlan()
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
   methods: {
-    ...mapActions('home', ['getScoreShow']),
+    ...mapActions('home', ['getScoreShow', 'getSubjectByPlan']),
+    /**
+     * @deprecated 查询考试科目
+     */
+    async _getSubjectByPlan() {
+      const res = await this.getSubjectByPlan(this.planId)
+      const subjectName = res.data.map(item => {
+        return {
+          title: item.subjectName,
+          dataIndex: item.subjectCode
+        }
+      })
+      subjectName.push({
+        title: '总分',
+        dataIndex: 'sumscore'
+      })
+      this.columns = this.columns.concat(subjectName)
+      console.log(this.columns)
+    },
     async select(item) {
       this.selectItem = item
       this.showList()
@@ -118,7 +126,12 @@ export default {
         userCode: '',
         ...this.searchText
       })
-      this.scoreList = res.data.list
+      this.scoreList = res.data.list.map(item => {
+        return {
+          id: item.workNo,
+          ...item
+        }
+      })
     }
   }
 }

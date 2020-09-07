@@ -46,7 +46,7 @@
               @click="actionTag = true"
             />
             <a-button icon="export" class="del-btn" @click="educe(1)">导出课表</a-button>
-            <a-button
+            <!-- <a-button
               v-if="classCode === ''"
               icon="upload"
               class="export-all-btn"
@@ -55,7 +55,7 @@
               >导入课表</a-button
             >
             <a-upload
-              v-if="false"
+              v-else
               style="width: 300px;"
               class="qui-fx-ac"
               :multiple="false"
@@ -69,7 +69,7 @@
               :beforeUpload="beforeUpload"
             >
               <a-button icon="upload" class="export-all-btn" style="margin: 0 10px 0 0;">导入课表</a-button>
-            </a-upload>
+            </a-upload> -->
           </div>
           <div class="mar-t10">
             <a-button icon="download" class="play-action-btn" style="margin:0;" @click="download(1)"
@@ -487,27 +487,15 @@ export default {
         if (!this.chooseTree.courseId) {
           return
         }
-        this.chooseCourseInfo[id] = {
-          subjectName: this.chooseTree.courseName,
-          subjectId: this.chooseTree.courseId,
-          userName: this.chooseTree.title,
-          userCode: this.chooseTree.teacherId
-        }
-        this.addCouse(type, id, list)
-        /* const req = {
+        const req = {
           timeInterval: id.substring(5, 6),
           week: id.substring(7, 8),
           classNode: id.substring(8, id.length),
           schoolYearId: this.schoolYearId,
           schoolCode: this.userInfo.schoolCode,
           userCode: this.chooseTree.teacherId
-<<<<<<< HEAD
         }
         this.verifyClass(req).then(res => {
-=======
-        } */
-        /* this.verifyClass(req).then((res) => {
->>>>>>> bd09e5ee27fbf01843c6c7489de4e131e584126e
           this.chooseCourseInfo[id] = {
             subjectName: this.chooseTree.courseName,
             subjectId: this.chooseTree.courseId,
@@ -515,7 +503,7 @@ export default {
             userCode: this.chooseTree.teacherId
           }
           this.addCouse(type, id, list)
-        }) */
+        })
       }
     }
   }
