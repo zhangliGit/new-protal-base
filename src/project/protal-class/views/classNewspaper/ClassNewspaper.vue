@@ -18,6 +18,7 @@
               :length="9"
               v-model="fileList"
               :fileInfo="fileInfo"
+              @success="success"
               @delUpload="delUpload">
             </upload-video>
           </div>
@@ -52,14 +53,14 @@ export default {
     }
   },
   computed: {
-    ...mapState('home', ['userInfo'])
+    ...mapState('home', ['userInfo', 'loginType'])
   },
   created () {
     this.scrollH = document.documentElement.offsetHeight - 180
     this.fileInfo.url = `${hostEnv.zk_oa}/study/theme/file/uploadFile?schoolCode=${this.userInfo.schoolCode}`
   },
   methods: {
-    ...mapActions('home', ['delFile', 'getClassMotto', 'addClassMotto', 'delFile']),
+    ...mapActions('home', ['delFile', 'getNewspaperList', 'addNewspaper', 'deleNewspaper']),
     // 选中年级
     select (item) {
       console.log(item)
@@ -68,60 +69,49 @@ export default {
         this.showList()
       }
     },
-    delUpload(id) {
-      this.delFile(id)
+    async success(value) {
+      console.log(value)
+      const req = {
+        schoolCode: this.userInfo.schoolCode,
+        schoolYearId: this.classInfo.schoolYearId,
+        classCode: this.classInfo.classCode,
+        gradeCode: this.classInfo.gradeCode,
+        createUsercode: this.loginType.userCode,
+        createUsername: this.loginType.userName,
+        photoUrl: value.url,
+        photoId: value.id
+      }
+      await this.addNewspaper(req)
+      this.$message.success('添加成功')
+      this.$tools.goNext(() => {
+        this.showList()
+      })
+    },
+    async delUpload(value) {
+      console.log(value)
+      await this.delFile(value.id)
+      await this.deleNewspaper(value.recordId)
+      this.$message.success('删除成功')
+      this.$tools.goNext(() => {
+        this.showList()
+      })
     },
     async showList () {
       const req = {
-        ...this.classInfo,
-        schoolCode: this.userInfo.schoolCode
-      }
-      const res = await this.getClassMotto(req)
-      if (!res.data) {
-        this.inputText = ''
-        this.areaText = ''
-      } else {
-        this.inputText = res.data.motto
-        this.areaText = res.data.introduce
-      }
-    },
-    deleHonor(type, record) {
-      if (type) {
-      } else {
-        if (this.chooseList.length === 0) {
-          this.$message.warning('请选择删除项')
-        }
-      }
-    },
-    submitForm(values) {
-      const req = {
-        ...values,
-        ...this.classInfo,
         schoolCode: this.userInfo.schoolCode,
-        schoolId: this.userInfo.schoolId,
-        admissionTime: values.admissionTime[0] || values.admissionTime,
-        photoUrl: this.fileList.length > 0 ? this.fileList[0].url : ''
+        schoolYearId: this.classInfo.schoolYearId,
+        classCode: this.classInfo.classCode,
+        gradeCode: this.classInfo.gradeCode
       }
-      let res = null
-      if (this.type === 0) {
-        res = this.addStudent(req)
-      } else {
-        req.userId = this.userId
-        res = this.studentUpdate(req)
-      }
-      res
-        .then(() => {
-          this.keywords = ''
-          this.$message.success(this.type === 0 ? '添加成功' : '编辑成功')
-          this.$tools.goNext(() => {
-            this.showList()
-            this.$refs.form.reset()
-            this.fileList = []
-          })
-        })
-        .catch(() => {
-          this.$refs.form.error()
-        })
+      const res = await this.getNewspaperList(req)
+      this.fileList = res.data.map(el => {
+        return {
+          id: el.photoId,
+          url: el.photoUrl,
+          createTime: el.createTime,
+          recordId: el.id
+        }
+      })
     }
   }
 }
