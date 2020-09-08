@@ -34,9 +34,7 @@
     </div>
     <div class="qui-fx-f1 qui-fx content qui-of">
       <div class="qui-fx-f1 content-box qui-fx-ver" style="margin-right: 10px;">
-        <div class="title qui-fx-ac">
-          <img :src="app" alt />我的应用
-        </div>
+        <div class="title qui-fx-ac"><img :src="app" alt />我的应用</div>
         <div class="qui-fx-f1 app">
           <div class="pos-box" style="overflow-y: auto; padding-bottom: 10px">
             <no-data style="padding-top: 100px" v-if="menuList.length === 0" msg="暂无应用~"></no-data>
@@ -56,9 +54,7 @@
         </div>
       </div>
       <div class="content-box qui-fx-ver">
-        <div class="title qui-fx-ac">
-          <img :src="news" alt />平台消息
-        </div>
+        <div class="title qui-fx-ac"><img :src="news" alt />平台消息</div>
         <div class="qui-fx-f1 notice">
           <div class="pos-box" style="overflow: auto; padding-bottom: 10px">
             <no-data style="padding-top: 100px" v-if="newList.length === 0" msg="暂无消息~"></no-data>
@@ -123,7 +119,7 @@ export default {
     NoData
   },
   async mounted() {
-    this._searchNotice()
+    // this._searchNotice()
   },
   methods: {
     ...mapActions('home', ['searchPersonNotice', 'readPersonNotice']),
@@ -180,6 +176,9 @@ export default {
         noticeCodes: [item.noticeCode],
         userCode: this.loginType.userCode
       })
+      this.newList.filter(_item => {
+        return _item.noticeCode === item.noticeCode
+      })[0].readStatus = '1'
     },
     goApp(index) {
       const url = this.menuList[index].url || ''

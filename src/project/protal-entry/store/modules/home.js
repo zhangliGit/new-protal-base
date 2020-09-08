@@ -48,7 +48,7 @@ const home = {
     schoolCode: JSON.parse(window.sessionStorage.getItem('loginType')).userTypes[0].schoolCode,
     slideTag: getState('slideTag', true), // 是否伸缩左侧菜单栏
     isEntryApp: getState('isEntryApp', false), // 是否进入应用状态
-    appIndex: getState('appIndex', 0), // 当前模块索引
+    appIndex: getState('appIndex', -1), // 当前模块索引
     menuIndex: getState('menuIndex', []), // 当前模块菜单项
     menuList: getState('menuList', []), // 当前用户角色菜单列表
     userInfo: getState('userInfo', {

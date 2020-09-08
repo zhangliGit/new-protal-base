@@ -1,13 +1,13 @@
 <template>
   <div class="page-layout notice-add">
     <a-row type="flex" align="middle">
-      <a-col span="3" class="u-tx-r u-mar-r">公告标题:</a-col>
+      <a-col span="3" class="u-tx-r u-mar-r"><span class="tip">*</span>公告标题:</a-col>
       <a-col span="18">
         <a-input style="width: 80%" v-model="appForm.title" placeholder="请输入公告标题" />
       </a-col>
     </a-row>
     <a-row class="u-mar-t30" style="height: 400px">
-      <a-col span="3" class="u-tx-r u-mar-r">公告内容:</a-col>
+      <a-col span="3" class="u-tx-r u-mar-r"><span class="tip">*</span>公告内容:</a-col>
       <a-col span="18">
         <quill-editor
           style="height: 380px; width: 80%"
@@ -123,5 +123,9 @@ export default {
 <style lang="less" scoped>
 .notice-add {
   padding: 40px;
+  .tip {
+    color: red;
+    padding-right: 5px;
+  }
 }
 </style>

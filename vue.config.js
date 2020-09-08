@@ -121,7 +121,7 @@ module.exports = {
         }
       },
       '/wxz_control': {
-        target: 'http://192.168.2.254:10090/',
+        target: 'http://192.168.2.235:10090/',
         // target: 'http://192.168.1.123:10090/', // 王选章-控制中心
         changeOrigin: true,
         pathRewrite: {
@@ -254,7 +254,7 @@ module.exports = {
       },
       '/zq_class': {
         // target: 'http://192.168.2.242:11009/', // 张琦-班牌管理
-        target: 'http://192.168.1.23:11009/',
+        target: 'http://192.168.1.193:11009/',
         changeOrigin: true,
         pathRewrite: {
           '^/zq_class': ''

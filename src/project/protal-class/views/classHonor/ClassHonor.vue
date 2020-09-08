@@ -41,7 +41,7 @@
               @click.stop="addHonor(1, action.record)"
             ></a-button>
           </a-tooltip>
-          <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="deleHonor(action.record)">
+          <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="deleHonor(1, action.record)">
             <template slot="title">
               您确定删除吗?
             </template>
@@ -75,15 +75,15 @@ const columns = [
   },
   {
     title: '荣誉名称',
-    dataIndex: 'userName',
+    dataIndex: 'content',
     width: '20%'
   },
   {
     title: '获奖时间',
-    dataIndex: 'time',
+    dataIndex: 'awardTime',
     width: '15%',
     customRender: text => {
-      return Tools.getDate(text)
+      return Tools.getDate(text, 1)
     }
   },
   {
@@ -99,7 +99,7 @@ const columns = [
     dataIndex: 'createTime',
     width: '15%',
     customRender: text => {
-      return Tools.getDate(text)
+      return Tools.getDate(text, 1)
     }
   },
   {
@@ -112,7 +112,7 @@ const columns = [
 ]
 const formData = [
   {
-    value: 'userName',
+    value: 'content',
     initValue: '',
     type: 'input',
     label: '荣誉名称',
@@ -120,7 +120,7 @@ const formData = [
     placeholder: '请输入荣誉名称, 不超过50个字符'
   },
   {
-    value: 'time',
+    value: 'awardTime',
     initValue: '',
     type: 'singleTime',
     label: '获奖时间',
@@ -157,20 +157,20 @@ export default {
       fileInfo: {
         url: '',
         tip: '上传图片',
-        height: 120,
-        width: 120
+        h: 200,
+        w: 200
       },
       fileList: []
     }
   },
   computed: {
-    ...mapState('home', ['userInfo'])
+    ...mapState('home', ['userInfo', 'loginType'])
   },
   created () {
     this.fileInfo.url = `${hostEnv.zk_oa}/study/theme/file/uploadFile?schoolCode=${this.userInfo.schoolCode}`
   },
   methods: {
-    ...mapActions('home', ['delFile', 'getClassMotto', 'addClassMotto', 'delFile']),
+    ...mapActions('home', ['getClassHonorList', 'getClassHonorDetail', 'addClassHonor', 'editClassHonor', 'deleClassHonor', 'delFile']),
     // 选中年级
     select (item) {
       console.log(item)
@@ -179,29 +179,47 @@ export default {
         this.showList()
       }
     },
-    delUpload(id) {
-      this.delFile(id)
+    delUpload(value) {
+      this.delFile(value.id)
     },
     async showList () {
       const req = {
-        ...this.classInfo,
-        schoolCode: this.userInfo.schoolCode
+        ...this.pageList,
+        schoolCode: this.userInfo.schoolCode,
+        schoolYearId: this.classInfo.schoolYearId,
+        classCode: this.classInfo.classCode,
+        gradeCode: this.classInfo.gradeCode
       }
-      const res = await this.getClassMotto(req)
-      if (!res.data) {
-        this.inputText = ''
-        this.areaText = ''
-      } else {
-        this.inputText = res.data.motto
-        this.areaText = res.data.introduce
-      }
+      const res = await this.getClassHonorList(req)
+      this.dataList = res.data.list
+      this.total = res.data.total
     },
-    deleHonor(type, record) {
+    async deleHonor(type, record) {
       if (type) {
+        console.log(record.id)
+        const req = {
+          ids: [record.id]
+        }
+        await this.deleClassHonor(req)
+        this.$message.success('删除成功')
+        this.$tools.goNext(() => {
+          this.showList()
+        })
       } else {
         if (this.chooseList.length === 0) {
           this.$message.warning('请选择删除项')
+          return
         }
+        this.$tools.delTip('确认删除吗?', async () => {
+          const req = {
+            ids: this.chooseList
+          }
+          await this.deleClassHonor(req)
+          this.$message.success('删除成功')
+          this.$tools.goNext(() => {
+            this.showList()
+          })
+        })
       }
     },
     addHonor(type, record) {
@@ -209,8 +227,10 @@ export default {
       if (type) {
         console.log(record)
         this.title = '编辑荣誉'
+        this.id = record.id
+        record.awardTime = this.$tools.getDate(record.awardTime, 1)
         this.formData = this.$tools.fillForm(formData, record)
-        this.fileList = record.photoUrl ? [{ url: record.photoUrl }] : []
+        this.fileList = record.photoUrl ? [{ url: record.photoUrl, id: record.photoId }] : []
         this.type = 1
       } else {
         this.title = '新增荣誉'
@@ -220,20 +240,24 @@ export default {
       }
     },
     submitForm(values) {
+      console.log(values)
       const req = {
         ...values,
-        ...this.classInfo,
         schoolCode: this.userInfo.schoolCode,
-        schoolId: this.userInfo.schoolId,
-        admissionTime: values.admissionTime[0] || values.admissionTime,
-        photoUrl: this.fileList.length > 0 ? this.fileList[0].url : ''
+        schoolYearId: this.classInfo.schoolYearId,
+        classCode: this.classInfo.classCode,
+        gradeCode: this.classInfo.gradeCode,
+        photoUrl: this.fileList.length > 0 ? this.fileList[0].url : '',
+        photoId: this.fileList.length > 0 ? this.fileList[0].id : '',
+        createUsercode: this.loginType.userCode,
+        createUsername: this.loginType.userName
       }
       let res = null
       if (this.type === 0) {
-        res = this.addStudent(req)
+        res = this.addClassHonor(req)
       } else {
-        req.userId = this.userId
-        res = this.studentUpdate(req)
+        req.id = this.id
+        res = this.editClassHonor(req)
       }
       res
         .then(() => {

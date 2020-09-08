@@ -3,70 +3,79 @@
     <div class="protal-logo" style="cursor: pointer" @click="goSite">
       <img :src="logoUrl" alt />
     </div>
-    <div class="protal-dialog">
-      <div class="title">{{ title }}</div>
-      <div class="protal-box">
-        <a-tabs v-model="autoKey">
-          <a-tab-pane tab="密码登录" key="1">
-            <div class="padd">
-              <div class="tip-error">
-                <img v-if="tipLogin" :src="tipError" alt />
-                {{ tipLogin }}
-              </div>
-              <div class="input-text" style="margin-top: 28px">
-                <a-input @change="tipLogin = ''" placeholder="请输入账号" v-model="userName">
-                  <img slot="addonBefore" src="./img/user.png" alt />
-                </a-input>
-              </div>
-              <div class="input-text">
-                <a-input type="password" @change="tipLogin = ''" placeholder="请输入密码" v-model="userPass">
-                  <img slot="addonBefore" src="./img/pwd.png" alt />
-                </a-input>
-              </div>
-              <a-button class="login-btn" type="primary" @click="accountLogin" :loading="loadingOne">
-                {{ loginText }}
-              </a-button>
-              <a-row style="margin-top: 30px">
-                <a-col :span="12" style="text-align: left">
-                  <a-checkbox :checked="isCheck" @change="onChange">记住账号</a-checkbox>
-                </a-col>
-                <a-col :span="12" style="text-align: right"></a-col>
-              </a-row>
-            </div>
-          </a-tab-pane>
-          <a-tab-pane tab="验证码登录" key="2">
-            <div class="padd">
-              <div class="tip-error">
-                <img v-if="tipMsg" :src="tipError" alt />
-                {{ tipMsg }}
-              </div>
-              <div class="input-text" style="margin-top: 28px">
-                <a-input @change="tipMsg = ''" placeholder="请输入手机号" v-model="phoneNum">
-                  <img slot="addonBefore" src="./img/phone.png" style="width: 16px; height: 16px" alt />
-                </a-input>
-              </div>
-              <div class="input-text">
-                <a-row>
-                  <a-col :span="16">
-                    <a-input @change="tipMsg = ''" placeholder="请输入验证码" v-model="phoneCode">
-                      <img slot="addonBefore" src="./img/pwd.png" alt />
-                    </a-input>
+    <div class="dialog-show">
+      <div class="dialog-info">
+        <div class="font1">
+          <span>铸/造/平/安/校/园</span> <span style="padding-left: 20px">创/新/智/慧/教/育</span>
+        </div>
+        <div class="font2">扫描二维码，了解更多详情~</div>
+      </div>
+      <div class="protal-dialog">
+        <div class="title">{{ title }}</div>
+        <div class="protal-box">
+          <a-tabs v-model="autoKey">
+            <a-tab-pane tab="密码登录" key="1">
+              <div class="padd">
+                <div class="tip-error">
+                  <img v-if="tipLogin" :src="tipError" alt />
+                  {{ tipLogin }}
+                </div>
+                <div class="input-text" style="margin-top: 28px">
+                  <a-input @change="tipLogin = ''" placeholder="请输入账号" v-model="userName">
+                    <img slot="addonBefore" src="./img/user.png" alt />
+                  </a-input>
+                </div>
+                <div class="input-text">
+                  <a-input type="password" @change="tipLogin = ''" placeholder="请输入密码" v-model="userPass">
+                    <img slot="addonBefore" src="./img/pwd.png" alt />
+                  </a-input>
+                </div>
+                <a-button class="login-btn" type="primary" @click="accountLogin" :loading="loadingOne">
+                  {{ loginText }}
+                </a-button>
+                <a-row style="margin-top: 30px">
+                  <a-col :span="12" style="text-align: left">
+                    <a-checkbox :checked="isCheck" @change="onChange">记住账号</a-checkbox>
                   </a-col>
-                  <a-col :span="8">
-                    <a-button class="yzm-btn" :disabled="yzmTag" :loading="yzmLoad" @click="getYzm">{{
-                      yzmText
-                    }}</a-button>
-                  </a-col>
+                  <a-col :span="12" style="text-align: right"></a-col>
                 </a-row>
               </div>
-              <a-button class="login-btn" type="primary" @click="msgLogin" :loading="loadingTwo">{{
-                loginText
-              }}</a-button>
-            </div>
-          </a-tab-pane>
-        </a-tabs>
+            </a-tab-pane>
+            <a-tab-pane tab="验证码登录" key="2">
+              <div class="padd">
+                <div class="tip-error">
+                  <img v-if="tipMsg" :src="tipError" alt />
+                  {{ tipMsg }}
+                </div>
+                <div class="input-text" style="margin-top: 28px">
+                  <a-input @change="tipMsg = ''" placeholder="请输入手机号" v-model="phoneNum">
+                    <img slot="addonBefore" src="./img/phone.png" style="width: 16px; height: 16px" alt />
+                  </a-input>
+                </div>
+                <div class="input-text">
+                  <a-row>
+                    <a-col :span="16">
+                      <a-input @change="tipMsg = ''" placeholder="请输入验证码" v-model="phoneCode">
+                        <img slot="addonBefore" src="./img/pwd.png" alt />
+                      </a-input>
+                    </a-col>
+                    <a-col :span="8">
+                      <a-button class="yzm-btn" :disabled="yzmTag" :loading="yzmLoad" @click="getYzm">{{
+                        yzmText
+                      }}</a-button>
+                    </a-col>
+                  </a-row>
+                </div>
+                <a-button class="login-btn" type="primary" @click="msgLogin" :loading="loadingTwo">{{
+                  loginText
+                }}</a-button>
+              </div>
+            </a-tab-pane>
+          </a-tabs>
+        </div>
       </div>
     </div>
+
     <div class="footer" v-if="isFooter">
       Copyright © 2018—2019 武汉全品教育科技有限公司版权所有
       <a href="http://www.beian.miit.gov.cn/" target="_blank">京ICP备15050178号-2</a>
@@ -83,7 +92,7 @@ export default {
   name: 'App',
   components: {},
   data() {
-    const imgUrl = process.env.VUE_APP_URL === 'prod' ? 'bg.png' : 'bg-common.png'
+    const imgUrl = process.env.VUE_APP_URL === 'prod' ? 'login-big.png' : 'login-big.png'
     return {
       styles: {
         background: 'url(' + require('./img/' + imgUrl) + ') no-repeat center center',
@@ -289,7 +298,7 @@ export default {
     right: -30%;
   }
   100% {
-    right: 15%;
+    right: 8%;
   }
 }
 @keyframes big {
@@ -298,6 +307,32 @@ export default {
   }
   100% {
     transform: scale(1);
+  }
+}
+.dialog-show {
+  z-index: 999;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -365px;
+  margin-left: -700px;
+  width: 1400px;
+  height: 730px;
+  background: url(./img/login-center.png) no-repeat;
+  background-size: contain;
+}
+.dialog-info {
+  letter-spacing: 3px;
+  padding-top: 120px;
+  width: 790px;
+  text-align: center;
+  color: #fff;
+  .font1 {
+    font-size: 24px;
+  }
+  .font2 {
+    padding-top: 20px;
+    font-size: 16px;
   }
 }
 .protal-login {
@@ -329,7 +364,7 @@ export default {
   }
   .protal-dialog {
     animation: move 1s ease;
-    right: 15%;
+    right: 8%;
     position: absolute;
     z-index: 99;
     top: 25%;
@@ -338,7 +373,7 @@ export default {
     text-align: center;
     .title {
       height: 50px;
-      color: #fff;
+      color: @u-type-primary;
       font-size: 32px;
       font-weight: 600;
       letter-spacing: 6px;
