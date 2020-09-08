@@ -9,12 +9,12 @@ const dutyColumns = {
     },
     {
       title: '上报人',
-      dataIndex: 'name',
+      dataIndex: 'reporterName',
       width: '10'
     },
     {
       title: '上报时间',
-      dataIndex: 'createTime',
+      dataIndex: 'reportTime',
       width: '12%',
       customRender: text => {
         return $tools.getDate(text)
@@ -22,17 +22,17 @@ const dutyColumns = {
     },
     {
       title: '值班人员',
-      dataIndex: 'name1',
+      dataIndex: 'watch',
       width: '10'
     },
     {
       title: '带班领导',
-      dataIndex: 'name2',
+      dataIndex: 'leader',
       width: '10'
     },
     {
       title: '状态',
-      dataIndex: 'qrcodeType',
+      dataIndex: 'patrolStatus',
       width: '10%',
       customRender: text => {
         if (text === '1') {
@@ -44,18 +44,16 @@ const dutyColumns = {
     },
     {
       title: '值班轨迹',
-      dataIndex: 'logoUrl',
       width: '12%',
       scopedSlots: {
-        customRender: 'photoUrl'
+        customRender: 'other1'
       }
     },
     {
       title: '巡查点数量',
-      dataIndex: 'logoUrl1',
       width: '10%',
       scopedSlots: {
-        customRender: 'other1'
+        customRender: 'other2'
       }
     },
     {
@@ -111,18 +109,18 @@ const dutyColumns = {
   ],
   inspectColumns: [{
       title: '巡查地点名称',
-      dataIndex: 'name',
+      dataIndex: 'patrolPointName',
       width: '30'
     },
     {
       title: '巡查结果',
-      dataIndex: 'name1',
+      dataIndex: 'patrolResult',
       width: '30'
     },
     {
       title: '巡查时间',
-      dataIndex: 'createTime',
-      width: '40%',
+      dataIndex: 'patrolTime',
+      width: '30%',
       customRender: text => {
         return $tools.getDate(text)
       }

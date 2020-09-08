@@ -47,6 +47,8 @@ const inspectApi = {
   allHolidayBind: '/holidayTask/adds#post', // 节假日全选
   // 巡查值班
   getDuty: '/patrol/page#post', // 校端巡查值班分页条件查询
+  getDutyDetail: '/patrol/info#getUrl', // 校端根据id查询巡查详情
+  getDutyPoint: '/patrol/result#getUrl' // 获取巡查点
 }
 for (const val in inspectApi) {
   inspectApi[val] = `${hostEnv.lz_safe}${inspectApi[val]}`

@@ -46,7 +46,7 @@
               @click="actionTag = true"
             />
             <a-button icon="export" class="del-btn" @click="educe(1)">导出课表</a-button>
-            <a-button
+            <!-- <a-button
               v-if="classCode === ''"
               icon="upload"
               class="export-all-btn"
@@ -55,7 +55,7 @@
               >导入课表</a-button
             >
             <a-upload
-              v-if="false"
+              v-else
               style="width: 300px;"
               class="qui-fx-ac"
               :multiple="false"
@@ -69,7 +69,7 @@
               :beforeUpload="beforeUpload"
             >
               <a-button icon="upload" class="export-all-btn" style="margin: 0 10px 0 0;">导入课表</a-button>
-            </a-upload>
+            </a-upload> -->
           </div>
           <div class="mar-t10">
             <a-button icon="download" class="play-action-btn" style="margin:0;" @click="download(1)"
@@ -100,8 +100,8 @@
                 <a-popover trigger="hover" v-for="(box, ind) in weekDays" :key="10 + ind">
                   <template slot="content">{{ contentHTML }}</template>
                   <li
-                    @click="addClass('class10' + (ind + 1) + (index + 1))"
-                    :id="'class10' + (ind + 1) + (index + 1)"
+                    @click="addClass('class10' + box + (index + 1))"
+                    :id="'class10' + box + (index + 1)"
                     class="qui-fx-f1 qui-fx-ac-jc"
                   ></li>
                 </a-popover>
@@ -112,8 +112,8 @@
                 <a-popover trigger="hover" v-for="(box, ind) in weekDays" :key="20 + ind">
                   <template slot="content">{{ contentHTML }}</template>
                   <li
-                    @click="addClass('class20' + (ind + 1) + (courseTime.morningNum + index + 1))"
-                    :id="'class20' + (ind + 1) + (courseTime.morningNum + index + 1)"
+                    @click="addClass('class20' + box + (courseTime.morningNum + index + 1))"
+                    :id="'class20' + box + (courseTime.morningNum + index + 1)"
                     class="qui-fx-f1 qui-fx-ac-jc"
                   ></li>
                 </a-popover>
@@ -125,9 +125,9 @@
                   <template slot="content">{{ contentHTML }}</template>
                   <li
                     @click="
-                      addClass('class30' + (ind + 1) + (courseTime.morningNum + courseTime.forenoonNum + index + 1))
+                      addClass('class30' + box + (courseTime.morningNum + courseTime.forenoonNum + index + 1))
                     "
-                    :id="'class30' + (ind + 1) + (courseTime.morningNum + courseTime.forenoonNum + index + 1)"
+                    :id="'class30' + box + (courseTime.morningNum + courseTime.forenoonNum + index + 1)"
                     class="qui-fx-f1 qui-fx-ac-jc"
                   ></li>
                 </a-popover>
@@ -141,13 +141,13 @@
                     @click="
                       addClass(
                         'class40' +
-                          (ind + 1) +
+                          box +
                           (courseTime.morningNum + courseTime.forenoonNum + courseTime.afternoonNum + index + 1)
                       )
                     "
                     :id="
                       'class40' +
-                        (ind + 1) +
+                        box +
                         (courseTime.morningNum + courseTime.forenoonNum + courseTime.afternoonNum + index + 1)
                     "
                     class="qui-fx-f1 qui-fx-ac-jc"
@@ -190,7 +190,7 @@ export default {
       chooseTree: {},
       isEdit: false, // 编辑状态
       tabPosition: 'class',
-      weekDays: ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'], // 每周上课天数
+      weekDays: [], // 每周上课天数
       classNum: 0, // 课程节数
       courseTime: {
         morningNum: 0,
@@ -487,14 +487,7 @@ export default {
         if (!this.chooseTree.courseId) {
           return
         }
-        this.chooseCourseInfo[id] = {
-          subjectName: this.chooseTree.courseName,
-          subjectId: this.chooseTree.courseId,
-          userName: this.chooseTree.title,
-          userCode: this.chooseTree.teacherId
-        }
-        this.addCouse(type, id, list)
-        /* const req = {
+        const req = {
           timeInterval: id.substring(5, 6),
           week: id.substring(7, 8),
           classNode: id.substring(8, id.length),
@@ -510,7 +503,7 @@ export default {
             userCode: this.chooseTree.teacherId
           }
           this.addCouse(type, id, list)
-        }) */
+        })
       }
     }
   }
