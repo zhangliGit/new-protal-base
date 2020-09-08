@@ -44,7 +44,7 @@ import Modal from '../../component/Modal'
 import { mapState, mapActions } from 'vuex'
 import moment from 'moment'
 export default {
-  name: 'AddCheck',
+  name: 'AddCheckItem',
   components: {
     Modal
   },
@@ -55,7 +55,9 @@ export default {
         wrapperCol: { span: 16 }
       },
       form: this.$form.createForm(this),
-      appForm: {},
+      appForm: {
+        name: ''
+      },
       normalList: [],
       count: 0,
       type: '',
@@ -66,13 +68,15 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
+    this.showDetail()
   },
   methods: {
     ...mapActions('home', ['addItem', 'itemDetail', 'eidtModity']),
     moment,
     async showDetail() {
+      if (!this.detailId) return
       const res = await this.itemDetail(this.detailId)
-      console.log(res)
+      // this.$set(this.appForm, name, res.data.name)
       this.appForm.name = res.data.name
       this.normalList = res.data.children.map((v, index) => {
         return {
@@ -105,8 +109,8 @@ export default {
         return
       }
       this.form.validateFields((error, values) => {
-        console.log(values)
-        console.log(this.normalList)
+        // console.log(values)
+        // console.log(this.normalList)
         if (this.normalList.length === 0) {
           this.$message.warning('请完善检查指标内容')
           return
@@ -144,11 +148,17 @@ export default {
     reset() {
       this.appForm = {}
       this.normalList = []
-      console.log(this.appForm)
     }
   },
   watch: {
-
+    appForm: {
+      handler(val) {
+        console.log(val)
+      },
+      // 代表在wacth里声明了firstName这个方法之后立即先去执行handler方法
+      immediate: true,
+      deep: true
+    }
   }
 }
 </script>

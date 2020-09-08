@@ -1,8 +1,8 @@
 <template>
   <div class="u-fx">
     <!-- 2. 柱状图Dom -->
-    <div id="main2" style="width: 600px;height:300px;"></div>
-    <div id="main1" style="width: 800px;height:300px;"></div>
+    <div id="main2" style="width: 50%;height:400px;"></div>
+    <div id="main1" style="width: 50%;height:400px;"></div>
   </div>
 </template>
 <script>
@@ -119,48 +119,205 @@ var option2 = {
   ]
 }
 export default {
-  name: 'PreBar',
+  name: 'PreBarEcharts',
   props: {
-    // 标题
-    title: {
-      type: String,
-      default: '标题'
-    },
-    // 宽度
-    width: {
-      type: Number,
-      default: 640
-    }
+    dataList: {}
   },
   data() {
     return {
-      visible: false
     }
   },
   mounted() {
-    // 对饼状图dom，初始化echarts实例
-    var myChart1 = echarts.init(document.getElementById('main1'), 'shine')
-    myChart1.setOption(option1) // 按option1展示myChart1图表
-
-    // 对柱状图dom，初始化echarts实例
-    var myChart2 = echarts.init(document.getElementById('main2'), 'shine')
-    myChart2.setOption(option2)
-    // 将myChart1和myChart2关联起来
-    echarts.connect([myChart1, myChart2])
-
-    // 配置自动适应Windows窗口大小
-    setTimeout(function () {
-      window.onresize = function () {
-        myChart1.resize()
-        myChart2.resize()
-      }
-    }, 200)
   },
   created() {
   },
+  watch: {
+    dataList(val) {
+      this.initPieData(val[0])
+      this.initColumnarData()
+    }
+  },
   methods: {
-    show() {
-      this.visible = true
+    initPieData(data) {
+      // 对饼状图dom，初始化echarts实例
+      var myChart1 = echarts.init(document.getElementById('main1'), 'shine')
+      const preData1 = [
+        { value: data.lowCount, name: '低风险' },
+        { value: data.generalCount, name: '一般风险' },
+        { value: data.biggerCount, name: '较大风险' },
+        { value: data.heavyCount, name: '重大风险' }
+      ]
+      myChart1.setOption({
+        // 图表标题
+        title: {
+          text: '某站点用户访问来源', // 标题内容
+          subtext: '纯属虚构',
+          x: 'center' // 居中显示
+        },
+        // 鼠标触发提示
+        tooltip: {
+          trigger: 'item',
+          formatter: '{a} <br/>{b} : {c} ({d}%)' // 展示格式
+        },
+        // 图例
+        // legend: {
+        //   orient: 'horizontal', // 垂直显示
+        //   top: 'auto',
+        //   // x: 'bottom', // 显示位置--左上
+        //   data: ['低风险', '一般风险', '较大风险', '最大风险']
+        // },
+        calculable: true,
+        series: [
+          {
+            name: '风险等级',
+            type: 'pie',
+            radius: '65%',
+            center: ['50%', '50%'],
+            data: preData1,
+            itemStyle: {
+              emphasis: {
+                shadowBlur: 10,
+                shadowOffsetX: 0
+                // shadowColor: 'rgba(0, 0, 0, 0.5)'
+              },
+              normal: {
+                color: function(params) {
+                  // 自定义颜色
+                  var colorList = [
+                    '#399ffb', '#f9d239', '#fd7d2a', '#f26980'
+                  ]
+                  return colorList[params.dataIndex]
+                }
+              }
+            }
+          }
+        ]
+      }) // 按option1展示myChart1图表
+      // echarts.connect([myChart2, myChart1])
+      // 配置自动适应Windows窗口大小
+      // setTimeout(function () {
+      //   window.onresize = function () {
+      //     myChart1.resize()
+      //     myChart2.resize()
+      //   }
+      // }, 200)
+    },
+    initColumnarData() {
+      // 对柱状图dom，初始化echarts实例
+      var myChart2 = echarts.init(document.getElementById('main2'), 'shine')
+      myChart2.setOption({
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: { // 指示器类型，shadow为阴影指示器
+            type: 'shadow'
+          }
+        },
+        color: ['#f26980', '#f9d239', '#fd7d2a', '#399ffb'],
+        legend: {
+          data: ['重大风险', '一般风险', '较大风险', '低风险']
+        },
+        calculable: true,
+        xAxis: [
+          {
+            splitLine: { show: false }, // 去除网格线
+            textStyle: {
+              color: '#999' // 这里用参数代替了
+            },
+            type: 'category',
+            data: this.dataList.map(v => v.schoolName)
+          }
+
+        ],
+        yAxis: [
+          {
+            splitLine: { show: false }, // 去除网格线
+            type: 'value',
+            splitArea: { show: true },
+            textStyle: {
+              color: '#999' // 这里用参数代替了
+            }
+          }
+        ],
+        grid: {
+          x2: 40
+        },
+        series: [
+          {
+            name: '重大风险',
+            type: 'bar',
+            stack: '总量',
+            barWidth: 50, // 柱图宽度
+            data: this.dataList.map(v => v.heavyCount),
+            itemStyle: {
+              normal: {
+                color: function(params) {
+                  // 自定义颜色
+                  var colorList = [
+                    '#f26980', '#f26980', '#f26980', '#f26980', '#f26980'
+                  ]
+                  return colorList[params.dataIndex]
+                }
+              }
+            }
+          },
+          {
+            name: '一般风险',
+            type: 'bar',
+            stack: '总量',
+            data: this.dataList.map(v => v.generalCount),
+            itemStyle: {
+              normal: {
+                color: function(params) {
+                  // 自定义颜色
+                  var colorList = [
+                    '#f9d239', '#f9d239', '#f9d239', '#f9d239', '#f9d239'
+                  ]
+                  return colorList[params.dataIndex]
+                }
+              }
+            }
+          },
+          {
+            name: '较大风险',
+            type: 'bar',
+            stack: '总量',
+            data: this.dataList.map(v => v.biggerCount),
+            itemStyle: {
+              normal: {
+                color: function(params) {
+                  // 自定义颜色
+                  var colorList = [
+                    '#fd7d2a', '#fd7d2a', '#fd7d2a', '#fd7d2a', '#fd7d2a'
+                  ]
+                  return colorList[params.dataIndex]
+                }
+              }
+            }
+          },
+          {
+            name: '低风险',
+            type: 'bar',
+            stack: '总量',
+            data: this.dataList.map(v => v.lowCount),
+            itemStyle: {
+              normal: {
+                color: function(params) {
+                  // 自定义颜色
+                  var colorList = [
+                    '#399ffb', '#399ffb', '#399ffb', '#399ffb', '#399ffb'
+                  ]
+                  return colorList[params.dataIndex]
+                }
+              }
+            }
+          }
+
+        ]
+      })
+      myChart2.on('click', (params) => {
+        const setPieData = this.dataList.filter(v => v.schoolName === params.name)
+        this.initPieData(setPieData[0])
+      })
     }
   }
 }

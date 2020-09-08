@@ -33,7 +33,7 @@ import { taskSearchLabel } from '../../assets/js/searchLabel.js'
 import { taskColumns } from '../../assets/js/tableColumns'
 
 export default {
-  name: 'DangerFind',
+  name: 'TaskRecord',
   components: {
     TableList,
     PageNum,
@@ -81,7 +81,7 @@ export default {
     },
     async add(type, record) {
       this.$router.push({
-        path: '/specialInspection/addCheck',
+        path: '/specialInspection/AddSpecialItem',
         query: {
           type: type
           // id: record ? record.record.id : ''

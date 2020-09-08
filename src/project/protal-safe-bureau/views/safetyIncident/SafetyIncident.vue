@@ -1,25 +1,32 @@
 <template>
   <div class="page-layout qui-fx-ver">
-    <search-form is-reset @search-form="searchForm" :search-label="taskSearchLabel">
-      <div slot="right">
-        <a-button icon="plus" class="add-action-btn u-mar-l20" @click="add(0)">添加专项检查</a-button>
-      </div>
+    <search-form is-reset @search-form="searchForm" :search-label="IncidentSearchLabel">
     </search-form>
     <table-list
       is-zoom
       :page-list="pageList"
-      :columns="taskColumns"
+      :columns="incidentColumns"
       :table-list="findList">
+      <template v-slot:other1="other1">
+        <a-tooltip placement="topLeft" title="批示" v-if="other1.record.status !== '3'">
+          <a-button size="small" class="edit-action-btn" icon="form" @click="instructions(other1.record)"></a-button>
+        </a-tooltip>
+      </template>
       <template v-slot:actions="action">
         <a-tooltip placement="topLeft" title="查看">
           <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="goDetail(action.record)"></a-button>
         </a-tooltip>
-        <a-tooltip placement="topLeft" title="查看报告">
-          <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="goReport(action.record.code)"></a-button>
-        </a-tooltip>
       </template>
     </table-list>
     <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
+    <submit-form
+      ref="form"
+      @submit-form="submitForm"
+      title="批示信息"
+      v-model="formStatus"
+      :form-data="accidentFormData"
+    >
+    </submit-form>
   </div>
 </template>
 
@@ -29,20 +36,24 @@ import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
 import SearchForm from '@c/SearchForm'
-import { taskSearchLabel } from '../../assets/js/searchLabel.js'
-import { taskColumns } from '../../assets/js/tableColumns'
+import SubmitForm from '@c/SubmitForm'
+import { IncidentSearchLabel } from '../../assets/js/searchLabel.js'
+import { incidentColumns } from '../../assets/js/tableColumns'
+import { accidentFormData } from '../../assets/js/submitLable'
 
 export default {
   name: 'DangerFind',
   components: {
     TableList,
     PageNum,
-    SearchForm
+    SearchForm,
+    SubmitForm
   },
   data() {
     return {
-      taskColumns,
-      taskSearchLabel,
+      incidentColumns,
+      IncidentSearchLabel,
+      accidentFormData,
       total: 0,
       pageList: {
         page: 1,
@@ -52,10 +63,6 @@ export default {
       form: this.$form.createForm(this),
       formStatus: false,
       searchList: {},
-      formItemLayout: {
-        labelCol: { span: 6 },
-        wrapperCol: { span: 16 }
-      },
       detailId: '',
       type: ''
     }
@@ -67,45 +74,62 @@ export default {
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['specialPage', 'getGroupClass', 'getDanger', 'delDanger', 'assignDanger', 'transferDanger']),
+    ...mapActions('home', [
+      'getAccident',
+      'delDanger',
+      'assignDanger',
+      'transferDanger',
+      'reportAccident'
+    ]),
     async showList() {
-      const req = {
-        ...this.pageList,
-        ...this.searchList,
-        schoolCode: this.userInfo.schoolCode
-      }
-      const res = await this.specialPage(req)
+      this.searchList.schoolCode = this.userInfo.schoolCode
+      this.searchList = Object.assign(this.searchList, this.pageList)
+      const res = await this.getAccident(this.searchList)
       console.log(res)
       this.findList = res.data.records
       this.total = res.data.total
     },
-    async add(type, record) {
-      this.$router.push({
-        path: '/specialInspection/addCheck',
-        query: {
-          type: type
-          // id: record ? record.record.id : ''
-        }
-      })
-    },
     searchForm(values) {
-      this.searchList = values
+      this.pageList.page = 1
+      this.pageList.size = 20
+      this.searchList.startDate = values.rangeTime ? `${values.rangeTime[0]} 00:00:00` : ''
+      this.searchList.endDate = values.rangeTime ? `${values.rangeTime[1]} 23:59:59` : ''
+      this.searchList = Object.assign(this.searchList, values)
       this.showList()
+    },
+    // 批示
+    instructions(record) {
+      this.accidentId = record.id
+      this.formStatus = true
+    },
+    submitForm(values) {
+      const req = {
+        type: '1',
+        accidentId: this.accidentId,
+        content: values.content,
+        userName: this.userInfo.userName,
+        userCode: this.userInfo.userCode
+      }
+      this.reportAccident(req)
+        .then(res => {
+          this.$refs.form.error()
+          this.formStatus = false
+          this.$message.success('操作成功')
+          this.$tools.goNext(() => {
+            this.showList()
+            this.$refs.form.reset()
+          })
+        })
+        .catch(() => {
+          this.$refs.form.error()
+        })
     },
     goDetail(record) {
       this.$router.push({
-        path: '/specialInspection/views',
+        path: '/safetyIncident/specialDetail',
         query: {
-          code: record.code,
-          teamLeaderName: record.teamLeaderName
-        }
-      })
-    },
-    goReport(code) {
-      this.$router.push({
-        path: '/specialInspection/viewsReport',
-        query: {
-          code: code
+          id: record.id,
+          state: record.state
         }
       })
     }
