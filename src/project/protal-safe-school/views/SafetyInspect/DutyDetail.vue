@@ -12,19 +12,32 @@
           <a-input v-decorator="['value', { initialValue: list.value }]" readOnly />
         </a-form-item>
         <a-form-item v-bind="formItemLayout" label="巡查点数量">
-          <div>{{ detailInfo.details }}</div>
+          <a-tag color="cyan" @click="look(detailInfo)">{{ detailInfo.patrolPointNum }} </a-tag>
         </a-form-item>
         <a-form-item v-bind="formItemLayout" label="值班轨迹">
-          <img :src="url" alt="" v-for="(url, index) in detailInfo.pictures" :key="index" />
+          <div @click="check(detailInfo.track)" id="track" style="width:150px;height:150px;"></div>
         </a-form-item>
         <a-form-item v-bind="formItemLayout" label="事故图片">
-          <img :src="url" alt="" v-for="(url, index) in detailInfo.pictures" :key="index" />
+          <img :src="url" alt="" v-for="(url, index) in detailInfo.pictureList" :key="index" />
         </a-form-item>
         <a-form-item v-bind="formItemLayout" label="问题描述">
-          <a-textarea v-decorator="['details', { initialValue: detailInfo.details }]" readOnly />
+          <a-textarea v-decorator="['details', { initialValue: detailInfo.reportContent }]" readOnly />
         </a-form-item>
       </a-form>
     </div>
+    <a-modal
+      title="值班轨迹"
+      :visible="mapVisible"
+      :footer="null"
+      centered
+      @cancel="mapVisible = false"
+      width="680px"
+      :destroyOnClose="true"
+    >
+      <div>
+        <div id="container" style="width:630px;height:500px;"></div>
+      </div>
+    </a-modal>
     <a-modal
       :visible="visible"
       :footer="null"
@@ -32,7 +45,6 @@
       @cancel="visible = false"
       :bodyStyle="bodyStyle"
       width="360px"
-      :closable="false"
       :destroyOnClose="true"
     >
       <table-list :columns="columns" :table-list="inspectList"> </table-list>
@@ -41,6 +53,7 @@
 </template>
 
 <script>
+import maps from 'qqmap'
 import { mapState, mapActions } from 'vuex'
 const columns = [
   {
@@ -76,12 +89,17 @@ export default {
       formData: [],
       detailId: '',
       detailInfo: {},
-      confirmLoading: false,
       visible: false,
       bodyStyle: {
         padding: 0
       },
-      inspectList: []
+      inspectList: [],
+      mapVisible: false,
+      //腾讯地图
+      map: null,
+      getAddress: null,
+      getAddCode: null,
+      addressKeyword: ''
     }
   },
   computed: {
@@ -92,54 +110,55 @@ export default {
     this.showDetail(this.detailId)
   },
   methods: {
-    ...mapActions('home', ['finishAccident', 'updateOtherArchive', 'accidentDetail']),
+    ...mapActions('home', ['finishAccident', 'updateOtherArchive', 'getDutyDetail']),
+    check(data) {
+      this.mapVisible = true
+      this.init(data,'container')
+    },
+    look(record) {
+      console.log('record',record)
+      this.visible = true
+    },
+    init(data,id) {
+      this.map = new qq.maps.Map(document.getElementById(id), {
+        center: new qq.maps.LatLng(),
+        zoom: 16
+      })
+      const arr = data.map(item => {
+        return new qq.maps.LatLng(item.latitude, item.longitude)
+      })
+      var polyline = new qq.maps.Polyline({
+        path: arr,
+        strokeColor: '#3385ff',
+        strokeWeight: 4,
+        map: this.map
+      });
+    },
     async showDetail() {
-      const res = await this.accidentDetail(this.detailId)
+      const res = await this.getDutyDetail(this.detailId)
       const data = res.data
       this.detailInfo = data
+      if (data.track.length > 0) {
+        this.init(data.track, 'track')
+      }
       this.formData = [
         {
-          value: res.data.title,
+          value: res.data.watch,
           label: '值班员'
         },
         {
-          value: this.$tools.getDate(res.data.happenTime, 1),
+          value: res.data.watchPhone,
           label: '值班电话'
         },
         {
-          value: this.$tools.accidentType(res.data.type),
+          value: res.data.leader,
           label: '带班领导'
         },
         {
-          value: this.$tools.accidentNature(res.data.nature),
+          value: res.data.leaderPhone,
           label: '带班领导电话'
         }
       ]
-    },
-    cancel() {
-      this.$router.go(-1)
-    },
-    submitForm(e) {
-      e.preventDefault()
-      this.form.validateFields((err, values) => {
-        if (!err) {
-          const req = {
-            finishInfo: values.finishInfo,
-            id: this.detailId
-          }
-          this.confirmLoading = true
-          this.finishAccident(req)
-            .then(res => {
-              this.$message.success('操作成功')
-              this.$tools.goNext(() => {
-                this.$router.go(-1)
-              })
-            })
-            .catch(() => {
-              this.confirmLoading = false
-            })
-        }
-      })
     }
   }
 }

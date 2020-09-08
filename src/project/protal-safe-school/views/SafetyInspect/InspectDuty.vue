@@ -26,7 +26,10 @@
         </a-popconfirm>
       </template>
       <template v-slot:other1="other1">
-        <div></div>
+        <div :id="other1.record.id"></div>
+      </template>
+       <template v-slot:other2="other2">
+        <a-tag color="cyan" @click="check(other2.record)">{{other2.record.patrolPointNum}} </a-tag>
       </template>
     </table-list>
     <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
@@ -36,9 +39,9 @@
       centered
       @cancel="visible = false"
       :bodyStyle="bodyStyle"
-      width="360px"
-      :closable="false"
+      width="660px"
       :destroyOnClose="true"
+      title="巡查点详情"
     >
       <table-list :columns="duty.inspectColumns" :table-list="inspectList"> </table-list>
     </a-modal>
@@ -50,7 +53,6 @@ import { mapState, mapActions } from 'vuex'
 import SearchForm from '@c/SearchForm'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
-
 import duty from '../../assets/js/table/dutyColumns'
 export default {
   name: 'InspectDuty',
@@ -81,22 +83,46 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
-    // this.showList()
+    this.showList()
   },
   methods: {
-    ...mapActions('home', ['getDuty', 'delInspect', 'delInspects']),
+    ...mapActions('home', ['getDuty', 'delInspect', 'delInspects', 'getDutyPoint']),
     async showList() {
-      this.searchList.schoolCode = this.userInfo.schoolCode
+      this.searchList.schoolCode = 'AITEST'
+      // this.searchList.schoolCode = this.userInfo.schoolCode
       this.searchList = Object.assign(this.searchList, this.pageList)
       const res = await this.getDuty(this.searchList)
       this.dutyList = res.data.records
       this.total = res.data.total
+      res.data.records.map((el,index) => {
+        if(el.track.length > 0){
+          el.map = new qq.maps.Map(document.getElementById(el.id), {
+            center: new qq.maps.LatLng(),
+            zoom: 16
+          })
+          const arr = el.track.map(item => {
+            return new qq.maps.LatLng(item.latitude, item.longitude)
+          })
+          var polyline = new qq.maps.Polyline({
+            path: arr,
+            strokeColor: '#3385ff',
+            strokeWeight: 4,
+            map: el.map
+          });
+        }
+      })
     },
     searchForm(values) {
       this.searchList = Object.assign(this.searchList, values)
       this.pageList.page = 1
       this.pageList.size = 20
       this.showList()
+    },
+    async check(record) {
+      console.log('record',record)
+      const res = await this.getDutyPoint(record.id)
+      this.inspectList = res.data.records
+      this.visible = true
     },
     goDetail(record) {
       this.$router.push({
