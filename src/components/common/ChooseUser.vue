@@ -12,6 +12,18 @@
       <a-col>
         <span>姓名/工号：</span>
         <a-input v-model="keyword" style="width: 120px;margin-right: 10px" placeholder="请输入姓名" />
+        <span>是否有人脸：</span>
+        <a-select v-model="hasPhoto" style="width: 120px; margin-right: 10px">
+          <a-select-option value="">
+            全部
+          </a-select-option>
+          <a-select-option :value="1">
+            是
+          </a-select-option>
+          <a-select-option :value="0">
+            否
+          </a-select-option>
+        </a-select>
         <a-button type="primary" @click="getUserList(chooseType !== '')">查询</a-button>
       </a-col>
     </a-row>
@@ -160,6 +172,7 @@ export default {
   },
   data() {
     return {
+      hasPhoto: '',
       keyword: '',
       confirmLoading: false,
       orgCode: '',
@@ -347,6 +360,7 @@ export default {
         params: {
           orgCode: this.orgCode,
           keyword: this.keyword,
+          hasPhoto: this.hasPhoto,
           schoolCode: this.code,
           ...this.pageList
         }
@@ -384,10 +398,7 @@ export default {
       this.confirmLoading = false
     },
     delUser(id, index) {
-      console.log('id', id)
-      console.log('index', index)
       this.totalList.splice(index, 1)
-      console.log(this.chooseList.indexOf(id))
       this.chooseList.splice(this.chooseList.indexOf(id), 1)
     },
     selectAll(item, type) {
