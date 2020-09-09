@@ -24,11 +24,16 @@ export default {
     width: {
       type: Number,
       default: 640
+    },
+    // 宽度
+    visibleTrue: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
     return {
-      visible: false
+      visible: this.visibleTrue
     }
   },
   created() {

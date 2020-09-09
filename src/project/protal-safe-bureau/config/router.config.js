@@ -3,17 +3,22 @@ import {
   BasicLayout,
   RouteView
 } from '../layouts'
+// 隐患管理
 const SchoolDanger = resolve => require(['../views/dangerManage/SchoolDanger.vue'], resolve)
 const ReportDangers = resolve => require(['../views/dangerManage/ReportDangers.vue'], resolve)
 const ViewDangers = resolve => require(['../views/dangerManage/ViewDangers.vue'], resolve)
 const RectificationNotice = resolve => require(['../views/dangerManage/RectificationNotice.vue'], resolve)
 const EidtRectificationNotice = resolve => require(['../views/dangerManage/EidtRectificationNotice.vue'], resolve)
+// 专项检查
+const AddCheckItem = resolve => require(['../views/specialInspection/AddCheckItem.vue'], resolve)
 const TaskRecord = resolve => require(['../views/specialInspection/TaskRecord.vue'], resolve)
 const CheckItem = resolve => require(['../views/specialInspection/CheckItem.vue'], resolve)
-const AddCheck = resolve => require(['../views/specialInspection/AddCheck.vue'], resolve)
+const AddSpecialItem = resolve => require(['../views/specialInspection/AddSpecialItem.vue'], resolve)
 const Views = resolve => require(['../views/specialInspection/Views.vue'], resolve)
 const ViewsReport = resolve => require(['../views/specialInspection/ViewsReport.vue'], resolve)
+// 安全事故
 const SafetyIncident = resolve => require(['../views/safetyIncident/SafetyIncident.vue'], resolve)
+const AccidentDetail = resolve => require(['../views/safetyIncident/AccidentDetail.vue'], resolve)
 
 export const asyncRouterMap = [{
   path: '/',
@@ -94,9 +99,9 @@ export const asyncRouterMap = [{
           }
         },
         {
-          path: '/specialInspection/addCheck',
-          name: 'addCheck',
-          component: AddCheck,
+          path: '/specialInspection/addSpecialItem',
+          name: 'addSpecialItem',
+          component: AddSpecialItem,
           meta: {
             title: '添加专项检查',
             isHide: true
@@ -141,6 +146,15 @@ export const asyncRouterMap = [{
       }
     },
     {
+      path: '/safetyIncident/specialDetail',
+      name: 'specialDetail',
+      component: AccidentDetail,
+      meta: {
+        title: '查看事故详情',
+        isHide: true
+      }
+    },
+    {
       path: '/safetyTask',
       name: 'safetyTask',
       component: RouteView,
@@ -168,7 +182,7 @@ export const asyncRouterMap = [{
         {
           path: '/specialInspection/addCheck',
           name: 'addCheck',
-          component: AddCheck,
+          component: AddCheckItem,
           meta: {
             title: '添加专项检查',
             isHide: true

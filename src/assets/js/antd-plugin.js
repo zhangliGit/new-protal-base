@@ -39,9 +39,11 @@ import {
   Collapse,
   Switch,
   Divider,
-  Card
+  Card,
+  Empty
 } from 'ant-design-vue'
 const ComList = [
+  Empty,
   Card,
   Divider,
   Alert,

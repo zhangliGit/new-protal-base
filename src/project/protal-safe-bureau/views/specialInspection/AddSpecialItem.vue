@@ -1,12 +1,12 @@
 <template>
-  <div class="add-find page-layout bg-fff qui-fx-ver">
+  <div class="add-special-item page-layout bg-fff qui-fx-ver">
     <a-form :form="form">
       <a-form-item v-bind="formItemLayout" label="任务名称" required>
         <a-input
           placeholder="请输入任务名称"
           v-decorator="[
             'name',
-            { initialValue: appForm.address, rules: [{max: 20,required: true, message: '请输入机构名称限30字' } ]}
+            { initialValue: appForm.address, rules: [{max: 20,required: true, message: '请输入机构名称限20字,支持中英文数字' } ]}
           ]"
         />
       </a-form-item>
@@ -22,7 +22,7 @@
       </a-form-item>
       <a-form-item label="专项指标：" v-bind="formItemLayout" required>
         <a-input
-          @click="showSpecific('zhibiao')"
+          @click="showSpecific()"
           placeholder="专项指标"
           v-decorator="[
             'specificIndicators',
@@ -32,7 +32,7 @@
       </a-form-item>
       <a-form-item label="督查小组：" v-bind="formItemLayout" required>
         <a-input
-          @click="showSupervision('itemAll')"
+          @click="showSupervision()"
           placeholder="督查小组"
           v-decorator="[
             'supervisionTeam',
@@ -71,11 +71,10 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
-// import ChooseCheck from '../../component/ChooseCheck'
 import UploadMulti from '@c/UploadMulti'
-import xiaozuData from './dubanxiaozu.json'
+// import xiaozuData from './dubanxiaozu.json'
 export default {
-  name: 'AddFind',
+  name: 'AddSpecialItem',
   components: {
     UploadMulti,
     ChooseCheck: () => import('../../component/ChooseCheck'),
@@ -89,7 +88,7 @@ export default {
       form: this.$form.createForm(this),
       itemAll: [], // 专项指标
       selectItem: [],
-      specificAll: xiaozuData.data, // 督查小组
+      specificAll: [], // 督查小组
       selectSpecific: [],
       formItemLayout: {
         labelCol: { span: 6 },
@@ -97,7 +96,10 @@ export default {
       },
       xiaozuData,
       isLoad: false,
-      appForm: {},
+      appForm: {
+        supervisionTeam: '',
+        specificIndicators: ''
+      },
       count: 0
     }
   },
@@ -105,9 +107,8 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   async mounted() {
-    // this._getItemAll()
-    // this._getTreeGroup()
-    this.initSpecificAll()
+    await this._getItemAll()
+    await this._getTreeGroup()
   },
   methods: {
     ...mapActions('home', ['getItemAll', 'addSpecialTask', 'getGroup', 'getSchoolFlights', 'getTreeGroup']),
@@ -123,12 +124,13 @@ export default {
         eduCode: this.userInfo.schoolCode // 机构编码
       }
       const res = await this.getTreeGroup(req)
-      console.log(res)
-      return res.data[0].memberList && res.data[0].memberList.map(v => v.eduCode)
+      console.log(this.initSpecificAll(res.data))
+      this.specificAll = this.initSpecificAll(res.data)
+      // return res.data[0].memberList && res.data[0].memberList.map(v => v.eduCode)
     },
     // 格式化督办小组数据
     initSpecificAll(data) {
-      this.specificAll.forEach(item => {
+      data.forEach(item => {
         // 树组件指定属性名
         item.leve = '1'
         item.title = item.streetName
@@ -138,8 +140,7 @@ export default {
           v.leve = '2'
           v.key = `${v.leaderCode}`
           v.children = []
-          v.title = v.leaderName
-          // 后台用的属性名
+          v.title = v.groupName
           // 后台用的属性名
           v.teamLeaderCode = v.leaderCode
           v.teamLeaderName = v.leaderName
@@ -151,6 +152,7 @@ export default {
           })
         })
       })
+      return data
     },
     onChange(value, dateString) {
       this.beginTime = dateString[0]
@@ -160,7 +162,7 @@ export default {
       this.$refs.itemAll.$refs.modal.visible = true
     },
     setItem(data) {
-      this.selectItem = data
+      this.selectItem = data.map(v => v.id)
       console.log(data.map(item => item.name) + '')
       this.appForm.specificIndicators = data.map(item => item.name) + ''
     },
@@ -169,9 +171,20 @@ export default {
     },
     setSupervisio(data) {
       // 展示数据
-      console.log(data.map(v => v.title).join(','))
-      this.appForm.supervisionTeam = data.map(v => v.title).join(',')
-      this.groupList = data
+      console.log(data)
+      console.log(data.map(v => v.title) + '')
+      this.appForm.supervisionTeam = data.map(v => v.title) + ''
+      this.groupList = data.map(res => {
+        const { teamLeaderCode, teamLeaderName, schoolDTOList, streetCode, streetName } = res
+        return {
+          teamLeaderCode: teamLeaderCode,
+          teamLeaderName: teamLeaderName,
+          schoolDTOList: schoolDTOList,
+          streetCode: streetCode,
+          streetName: streetName
+        }
+      })
+      console.log(this.groupList)
     },
     // 提交
     submitOk(e) {
@@ -213,7 +226,7 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-.add-find {
+.add-special-item {
   padding: 20px;
 }
 </style>

@@ -58,10 +58,19 @@ export default {
     },
     exportClick() {
       const url = `${hostEnv.zx_subject}/file/downLoad/doc?url=${this.url}`
-      window.open(url)
+      var a = document.createElement('a')
+      a.id = 'expertFile'
+      a.href = url
+      document.body.append(a)
+      a.click()
+      document.getElementById('expertFile').remove()
+      // window.open(url)
     },
     goBack() {
-      this.$router.go(-1)
+      this.$router.push({
+        path: '/schoolDanger',
+        props: true
+      })
     }
   }
 }

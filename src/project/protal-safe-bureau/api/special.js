@@ -9,7 +9,7 @@ const specialApi = {
   // 专项检查
   addSpecialTask: '/specialTask/add#post', // 局端添加专项检查任务
   specialTaskDetail: '/specialTask/info#getUrl', // 局端/校端查看任务详情
-  specialModify: '/specialTask/modify#post', // 校端/局端自查/审核/督察
+  modifySpecial: '/specialTask/modify#post', // 校端/局端自查/审核/督察
   specialPage: '/specialTask/page#post', // 局端分页条件查询任务列表
   seeReport: '/specialTask/report#getUrl', // 局端查看检查报告
   getStreetStatus: '/specialTask/template/info#getUrl', // 局端查看各街道任务状态
@@ -20,6 +20,7 @@ const specialApi = {
   eidtModity: '/specialItem/modify#post', // 修改检查项  /specialItem/modify
   getItemPageList: '/specialItem/page#post', // 专检项目分页条件查询 /specialItem/page
   delItem: '/specialItem/remove#getUrl' // 删除检查项 /specialItem/remove/{id}
+
 }
 for (const val in specialApi) {
   specialApi[val] = `${hostEnv.lz_safe}${specialApi[val]}`

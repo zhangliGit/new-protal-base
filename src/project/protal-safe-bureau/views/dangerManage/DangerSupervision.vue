@@ -3,7 +3,7 @@
     <search-form is-reset @search-form="searchForm" :search-label="searchLabelSupervise">
       <div slot="right">
         <a-button type="primary" class="u-mar-l10" @click="exportHazards">隐患导出</a-button>
-        <a-button type="primary" class="u-mar-l10" @click="reportDangers">上报隐患</a-button>
+        <a-button icon="export" class="u-mar-l10 export-btn" @click="reportDangers">上报隐患</a-button>
       </div>
     </search-form>
     <table-list
@@ -42,33 +42,32 @@ import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import SearchForm from '@c/SearchForm'
 import PageNum from '@c/PageNum'
-import Modal from '../../component/Modal'
 import DropDown from '../../component/Dropdown'
-import { searchLabelSupervise, SuperviseColumns } from '../../assets/js/initData.js'
-import Tools from '@u/tools'
+import { searchLabelSupervise } from '../../assets/js/searchLabel'
+import { SuperviseColumns } from '../../assets/js/tableColumns'
 import hostEnv from '@config/host-env'
 export default {
   components: {
     TableList,
     SearchForm,
     DropDown,
-    Modal,
     PageNum
   },
   data() {
+    this.schoolCodes = ''
     return {
       searchObj: {
-        sourceDanger: '',
-        DangerLevel: '',
-        DangerState: '',
-        streetCode: ''
+        // sourceDanger: '',
+        // DangerLevel: '',
+        // DangerState: '',
+        // streetCode: ''
       },
       searchLabelSupervise,
+      SuperviseColumns,
       pageList: {
         page: 1,
         size: 10
       },
-      SuperviseColumns,
       userList: [],
       chooseList: [], // 当有选择项时，被选中的项，返回每项的唯一id
       searchList: [],
@@ -79,10 +78,6 @@ export default {
     ...mapState('home', ['schoolCode', 'schoolName', 'userInfo'])
   },
   created() {
-    // const baseData = this.initBaseData()
-    // for (const key in baseData) {
-    //   this[key] = baseData[key]
-    // }
   },
   async mounted() {
     await this._getEndSchools()
@@ -91,11 +86,6 @@ export default {
   },
   methods: {
     ...mapActions('home', ['getDangerList', 'superviseDanger', 'getStreet', 'getGroup', 'underSchoolList', 'exportDanger']),
-    initBaseData() {
-      return {
-        schoolCodes: '' // 学校集合
-      }
-    },
     // async _getStreet() {
     //   const req = {
     //     eduCode: this.schoolCode,
@@ -131,19 +121,12 @@ export default {
       }
       const res = await this.underSchoolList(req)
       this.schoolCodes = res.data.list.map(v => v.schoolCode)
-      console.log(this.schoolCodes)
       // return res.data[0].memberList && res.data[0].memberList.map(v => v.eduCode)
     },
     async showList() {
-      // if (this.searchObj.streetCode) {
-      //   const schoolCodes = await this._getSchools()
-      //   this.schoolCodes = schoolCodes
-      // }
       const req = {
         ...this.searchObj,
         ...this.pageList,
-        // schoolCode: this.schoolCode,
-        // schoolName: this.schoolName,
         schoolCodes: this.schoolCodes,
         hasSupervise: true
       }

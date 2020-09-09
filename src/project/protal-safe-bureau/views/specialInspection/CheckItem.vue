@@ -32,11 +32,13 @@
       </template>
     </table-list>
     <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
-    <add-check
+    <add-check-item
       width="1000px"
       ref="addCheck"
+      v-if="flag"
     >
-    </add-check>
+      <!-- :key="count" -->
+    </add-check-item>
   </div>
 </template>
 
@@ -46,7 +48,7 @@ import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
 import SearchForm from '@c/SearchForm'
-import AddCheck from './AddCheck'
+import AddCheckItem from './AddCheckItem'
 import { checkSearchLabel } from '../../assets/js/searchLabel.js'
 import { checkColumns } from '../../assets/js/tableColumns'
 
@@ -56,11 +58,12 @@ export default {
     TableList,
     PageNum,
     SearchForm,
-    AddCheck
+    AddCheckItem
   },
   data() {
     return {
-      showCheck: false,
+      count: 0,
+      flag: true,
       checkColumns,
       checkSearchLabel,
       total: 0,
@@ -70,13 +73,7 @@ export default {
       },
       findList: [],
       form: this.$form.createForm(this),
-      formStatus: false,
       searchList: {},
-      title: '指派',
-      formItemLayout: {
-        labelCol: { span: 6 },
-        wrapperCol: { span: 16 }
-      },
       detailId: '',
       type: ''
     }
@@ -111,13 +108,18 @@ export default {
     },
     async goDetail(type, id) {
       this.$refs.addCheck.$refs.modal.visible = true
-      // this.$refs.addCheck.reset()
       this.$refs.addCheck.detailId = id
       this.$refs.addCheck.type = type
-      if (type == 1 || type == 2) {
+      // this.flag = false
+      // const that = this
+      // this.$nextTick(() => {
+      //   this.flag = true
+      //   // console.log(that.$refs.$refs.modal)
+      // })
+      this.$refs.addCheck.reset()
+      if (type === 1 || type === 2) {
         this.$refs.addCheck.showDetail()
-      } else if (type == 0) {
-
+      } else if (type === 0) {
       }
     }
   }
