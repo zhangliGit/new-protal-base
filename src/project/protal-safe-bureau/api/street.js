@@ -4,7 +4,6 @@
  */
 
 import hostEnv from '@config/host-env'
-
 const streetApi = {
   getStreet: '/subsidiary/street/manage/list#get', // 查询附属街道
   getGroup: '/supervise/group/manage/list#get', // 查询督办小组

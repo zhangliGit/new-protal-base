@@ -1,68 +1,38 @@
 <template>
-  <div class="view-dangers page-layout">
-    <div class="information page-layout bg-fff">
-      <div class="half flex u-line2" >
-        <div class="lable  u-type-primary-light-bg u-fx-je u-bd-r u-padd-10" >隐患地点:</div>
-        <div class="content  u-fx-jl  u-bd-r u-padd-10" >{{ data.address }}</div>
-      </div>
-      <div class="half flex u-line2" >
-        <div class="lable  u-type-primary-light-bg u-fx-je u-bd-r u-padd-10" >负责人:</div>
-        <div class="content  u-fx-jl  u-bd-r u-padd-10" >{{ data.leaderName }}</div>
-      </div>
-      <div class="half flex u-line2" >
-        <div class="lable  u-type-primary-light-bg u-fx-je u-bd-r u-padd-10" >隐患类型:</div>
-        <div class="content  u-fx-jl  u-bd-r u-padd-10" >{{ data.address }}</div>
-      </div>
-      <div class="half flex u-line2" >
-        <div class="lable  u-type-primary-light-bg u-fx-je u-bd-r u-padd-10" >处理人:</div>
-        <div class="content  u-fx-jl  u-bd-r u-padd-10" >{{ data.handerName }}</div>
-      </div>
-      <div class="half flex u-line2" >
-        <div class="lable  u-type-primary-light-bg u-fx-je u-bd-r u-padd-10" >隐患状态:</div>
-        <div class="content  u-fx-jl  u-bd-r u-padd-10" >{{ data.state | getDangerState }}</div>
-      </div>
-      <div class="half flex u-line2" >
-        <div class="lable  u-type-primary-light-bg u-fx-je u-bd-r u-padd-10" >要求处理完时间:</div>
-        <div class="content  u-fx-jl  u-bd-r u-padd-10" >{{ data.handleDuration | gmtToDate }}</div>
-      </div>
-      <div class="half flex u-line2" >
-        <div class="lable  u-type-primary-light-bg u-fx-je u-bd-r u-padd-10" >风险等级:</div>
-        <div class="content  u-fx-jl  u-bd-r u-padd-10" >{{ data.level | getDangerLevel }}</div>
-      </div>
-      <div class="half flex u-line2" >
-        <div class="lable  u-type-primary-light-bg u-fx-je u-bd-r u-padd-10" >是否允许转派:</div>
-        <div class="content  u-fx-jl  u-bd-r u-padd-10" >{{ data.hasDispense==='0'?'不可以':data.hasDispense==='1'?'可以':'' }}</div>
-      </div>
-      <div class="all flex u-line2" >
-        <div class="lable  u-type-primary-light-bg u-fx-je u-bd-r u-fx-ac u-padd-10" >隐患图片:</div>
-        <div class="content  u-fx-jl u-fx-ac  u-bd-r" >
-          <div class="img u-mar-l10" v-for="(item,index) in data.dangerPhotoUrls" :key="index">
-            <img :src="item" alt="" >
+  <div class="danger-detail page-layout bg-fff qui-fx-ver">
+    <div class="content pos-box">
+      <div class="detail-info">
+        <div class="detail-title">
+          <div class="title">查看隐患信息</div>
+        </div>
+        <div class="info">
+          <div>
+            <div class="info-box qui-fx" v-for="item in detailInfo" :key="item.id">
+              <div class="info-title">{{ item.title }}</div>
+              <div class="info-content qui-fx-f1">{{ item.content }}</div>
+            </div>
+          </div>
+          <div class="img-content">
+            <div class="img-box qui-fx" v-for="item in detailImg" :key="item.id">
+              <div class="info-title">{{ item.title }}</div>
+              <div class="info-content qui-fx-f1" v-if="item.title !== '隐患描述：'">
+                <img v-for="(list,index) in item.content" :key="index" :src="list" alt />
+              </div>
+              <div v-else class="info-content qui-fx-f1">{{ item.content }}</div>
+            </div>
           </div>
         </div>
       </div>
-      <div class="all flex u-line2" >
-        <div class="lable  u-type-primary-light-bg u-fx-je u-bd-r u-fx-ac u-padd-10" >隐患描述:</div>
-        <div class="content u-fx-ac u-padd-l10  u-fx-jl  u-bd-r" >{{ data.address }}</div>
-      </div>
-      <div class="all changxiang flex u-line2" >
-        <div class="lable  u-type-primary-light-bg u-fx-je u-bd-r u-fx-ac u-padd-10" >整改图片:</div>
-        <div class="content  u-fx-ac u-padd-l10 u-fx-jl  u-bd-r" >{{ data.address }}</div>
-      </div>
-    </div>
-    <div class="processingFlow page-layout bg-fff u-mar-t20 u-bd-b">
-      <div class="title u-line1 u-bd-b">处理流程</div>
-      <div class="content u-mar-t20 u-padd-l20">
-        <a-timeline>
-          <a-timeline-item v-for="(item,index) in data.processes" :key="index" color="gray">
-            <a-row type="flex" >
-              <a-col :span="8" >
-                {{ item.content }}
-              </a-col>
-              <a-col :span="10" >
-                {{ item.createTime | gmtToDate }}
-              </a-col>
-            </a-row>
+      <div class="detail-deal">
+        <div class="detail-title">
+          <div class="title">处理流程</div>
+        </div>
+        <a-timeline class="time-line">
+          <a-timeline-item v-for="(item,index) in processes" :key="index">
+            <div class="qui-fx">
+              <div class="time-left">{{ item.content }}</div>
+              <div class="qui-fx-f1">{{ item.createTime | gmtToDate }}</div>
+            </div>
           </a-timeline-item>
         </a-timeline>
       </div>
@@ -73,103 +43,177 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 import moment from 'moment'
+
 export default {
-  name: 'SubmitForm',
-  components: {},
-  computed: {
-    status: {
-      get() {
-        return this.value
-      },
-      set() {
-        this.$emit('input', false)
-      }
-    }
+  name: 'DangerDetail',
+  components: {
   },
   data() {
     return {
-      data: {
-
-      }
+      detailInfo: [],
+      detailImg: [],
+      processes: []
     }
   },
-  created() {
-    this.id = this.$route.query.id || ''
-    this._getDangerInfo()
+  computed: {
+    ...mapState('home', ['userInfo'])
+  },
+  mounted() {
+    this.detailId = this.$route.query.id
+    if (this.detailId) {
+      this.showDetail()
+    }
   },
   methods: {
-    ...mapActions('home', ['getDangerInfo', 'subsidy', 'getSchool']),
-    async _getDangerInfo() {
-      const res = await this.getDangerInfo(this.id)
-      this.data = res.data
+    ...mapActions('home', ['getDangerInfo']),
+    moment,
+    handleClick(event) {
+      event.stopPropagation()
+    },
+    async showDetail() {
+      const res = await this.getDangerInfo(this.detailId)
+      const data = res.data
+      this.processes = data.processes
+      this.detailInfo = [
+        {
+          title: '隐患地点：',
+          content: data.address
+        },
+        {
+          title: '负责人：',
+          content: data.leaderName
+        },
+        {
+          title: '隐患类型：',
+          content: data.categoryName
+        },
+        {
+          title: '处理人：',
+          content: data.handerName
+        },
+        {
+          title: '隐患状态：',
+          content: data.state === '1' ? '已上报' : data.state === '2' ? '已指派' : data.state === '3' ? '已处理' : data.state === '4' ? '已验收' : data.state === '5' ? '已撤销' : ''
+        },
+        {
+          title: '要求处理完成时长：',
+          content: data.handleDuration
+        },
+        {
+          title: '隐患等级：',
+          content: data.level === '1' ? '低风险' : data.state === '2' ? '一般风险' : data.state === '3' ? '较大风险' : data.state === '4' ? '重大风险' : ''
+        },
+        {
+          title: '是否允许转派：',
+          content: data.hasDispense === '1' ? '可以' : '不可以'
+        }
+      ]
+      this.detailImg = [
+        {
+          title: '隐患图片：',
+          content: data.dangerPhotoUrls
+        },
+        {
+          title: '隐患描述：',
+          content: data.description
+        },
+        {
+          title: '整改图片：',
+          content: data.completePhotoUrls
+        }
+      ]
     }
   }
 }
 </script>
 <style lang="less" scoped>
-.view-dangers{
-  padding: 20px;
-  .img{
-    width: 60px;
-    height: 60px;
-    img{
-      width: 100%;
-      height: 100%;
-    }
-  }
-  .information{
-    display: flex;
-    flex-wrap: wrap;
-    width: 100%;
-    .half{
-        display: flex;
-        width: 50%;
-        .lable{
-        &:nth-of-type(even){
-          border-left: none;
+.danger-detail {
+  background-color: #f0f2f5;
+  .content {
+    height: calc(100% - 10px);
+    overflow-y: scroll;
+    .detail-info {
+      padding-top: 20px;
+      min-height: 500px;
+      overflow-y: scroll;
+      background-color: #fff;
+      .info {
+        padding: 20px;
+        .info-box {
+          border-top: 1px solid #9698d6;
+          height: 55px;
+          line-height: 53px;
+          width: 50%;
+          float: left;
+          &:nth-child(2n) {
+            border-right: 1px solid #9698d6;
+          }
         }
-        width: 50%;
-        box-sizing: border-box;
-        border-top: 1px solid  rgb(196, 176, 228) !important;
-        border-left: 1px solid  rgb(196, 176, 228) !important;
+        .img-content {
+          margin-top: 220px;
         }
-        .content{
-        box-sizing: border-box;
-        width: 100%;
-        border-top: 1px solid rgb(181, 165, 228) !important;
-        border-right: 1px solid rgb(181, 165, 228) !important;
-        border-left: 1px solid rgb(181, 165, 228) !important;
+        .info-title {
+          width: 150px;
+          background-color: #f5f5fb;
+          border-right: 1px solid #9698d6;
+          border-left: 1px solid #9698d6;
+          text-align: right;
+          padding: 0 5px;
+          color: #575758;
         }
-    }
-    .all{
-      width: 100%;
-       display: flex;
-        height: 80px;
-      .lable{
-        box-sizing: border-box;
-        width: 20%;
-        border-top: 1px solid  rgb(196, 176, 228) !important;
-        border-left: 1px solid  rgb(196, 176, 228) !important;
+        .info-content {
+          padding: 0 10px;
+          color: #333;
+          width: 100%;
+          overflow-x: scroll;
+          img {
+            width: 60px;
+            height: 60px;
+            margin-right: 10px;
+          }
         }
-        .content{
-        box-sizing: border-box;
-        width: 100%;
-        border-top: 1px solid rgb(181, 165, 228) !important;
-        border-right: 1px solid rgb(181, 165, 228) !important;
-        border-left: 1px solid rgb(181, 165, 228) !important;
+        .img-box {
+          border: 1px solid #9698d6;
+          height: 80px;
+          line-height: 70px;
+          border-bottom: none;
+          &:last-child {
+            border-bottom: 1px solid #9698d6;
+          }
+          .info-title {
+            &:last-child {
+              border-bottom: 1px solid #9698d6 !important;
+            }
+          }
         }
-
-    }
-    .changxiang{
-        border-bottom: 1px solid  rgb(181, 165, 228) !important;
       }
-  }
-  .processingFlow{
-    .title{
-      line-height: 40px;
     }
-    .content{
-
+    .detail-title {
+      height: 35px;
+      border-bottom: 1px solid #ddd;
+      .title {
+        margin-left: 40px;
+        position: relative;
+        &::before{
+          content: '';
+          position: absolute;
+          height: 20px;
+          width: 5px;
+          background-color: #4D4CAC;
+          left: -20px;
+        }
+      }
+    }
+    .detail-deal {
+      margin-top: 20px;
+      padding: 20px 0;
+      background-color: #fff;
+      .time-line {
+        margin: 30px 0 0 20px;
+        .time-left {
+          width: 360px;
+        }
+      }
     }
   }
 }

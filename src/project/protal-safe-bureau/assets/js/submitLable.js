@@ -92,86 +92,14 @@ export const reportDangerForm = [
     placeholder: '请选择工作时间'
   }
 ]
-// table列
-export const columns = [
-  // {
-  //   title: '序号',
-  //   width: '5%',
-  //   scopedSlots: {
-  //     customRender: 'index'
-  //   }
-  // },
-  {
-    title: 'ID',
-    dataIndex: 'ID'
-    // width: '15%'
-  },
-  {
-    title: '所属学校',
-    dataIndex: 'school'
-    // width: '15%'
-  },
-  {
-    title: '隐患照片',
-    dataIndex: 'DangerPhotos',
-    // width: '10%',
-    scopedSlots: {
-      customRender: 'snapPic'
-    }
-  },
-  {
-    title: '整改照片',
-    dataIndex: 'rectifyPhotos',
-    // width: '10%',
-    scopedSlots: {
-      customRender: 'snapPic'
-    }
-  },
-  {
-    title: '隐患描述',
-    dataIndex: 'hazardDescription'
-    // width: '10%'
-  },
-  {
-    title: '隐患来源',
-    dataIndex: 'sourceOfDanger'
-    // width: '10%'
-  },
-  {
-    title: '隐患类型',
-    dataIndex: 'hazardType'
-    // width: '10%'
-  },
-  {
-    title: '上报人',
-    dataIndex: 'reporter'
-    // width: '10%'
-  },
-  {
-    title: '隐患状态',
-    dataIndex: 'DangerState'
-    // width: '10%'
-  },
-  {
-    title: '隐患等级',
-    dataIndex: 'hiddenDangerLevel'
-    // width: '10%'
-  },
-  {
-    title: '处理人',
-    dataIndex: 'handler'
-    // width: '10%'
-  },
-  {
-    title: '最近操作时间',
-    dataIndex: 'lastOperationTime'
-    // width: '10%'
-  },
-  {
-    title: '操作',
-    width: '20%',
-    scopedSlots: {
-      customRender: 'action'
-    }
-  }
-]
+// 安全事故批示表单
+export const accidentFormData = [{
+  value: 'content',
+  initValue: '',
+  type: 'textarea',
+  label: '批示内容',
+  placeholder: '请填写批示内容',
+  minRows: 2,
+  maxRows: 6,
+  max: 100
+}]

@@ -1,5 +1,5 @@
 <template>
-  <Modal title="查看任务详情" :width="800" ref="modal" @ok="close">
+  <Modal title="查看任务详情" :width="1000" ref="modal" @ok="close">
     <div class="content">
       <div class="detail-info u-bd-1px">
         <div class="detail-title u-mar-t10">
@@ -16,19 +16,29 @@
               <template #expandIcon="props">
                 <a-icon type="caret-right" :rotate="props.isActive ? 90 : 0" />
               </template>
+              <!-- 检查项信息列表 -->
               <a-collapse-panel :key="`'${index+1}'`" :header="list.name" :style="customStyle" v-for="(list,index) in detailInfo.itemList">
                 <div class="collapse-title qui-fx-jsb">
+
                   <div>检查标准</div>
                   <div class="qui-fx">
-                    <div class="collapse-state u-mar-l10" v-if="!(detailInfo.state === '1' && type === '3')">自查结果</div>
-                    <div class="collapse-state u-mar-l10" v-if="detailInfo.state === '3' || detailInfo.state === '4' || type === '2'">审核结果</div>
-                    <div class="collapse-state u-mar-l10" v-if="detailInfo.state === '4'">督查结果</div>
+                    <div class="collapse-state u-mar-l10" v-if="!(detailInfo.state === '1' )">自查结果</div>
+                    <div
+                      class="collapse-state u-mar-l10"
+                      v-if="(detailInfo.state === '2'&& teamLeaderCode==userCode)|| detailInfo.state === '3' || detailInfo.state === '4'">
+                      审核结果
+                    </div>
+                    <div
+                      class="collapse-state u-mar-l10"
+                      v-if="(detailInfo.state === '3'&& supervisionCode==userCode) || detailInfo.state === '4'">督查结果</div>
                   </div>
                 </div>
+                <!-- 指示信息列表 -->
                 <div class="collapse-content qui-fx-jsb" v-for="item in list.standardList" :key="item.id">
                   <div>
                     <div> {{ item.itemName }} </div>
                     <div v-if="!item.selfResult || !item.examineResult">
+                      <!-- 隐患列表 -->
                       <span v-for="el in item.dangerList" :key="el.dangerCode" @click="goDetail(el)">
                         ({{ el.userName }}上报隐患：
                         <span style="color:#fa3534">{{ el.dangerCode }})</span>
@@ -36,16 +46,22 @@
                     </div>
                   </div>
                   <div class="qui-fx">
-                    <div class="collapse-state u-mar-l10 u-mar-r10" v-if="!(detailInfo.state === '1' && type === '3')">
-                      <a-switch size="small" :disabled="type !== '1'" v-model="item.selfResult"/>
-                      <div class="add" v-if="(!item.selfResult || !item.examineResult) && type === '1'" @click="add(item)">上报隐患</div>
+                    <!-- 自查结果 -->
+                    <div class="collapse-state u-mar-l10 u-mar-r10" v-if="detailInfo.state !== '1'">
+                      <a-switch size="small" :disabled="true" v-model="item.selfResult"/>
                     </div>
-                    <div class="collapse-state u-mar-l10" v-if="detailInfo.state === '3' || detailInfo.state === '4' || type === '2'" >
-                      <a-switch size="small" :disabled="type !== '2'" v-model="item.examineResult"/>
-                      <div class="add" v-if="(type === '1' && !item.selfResult )|| (type === '2' && !item.examineResult)" @click="add(item)">上报隐患</div>
+                    <!-- 审核结果 -->
+                    <div
+                      class="collapse-state u-mar-l10"
+                      v-if="(detailInfo.state === '2'&& teamLeaderCode==userCode)|| detailInfo.state === '3' || detailInfo.state === '4'" >
+                      <a-switch size="small" :disabled="!(detailInfo.state === '2'&& teamLeaderCode==userCode)" v-model="item.examineResult"/>
+                      <!-- {{ !(detailInfo.state === '2'&&userInfo.userCode==detailInfo.teamLeaderCode) }} -->
                     </div>
-                    <div class="collapse-state u-mar-l10" v-if="detailInfo.state === '4'">
-                      <a-switch size="small" disabled v-model="item.inspectionResult"/>
+                    <!-- 督查结果 -->
+                    <div
+                      class="collapse-state u-mar-l10"
+                      v-if="(detailInfo.state === '3'&& supervisionCode==userCode) || detailInfo.state === '4'">
+                      <a-switch size="small" :disabled="!(detailInfo.state === '3'&& teamLeaderCode==userCode)" v-model="item.inspectionResult"/>
                     </div>
                   </div>
                 </div>
@@ -54,6 +70,7 @@
           </div>
         </div>
       </div>
+
       <div class="detail-deal  u-bd-1px">
         <div class="detail-title ">
           <div class="title">处理流程</div>
@@ -68,8 +85,23 @@
         </a-timeline>
         <no-data v-else msg="未检查，暂无处理流程记录~"></no-data>
       </div>
-      <div class="qui-tx-c u-mar-t" v-if="type !== '3'">
-        <a-button type="primary" @click="submitOk" :disabled="isLoad">审核</a-button>
+      <!-- v-if="(userInfo.userCode== detailInfo.stat && detailInfo.state=='2')||
+            (userInfo.userCode== detailInfo.stat && detailInfo.state=='2')" -->
+      <div class="qui-tx-c u-mar-t" >
+        <a-button
+          type="primary"
+          v-if="detailInfo.state=='2'&&teamLeaderCode==userCode"
+          @click="submitOk('2')"
+          :disabled="isLoad">
+          审核
+        </a-button>
+        <a-button
+          type="primary"
+          v-if="detailInfo.state=='3'&&userCode==supervisionCode"
+          @click="submitOk('3')"
+          :disabled="isLoad">
+          督查
+        </a-button>
       </div>
     </div>
     <!-- <submit-form
@@ -128,9 +160,10 @@ export default {
   data() {
     this.id = ''
     return {
+      teamLeaderCode: 'QPJYJ', // 小组长Code
+      supervisionCode: 'QPJYJ', // 小组长Code
       formData,
       detailInfo: [],
-      detailImg: [],
       processes: [],
       activeKey: ['1'],
       isLoad: false,
@@ -140,68 +173,76 @@ export default {
     }
   },
   computed: {
-    ...mapState('home', ['userInfo'])
+    ...mapState('home', ['userInfo']),
+    userCode: {
+      get() {
+        return this.userInfo.schoolCode
+      },
+      set() {
+        this.$emit('input', false)
+      }
+    }
   },
   mounted() {
 
   },
   methods: {
-    ...mapActions('home', ['specialTaskDetail', 'updateInspect']),
+    ...mapActions('home', ['specialTaskDetail', 'updateInspect', 'modifySpecial']),
     moment,
     async showDetail(id) {
       this.id = id
       const res = await this.specialTaskDetail(id)
       console.log(res)
       this.detailInfo = res.data
+      this.detailInfo.itemList = this.detailInfo.itemList.map(el => {
+        return {
+          ...el,
+          standardList: el.standardList.map(item => {
+            return {
+              ...item,
+              examineResult: item.examineResult !== '0',
+              inspectionResult: item.inspectionResult !== '0',
+              selfResult: item.selfResult !== '0'
+            }
+          })
+        }
+      })
     },
     close() {
       this.$refs.modal.close()
     },
     // 提交
-    submitOk(e) {
-      e.preventDefault()
-      this.form.validateFields((error, values) => {
-        this.isLoad = false
-        if (!error) {
-          if (this.fileList.length === 0) {
-            this.$message.warning('请上传图片')
-            return
-          }
-          values.leaderCode = values.leaderName.split('+')[1]
-          values.leaderName = values.leaderName.split('+')[0]
-          values.reporterCode = this.userInfo.userName
-          values.reporterName = this.userInfo.userCode
-          values.reporterPhotoUrl = this.userInfo.logoUrl
-          values.schoolCode = this.userInfo.schoolCode
-          values.schoolName = this.userInfo.schoolName
-          values.photoUrl = this.fileList.map(el => el.url)
-          this.isLoad = true
-          if (!this.detailId) {
-            this.reportDanger(values)
-              .then(res => {
-                this.$message.success('操作成功')
-                this.$tools.goNext(() => {
-                  this.$router.go(-1)
-                })
-              })
-              .catch(res => {
-                this.isLoad = false
-              })
+    submitOk(type) {
+      this.isLoad = true
+      const resultList = []
+      this.detailInfo.itemList.map(el => {
+        el.standardList.map(item => {
+          if (this.type === '1') {
+            resultList.push({ id: item.id, result: item.selfResult ? '1' : '0' })
           } else {
-            values.id = this.detailId
-            this.updateSchoolArchive(values)
-              .then(res => {
-                this.$message.success('操作成功')
-                this.$tools.goNext(() => {
-                  this.$router.go(-1)
-                })
-              })
-              .catch(res => {
-                this.isLoad = false
-              })
+            resultList.push({ id: item.id, result: item.examineResult ? '1' : '0' })
           }
-        }
+        })
       })
+      const req = {
+        resultList: resultList,
+        submitType: type,
+        taskId: this.detailInfo.taskId,
+        userCode: this.userInfo.schoolCode,
+        userName: this.userInfo.schoolName
+      }
+      this.modifySpecial(req)
+        .then(res => {
+          this.isLoad = false
+          this.$message.success('操作成功')
+          this.$tools.goNext(() => {
+            this.$refs.modal.visible = false
+            this.$parent.showList()
+          })
+        })
+        .catch(res => {
+          this.isLoad = false
+        })
     }
   }
 }
