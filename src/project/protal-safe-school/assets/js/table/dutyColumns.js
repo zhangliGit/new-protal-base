@@ -70,7 +70,7 @@ const dutyColumns = {
       label: '上报时间'
     },
     {
-      value: 'keyWord',
+      value: 'name',
       initValue: '',
       type: 'selectInput',
       selectType: [{
@@ -98,11 +98,11 @@ const dutyColumns = {
           val: '正常'
         },
         {
-          key: '2',
+          key: '0',
           val: '异常'
         }
       ],
-      value: 'healthyState',
+      value: 'status',
       type: 'select',
       label: '状态'
     }

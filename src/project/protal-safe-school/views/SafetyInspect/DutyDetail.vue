@@ -2,6 +2,14 @@
   <div class="accident-add page-layout bg-fff qui-fx-ver">
     <div class="content pos-box">
       <a-form :form="form">
+        <a-form-item v-bind="formItemLayout" label="巡查点数量">
+          <a-radio-group
+            v-decorator="['patrolStatus', {initialValue: detailInfo.patrolStatus }]"
+            disabled
+          >
+            <a-radio :value="list.id" v-for="(list, ind) in list" :key="ind">{{ list.val }}</a-radio>
+          </a-radio-group>
+        </a-form-item>
         <a-form-item
           v-bind="formItemLayout"
           :label="list.label"
@@ -9,19 +17,22 @@
           :key="index"
           required
         >
-          <a-input v-decorator="['value', { initialValue: list.value }]" readOnly />
+          <a-input v-decorator="['value', { initialValue: list.value }]" readonly />
         </a-form-item>
         <a-form-item v-bind="formItemLayout" label="巡查点数量">
-          <a-tag color="cyan" @click="look(detailInfo)">{{ detailInfo.patrolPointNum }} </a-tag>
+          <a-tag color="cyan" @click="look">{{ detailInfo.patrolPointNum }}</a-tag>
         </a-form-item>
         <a-form-item v-bind="formItemLayout" label="值班轨迹">
           <div @click="check(detailInfo.track)" id="track" style="width:150px;height:150px;"></div>
         </a-form-item>
         <a-form-item v-bind="formItemLayout" label="事故图片">
-          <img :src="url" alt="" v-for="(url, index) in detailInfo.pictureList" :key="index" />
+          <img :src="url" alt v-for="(url, index) in detailInfo.pictureList" :key="index" />
         </a-form-item>
         <a-form-item v-bind="formItemLayout" label="问题描述">
-          <a-textarea v-decorator="['details', { initialValue: detailInfo.reportContent }]" readOnly />
+          <a-textarea
+            v-decorator="['details', { initialValue: detailInfo.reportContent }]"
+            readonly
+          />
         </a-form-item>
       </a-form>
     </div>
@@ -44,16 +55,18 @@
       centered
       @cancel="visible = false"
       :bodyStyle="bodyStyle"
-      width="360px"
+      width="660px"
       :destroyOnClose="true"
+      title="巡查点详情"
     >
-      <table-list :columns="columns" :table-list="inspectList"> </table-list>
+      <table-list :columns="columns" :table-list="inspectList"></table-list>
     </a-modal>
   </div>
 </template>
 
 <script>
 import maps from 'qqmap'
+import TableList from '@c/TableList'
 import { mapState, mapActions } from 'vuex'
 const columns = [
   {
@@ -70,14 +83,16 @@ const columns = [
     title: '巡查时间',
     dataIndex: 'createTime',
     width: '40%',
-    customRender: text => {
+    customRender: (text) => {
       return $tools.getDate(text)
     }
   }
 ]
 export default {
   name: 'AddAccident',
-  components: {},
+  components: {
+    TableList
+  },
   data() {
     return {
       columns,
@@ -99,7 +114,17 @@ export default {
       map: null,
       getAddress: null,
       getAddCode: null,
-      addressKeyword: ''
+      addressKeyword: '',
+      list: [
+        {
+          id: '1',
+          val: '正常'
+        },
+        {
+          id: '0',
+          val: '异常'
+        }
+      ]
     }
   },
   computed: {
@@ -110,21 +135,22 @@ export default {
     this.showDetail(this.detailId)
   },
   methods: {
-    ...mapActions('home', ['finishAccident', 'updateOtherArchive', 'getDutyDetail']),
+    ...mapActions('home', ['getDutyPoint', 'getDutyDetail']),
     check(data) {
       this.mapVisible = true
-      this.init(data,'container')
+      this.init(data, 'container')
     },
-    look(record) {
-      console.log('record',record)
+    async look() {
+      const res = await this.getDutyPoint(this.detailId)
+      this.inspectList = res.data.records
       this.visible = true
     },
-    init(data,id) {
+    init(data, id) {
       this.map = new qq.maps.Map(document.getElementById(id), {
         center: new qq.maps.LatLng(),
         zoom: 16
       })
-      const arr = data.map(item => {
+      const arr = data.map((item) => {
         return new qq.maps.LatLng(item.latitude, item.longitude)
       })
       var polyline = new qq.maps.Polyline({
@@ -132,7 +158,7 @@ export default {
         strokeColor: '#3385ff',
         strokeWeight: 4,
         map: this.map
-      });
+      })
     },
     async showDetail() {
       const res = await this.getDutyDetail(this.detailId)
