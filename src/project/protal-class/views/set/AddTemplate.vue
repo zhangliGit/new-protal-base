@@ -229,7 +229,16 @@ export default {
       if (ev.to.className === 'dragArea11') {
         console.log(ev.item.id)
         console.log(ev.to.childNodes[ev.newIndex].offsetLeft, ev.to.childNodes[ev.newIndex].offsetTop)
-        const position = this.transform('position', { x: ev.to.childNodes[ev.newIndex].offsetLeft, y: ev.to.childNodes[ev.newIndex].offsetTop })
+        console.log(ev.to.childNodes)
+        this.setList = Array.prototype.slice.call(ev.to.childNodes).map(ele => {
+          return {
+            name: ele.innerText,
+            width: this.transform('size', ele.offsetWidth),
+            height: this.transform('size', ele.offsetHeight),
+            position: this.transform('position', { x: ele.offsetLeft, y: ele.offsetTop })
+          }
+        })
+        /* const position = this.transform('position', { x: ev.to.childNodes[ev.newIndex].offsetLeft, y: ev.to.childNodes[ev.newIndex].offsetTop })
         console.log(position)
         if (this.girdNum >= 12) {
           this.$message.error('超过限制')
@@ -241,16 +250,17 @@ export default {
           width: this.transform('size', ev.item.id.split('^')[0]),
           height: this.transform('size', ev.item.id.split('^')[1]),
           position
-        })
+        }) */
         this.$set(this.imgList[ev.oldIndex], 'flag', true)
         console.log(this.setList)
       }
     },
-    start22 (event) {
+    start22 (ev) {
       this.falgs = '222222'
     },
     end22 (ev) {
       this.falgs = 'article'
+      console.log(ev)
     },
     handleDel (index, key) {
       this.list.splice(index, 1)

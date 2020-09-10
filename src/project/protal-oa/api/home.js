@@ -48,6 +48,13 @@ const zqApi = {
   delReserve: '/place/reserve/delete#delWithQuery', // 删除场地预定
   getSignDetail: '/place/reserve/signdetail#get', // 签到详情
 
+  // 校园活动
+  getSchoolActivityList: '/school/activity/list#post', // 校园活动列表查询
+  schoolActivityDetail: '/school/activity/detail#getUrl', // 查询校园活动详情
+  addSchoolActivity: '/school/activity/add#post', // 校园活动新增
+  editSchoolActivity: '/school/activity/update#putJson', // 校园活动编辑
+  delSchoolActivity: '/school/activity/delete#delWithQuery', // 删除校园活动
+
   // 会议发布
   addMeetRecord: '/place/reserve/summary/add#post', // 新增会议纪要
   getMeetRecordById: '/place/reserve/summary/detail#getUrl' // 会议纪要

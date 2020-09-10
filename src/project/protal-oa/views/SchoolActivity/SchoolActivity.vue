@@ -7,7 +7,7 @@
     </search-form>
     <table-list :page-list="pageList" :columns="columns" :table-list="bookingList">
       <template v-slot:actions="action">
-        <a-tooltip placement="topLeft" title="查看" v-if="action.record.status !== '未使用'">
+        <a-tooltip placement="topLeft" title="查看" v-if="action.record.state !== '1'">
           <a-button
             size="small"
             class="detail-action-btn"
@@ -15,7 +15,7 @@
             @click.stop="addBooking('1', action.record)"
           ></a-button>
         </a-tooltip>
-        <a-tooltip placement="topLeft" title="编辑" v-if="action.record.status === '未使用'">
+        <a-tooltip placement="topLeft" title="编辑" v-if="action.record.state === '1'">
           <a-button
             size="small"
             class="edit-action-btn"
@@ -31,7 +31,7 @@
             @click.stop="downLoad(action.record)"
           ></a-button>
         </a-tooltip>
-        <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="deleteList(action.record)" v-if="action.record.status === '未开始' || action.record.status === '已结束'">
+        <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="deleteList(action.record)" v-if="action.record.state === '1' || action.record.status === '3'">
           <template slot="title">
             确定删除吗?
           </template>
@@ -41,7 +41,7 @@
         </a-popconfirm>
       </template>
       <template v-slot:other3="other3">
-        <span>{{ other3.record.reserveDate | gmtToDate('date') }} {{ other3.record.startTime }}-{{ other3.record.endTime }}</span>
+        <span>{{ other3.record.startTime | gmtToDate() }} - {{ other3.record.endTime | gmtToDate() }}</span>
       </template>
       <template v-slot:other4="other4">
         <a-popover>
@@ -57,8 +57,8 @@
       </template>
       <template v-slot:other1="other1">
         <a-tag
-          :color="other1.record.status === '使用中' ? '#87d068' : other1.record.status === '未使用' ? '#2db7f5' : 'purple'"
-        >{{ other1.record.status === '使用中' ? '进行中' : other1.record.status === '未使用' ? '未开始' : '已结束' }}</a-tag>
+          :color="other1.record.state === '2' ? '#87d068' : other1.record.state === '1' ? '#2db7f5' : 'purple'"
+        >{{ other1.record.state === '2' ? '进行中' : other1.record.state === '1' ? '未开始' : '已结束' }}</a-tag>
       </template>
     </table-list>
     <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
@@ -86,7 +86,7 @@ const columns = [
   },
   {
     title: '活动时间',
-    dataIndex: 'reserveDate',
+    dataIndex: 'startTime',
     width: '10%',
     scopedSlots: {
       customRender: 'other3'
@@ -108,10 +108,10 @@ const columns = [
   },
   {
     title: '报名截止时间',
-    dataIndex: 'openSign',
+    dataIndex: 'stopDatetime',
     width: '10%',
-    scopedSlots: {
-      customRender: 'other2'
+    customRender: text => {
+      return Tools.getDate(text, 6)
     }
   },
   {
@@ -163,7 +163,7 @@ const searchLabel = [
         val: '已结束'
       }
     ],
-    value: 'status',
+    value: 'state',
     type: 'select',
     label: '活动状态'
   },
@@ -204,15 +204,14 @@ export default {
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getReserveList', 'delReserve', 'addMeetRecord', 'getMeetRecordById']),
+    ...mapActions('home', ['getSchoolActivityList', 'schoolActivityDetail', 'delSchoolActivity']),
     async showList() {
       const req = {
         ...this.searchObj,
         ...this.pageList,
-        schoolCode: this.userInfo.schoolCode,
-        type: '3'
+        schoolCode: this.userInfo.schoolCode
       }
-      const res = await this.getReserveList(req)
+      const res = await this.getSchoolActivityList(req)
       this.bookingList = res.data.list
       this.bookingList.map(el => {
         el.placeName = el.placeName.replace(/,/g, '-')
@@ -222,9 +221,9 @@ export default {
     searchForm(values) {
       console.log(values)
       this.searchObj = {
-        startDate: values.rangeTime ? values.rangeTime[0] : undefined,
-        endDate: values.rangeTime ? values.rangeTime[1] : undefined,
-        status: values.status,
+        startTime: values.rangeTime ? new Date(values.rangeTime[0]) : undefined,
+        endTime: values.rangeTime ? new Date(values.rangeTime[1]) : undefined,
+        state: values.state,
         description: values.description
       }
       this.showList()
@@ -237,7 +236,7 @@ export default {
       }
     },
     async deleteList(record) {
-      await this.delReserve(record.id)
+      await this.delSchoolActivity(record.id)
       this.$message.success('删除成功')
       this.$tools.goNext(() => {
         this.showList()

@@ -26,41 +26,15 @@
         :wrapper-col="{ span: 18 }"
         :required="true"
       >
-        <ul>
-          <li class="qui-fx-f1" v-for="(time, index) in timeList" :key="index">
-            <div class="qui-fx-ac mar-b10">
-              <a-date-picker
-                :allowClear="false"
-                :value="time.date"
-                :disabled="type === '1'"
-                :default-value="defaultDate"
-                :disabled-date="disabledDate"
-                style="margin-right: 10px"
-                @change="(val,dateStrings)=>changeDate(val,dateStrings, index)"
-              />
-              <a-time-picker
-                :allowClear="false"
-                :disabled="type === '1'"
-                :value="time.startTime"
-                @change="(val,dateStrings)=>changeTime(val,dateStrings,'startTime', index)"
-                format="HH:mm"
-                :disabledMinutes="(val)=>getStartMinutes(val,index)"
-                :disabledHours="(val)=>getStartHours(val,index)"
-              />
-              <span style="padding: 0 8px">至</span>
-              <a-time-picker
-                :allowClear="false"
-                :disabled="type === '1'"
-                style="margin-right: 10px"
-                :value="time.endTime"
-                format="HH:mm"
-                :disabledMinutes="(val)=>getDisabledMinutes(val, index)"
-                :disabledHours="(val)=>getDisabledHours(val, index)"
-                @change="(val,dateStrings)=>changeTime(val,dateStrings,'endTime', index)"
-              ></a-time-picker>
-            </div>
-          </li>
-        </ul>
+        <div class="qui-fx-ac mar-b10">
+          <a-range-picker
+            :allowClear="false"
+            :disabled-date="disabledDate"
+            v-model="timeList"
+            :show-time="{ format: 'HH:mm' }"
+            format="YYYY-MM-DD HH:mm"
+          />
+        </div>
       </a-form-item>
       <a-form-item
         label="活动地点"
@@ -71,7 +45,7 @@
         <a-input
           :maxLength="10"
           placeholder="请输入活动地点"
-          :disabled="type !== '0'"
+          :disabled="type === '1'"
           v-decorator="['placeName', { initialValue: formData.placeName, rules: [{ required: true, message: '请输入活动地点' }] }]"
         />
       </a-form-item>
@@ -130,10 +104,12 @@
         <div class="qui-fx-ac mar-b10">
           <a-date-picker
             show-time
+            :allowClear="false"
             v-model="formData.applyEnddate"
             :disabled="type === '1'"
-            default-value=""
             :disabled-date="disabledDate"
+            valueFormat="YYYY-MM-DD HH:mm"
+            format="YYYY-MM-DD HH:mm"
           />
         </div>
       </a-form-item>
@@ -147,7 +123,7 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
-import ChooseControl from '@c/choose/ChooseControl'
+import ChooseControl from '../../component/ChooseCardcontrol'
 import { Switch } from 'ant-design-vue'
 import moment from 'moment'
 export default {
@@ -159,13 +135,12 @@ export default {
   },
   data() {
     return {
-      defaultDate: moment(new Date(), 'YYYY-MM-DD'),
       formData: {
         remark: '',
         content: '',
         placeName: '',
         switch: false,
-        applyEnddate: ''
+        applyEnddate: moment(new Date(), 'YYYY-MM-DD HH:mm')
       },
       controlTag: false,
       switchTag: false,
@@ -173,7 +148,7 @@ export default {
       maxHeight: 0,
       id: 0,
       type: 0, // 0新增 1查看 2编辑
-      timeList: [],
+      timeList: [moment(new Date(), 'YYYY-MM-DD HH:mm'), moment(new Date(new Date().getTime() + (24 * 60 * 60 * 1000)), 'YYYY-MM-DD HH:mm')],
       controlList: []
     }
   },
@@ -185,20 +160,13 @@ export default {
     this.type = this.$route.query.type
     if (this.type !== '0') {
       this.showData()
-    } else {
-      this.timeList = [
-        {
-          date: moment(new Date(), 'YYYY-MM-DD'),
-          startTime: moment(new Date(), 'HH:mm'),
-          endTime: moment('23:59', 'HH:mm')
-        }
-      ]
     }
   },
   methods: {
     ...mapActions('home', [
-      'addReserve',
-      'reserveDetail'
+      'addSchoolActivity',
+      'schoolActivityDetail',
+      'editSchoolActivity'
     ]),
     switchChange(val) {
       if (!val) {
@@ -207,20 +175,17 @@ export default {
     },
     // 表单回填
     async showData() {
-      const res = await this.reserveDetail(this.$route.query.id)
+      const res = await this.schoolActivityDetail(this.$route.query.id)
       console.log(res.data)
       this.formData.placeName = res.data.placeName
-      this.timeList = [
-        {
-          date: moment(new Date(res.data.reserveDate), 'YYYY/MM/DD'),
-          startTime: moment(res.data.startTime, 'HH:mm'),
-          endTime: moment(res.data.endTime, 'HH:mm')
-        }
-      ]
+      this.timeList = [moment(new Date(res.data.startTime), 'YYYY-MM-DD HH:mm'), moment(new Date(res.data.endTime), 'YYYY-MM-DD HH:mm')]
       this.formData.remark = res.data.description
       this.formData.content = res.data.content
       this.formData.switch = res.data.openSign === '1'
-      this.controlList = res.data.placeReserveDeviceList
+      if (this.formData.switch) {
+        this.formData.applyEnddate = moment(new Date(res.data.stopDatetime), 'YYYY-MM-DD HH:mm')
+      }
+      this.controlList = res.data.deviceList
     },
     // 提交权限组
     handleSubmit(e) {
@@ -235,46 +200,50 @@ export default {
             this.$message.error('请选择报名截止时间')
             return
           }
+          if (new Date(this.formData.applyEnddate).getTime() >= new Date(this.timeList[0]).getTime()) {
+            this.$message.error('报名截止时间不能晚于活动开始时间')
+            return
+          }
           const req = {
             schoolCode: this.userInfo.schoolCode,
             createName: this.userInfo.userName,
             createCode: this.userInfo.userCode,
             description: values.remark,
             content: values.content,
-            placeReserveDateDtoList: [
-              {
-                reserveDate: this.timeList[0].date.format('YYYY-MM-DD'),
-                startTime: this.timeList[0].startTime.format('HH:mm'),
-                endTime: this.timeList[0].endTime.format('HH:mm')
-              }
-            ],
-            openSign: values.switch ? '1' : '2',
+            startTime: this.timeList[0],
+            endTime: this.timeList[1],
+            openSign: values.switch ? '1' : '0',
             placeName: values.placeName,
-            placeReserveDeviceList: this.controlList.map(el => {
+            deviceList: this.controlList.map(el => {
               return {
                 deviceName: el.deviceName,
-                deviceSn: el.deviceSn
+                deviceSn: el.deviceSn,
+                deviceIp: el.deviceIp,
+                schoolCode: el.schoolCode,
+                activityId: this.$route.query.id
               }
-            }),
-            type: '3'
+            })
           }
           if (values.switch) {
-            req.applyEnddate = this.formData.applyEnddate.format('YYYY-MM-DD HH:mm:ss')
-          }
-          if (this.type === '2') {
-            req.id = this.$route.query.id
-            req.placeReserveDateDtoList = undefined
-            req.reserveDate = this.timeList[0].date.format('YYYY-MM-DD')
-            req.startTime = this.timeList[0].startTime.format('HH:mm')
-            req.endTime = this.timeList[0].endTime.format('HH:mm')
+            req.stopDatetime = this.formData.applyEnddate
           }
           console.log(req)
-          /* this.addReserve(req).then(res => {
-            this.$message.success('添加成功')
-            this.$tools.goNext(() => {
-              this.$router.push({ path: '/activityBooking' })
+          if (this.type === '2') {
+            req.id = this.$route.query.id
+            this.editSchoolActivity(req).then(res => {
+              this.$message.success('编辑成功')
+              this.$tools.goNext(() => {
+                this.$router.push({ path: '/schoolActivity' })
+              })
             })
-          }) */
+          } else if (this.type === '0') {
+            this.addSchoolActivity(req).then(res => {
+              this.$message.success('添加成功')
+              this.$tools.goNext(() => {
+                this.$router.push({ path: '/schoolActivity' })
+              })
+            })
+          }
         }
       })
     },
@@ -294,64 +263,6 @@ export default {
     },
     disabledDate(current) {
       return current && current < moment().startOf('day')
-    },
-    changeTime(val, dateStrings, type, index) {
-      console.log()
-      if (
-        this.timeList[index].date.format('YYYY/MM/DD') === moment(new Date()).format('YYYY/MM/DD') &&
-        val.valueOf() < moment(new Date()).valueOf()
-      ) {
-        val = moment(new Date(), 'HH:mm')
-      }
-      if (type === 'startTime') {
-        this.timeList[index].startTime = val
-      } else {
-        this.timeList[index].endTime = val
-      }
-    },
-    changeDate(val, dateStrings, index) {
-      this.timeList[index].date = val
-      if (dateStrings !== moment(new Date()).format('YYYY-MM-DD')) {
-        this.timeList[index].startTime = moment('00:00', 'HH:mm')
-      } else {
-        this.timeList[index].startTime = moment(new Date(), 'HH:mm')
-      }
-    },
-    getStartHours(val, index) {
-    },
-    getDisabledHours(val, index) {
-      const hours = []
-      const time = moment(this.timeList[index].startTime).format('HH:mm')
-      const timeArr = time.split(':')
-      for (var i = 0; i < parseInt(timeArr[0]); i++) {
-        hours.push(i)
-      }
-      return hours
-    },
-    getStartMinutes(selectedHour, index) {
-      if (index === 0) {
-        return
-      }
-      const time = moment(this.timeList[index].endTime).format('HH:mm')
-      const timeArr = time.split(':')
-      const minutes = []
-      if (selectedHour === parseInt(timeArr[0])) {
-        for (var i = 0; i < parseInt(timeArr[1]); i++) {
-          minutes.push(i)
-        }
-      }
-      return minutes
-    },
-    getDisabledMinutes(selectedHour, index) {
-      const time = moment(this.timeList[index].startTime).format('HH:mm')
-      const timeArr = time.split(':')
-      const minutes = []
-      if (selectedHour === parseInt(timeArr[0])) {
-        for (var i = 0; i <= parseInt(timeArr[1]); i++) {
-          minutes.push(i)
-        }
-      }
-      return minutes
     }
   }
 }
