@@ -1,14 +1,14 @@
 <template>
   <div class="page-layout qui-fx-ver">
     <div class="mode-content qui-fx">
-      <div ref="imageWrapper" id="content" class="content-left">
+      <div ref="imageWrapper" id="content" class="box-scroll content-left" :style="{height: (scrollH - 60) + 'px'}">
         <draggable
           :list="list"
           :options="{group:'article', disabled: disabled}"
           @start="start22"
           @end="end22"
           class="dragArea11"
-          :style="{'backgroundImage' : 'url('+gridImg+')','height': '100%', 'width':'100%'}">
+          :style="{'backgroundImage' : 'url('+gridImg+')','height': '660px', 'width':'100%'}">
           <div class="notice-card qui-fx-ver" v-for="(item,i) in list" :key="i" :style="{'width':''+(item.x)+'px','height':''+(item.y)+'px'}">
             <div class="qui-fx-f1 qui-fx-ver qui-fx-jsb right-img" :style="{'backgroundImage': 'url('+item.img+')'}"></div>
             <div class="notice-title qui-fx-jc qui-je">{{ item.title }}</div>
@@ -17,8 +17,34 @@
             </div>
           </div>
         </draggable>
+        <div class="wrap-table qui-fx-f1 qui-fx-ver">
+          <a-form :form="form">
+            <a-form-item :label-col="{ span: 2 }" :wrapper-col="{ span: 16 }" label="模板名称">
+              <a-input
+                placeholder="请输入模板名称"
+                type="text"
+                v-decorator="['name',{rules: [{max: 10,required: true,message: '请输入模板名称'}]}]"
+              />
+            </a-form-item>
+            <a-form-item :label-col="{ span: 2 }" :wrapper-col="{ span: 16 }" label="模板简介">
+              <a-input
+                placeholder="请输入模板简介"
+                type="text"
+                v-decorator="['remark',{rules: [{max: 10,required: true,message: '请输入模板简介'}]}]"
+              />
+            </a-form-item>
+            <a-form-item :wrapper-col="{ span: 12, offset: 4 }">
+              <a-button class="mar-r10">
+                取消
+              </a-button>
+              <a-button type="primary" @click="addSubmit">
+                保存
+              </a-button>
+            </a-form-item>
+          </a-form>
+        </div>
       </div>
-      <div class="qui-fx-f2 box-scroll content-right">
+      <div class="qui-fx-f1 box-scroll content-right">
         <a-button type="primary">组件库</a-button>
         <draggable
           :list="imgList"
@@ -26,25 +52,13 @@
           @start="start"
           @end="end"
           class="dragArea box"
-          :style="{height: scrollH + 'px'}">
-          <div :class="item.flag ? 'undraggable notice-card qui-fx-ver ' : 'notice-card qui-fx-ver ' " v-for="(item, index) in imgList" :key="item.key" @click="chooseImg(item, index)">
+          :style="{height: (scrollH - 150) + 'px'}">
+          <div :id="item.x + '^' + item.y + '^' + item.key" :class="item.flag ? 'undraggable notice-card qui-fx-ver ' : 'notice-card qui-fx-ver ' " v-for="(item, index) in imgList" :key="item.key" @click="chooseImg(item, index)">
             <div class="qui-fx-f1 qui-fx-ver qui-fx-jsb right-img" :style="{'backgroundImage': 'url('+item.img+')'}"></div>
             <div class="notice-title qui-fx-jc qui-je">{{ item.title }}</div>
           </div>
         </draggable>
       </div>
-    </div>
-    <div class="wrap-table qui-fx-f1 qui-fx-ver">
-      <a-form :form="form">
-        <a-form-item :wrapper-col="{ span: 12, offset: 4 }">
-          <a-button class="mar-r10">
-            取消
-          </a-button>
-          <a-button type="primary" @click="addSubmit">
-            保存
-          </a-button>
-        </a-form-item>
-      </a-form>
     </div>
   </div>
 </template>
@@ -83,6 +97,9 @@ export default {
       disabled: false,
       imgUrl: '',
       list: [],
+      setList: [],
+      girdNum: 0,
+      position: 1,
       imgList: [
         {
           key: '0',
@@ -157,26 +174,93 @@ export default {
   },
   mounted() {
     this.showList()
-    this.scrollH = document.documentElement.offsetHeight - 280
+    this.scrollH = document.documentElement.offsetHeight
   },
   methods: {
     ...mapActions('home', [
       'addWelcome'
     ]),
+    transform(type, val) {
+      if (type === 'size') {
+        const data = {
+          '200': '1',
+          '420': '2'
+        }
+        return data[val]
+      } else if (type === 'position') {
+        if (parseInt(val.y / 210) >= 2) {
+          if (parseInt(val.x / 210) >= 3) {
+            return 12
+          } else if (parseInt(val.x / 210) >= 2) {
+            return 11
+          } else if (parseInt(val.x / 210) >= 1) {
+            return 10
+          } else {
+            return 9
+          }
+        } else if (parseInt(val.y / 210) >= 1) {
+          if (parseInt(val.x / 210) >= 3) {
+            return 8
+          } else if (parseInt(val.x / 210) >= 2) {
+            return 7
+          } else if (parseInt(val.x / 210) >= 1) {
+            return 6
+          } else {
+            return 5
+          }
+        } else {
+          if (parseInt(val.x / 210) >= 3) {
+            return 4
+          } else if (parseInt(val.x / 210) >= 2) {
+            return 3
+          } else if (parseInt(val.x / 210) >= 1) {
+            return 2
+          } else {
+            return 1
+          }
+        }
+      }
+    },
     start (event) {
       console.log(event)
     },
     end (ev) {
       console.log(ev)
       if (ev.to.className === 'dragArea11') {
+        console.log(ev.item.id)
+        console.log(ev.to.childNodes[ev.newIndex].offsetLeft, ev.to.childNodes[ev.newIndex].offsetTop)
+        console.log(ev.to.childNodes)
+        this.setList = Array.prototype.slice.call(ev.to.childNodes).map(ele => {
+          return {
+            name: ele.innerText,
+            width: this.transform('size', ele.offsetWidth),
+            height: this.transform('size', ele.offsetHeight),
+            position: this.transform('position', { x: ele.offsetLeft, y: ele.offsetTop })
+          }
+        })
+        /* const position = this.transform('position', { x: ev.to.childNodes[ev.newIndex].offsetLeft, y: ev.to.childNodes[ev.newIndex].offsetTop })
+        console.log(position)
+        if (this.girdNum >= 12) {
+          this.$message.error('超过限制')
+          return
+        }
+        this.setList.push({
+          name: ev.item.innerText,
+          id: ev.item.id.split('^')[2],
+          width: this.transform('size', ev.item.id.split('^')[0]),
+          height: this.transform('size', ev.item.id.split('^')[1]),
+          position
+        }) */
         this.$set(this.imgList[ev.oldIndex], 'flag', true)
+        console.log(this.setList)
       }
     },
-    start22 (event) {
+    start22 (ev) {
       this.falgs = '222222'
     },
     end22 (ev) {
       this.falgs = 'article'
+      console.log(ev)
     },
     handleDel (index, key) {
       this.list.splice(index, 1)
@@ -184,6 +268,10 @@ export default {
         return value.key === key
       })
       this.$set(q, 'flag', false)
+      const j = this.setList.findIndex(list => list.id === key)
+      this.girdNum -= this.setList[j].width * this.setList[j].height
+      this.setList.splice(j, 1)
+      console.log(this.setList)
     },
     async showList () {
     },
@@ -191,6 +279,11 @@ export default {
       this.active = index
     },
     addSubmit () {
+      this.form.validateFields((err, values) => {
+        if (!err) {
+          console.log(values)
+        }
+      })
       html2canvas(this.$refs.imageWrapper).then(canvas => {
         const dataURL = canvas.toDataURL('image/png')
         this.imgUrl = dataURL
@@ -212,6 +305,7 @@ export default {
   .mode-content{
     background-color:#fff;
     padding: 20px 0px 20px 20px;
+    overflow-y: auto;
   }
   .go-back{
     margin-bottom: 5px;
@@ -220,15 +314,14 @@ export default {
   }
   .content-left{
     width: 900px;
-    height: 660px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    height: 100%;
+    overflow: auto;
     margin-right: 20px;
     background-repeat: no-repeat;
     background-size: 100% 100%;
+    .dragArea11{
+      margin-bottom: 20px;
+    }
     .content-input{
       margin-bottom:40px;
       width: 60%;
@@ -294,5 +387,8 @@ export default {
         width: calc( 50% - 20px);
       }
     }
+  }
+  .wrap-table{
+    width: 100%;
   }
 </style>

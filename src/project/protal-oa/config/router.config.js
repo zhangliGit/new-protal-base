@@ -9,6 +9,8 @@ const Register = resolve => require(['../views/GoodsManage/register.vue'], resol
 const Guarantee = resolve => require(['../views/GoodsManage/guarantee.vue'], resolve)
 const Collect = resolve => require(['../views/GoodsManage/collect.vue'], resolve)
 const Record = resolve => require(['../views/SubstituteClass/record.vue'], resolve)
+const SchoolActivity = resolve => require(['../views/SchoolActivity/SchoolActivity.vue'], resolve)
+const AddSchoolActivity = resolve => require(['../views/SchoolActivity/AddSchoolActivity.vue'], resolve)
 export const asyncRouterMap = [
   {
     path: '/',
@@ -17,7 +19,7 @@ export const asyncRouterMap = [
     meta: {
       title: 'OA办公'
     },
-    redirect: '/register',
+    redirect: '/schoolActivity',
     children: [
       {
         path: '/home',
@@ -25,6 +27,23 @@ export const asyncRouterMap = [
         component: Home,
         meta: {
           title: '首页'
+        }
+      },
+      {
+        path: '/schoolActivity',
+        name: 'schoolActivity',
+        component: SchoolActivity,
+        meta: {
+          title: '校园活动'
+        }
+      },
+      {
+        path: '/schoolActivity/addSchoolActivity',
+        name: 'addSchoolActivity',
+        component: AddSchoolActivity,
+        meta: {
+          title: '活动发布',
+          isHide: true
         }
       },
       {

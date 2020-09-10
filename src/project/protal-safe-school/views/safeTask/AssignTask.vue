@@ -1,55 +1,65 @@
 <template>
   <div class="page-layout qui-fx-ver">
-    <search-form is-reset @search-form="searchForm" :search-label="duty.searchLabel">
+    <search-form is-reset @search-form="searchForm" :search-label="task.assignSearchLabel">
       <div slot="left">
+        <a-button type="primary" icon="plus" @click="add(0)">添加任务</a-button>
         <a-button icon="delete" class="del-btn mar-l10" @click="dels">批量删除</a-button>
       </div>
     </search-form>
     <table-list
-      is-check
       :page-list="pageList"
-      :columns="duty.columns"
-      :table-list="dutyList"
+      :columns="task.assignColumns"
+      :table-list="userList"
       v-model="chooseList"
       @clickRow="clickRow"
       @selectAll="selectAll"
     >
       <template v-slot:actions="action">
-        <a-tooltip placement="topLeft" title="查看">
-          <a-button
-            size="small"
-            class="detail-action-btn"
-            icon="ellipsis"
-            @click="goDetail(action.record)"
-          ></a-button>
+        <a-tooltip placement="topLeft" title="预览">
+          <a-button size="small" class="detail-action-btn" icon="ellipsis"></a-button>
+        </a-tooltip>
+        <a-tooltip placement="topLeft" title="编辑">
+          <a-button size="small" class="edit-action-btn" icon="form"></a-button>
+        </a-tooltip>
+        <a-tooltip placement="topLeft" title="发布">
+          <a-button size="small" class="play-action-btn" icon="play-circle"></a-button>
+        </a-tooltip>
+        <a-tooltip placement="topLeft" title="查看完成情况">
+          <a-button size="small" class="copy-action-btn" icon="copy"></a-button>
+        </a-tooltip>
+        <a-tooltip placement="topLeft" title="产看统计">
+          <a-button size="small" class="export-all-btn" icon="export"></a-button>
         </a-tooltip>
         <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="del(action)">
-          <template slot="title">确定删除该巡查值班吗?</template>
+          <template slot="title">确定删除该器材的档案记录吗？</template>
           <a-tooltip placement="topLeft" title="删除">
             <a-button size="small" class="del-action-btn" icon="delete"></a-button>
           </a-tooltip>
         </a-popconfirm>
       </template>
       <template v-slot:other1="other1">
-        <div :id="other1.record.id"></div>
-      </template>
-      <template v-slot:other2="other2">
-        <a-tag color="cyan" @click="check(other2.record)">{{ other2.record.patrolPointNum }}</a-tag>
+        <img class="ewm" :src="img" alt />
       </template>
     </table-list>
     <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
-    <a-modal
+    <!-- <a-modal
       :visible="visible"
       :footer="null"
       centered
       @cancel="visible = false"
       :bodyStyle="bodyStyle"
-      width="660px"
+      width="360px"
+      :closable="false"
       :destroyOnClose="true"
-      title="巡查点详情"
     >
-      <table-list :columns="duty.inspectColumns" :table-list="inspectList"></table-list>
-    </a-modal>
+      <div class="erm-box qui-fx-ver">
+        <div class="logo">
+          <img :src="logo" alt />
+        </div>
+        <div class="qr-code" id="qrCode" ref="qrCodeDiv"></div>
+        <div class="area">巡检点：{{ area }}</div>
+      </div>
+    </a-modal>-->
   </div>
 </template>
 
@@ -58,9 +68,10 @@ import { mapState, mapActions } from 'vuex'
 import SearchForm from '@c/SearchForm'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
-import duty from '../../assets/js/table/dutyColumns'
+import $tools from '@u/tools'
+import task from '../../assets/js/table/task'
 export default {
-  name: 'InspectDuty',
+  name: 'AssignTask',
   components: {
     TableList,
     PageNum,
@@ -68,20 +79,23 @@ export default {
   },
   data() {
     return {
-      duty,
+      task,
+      bodyStyle: {
+        padding: 0
+      },
+      visible: false,
       total: 0,
       pageList: {
         page: 1,
         size: 20
       },
       searchList: {},
-      dutyList: [],
+      userList: [],
+      form: this.$form.createForm(this),
+      areaList: [],
+      disabled: false,
       chooseList: [],
-      visible: false,
-      bodyStyle: {
-        padding: 0
-      },
-      inspectList: []
+      area: ''
     }
   },
   computed: {
@@ -91,69 +105,50 @@ export default {
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getDuty', 'getDutyPoint', 'delDutyPoint', 'delsDutyPoint']),
+    ...mapActions('home', ['getInspectList']),
     async showList() {
-      this.searchList.schoolCode = 'AITEST'
-      // this.searchList.schoolCode = this.userInfo.schoolCode
+      this.searchList.schoolCode = this.userInfo.schoolCode
       this.searchList = Object.assign(this.searchList, this.pageList)
-      const res = await this.getDuty(this.searchList)
-      this.dutyList = res.data.records
+      const res = await this.getInspectList(this.searchList)
+      this.userList = res.data.records
       this.total = res.data.total
-      res.data.records.map((el, index) => {
-        if (el.track.length > 0) {
-          el.map = new qq.maps.Map(document.getElementById(el.id), {
-            center: new qq.maps.LatLng(),
-            zoom: 16
-          })
-          const arr = el.track.map((item) => {
-            return new qq.maps.LatLng(item.latitude, item.longitude)
-          })
-          var polyline = new qq.maps.Polyline({
-            path: arr,
-            strokeColor: '#3385ff',
-            strokeWeight: 4,
-            map: el.map
-          })
-        }
-      })
     },
     searchForm(values) {
-      this.searchList.reportTimeFrom = values.rangeTime[0]
-      this.searchList.reportTimeTo = values.rangeTime[1]
       this.searchList = Object.assign(this.searchList, values)
       this.pageList.page = 1
       this.pageList.size = 20
       this.showList()
     },
-    async check(record) {
-      const res = await this.getDutyPoint(record.id)
-      this.inspectList = res.data.records
-      this.visible = true
-    },
-    goDetail(record) {
+    add() {
       this.$router.push({
-        path: '/inspectDuty/dutyDetail',
+        path: '/assignTask/addTask'
+      })
+    },
+    async addApp(type, record) {
+      this.$router.push({
+        path: '/inspectArea/areaAdd',
         query: {
-          id: record.id
+          id: record ? record.record.id : ''
         }
       })
     },
-    del(record) {
-      this.delDutyPoint(record.record.id).then((res) => {
-        this.$message.success('操作成功')
-        this.$tools.goNext(() => {
-          this.showList()
-          this.chooseList = []
-        })
+    // 删除单条记录
+    async del(record) {
+      await this.delOtherArchive(record.record.id)
+      this.$message.success('操作成功')
+      this.$tools.goNext(() => {
+        this.showList()
+        this.chooseList = []
       })
     },
-    dels() {
+    // 批量删除
+    dels(record) {
       if (this.chooseList.length === 0) {
-        this.$message.warning('请选择要删除的巡查值班')
+        this.$message.warning('请选择要删除的档案记录')
         return false
       }
-      this.$tools.delTip('确定删除选中的巡查值班吗？', () => {
-        this.delsDutyPoint(this.chooseList).then((res) => {
+      this.$tools.delTip('确定删除选中的档案记录吗？', () => {
+        this.delOtherArchives(this.chooseList).then((res) => {
           this.$message.success('操作成功')
           this.$tools.goNext(() => {
             this.showList()
@@ -189,4 +184,5 @@ export default {
   }
 }
 </script>
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+</style>

@@ -190,7 +190,7 @@ export default {
       this.area = record.name
       setTimeout(() => {
         const ewm = new QRCode(this.$refs.qrCodeDiv, {
-          text: `schoolCode=${this.userInfo.schoolCode}&code=${record.code}`,
+          text: `${this.userInfo.schoolCode}&${record.code}?${record.name}`,
           width: 200,
           height: 200,
           colorDark: '#333333', // 二维码颜色

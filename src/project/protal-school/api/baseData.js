@@ -47,14 +47,14 @@ const baseData2Api = {
   editSiteManage: '/place/manage/updatePlaceManage#post', // 更新场地
   getSiteById: '/place/manage/getPlaceManageById#getUrl', // 根据id获取场地信息
   getChildSite: '/place/manage/getPlaceManageList#post', // 查询场地子节点列表
-  deleteSite: '/place/manage/delPlaceManageById#del', // 根据id删除场地
+  deleteSite: '/place/manage/delPlaceManageById#del' // 根据id删除场地
 
-  // 学科管理
+  /* // 学科管理
   addSub: '/subject/manage/add#post', // 添加学科信息
   editSub: '/subject/manage/update#post', // 根据id更新学科信息
   getSubById: '/subject/manage/getSubjectById#getUrl', // 根据id查询学科信息
   getSubList: '/subject/manage/getSubjectList#post', // 查询学科列表
-  deleteSub: '/subject/manage/delSubjectById#del' // 根据id删除学科信息
+  deleteSub: '/subject/manage/delSubjectById#del' // 根据id删除学科信息 */
 }
 
 const baseData3Api = {

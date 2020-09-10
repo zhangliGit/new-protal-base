@@ -11,38 +11,10 @@
           :key="index2"
           @click="reviewDetails(v.taskId)">
           <div class="title u-bold u-font-1">{{ v.schoolName }}</div>
-          <div class="btn u-fx-ac-jc u-font-01" :class="v.state==4?'green':''">
+          <div class="btn u-fx-ac-jc u-font-01" :class="v.state==4||v.state==3?'green':''">
             {{ v.state | taskStatus }}
           </div>
         </div>
-      </div>
-    </div>
-    <div class="card ">
-      <div class="title-tab">
-        <span class="title-tab-pane on u-type-primary">光明街道</span>
-      </div>
-      <div class="cont u-fx-wp u-mar-t10">
-        <div class="list_box u-fx-ac-jc  u-mar-10">
-          <div class="title u-bold u-font-1">梅沙河里小学</div>
-          <div class="btn u-fx-ac-jc u-font-01">检查待审核</div>
-        </div>
-        <div class="list_box u-fx-ac-jc  u-mar-10">
-          <div class="title u-bold  u-font-1">梅沙河里小学</div>
-          <div class="btn u-fx-ac-jc green u-font-01">督查完成</div>
-        </div>
-        <div class="list_box u-fx-ac-jc u-bold u-font-1 u-mar-10">梅沙河里小学
-          <div class="btn u-fx-ac-jc u-font-01 ">检查待审核</div>
-        </div>
-        <div class="list_box u-fx-ac-jc u-bold u-font-1 u-mar-10">梅沙河里小学
-          <div class="btn u-fx-ac-jc u-font-01 ">检查待审核</div>
-        </div>
-        <div class="list_box u-fx-ac-jc u-bold u-font-1 u-mar-10">梅沙河里小学
-          <div class="btn u-fx-ac-jc u-font-01 ">检查待审核</div>
-        </div>
-        <div class="list_box u-fx-ac-jc u-bold u-font-1 u-mar-10">梅沙河里小学
-          <div class="btn u-fx-ac-jc u-font-01 ">检查待审核</div>
-        </div>
-
       </div>
     </div>
     <special-detail ref="SpecialDetail" ></special-detail>

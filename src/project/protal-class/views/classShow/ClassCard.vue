@@ -78,8 +78,8 @@ export default {
   },
   methods: {
     ...mapActions('home', ['getClassMotto', 'addClassMotto', 'delFile']),
-    delUpload(id) {
-      this.delFile(id || this.fileList[0].photoId)
+    delUpload(value) {
+      this.delFile(value.id || this.fileList[0].photoId)
     },
     // 选中年级
     select (item) {

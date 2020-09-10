@@ -116,7 +116,7 @@ export default {
         const index = this.fileList.findIndex(item => {
           return item.uid === file.uid
         })
-        this.$emit('delUpload', this.fileList[index].id)
+        this.$emit('delUpload', this.fileList[index])
         this.fileList.splice(index, 1)
       })
     },
@@ -150,6 +150,7 @@ export default {
           id: Array.isArray(info.file.response.data) ? info.file.response.data[0].id : info.file.response.data.id,
           url: Array.isArray(info.file.response.data) ? info.file.response.data[0].url : info.file.response.data.url
         })
+        this.$emit('success', info.file.response.data)
         this.uploadTag = false
       }
     }

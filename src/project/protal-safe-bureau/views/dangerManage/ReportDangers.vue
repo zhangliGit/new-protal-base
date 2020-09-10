@@ -25,14 +25,6 @@
                 {{ list.name }}
               </a-select-option>
             </a-select>
-            <!-- <a-input
-              @click="scoloolChange"
-              placeholder="请选择指定负责人"
-              v-decorator="[
-                'leaderName',
-                { initialValue: appForm.leaderName, rules: [ {required: false, message: '请选择指定负责人' } ]}
-              ]"
-            /> -->
           </a-form-item>
           <a-form-item v-bind="formItemLayout" label="隐患位置" >
             <a-input
@@ -110,7 +102,6 @@ import { mapState, mapActions } from 'vuex'
 import SearchForm from '@c/SearchForm'
 import UploadMulti from '@c/UploadMulti'
 import ChooseSchool from '@c/choose/ChooseSchool'
-// import ChooseUser from '@c/choose/ChooseUser.vue'
 import { reportDangerForm } from '../../assets/js/submitLable.js'
 // import hostEnv from '@config/host-env'
 
@@ -146,46 +137,26 @@ export default {
         w: 120 // 宽度
       },
       photoUrl: [],
-      status: false,
       appForm: {},
-      areaList: [],
-      placeholder: '请选择地区',
-      length: 0,
-      radioStyle: {
-        display: 'block'
-      },
-      checkBox: [],
       userList: {}, // 负责人
       // 选择学校，指定人
       schoolCode: '', // 指定学校
       schoolName: '', // 指定学校
-      userTag: false,
       schoolTag: false,
       chooseTeachersDeatil: []
     }
   },
   computed: {
-    // ...mapState('home', ['schoolCode', 'userInfo', 'eduName', 'eduCode'])
     ...mapState('home', ['userInfo', 'eduName', 'eduCode'])
   },
   created() {
-    const baseData = this.initBaseData()
-    for (const key in baseData) {
-      this[key] = baseData[key]
-    }
   },
   mounted() {
-    console.log(this.eduName)
     // this.showList()
     // this.getUserList() // 获取指定人
   },
   methods: {
     ...mapActions('home', ['addDangerTask', 'subsidy', 'getSchool', 'getGroupDetail']),
-    initBaseData() {
-      return {
-
-      }
-    },
     // 获取指定人
     async getUserList(schoolCode) {
       console.log(schoolCode)
@@ -207,7 +178,7 @@ export default {
             this.$message.warning('请上传图片')
             return
           }
-          console.log(values)
+          // console.log(values)
           const req = {
             address: values.address,
             description: values.description,

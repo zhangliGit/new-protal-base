@@ -90,10 +90,14 @@ export default {
     }
   },
   created() {
-    console.log(this.userData)
-    this.treeData = this.initData(this.userData)
+    // this.treeData = this.initData(this.userData)
   },
   async mounted() {
+  },
+  watch: {
+    userData() {
+      this.treeData = this.initData(this.userData)
+    }
   },
   methods: {
     initData(arr, parentId, parentName) {
@@ -212,9 +216,8 @@ export default {
       this.$refs.modal.visible = false
       this.$emit('submit', this.selectObj)
     }
-  },
-  watch: {
   }
+
 }
 </script>
 

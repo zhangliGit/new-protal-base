@@ -8,21 +8,27 @@
     :destroyOnClose="true"
     :confirmLoading="confirmLoading"
   >
-    <a-row type="flex" justify="end" style="margin-bottom: 15px; margin-right: 215px">
+    <a-row type="flex" justify="start" style="margin-bottom: 15px;">
       <a-col>
-        <span>姓名/工号：</span>
-        <a-input v-model="keyword" style="width: 120px;margin-right: 10px" placeholder="请输入姓名" />
-        <a-button type="primary" @click="getUserList">查询</a-button>
+        <span>设备名称：</span>
+        <a-input v-model="keyword" style="width: 120px;margin-right: 20px" placeholder="请输入设备名称" />
+      </a-col>
+      <a-col>
+        <span>设备类型：</span>
+        <a-select v-model="deviceType" style="width: 120px;margin-right: 20px">
+          <a-select-option v-for="(item, i) in typeList" :key="i" :value="item.key">{{ item.val }}</a-select-option>
+        </a-select>
+      </a-col>
+      <a-col>
+        <a-button type="primary" @click="getControlList">查询</a-button>
+        <a-button type="default" @click="resetBtn">重置</a-button>
       </a-col>
     </a-row>
     <div class="choose-user qui-fx">
-      <div class="org-box">
-        <org-tree @select="select" @defaultCode="defaultCode" :type="type"></org-tree>
-      </div>
       <div class="qui-fx-ver qui-fx-f1">
         <table-list
-          :is-check="isCheck"
-          :is-radio="isRadio"
+          is-check
+          is-zoom
           :scroll-h="500"
           :page-list="pageList"
           v-model="chooseList"
@@ -30,7 +36,8 @@
           @clickRow="clickRow"
           @selectAll="selectAll"
           :table-list="userList"
-        ></table-list>
+        >
+        </table-list>
         <page-num
           :jumper="false"
           v-model="pageList"
@@ -38,19 +45,19 @@
           :mar-bot="0"
           size="small"
           :total="total"
-          @change-page="getUserList"
+          @change-page="getControlList"
         ></page-num>
       </div>
       <div class="user-box qui-fx-ver">
         <div class="title qui-fx-jsb">
           <span>已选择</span>
-          <span>{{ totalList.length }}人</span>
+          <span>{{ totalList.length }}个</span>
         </div>
         <div class="qui-fx-f1" style="overflow: auto">
-          <ul style="padding-left:0">
-            <li v-for="(item, index) in totalList" :key="item.userCode" class="qui-fx-jsb">
-              <span>{{ item.userName }}</span>
-              <a-tag @click="delUser(item.userCode, index)" color="#f50">删除</a-tag>
+          <ul>
+            <li v-for="(item, index) in totalList" :key="item.deviceSn" class="qui-fx-jsb qui-fx-ac">
+              <span>{{ item.deviceName }}</span>
+              <a-tag @click="delUser(item.deviceSn, index)" color="#f50">删除</a-tag>
             </li>
           </ul>
         </div>
@@ -62,45 +69,67 @@
 <script>
 import PageNum from '@c/PageNum'
 import TableList from '@c/TableList'
-import OrgTree from '@c/OrgTree'
 import $ajax from '@u/ajax-serve'
-import { mapState } from 'vuex'
 import hostEnv from '@config/host-env'
+
 const columns = [
   {
     title: '序号',
-    width: '20%',
+    width: '10%',
     scopedSlots: {
       customRender: 'index'
     }
   },
   {
-    title: '姓名',
-    dataIndex: 'userName',
+    title: '设备名称',
+    dataIndex: 'deviceName',
+    width: '30%'
+  },
+  {
+    title: '设备类型',
+    dataIndex: 'deviceType',
+    width: '10%',
+    customRender: text => {
+      return parseInt(text) === 1 ? '相机' : '面板机'
+    }
+  },
+  {
+    title: '安装位置',
+    dataIndex: 'snapSite',
+    width: '25%'
+  },
+  {
+    title: '设备IP',
+    dataIndex: 'deviceIp',
     width: '15%'
   },
   {
-    title: '手机号',
-    dataIndex: 'mobile',
-    width: '30%'
-  },
-  {
-    title: '工号',
-    dataIndex: 'workNo',
-    width: '30%'
+    title: '设备状态',
+    dataIndex: 'deviceStatus',
+    width: '10%',
+    customRender: text => {
+      return parseInt(text) === 1 ? '在线' : '离线'
+    }
   }
 ]
 export default {
-  name: 'ChooseUser',
+  name: 'ChooseControl',
   components: {
     PageNum,
-    TableList,
-    OrgTree
+    TableList
   },
   props: {
-    chooseType: {
+    schoolCode: {
       type: String,
       default: ''
+    },
+    title: {
+      type: String,
+      default: ''
+    },
+    value: {
+      type: Boolean,
+      default: false
     },
     isRadio: {
       type: Boolean,
@@ -110,27 +139,18 @@ export default {
       type: Boolean,
       default: false
     },
-    title: {
-      type: String,
-      default: ''
-    },
-    type: {
-      type: String,
-      default: ''
-    },
-    value: {
-      type: Boolean,
-      default: false
-    },
-    teacherList: {
+    controlList: {
       type: Array,
       default: () => {
         return []
       }
+    },
+    chooseType: {
+      type: String,
+      default: ''
     }
   },
   computed: {
-    ...mapState('home', ['schoolCode', 'eduCode']),
     status: {
       get() {
         return this.value
@@ -142,72 +162,76 @@ export default {
   },
   data() {
     return {
-      keyword: '',
       confirmLoading: false,
-      orgCode: '',
       chooseList: [],
       pageList: {
         page: 1,
-        size: 20
+        size: 40
       },
+      deviceType: '',
+      typeList: [
+        {
+          key: '',
+          val: '全部'
+        },
+        {
+          key: 1,
+          val: '相机'
+        },
+        {
+          key: 2,
+          val: '面板机'
+        }
+      ],
+      keyword: '',
       total: 0,
       columns,
       userList: [],
-      totalList: [],
-      code: ''
+      totalList: []
     }
   },
-  created() {
-    this.code = this.type === 'edu' ? this.eduCode : this.schoolCode
-  },
   async mounted() {
-    this.teacherList.forEach(item => {
-      this.chooseList.push(item.userCode)
+    this.controlList.forEach(item => {
+      this.chooseList.push(item.deviceSn)
       this.totalList.push({
         ...item,
-        id: item.userCode
+        id: item.deviceSn
       })
     })
-    this.getUserList()
+    this.getControlList()
   },
   methods: {
-    async getUserList() {
+    async getControlList() {
       const res = await $ajax.post({
-        url: `${hostEnv.lz_user_center}/userinfo/teacher/user/queryTeacherInfo`,
+        url: `${hostEnv.zq_class}/classcard/bind/list`,
         params: {
-          orgCode: this.orgCode,
-          keyword: this.keyword,
-          schoolCode: this.code,
+          bindStatus: '1',
+          schoolCode: this.schoolCode,
           ...this.pageList
         }
       })
       this.userList = res.data.list.map(item => {
         return {
           ...item,
-          id: item.userCode
+          id: item.deviceSn
         }
       })
       this.total = res.data.total
     },
-    defaultCode(item) {
-      this.orgCode = item.code[0]
-    },
-    select(item) {
-      this.pageList.page = 1
-      console.log(item)
-      this.orgCode = item.code
-      this.getUserList()
-    },
     reset() {
       this.confirmLoading = false
       this.$emit('input', false)
+    },
+    resetBtn() {
+      this.keyword = ''
+      this.deviceType = ''
+      this.getControlList()
     },
     error() {
       this.confirmLoading = false
     },
     delUser(id, index) {
       this.totalList.splice(index, 1)
-      console.log(this.chooseList.indexOf(id))
       this.chooseList.splice(this.chooseList.indexOf(id), 1)
     },
     selectAll(item, type) {
@@ -216,7 +240,7 @@ export default {
       } else {
         item.forEach(item => {
           const index = this.totalList.findIndex(list => {
-            return list.userCode === item.userCode
+            return list.deviceSn === item.deviceSn
           })
           this.totalList.splice(index, 1)
         })
@@ -224,20 +248,22 @@ export default {
     },
     // 监听选中或取消
     clickRow(item, type) {
+      console.log(item)
       if (type) {
         if (this.isCheck) {
           this.totalList.push(item)
+          console.log(this.totalList)
         } else {
           this.totalList = [item]
         }
       } else {
-        const index = this.totalList.findIndex(list => list.userCode === item.userCode)
+        const index = this.totalList.findIndex(list => list.deviceSn === item.deviceSn)
         this.totalList.splice(index, 1)
       }
     },
     submitOk() {
-      if (this.totalList.length === 0 && this.bindId === -1) {
-        this.$message.warning('请选择人员')
+      if (this.totalList.length === 0) {
+        this.$message.warning('请选择设备')
         return
       }
       this.confirmLoading = true

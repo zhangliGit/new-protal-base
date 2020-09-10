@@ -1,115 +1,113 @@
 <template>
-  <div class="notice content pos-box page-layout bg-fff ">
-    <a-row class="u-mar-t20 u-padd-r20" type="flex" justify="end" >
-      <a-col class="u-fx" >
-        <a-button type="primary" class="u-mar-r20" @click="saveImage('canvasPic','整改通知书','download')">下载通知书</a-button>
-      </a-col>
-      <a-col class="u-fx" v-if="isEidt" >
-        <a-button type="primary" @click="reset()">恢复默认</a-button>
-      </a-col>
-      <a-col class="u-fx" v-else>
-        <a-button type="primary" @click="isEidt=true">编辑通知书</a-button>
-      </a-col>
-    </a-row>
-    <!-- <a-row class="u-mar-t20 u-padd-r20" type="flex" justify="star" > -->
-    <a-form-model v-if="isEidt" :model="form" :label-col="labelCol" :wrapper-col="wrapperCol">
-      <a-form-model-item label="红头文件">
-        <a-radio-group v-model="form.resource">
-          <a-radio value="1">
-            显示
-          </a-radio>
-          <a-radio value="2">
-            不显示
-          </a-radio>
-        </a-radio-group>
-      </a-form-model-item>
-      <a-form-model-item label="文件公章" >
-        <a-radio-group v-model="form.officialSeal">
-          <a-radio value="1">
-            显示
-          </a-radio>
-          <a-radio value="2">
-            不显示
-          </a-radio>
-          <a-upload
-            :multiple="false"
-            class="upload-img"
-            v-if="form.officialSeal=='1'"
-            :showUploadList="false"
-            name="file"
-            :beforeUpload="beforeUpload"
-            @change="handleChange"
-          >
-            <a-button> <a-icon type="upload" /> 上传 </a-button>
-          </a-upload>
-          <!-- <upload-multi v-if="form.officialSeal=='1'" class="upload-img" :length="1" v-model="fileList" :fileInfo="fileInfo" ></upload-multi> -->
-        </a-radio-group>
-      </a-form-model-item>
-      <a-form-model-item label="整改期限" >
-        <a-radio-group v-model="form.theTerm" @change="changeTime">
-          <a-radio value="1">
-            7个工作日(默认)
-          </a-radio>
-          <a-radio value="2">
-            15个工作日
-          </a-radio>
-          <a-radio value="3">
-            自定义
-            <div class="customize" v-if="form.theTerm=='3'">
-              <a-input size="small" @change="changeTimeCustomize" v-model="form.customWorkingDay" placeholder="3" />
-              <span>个工作日</span>
+  <div class="eidt-notice page-layout bg-fff qui-fx-ver">
+    <div class="content pos-box" >
+      <a-row class="u-mar-t20 u-padd-r20" type="flex" justify="end" >
+        <a-col class="u-fx" >
+          <a-button type="primary" class="u-mar-r20" @click="saveImage('canvasPic','整改通知书','download')">下载通知书</a-button>
+        </a-col>
+        <a-col class="u-fx" v-if="isEidt" >
+          <a-button type="primary" @click="reset()">恢复默认</a-button>
+        </a-col>
+        <a-col class="u-fx" v-else>
+          <a-button type="primary" @click="isEidt=true">编辑通知书</a-button>
+        </a-col>
+      </a-row>
+      <a-form-model v-if="isEidt" :model="form" :label-col="labelCol" :wrapper-col="wrapperCol">
+        <a-form-model-item label="红头文件">
+          <a-radio-group v-model="form.resource">
+            <a-radio value="1">
+              显示
+            </a-radio>
+            <a-radio value="2">
+              不显示
+            </a-radio>
+          </a-radio-group>
+        </a-form-model-item>
+        <a-form-model-item label="文件公章" >
+          <a-radio-group v-model="form.officialSeal">
+            <a-radio value="1">
+              显示
+            </a-radio>
+            <a-radio value="2">
+              不显示
+            </a-radio>
+            <a-upload
+              :multiple="false"
+              class="upload-img"
+              v-if="form.officialSeal=='1'"
+              :showUploadList="false"
+              name="file"
+              :beforeUpload="beforeUpload"
+              @change="handleChange"
+            >
+              <a-button> <a-icon type="upload" /> 上传 </a-button>
+            </a-upload>
+          </a-radio-group>
+        </a-form-model-item>
+        <a-form-model-item label="整改期限" >
+          <a-radio-group v-model="form.theTerm" @change="changeTime">
+            <a-radio value="1">
+              7个工作日(默认)
+            </a-radio>
+            <a-radio value="2">
+              15个工作日
+            </a-radio>
+            <a-radio value="3">
+              自定义
+              <div class="customize" v-if="form.theTerm=='3'">
+                <a-input size="small" @change="changeTimeCustomize" v-model="form.customWorkingDay" placeholder="3" />
+                <span>个工作日</span>
+              </div>
+            </a-radio>
+          </a-radio-group>
+        </a-form-model-item>
+      </a-form-model>
+      <div class="notice-box" ref="canvasPic" id="canvasPic">
+        <div class="border-notice">
+          <div v-if="form.resource=='1'" class="title">
+            <a-input class="text text-input  u-fx-ac-jc" v-if="isEidt" v-model="noticeData.redHeader">{{ noticeData.redHeader }}</a-input>
+            <div class="text u-fx-ac-jc" v-else>{{ noticeData.redHeader }}</div>
+            <!-- <div ></div> -->
+            <!-- <div class="border-bottm"></div> -->
+          </div>
+          <div class="content">
+            <div class="numbering">{{ noticeData.numbering }}</div>
+            <div class="c-text">整改通知书</div>
+            <div class="c-school u-mar-b20">{{ noticeData.schoolName }}</div>
+            <div class="div" v-if="isEidt">
+              <a-textarea class="con-text1 u-fx-ac-jc" v-model="noticeData.conAsk"></a-textarea>
+              <a-textarea class="con-text1 u-fx-ac-jc" v-model="inintConResult"></a-textarea>
             </div>
-          </a-radio>
-        </a-radio-group>
-      </a-form-model-item>
-    </a-form-model>
-    <!-- </a-row> -->
-    <div class="notice-box" ref="canvasPic" id="canvasPic">
-      <div class="border-notice">
-        <div v-if="form.resource=='1'" class="title">
-          <a-input class="text text-input  u-fx-ac-jc" v-if="isEidt" v-model="noticeData.redHeader">{{ noticeData.redHeader }}</a-input>
-          <div class="text u-fx-ac-jc" v-else>{{ noticeData.redHeader }}</div>
-        <!-- <div ></div> -->
-        <!-- <div class="border-bottm"></div> -->
-        </div>
-        <div class="content">
-          <div class="numbering">{{ noticeData.numbering }}</div>
-          <div class="c-text">整改通知书</div>
-          <div class="c-school u-mar-b20">{{ noticeData.schoolName }}</div>
-          <div class="div" v-if="isEidt">
-            <a-textarea class="con-text1 u-fx-ac-jc" v-model="noticeData.conAsk"></a-textarea>
-            <a-textarea class="con-text1 u-fx-ac-jc" v-model="inintConResult"></a-textarea>
-          </div>
-          <div v-else>
-            <div class="con-text1" >{{ noticeData.conAsk }}</div>
-            <div class="con-text1">{{ inintConResult }}</div>
-          </div>
-        </div>
-        <div class="foot u-fx-jsb u-line3">
-          <div class="left">签收单位（盖章）：</div>
-          <div class="right">
-            <div class="r-t">{{ noticeData.redHeader }}</div>
-            <div class="r-m">{{ noticeData.currentTime }}</div>
-            <div class="r-b">签收人：</div>
-            <div class="dongzhang-img" v-if="form.officialSeal=='1'&&this.noticeData.url">
-              <!-- <img :src="this.noticeData.url" alt=""> -->
-              <img :src="`data:image/jpeg;base64,${this.noticeData.url}`" alt="">
+            <div v-else>
+              <div class="con-text1" >{{ noticeData.conAsk }}</div>
+              <div class="con-text1">{{ inintConResult }}</div>
             </div>
           </div>
+          <div class="foot u-fx-jsb u-line3">
+            <div class="left">签收单位（盖章）：</div>
+            <div class="right">
+              <div class="r-t">{{ noticeData.redHeader }}</div>
+              <div class="r-m">{{ noticeData.currentTime }}</div>
+              <div class="r-b">签收人：</div>
+              <div class="dongzhang-img" v-if="form.officialSeal=='1'&&this.noticeData.url">
+                <!-- <img :src="this.noticeData.url" alt=""> -->
+                <img :src="`data:image/jpeg;base64,${this.noticeData.url}`" alt="">
+              </div>
+            </div>
+          </div>
         </div>
+
       </div>
-
+      <a-row class="u-mar-t40" type="flex" justify="center" >
+        <a-col :span="3" >
+          <a-button type="primary" v-if="!isEidt" @click="saveImage('canvasPic','整改通知书','upload')">确定并下发通知</a-button>
+          <div v-else>
+            <a-button type="primary" class="u-mar-r10" @click="isEidt = false">确定</a-button>
+            <a-button type="info" @click="reset()">取消</a-button>
+          </div>
+        </a-col>
+      </a-row>
     </div>
-    <a-row class="u-mar-t40" type="flex" justify="center" >
-      <a-col :span="3" >
-
-        <a-button type="primary" v-if="!isEidt" @click="saveImage('canvasPic','整改通知书','upload')">确定并下发通知</a-button>
-        <div v-else>
-          <a-button type="primary" class="u-mar-r10" @click="isEidt = false">确定</a-button>
-          <a-button type="info" @click="reset()">取消</a-button>
-        </div>
-      </a-col>
-    </a-row>
   </div>
 </template>
 
@@ -117,26 +115,10 @@
 import { mapState, mapActions } from 'vuex'
 import Tools from '@u/tools'
 import { getPdfFromHtml } from '@u/htmlToPdf'
-import UploadMulti from '@c/UploadMulti'
-import moment from 'moment'
 import hostEnv from '@config/host-env'
-
 export default {
-  name: 'SubmitForm',
+  name: 'EidtRectificationNotice',
   components: {
-    UploadMulti
-  },
-  props: {
-    title: {
-      type: String,
-      default: ''
-    },
-    formData: {
-      type: Array,
-      default: () => {
-        return []
-      }
-    }
   },
   computed: {
     ...mapState('home', ['schoolCode', 'schoolName']),
@@ -152,6 +134,9 @@ export default {
   watch: {
     'noticeData.rectificationTime'() {
       this.inintConResult = `${this.noticeData.conResultleft}${this.noticeData.rectificationTime}${this.noticeData.conResultRight}`
+    },
+    fileList(value) {
+      this.noticeData.url = value[0].url
     }
   },
   data() {
@@ -171,7 +156,6 @@ export default {
         url: ''
       },
       inintConResult1: '2',
-      hazardDetails: {},
       labelCol: { span: 6 },
       wrapperCol: { span: 8 },
       form: {
@@ -181,12 +165,7 @@ export default {
         customWorkingDay: '3'
       },
       // 图片上传
-      fileList: [],
-      fileInfo: {
-        tip: '上传',
-        h: 120, // 高度
-        w: 120 // 宽度
-      }
+      fileList: []
     }
   },
   created() {
@@ -224,6 +203,7 @@ export default {
       this.noticeData.conAsk = `${this.noticeData.conAsk}${res.data.description}`
       this.noticeData.schoolName = `${res.data.schoolName}:`
     },
+    // 获取编码
     async _getCode() {
       const res = await this.getCode()
       this.noticeData.numbering = res.data
@@ -298,117 +278,110 @@ export default {
       }
       xhr.send(form)
     }
-  },
-  watch: {
-    fileList(value) {
-      this.noticeData.url = value[0].url
-    }
   }
 }
 </script>
 <style lang="less" scoped>
-.page-layout{
-  .ant-layout{
-    overflow-y: auto !important;
-  }
-  .notice-box{
-    margin-top: 20px;
-    font-size: 16px;
-    width: 100%;
-    padding: 20px 50px;
-    .border-notice{
-    border: 1px solid #bbbbbb;
-    .title{
-      height: 115px;
-      padding-top: 30px;
-      margin: 0 10px;
-      text-align: center;
-      border-bottom: 2px solid #ff0000;
-      .text{
-        font-size: 30px;
-        justify-content: center;
+.eidt-notice{
+   box-sizing: content-box;
+  .content{
+     height: calc(100% - 10px);
+     overflow-y: scroll;
+    .notice-box{
+      margin-top: 20px;
+      font-size: 16px;
         width: 100%;
-        height: 50px;
-        color: #ff0000;
-      }
-      .text-input{
-        width: 500px;
+        padding: 20px 50px;
+        .border-notice{
+        border: 1px solid #bbbbbb;
+        .title{
+          height: 115px;
+          padding-top: 30px;
+          margin: 0 10px;
+          text-align: center;
+          border-bottom: 2px solid #ff0000;
+          .text{
+            font-size: 30px;
+            justify-content: center;
+            width: 100%;
+            height: 50px;
+            color: #ff0000;
+          }
+          .text-input{
+            width: 500px;
+          }
+        }
+        .content{
+          .numbering{
+              text-align: right;
+              margin: 20px 80px 0 0
+          }
+          .c-text{
+            margin-top: 40px;
+            text-align: center;
+            font-size: 24px;
+            color: #191919;
+          }
+          .c-school{
+            margin-top: 40px;
+            margin-left: 80px;
+            font-weight: bold
+          }
+          .con-text1{
+            margin: 0 auto;
+            margin-top: 30px;
+            margin-left: 80px;
+            width: 80%;
+            line-height: 30px;
+            text-indent: 30px;
+          }
+        }
+        .foot{
+          padding: 0 80px;
+          margin-top: 30px;
+          height: 100px;
+          .left{
+          }
+          .right{
+            position: relative;
+            .dongzhang-img{
+              position: absolute;
+              right: 0;
+              top: 0;
+              transform: translate(-50%,-20% );
+              width: 150px;
+              height: 150px;
+              img{
+                width: 100%;
+                height: 100%;
+              }
+            }
+          }
+        }
       }
     }
-    .content{
-      .numbering{
-          text-align: right;
-          margin: 20px 80px 0 0
-      }
-      .c-text{
-        margin-top: 40px;
-        text-align: center;
-        font-size: 24px;
-        color: #191919;
-      }
-      .c-school{
-        margin-top: 40px;
-        margin-left: 80px;
-        font-weight: bold
-      }
-      .con-text1{
-        margin: 0 auto;
-        margin-top: 30px;
-        margin-left: 80px;
-        width: 80%;
-        line-height: 30px;
-        text-indent: 30px;
-      }
-    }
-    .foot{
-      padding: 0 80px;
-      margin-top: 30px;
-      height: 100px;
-      .left{
-      }
-      .right{
+    .ant-form-item{
+      margin-bottom: 0;
+      .ant-radio-group{
         position: relative;
-        .dongzhang-img{
+        .upload-img{
+          width: 50px;
+          height: 50px;
           position: absolute;
           right: 0;
+          transform: translateX(100%);
           top: 0;
-          transform: translate(-50%,-20% );
-          width: 150px;
-          height: 150px;
-          img{
-            width: 100%;
-            height: 100%;
-          }
+          z-index: 100;
+        }
+        .customize{
+          position: absolute;
+          left: 0;
+          right: 0;
+          transform: translate(100%,-100%);
         }
       }
     }
   }
 }
 
-.ant-form-item{
-  margin-bottom: 0;
-  .ant-radio-group{
-     position: relative;
-    .upload-img{
-      width: 50px;
-      height: 50px;
-      position: absolute;
-      right: 0;
-      transform: translateX(100%);
-      top: 0;
-      z-index: 100;
-    }
-    .customize{
-      position: absolute;
-      left: 0;
-      right: 0;
-      transform: translate(100%,-100%);
-    }
-  }
-}
-}
-.content {
-    height: calc(100% - 10px);
-    overflow-y: scroll;
-}
 </style>

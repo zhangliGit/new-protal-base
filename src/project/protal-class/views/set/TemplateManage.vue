@@ -1,11 +1,5 @@
 <template>
   <div class="page-layout qui-fx-ver">
-    <a-tabs v-model="autoKey" @change="tabChange">
-      <a-tab-pane tab="横板" key="1">
-      </a-tab-pane>
-      <a-tab-pane tab="竖版" key="2">
-      </a-tab-pane>
-    </a-tabs>
     <div class="qui-fx-f1">
       <div class="box-scroll" :style="{height: scrollH -50+ 'px'}">
         <div class="notice-card notice qui-fx-ac-jc">
@@ -31,8 +25,22 @@
                 <div class="useNum" v-else>{{ item.useNum }}台设备使用中</div>
               </div>
               <div class="notice-action">
-                <a-tag color="#2db7f5" @click="modifyApp(item)">编辑</a-tag>
-                <a-tag color="#f50" style="margin-left: 5px;" @click="delClick(item)">删除</a-tag>
+                <a-dropdown>
+                  <a class="ant-dropdown-link" @click="e => e.preventDefault()">
+                    更多 <a-icon type="down" />
+                  </a>
+                  <a-menu slot="overlay">
+                    <a-menu-item>
+                      <a @click.stop="editTemplate(item.id)">编辑模板</a>
+                    </a-menu-item>
+                    <a-menu-item>
+                      <a @click.stop="delTemplate(item.id)">删除模板</a>
+                    </a-menu-item>
+                    <a-menu-item>
+                      <a @click.stop="useTemplate(item.id)">应用到指定设备</a>
+                    </a-menu-item>
+                  </a-menu>
+                </a-dropdown>
               </div>
             </div>
           </div>
@@ -53,7 +61,6 @@ export default {
   },
   data() {
     return {
-      autoKey: '1',
       noticeList: [{
         title: '默认模板',
         content: '系统提供的默认模板，不可删除',
@@ -86,28 +93,6 @@ export default {
   },
   methods: {
     ...mapActions('home', ['getWelcome']),
-    tabChange() {
-      if (this.autoKey === '1') {
-        this.noticeList = [
-          {
-            title: '默认模板',
-            content: '系统提供的默认模板，不可删除',
-            id: 'M144i03z0yvzin1',
-            photoUrl: photoUrl,
-            useNum: 1
-          },
-          {
-            title: '模板A',
-            content: '说明文字说明文字说明文字说明文字',
-            id: 'M144i03z0yvzin2',
-            photoUrl: photoUrl,
-            useNum: 0
-          }]
-      }
-      if (this.autoKey === '2') {
-        this.noticeList = []
-      }
-    },
     async welcomeGet () {
       this.pageList.schoolScheme = this.authWebUserInfo.exts.schoolScheme
       const res = await this.getWelcome(this.pageList)
@@ -119,8 +104,14 @@ export default {
       path = `/templateManage/template`
       this.$router.push({ path })
     },
-    modifyApp() {
-
+    editTemplate(id) {
+      console.log(id)
+    },
+    delTemplate(id) {
+      console.log(id)
+    },
+    useTemplate(id) {
+      console.log(id)
     },
     delClick (record) {
       this.$tools.delTip('确认要删除该欢迎模式吗?', () => {
@@ -137,9 +128,8 @@ export default {
     padding: 10px;
     float: left;
     width: 23.33%;
-    margin-left: 1%;
     overflow: hidden;
-    margin-bottom: 20px;
+    margin: 20px 0 20px 1%;
     min-height: 200px;
     .title{
       font-size: 16px;
