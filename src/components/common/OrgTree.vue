@@ -1,5 +1,5 @@
 <template>
-  <div class="grade-tree">
+  <div class="grade-tree u-scroll-y">
     <a-skeleton v-if="orgData.length == 0 && !noData" active :paragraph="{rows: 10}" />
     <no-data v-if="noData" msg="暂无组织机构~"></no-data>
     <a-tree
@@ -10,8 +10,7 @@
       :defaultExpandedKeys="defaultKey"
       :defaultSelectedKeys="defaultKey"
       showLine
-    >
-    </a-tree>
+    ></a-tree>
   </div>
 </template>
 
@@ -22,7 +21,7 @@ import { mapState } from 'vuex'
 import hostEnv from '@config/host-env'
 export default {
   name: 'OrgTree',
-  data () {
+  data() {
     return {
       noData: false,
       orgData: [],
@@ -45,11 +44,9 @@ export default {
     NoData
   },
   computed: {
-    ...mapState('home', [
-      'schoolCode', 'eduCode'
-    ])
+    ...mapState('home', ['schoolCode', 'eduCode'])
   },
-  created () {
+  created() {
     this.code = this.type === 'edu' ? this.eduCode : this.schoolCode
     if (this.school) {
       this.code = this.school
@@ -57,7 +54,7 @@ export default {
     this.showList()
   },
   methods: {
-    select (selectedKeys, info) {
+    select(selectedKeys, info) {
       this.$emit('select', {
         name: info.node.title,
         code: info.node.eventKey,
@@ -66,7 +63,7 @@ export default {
         id: info.selectedNodes[0] ? info.selectedNodes[0].data.props.id : this.orgData[0].id
       })
     },
-    async showList () {
+    async showList() {
       const res = await $ajax.get({
         url: `${hostEnv.lz_user_center}/school/org/getSchoolRoot/${this.code}`
       })
@@ -82,7 +79,7 @@ export default {
       this.orgData = data
     },
     // 深层递归
-    newOrgData (data) {
+    newOrgData(data) {
       data.forEach(item => {
         item.children = item.orgChilds || null
         item.title = item.name
@@ -98,10 +95,10 @@ export default {
 </script>
 
 <style lang="less" scoed>
-  .grade-tree {
-    padding: 0 10px;
-    width: 240px;
-    min-height: 600px;
-    overflow-y: auto
-  }
+.grade-tree {
+  padding: 0 10px;
+  width: 240px;
+  min-height: 600px;
+  overflow-y: auto;
+}
 </style>
