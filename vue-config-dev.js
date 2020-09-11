@@ -283,6 +283,14 @@ module.exports = {
           '^/zq_oa': ''
         }
       },
+      '/cl_oa': {
+        target: 'http://192.168.1.193:11009/', // 陈琳-oa
+        // target: 'http://192.168.1.23:11009/',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/cl_oa': ''
+        }
+      },
       '/hpb_card': {
         target: 'http://192.168.2.242:11008/', // 胡鹏奔-消费
         // target: 'http://192.168.2.134:11008/', // 胡鹏奔-消费

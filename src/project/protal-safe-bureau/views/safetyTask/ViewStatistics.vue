@@ -2,7 +2,7 @@
   <div class="accident-add page-layout  bg-fff qui-fx-ver">
     <div class="content pos-box">
       <div class="title u-fx-ac-jc u-mar-t40 u-bold u-font-1 u-mar-b40">开学需要注意事项</div>
-      <div class="search-box u-fx u-mar-l20">
+      <div class="search-box u-fx-ac u-mar-l20">
         <div>月计划：</div>
         <div><a-input placeholder="Basic usage" /></div>
       </div>
@@ -11,7 +11,7 @@
           Q1、(单选题)近一周是否出现体温异常的情况？
         </div>
         <div class="list-cont u-fx-ac-jc">
-          <pre-echarts v-if="dangerSchool.length>0" :dataList="dangerSchool"></pre-echarts>
+          <pre-echarts v-if="Object.keys(dangerSchool).length>0" :dataList="dangerSchool"></pre-echarts>
           <a-empty v-else :image="simpleImage" />
         </div>
         <div class="list-cont u-mar-t20">
@@ -46,7 +46,9 @@
           Q2、(单选题)近一周是否出现体温异常的情况？
         </div>
         <div class="list-cont u-fx-ac-jc">
-          图表
+          <!-- v-if="multipleData.length>0" -->
+          <bar-echarts :multipleData="multipleData"></bar-echarts>
+          <!-- <a-empty v-else :image="simpleImage" /> -->
         </div>
         <div class="list-cont u-mar-t20">
           <table border="0" class="u-bd-1px" width="100%" cellspacing:="0">
@@ -100,6 +102,7 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 import PreEcharts from './PreEcharts'
+import BarEcharts from './BarEcharts'
 import NoData from '@c/NoData'
 import { Empty } from 'ant-design-vue'
 // import PreBarEcharts from './PreBarEcharts'
@@ -124,7 +127,8 @@ export default {
   name: 'ViewsReport',
   components: {
     NoData,
-    PreEcharts
+    PreEcharts,
+    BarEcharts
     // PreBarEcharts
   },
   data() {
@@ -142,43 +146,29 @@ export default {
           schoolName: '采育小学'
         }
       ], // 隐患明细table
-      dangerSchool: [
+      dangerSchool: {
+        yes: '1',
+        no: '99',
+        schoolName: '学校A'
+      },
+      multipleData: [
         {
           biggerCount: '3',
-          generalCount: '1',
-          heavyCount: '4',
-          lowCount: '9',
-          schoolName: '学校A'
+          schoolName: '看见摔倒的奶奶过去扶起'
         },
         {
-          biggerCount: '3',
-          generalCount: '1',
-          heavyCount: '8',
-          lowCount: '9',
-          schoolName: '学校B'
+          biggerCount: '55',
+          schoolName: '地上有100元。拾起来占为己有'
         },
         {
-          biggerCount: '3',
-          generalCount: '1',
-          heavyCount: '4',
-          lowCount: '9',
-          schoolName: '学校C'
-        },
-        {
-          biggerCount: '3',
-          generalCount: '4',
-          heavyCount: '4',
-          lowCount: '9',
+          biggerCount: '20',
           schoolName: '学校D'
         },
         {
-          biggerCount: '1',
-          generalCount: '1',
-          heavyCount: '4',
-          lowCount: '9',
+          biggerCount: '10',
           schoolName: '学校f'
         }
-      ], // 隐患数量排名图标数据
+      ],
       general: {}, // 检查的总体情况
       mainIssues: [], // 存在的问题
       name: '',

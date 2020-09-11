@@ -308,6 +308,13 @@ module.exports = {
           '^/zk_oa': ''
         }
       },
+      '/cl_oa': {
+        target: 'http://canpointtest.com/zk_oa', // 陈琳-oa
+        changeOrigin: true,
+        pathRewrite: {
+          '^/cl_oa': ''
+        }
+      },
       '/lz_safe': {
         target: 'http://canpointtest.com/lz_safe', // 吕卓-安防
         changeOrigin: true,

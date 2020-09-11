@@ -9,12 +9,12 @@
           <a-form-item label="任务名称：" v-bind="formItemLayout">
             <a-input
               v-decorator="[
-              'taskName',
-              {
-                initialValue: cardInfo.taskName,
-                rules: [{ required: true, message: '请填写任务名称' }]
-              }
-            ]"
+                'taskName',
+                {
+                  initialValue: cardInfo.taskName,
+                  rules: [{ required: true, message: '请填写任务名称' }]
+                }
+              ]"
               placeholder="请填写任务名称"
             />
           </a-form-item>
@@ -121,12 +121,12 @@
                 v-for="item in list"
                 :key="item.key"
                 @click="modify(0,item.key)"
-              >{{item.val}}</div>
+              >{{ item.val }}</div>
             </div>
           </div>
           <no-data
             msg="暂无题目~"
-            v-if="radioList.length === 0 && checkList.length === 0  && fillList.length === 0  && fileList.length === 0 "
+            v-if="radioList.length === 0 && checkList.length === 0 && fillList.length === 0 && fileList.length === 0 "
           ></no-data>
           <div class="qui-fx-f1" v-else>
             <div class="u-mar-t20 u-mar-l20 u-mar-r20" v-if="radioList.length !== 0">

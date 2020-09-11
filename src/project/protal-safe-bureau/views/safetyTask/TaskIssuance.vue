@@ -64,7 +64,7 @@ export default {
         page: 1,
         size: 20
       },
-      findList: [{}],
+      findList: [],
       form: this.$form.createForm(this),
       formStatus: false,
       searchList: {},
@@ -80,17 +80,17 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
-    // this.showList()
+    this.showList()
   },
   methods: {
-    ...mapActions('home', ['specialPage', 'getGroupClass', 'getDanger', 'delDanger', 'assignDanger', 'transferDanger']),
+    ...mapActions('home', ['getTaskList', 'getGroupClass', 'getDanger', 'delDanger', 'assignDanger', 'transferDanger']),
     async showList() {
       const req = {
         ...this.pageList,
         ...this.searchList,
         schoolCode: this.userInfo.schoolCode
       }
-      const res = await this.specialPage(req)
+      const res = await this.getTaskList(req)
       console.log(res)
       this.findList = res.data.records
       this.total = res.data.total
