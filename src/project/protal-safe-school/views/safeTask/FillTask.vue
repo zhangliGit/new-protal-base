@@ -8,15 +8,15 @@
               <div class="fill-head task">任务内容</div>
             </div>
             <div>
-              <div class="title">教育局下发演示任务</div>
+              <div class="title">{{detailInfo.taskName}}</div>
               <div class="qui-fx-jc u-mar-t10">
                 <div class="qui-fx-ver">
-                  <div>发布人：admin</div>
-                  <div>任务开始时间：2019-05-27 20:26:12</div>
+                  <div>发布人：{{detailInfo.userName}}</div>
+                  <div>任务开始时间：{{detailInfo.beginTime | gmtToDate}}</div>
                 </div>
                 <div class="qui-fx-ver u-mar-l20">
-                  <div>发布时间：2019-05-27 20:26:12</div>
-                  <div>任务结束时间：2019-05-27 20:26:12</div>
+                  <div>发布时间：{{detailInfo.completeTime | gmtToDate}}</div>
+                  <div>任务结束时间：{{detailInfo.endTime | gmtToDate}}</div>
                 </div>
               </div>
               <div class="fill-describe u-mar-t10 u-padd-l10 u-padd-r10">
@@ -31,9 +31,14 @@
                 电话：0531-61378850；电子邮箱：qingqianban8869@163.com；
               </div>
               <div class="u-mar-t20">
-                <div class="upload u-mar-l20 u-mar-r20">
+                <div class="upload u-mar-l20 u-mar-r20 u-mar-b10">
                   <div class="upload-title">附件上传</div>
                 </div>
+                <a-upload class="u-mar-l10" name="file" :multiple="true" @change="handleChange">
+                  <a-button>
+                    <a-icon type="upload" />文件上传
+                  </a-button>
+                </a-upload>
               </div>
             </div>
           </div>
@@ -106,19 +111,44 @@ import img from '../../assets/img/choose.png'
 import $tools from '@u/tools'
 export default {
   name: 'AvoidingTime',
+  components: {},
   data() {
     return {
       img,
       params: {},
-      isLoad: false
+      isLoad: false,
+      detailInfo: {}
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
-  mounted() {},
+  mounted() {
+    this.detailId = this.$route.query.id
+    if (this.detailId) {
+      this.showDetail()
+    }
+  },
   methods: {
-    ...mapActions('home', []),
+    ...mapActions('home', ['myTaskDetail']),
+    async showDetail() {
+      const res = await this.myTaskDetail({ id: this.detailId })
+      this.detailInfo = res.data
+    },
+    handleChange(info) {
+      console.log('111', info)
+      // if (info.file.status !== 'uploading') {
+      //   console.log(info.file, info.fileList)
+      // }
+      // if (info.file.status === 'done') {
+      //   this.$message.success(`${info.file.name} file uploaded successfully`)
+      // } else if (info.file.status === 'error') {
+      //   this.$message.error(`${info.file.name} file upload failed.`)
+      // }
+    },
+    cancel() {
+      this.$router.go(-1)
+    },
     submitOk() {}
   }
 }

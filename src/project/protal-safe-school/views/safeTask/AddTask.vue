@@ -18,13 +18,13 @@
               placeholder="请填写任务名称"
             />
           </a-form-item>
-          <a-form-item label="巡查时间类型" v-bind="formItemLayout">
+          <a-form-item label="任务类型" v-bind="formItemLayout">
             <a-radio-group
               v-decorator="[
-                'taskTimeType',
+                'taskType',
                 {
-                  initialValue: cardInfo.taskTimeType,
-                  rules: [{ required: true, message: '请选择巡查时间类型' }]
+                  initialValue: cardInfo.taskType,
+                  rules: [{ required: true, message: '请选择任务类型' }]
                 }
               ]"
               button-style="solid"
@@ -35,7 +35,7 @@
               <a-radio-button value="2">周任务</a-radio-button>
               <a-radio-button value="3">月任务</a-radio-button>
             </a-radio-group>
-            <div class="week-box week-task qui-fx-ver" v-if="cardInfo.taskTimeType === '2'">
+            <div class="week-box week-task qui-fx-ver" v-if="cardInfo.taskType === '2'">
               <div>
                 <span class="mar-r10">
                   <a-input-number id="inputNumber" v-model="value" :min="minValue" />
@@ -60,7 +60,7 @@
                 </a-tooltip>
               </div>
             </div>
-            <div class="week-box week-task qui-fx-ver" v-if="cardInfo.taskTimeType === '3'">
+            <div class="week-box week-task qui-fx-ver" v-if="cardInfo.taskType === '3'">
               <div>
                 <span class="mar-r10">
                   <a-input-number id="inputNumber" v-model="value" :min="minValue" />
@@ -84,7 +84,7 @@
             label="时间："
             v-bind="formItemLayout"
             :style="{ textAlign: 'center' }"
-            v-if="cardInfo.taskTimeType === '1'"
+            v-if="cardInfo.taskType === '1'"
           >
             <a-range-picker
               v-decorator="['data', {initialValue: [moment(new Date(), 'YYYY-MM-DD'), moment( new Date(), 'YYYY-MM-DD')], rules: [{ required: 'required', message: '请选择时间' }]}]"
@@ -92,7 +92,7 @@
           </a-form-item>
           <a-form-item label="任务描述：" v-bind="formItemLayout" :style="{ textAlign: 'center' }">
             <quill-editor
-              v-model="cardInfo.content"
+              v-model="cardInfo.des"
               ref="myQuillEditor"
               :options="quillOption"
               @focus="onEditorFocus($event)"
@@ -140,14 +140,14 @@
                   <div class="qui-fx-ver">题目：</div>
                   <div class="qui-fx-f1 qui-fx-ver u-mar-l20">
                     <div class="qui-fx">
-                      <a-input style="width:90%" placeholder="请输入标题" />
+                      <a-input style="width:90%" placeholder="请输入标题" v-model="list.title" />
                       <div
                         class="u-line u-mar-l10 u-type-primary"
                         @click="del(0, list, 'radioList')"
                       >删除</div>
                     </div>
                     <div class="qui-fx u-mar-t10" v-for="item in list.pointList" :key="item.key">
-                      <a-input style="width:90%" placeholder="请输入选项" />
+                      <a-input style="width:90%" placeholder="请输入选项" v-model="item.content" />
                       <a-icon
                         class="u-line u-mar-l10 u-type-primary"
                         type="minus-circle"
@@ -177,14 +177,14 @@
                   <div class="qui-fx-ver">题目：</div>
                   <div class="qui-fx-f1 qui-fx-ver u-mar-l20">
                     <div class="qui-fx">
-                      <a-input style="width:90%" placeholder="请输入标题" />
+                      <a-input style="width:90%" placeholder="请输入标题" v-model="list.title" />
                       <div
                         class="u-line u-mar-l10 u-type-primary"
                         @click="del(0, list, 'checkList')"
                       >删除</div>
                     </div>
                     <div class="qui-fx u-mar-t10" v-for="item in list.pointList" :key="item.key">
-                      <a-input style="width:90%" placeholder="请输入选项" />
+                      <a-input style="width:90%" placeholder="请输入选项" v-model="item.content" />
                       <a-icon
                         class="u-line u-mar-l10 u-type-primary"
                         type="minus-circle"
@@ -214,7 +214,7 @@
                   <div class="qui-fx-ver">题目：</div>
                   <div class="qui-fx-f1 qui-fx-ver u-mar-l20">
                     <div class="qui-fx">
-                      <a-input style="width:90%" placeholder="请输入题目" />
+                      <a-input style="width:90%" placeholder="请输入题目" v-model="list.title" />
                       <div
                         class="u-line u-mar-l10 u-type-primary"
                         @click="del(0, list, 'fillList')"
@@ -235,7 +235,7 @@
                   <div class="qui-fx-ver">题目：</div>
                   <div class="qui-fx-f1 qui-fx-ver u-mar-l20">
                     <div class="qui-fx">
-                      <a-input style="width:90%" placeholder="请输入附件标题" />
+                      <a-input style="width:90%" placeholder="请输入附件标题" v-model="list.title" />
                       <div
                         class="u-line u-mar-l10 u-type-primary"
                         @click="del(0, list, 'fileList')"
@@ -325,8 +325,7 @@ export default {
       teacherList: [],
       cardInfo: {
         timeType: '1',
-        taskTimeType: '1',
-        taskTimeType2: '2'
+        taskType: '1'
       },
       users: [],
       type: '',
@@ -417,15 +416,12 @@ export default {
     },
     timeChange(e) {
       this.cardInfo.timeType = e.target.value
-      this.cardInfo.taskTimeType = '1'
-      this.cardInfo.taskTimeType2 = '2'
+      this.cardInfo.taskType = '1'
       this.times = [{ key: 0 }]
     },
     // 任务类型切换
     change(e) {
-      this.cardInfo.timeType === '1'
-        ? (this.cardInfo.taskTimeType = e.target.value)
-        : (this.cardInfo.taskTimeType2 = e.target.value)
+      this.cardInfo.taskType = e.target.value
     },
     // 周月季任务的切换
     weekChange(string, record, data) {
@@ -472,7 +468,8 @@ export default {
         if (key === '0') return false
         const newData = {
           key: this[`${key}Count`],
-          pointList: []
+          pointList: key === 'radio' || key === 'check' ? [] : undefined,
+          questionType: key === 'radio' ? '1' : key === 'check' ? '2' : key === 'fill' ? '3' : '4'
         }
         this[`${key}List`] = [...this[`${key}List`], newData]
         this[`${key}Count`] = this[`${key}Count`] + 1
@@ -494,20 +491,34 @@ export default {
     submitOk(e) {
       e.preventDefault()
       this.form.validateFields((error, values) => {
-        this.isLoad = false
-        if (!error) {
-          this.isLoad = true
-          this.addDailyTask(values)
-            .then((res) => {
-              this.$message.success('操作成功')
-              this.$tools.goNext(() => {
-                this.$router.go(-1)
-              })
-            })
-            .catch((res) => {
-              this.isLoad = false
-            })
-        }
+        console.log('values', values)
+        console.log('cardInfo', this.cardInfo)
+        console.log('radioList', this.radioList)
+        console.log('checkList', this.checkList)
+        console.log('fillList', this.fillList)
+        const radioList = this.radioList.map((el) => {
+          return {
+            content: el.pointList.map((item) => {
+              content.push(item.content)
+            }),
+            title: el.title,
+            questionType: el.questionType
+          }
+        })
+        // this.isLoad = false
+        // if (!error) {
+        //   this.isLoad = true
+        //   this.addDailyTask(values)
+        //     .then((res) => {
+        //       this.$message.success('操作成功')
+        //       this.$tools.goNext(() => {
+        //         this.$router.go(-1)
+        //       })
+        //     })
+        //     .catch((res) => {
+        //       this.isLoad = false
+        //     })
+        // }
       })
     }
   }
