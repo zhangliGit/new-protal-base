@@ -37,6 +37,9 @@
           @selectAll="selectAll"
           :table-list="userList"
         >
+          <template v-slot:other1="other1">
+            <span>{{ other1.record.gradeName }}{{ other1.record.className }}</span>
+          </template>
         </table-list>
         <page-num
           :jumper="false"
@@ -83,7 +86,7 @@ const columns = [
   {
     title: '设备名称',
     dataIndex: 'deviceName',
-    width: '30%'
+    width: '10%'
   },
   {
     title: '设备类型',
@@ -96,12 +99,20 @@ const columns = [
   {
     title: '安装位置',
     dataIndex: 'snapSite',
-    width: '25%'
+    width: '10%'
   },
   {
     title: '设备IP',
     dataIndex: 'deviceIp',
-    width: '15%'
+    width: '10%'
+  },
+  {
+    title: '关联数据',
+    dataIndex: 'gradeName',
+    width: '10%',
+    scopedSlots: {
+      customRender: 'other1'
+    }
   },
   {
     title: '设备状态',
