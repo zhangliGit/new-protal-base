@@ -106,7 +106,9 @@ export default {
       this.searchList = values
       this.showList()
     },
+    // 打开子组件传给子组件的数据
     async goDetail(type, id) {
+      this.$refs.addCheck.reset()
       this.$refs.addCheck.$refs.modal.visible = true
       this.$refs.addCheck.detailId = id
       this.$refs.addCheck.type = type
@@ -116,7 +118,6 @@ export default {
       //   this.flag = true
       //   // console.log(that.$refs.$refs.modal)
       // })
-      this.$refs.addCheck.reset()
       if (type === 1 || type === 2) {
         this.$refs.addCheck.showDetail()
       } else if (type === 0) {

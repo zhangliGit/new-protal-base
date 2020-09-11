@@ -24,16 +24,11 @@ export default {
     width: {
       type: Number,
       default: 640
-    },
-    // 宽度
-    visibleTrue: {
-      type: Boolean,
-      default: false
     }
   },
   data() {
     return {
-      visible: this.visibleTrue
+      visible: false
     }
   },
   created() {
@@ -59,4 +54,4 @@ export default {
   }
 }
 </script>
-<style lang="less"></style>
+<style lang="less" scoped></style>

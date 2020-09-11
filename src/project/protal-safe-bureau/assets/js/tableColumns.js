@@ -199,6 +199,7 @@ export const SuperviseColumns = [
   }
 ]
 // 专项table列
+// 任务记录
 export const taskColumns = [
   {
     title: '序号',
@@ -256,6 +257,7 @@ export const taskColumns = [
     }
   }
 ]
+// 检查项目
 export const checkColumns = [
   {
     title: '序号',
@@ -288,7 +290,7 @@ export const checkColumns = [
     }
   }
 ]
-// 事故table
+// 安全事故table
 export const incidentColumns = [
   {
     title: '序号',
@@ -352,6 +354,117 @@ export const incidentColumns = [
     width: '10%',
     scopedSlots: {
       customRender: 'other1'
+    }
+  },
+  {
+    title: '操作',
+    width: '10%',
+    scopedSlots: {
+      customRender: 'action'
+    }
+  }
+]
+// 安全任务
+// 任务下发
+export const issuanceColumns = [
+  {
+    title: '序号',
+    scopedSlots: {
+      customRender: 'index'
+    },
+    width: '8%'
+  },
+  {
+    title: '任务名称',
+    dataIndex: 'schoolName',
+    width: '12%'
+  },
+  {
+    title: '任务类型',
+    dataIndex: 'title',
+    width: '12%'
+  },
+  {
+    title: '开始时间',
+    dataIndex: 'happenTime',
+    width: '15%',
+    customRender: text => {
+      return Tools.getDate(text, 1)
+    }
+  },
+  {
+    title: '结束时间',
+    dataIndex: 'happenTime',
+    width: '15%',
+    customRender: text => {
+      return Tools.getDate(text, 1)
+    }
+  },
+  {
+    title: '发布人',
+    dataIndex: 'level',
+    width: '12%',
+    customRender: text => {
+      return Tools.accidentLevel(text)
+    }
+  },
+  {
+    title: '发布时间',
+    dataIndex: 'happenTime',
+    width: '15%',
+    customRender: text => {
+      return Tools.getDate(text, 1)
+    }
+  },
+  {
+    title: '状态',
+    dataIndex: 'type',
+    width: '10%',
+    customRender: text => {
+      return Tools.accidentType(text)
+    }
+  },
+  {
+    title: '操作',
+    width: '10%',
+    scopedSlots: {
+      customRender: 'action'
+    }
+  }
+]
+// 任务模板
+export const templateColumns = [
+  {
+    title: '序号',
+    scopedSlots: {
+      customRender: 'index'
+    },
+    width: '8%'
+  },
+  {
+    title: '任务名称',
+    dataIndex: 'schoolName',
+    width: '12%'
+  },
+  {
+    title: '任务类型',
+    dataIndex: 'title',
+    width: '12%'
+  },
+  {
+    title: '开始时间',
+    dataIndex: 'happenTime',
+    width: '15%',
+    customRender: text => {
+      return Tools.getDate(text, 1)
+    }
+  },
+  {
+    title: '结束时间',
+    dataIndex: 'happenTime',
+    width: '15%',
+    customRender: text => {
+      return Tools.getDate(text, 1)
     }
   },
   {

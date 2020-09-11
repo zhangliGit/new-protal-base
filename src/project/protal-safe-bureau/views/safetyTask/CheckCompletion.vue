@@ -11,37 +11,44 @@
           v-for="(v,index2) in item.schoolAndStateList"
           :key="index2"
           @click="reviewDetails(v.taskId)">
-          <div class="title u-bold u-font-1">{{ v.schoolName }}</div>
+          <div class="title u-bold u-font-1">{{ v.name }}</div>
           <div class="btn u-fx-ac-jc u-font-01" >
             {{ v.state | taskStatus }}
           </div>
         </div>
       </div>
     </div>
-    <special-detail ref="SpecialDetail" ></special-detail>
+    <special-detail ref="TaskDetail" ></special-detail>
   </div>
 </template>
 
 <script>
 import { mapState, mapActions } from 'vuex'
-import SpecialDetail from './SpecialDetail'
+import TaskDetail from './TaskDetail'
 export default {
   name: 'Views',
   components: {
-    // SpecialDetail: () => import('./SpecialDetail')
-    SpecialDetail
+    TaskDetail
   },
   data() {
     this.code = this.$route.query.code || ''
     return {
-      dataList: []
+      dataList: [
+        { name: '2',
+          schoolAndStateList:
+          [
+            { name: '云校园', state: 3 },
+            { name: '云校园', state: 4 }
+          ]
+        }
+      ]
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
-    this.showList()
+    // this.showList()
   },
   methods: {
     ...mapActions('home', ['getStreetStatus']),
@@ -51,8 +58,8 @@ export default {
       this.dataList = res.data
     },
     reviewDetails(id) {
-      this.$refs.SpecialDetail.$refs.modal.visible = true
-      this.$refs.SpecialDetail.showDetail(id)
+      this.$refs.TaskDetail.$refs.modal.visible = true
+      this.$refs.TaskDetail.showDetail(id)
     },
     cancel() {
       this.$router.go(-1)
