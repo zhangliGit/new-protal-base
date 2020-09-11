@@ -231,7 +231,6 @@ export default {
       },
       searchList: {
         schoolCode: '',
-        queryType: '0'
       },
       total: 0,
       userList: [],

@@ -2,7 +2,7 @@
   <div class="page-home">
     <!-- <guide-dialog top="342" title="欢迎使用宿管系统，请先新增宿舍" :show-tag="dormTag">
       <div @click="goDrom">宿舍管理</div>
-    </guide-dialog> -->
+    </guide-dialog>-->
     <div class="home-banner" :style="{ marginTop: bannerTop + 'px' }">
       <div class="home-total-info">
         <div class="info-title">
@@ -18,18 +18,15 @@
         <div class="home-number">
           <div class="home-number-button" @click="getNumberDetail(2, totalInfo.lateCount)">
             晚归人数：
-            <span>{{ totalInfo.lateCount || 0 }}</span
-            >人
+            <span>{{ totalInfo.lateCount || 0 }}</span>人
           </div>
           <div class="home-number-button" @click="getNumberDetail(3, totalInfo.noCount)">
             未归人数：
-            <span>{{ totalInfo.noCount || 0 }}</span
-            >人
+            <span>{{ totalInfo.noCount || 0 }}</span>人
           </div>
           <div class="home-number-button" @click="getNumberDetail(1, totalInfo.leaveCount)">
             请假人数：
-            <span>{{ totalInfo.leaveCount || 0 }}</span
-            >人
+            <span>{{ totalInfo.leaveCount || 0 }}</span>人
           </div>
           <div style="clear: both"></div>
         </div>
@@ -52,7 +49,7 @@
       <div style="clear: both"></div>
       <a-row type="flex">
         <a-col>
-          <floor-list ref="floorList" @get-room="getRoomList" :current-date="currentDate"> </floor-list>
+          <floor-list ref="floorList" @get-room="getRoomList" :current-date="currentDate"></floor-list>
         </a-col>
         <a-col
           class="room-container"
@@ -74,7 +71,7 @@
       <guide-info>
         <a-button @click="isFirst = false" type="primary">知道了</a-button>
       </guide-info>
-    </a-modal> -->
+    </a-modal>-->
     <a-modal :title="'记录详情-' + dialogTitle" v-model="numberVisible" width="985px" :footer="null">
       <a-table
         :columns="columns"
@@ -90,15 +87,11 @@
         </template>
         <template slot="name" slot-scope="name">{{ name.first }} {{ name.last }}</template>
         <template slot="parentsList" slot-scope="parentsList">
-          <div v-if="!parentsList || parentsList.length === 0">
-            --
-          </div>
+          <div v-if="!parentsList || parentsList.length === 0">--</div>
           <a-popover placement="top" v-else>
             <template slot="content">
               <div v-for="list in parentsList" :key="list.parentsPhone">
-                <p>
-                  {{ list.relation | getParentType }}：{{ list.parentsName }} &nbsp; 联系电话：{{ list.parentsPhone }}
-                </p>
+                <p>{{ list.relation | getParentType }}：{{ list.parentsName }} &nbsp; 联系电话：{{ list.parentsPhone }}</p>
               </div>
             </template>
             <div>{{ parentsList[0].relation | getParentType }}：{{ parentsList[0].parentsName }}...</div>
@@ -132,14 +125,14 @@
             <p>班级：{{ personDetail.className }}</p>
             <p>
               班主任：{{ personDetail.teacherName ? personDetail.teacherName : '暂无' }} &nbsp;&nbsp; 联系电话：{{
-                personDetail.teacherPhone ? personDetail.teacherPhone : '暂无'
+              personDetail.teacherPhone ? personDetail.teacherPhone : '暂无'
               }}
             </p>
             <div v-if="personDetail.parentsList && personDetail.parentsList.length > 0">
               <div v-for="list in personDetail.parentsList" :key="list.parentsPhone">
                 <p>
                   {{ list.relation | getParentType }}：{{ list.parentsName }} &nbsp;&nbsp; 联系电话：{{
-                    list.parentsPhone
+                  list.parentsPhone
                   }}
                 </p>
               </div>
@@ -178,9 +171,7 @@
             <div v-if="personStatusDetail.type !== '4'">
               <div>
                 <img :src="tongguofangxiang" />
-                <span
-                >通过方向：{{ personStatusDetail.passDirection ? personStatusDetail.passDirection : '暂无' }}</span
-                >
+                <span>通过方向：{{ personStatusDetail.passDirection ? personStatusDetail.passDirection : '暂无' }}</span>
               </div>
               <div>
                 <img style="margin-bottom:3px" :src="zhuapaishebei" />
@@ -196,11 +187,11 @@
               </div>
               <div>
                 <img :src="shijian" />
-                <span
-                >应归时间：{{
+                <span>
+                  应归时间：{{
                   personStatusDetail.shouldReturnTime ? personStatusDetail.shouldReturnTime : '暂无'
-                }}</span
-                >
+                  }}
+                </span>
               </div>
             </div>
           </div>
@@ -253,7 +244,7 @@ const columns = [
     dataIndex: 'gender',
     width: '8%',
     align: 'center',
-    customRender: function(text, row, index) {
+    customRender: function (text, row, index) {
       if (text === '1') {
         text = '男'
       } else if (text === '2') {
@@ -281,7 +272,7 @@ const columns = [
     dataIndex: 'teacherName',
     width: '18%',
     align: 'center',
-    customRender: function(text, row, index) {
+    customRender: function (text, row, index) {
       if (text) {
         text = row.teacherName + '/' + row.teacherPhone
       } else {
@@ -437,9 +428,11 @@ export default {
           '&schoolScheme=' +
           sessionStorage.getItem('schoolScheme')
       )
-      this.getPersonChart('?studentId=' + id + '&schoolScheme=' + sessionStorage.getItem('schoolScheme')).then(res => {
-        this.personPie(res)
-      })
+      this.getPersonChart('?studentId=' + id + '&schoolScheme=' + sessionStorage.getItem('schoolScheme')).then(
+        (res) => {
+          this.personPie(res)
+        }
+      )
       this.personVisible = true
     },
     personPie(res) {
@@ -554,7 +547,7 @@ export default {
       this.getNumberList({
         ...this.params,
         ...this.searchForm
-      }).then(res => {
+      }).then((res) => {
         if (res.code === 200) {
           if (res.data.list.length > 0) {
             this.numberVisible = true
@@ -586,7 +579,7 @@ export default {
               this.currentDate,
             params: {}
           })
-          .then(res => {
+          .then((res) => {
             this.userState = res.data
             this.showRoom(code)
           })
@@ -601,7 +594,7 @@ export default {
             floorId: code
           }
         })
-        .then(res => {
+        .then((res) => {
           this.rawRoomList = res.data
           this.filterRoomData()
         })
@@ -610,13 +603,13 @@ export default {
     filterRoomData() {
       const filterRoomState = {}
       if (!this.userState) {
-        this.rawRoomList.forEach(item => {
-          item.personList.forEach(elem => {
-            elem.type = 5
+        this.rawRoomList.forEach((item) => {
+          item.personList.forEach((elem) => {
+            elem.type = 0
           })
         })
       } else {
-        this.userState.forEach(el => {
+        this.userState.forEach((el) => {
           if (el.inFlag === '1') {
             filterRoomState[el.studentId] = 0
           } else if (el.inFlag === '2') {
@@ -626,13 +619,13 @@ export default {
           } else if (el.leaveFlag === '1') {
             filterRoomState[el.studentId] = 1
           } else {
-            filterRoomState[el.studentId] = 5
+            filterRoomState[el.studentId] = 0
           }
         })
-        this.rawRoomList.forEach(item => {
-          item.personList.forEach(elem => {
+        this.rawRoomList.forEach((item) => {
+          item.personList.forEach((elem) => {
             if (!filterRoomState[elem.personId]) {
-              elem.type = 5
+              elem.type = 0
             } else {
               elem.type = filterRoomState[elem.personId]
             }
@@ -640,7 +633,7 @@ export default {
         })
       }
 
-      this.roomList = this.rawRoomList.map(item => {
+      this.roomList = this.rawRoomList.map((item) => {
         return {
           ...item,
           blockNum: item.personList.length + ''
@@ -651,13 +644,13 @@ export default {
   },
   created() {},
   mounted() {
-    this.getTotal().then(res => {
+    this.getTotal().then((res) => {
       if (res.data === null) {
         this.totalInfo.endDate = '数据正在统计中...'
       }
       console.log('res', res.data)
       this.currentDate = res.data ? res.data.date : this.getDateTime(new Date())
-      this.$refs.buildList.getBuildList(res => {
+      this.$refs.buildList.getBuildList((res) => {
         this.dormTag = true
         this.isFirst = true
       })
@@ -666,7 +659,7 @@ export default {
     // 初始化时间设置
     this.getCycleList({
       schoolCode: sessionStorage.getItem('schoolScheme')
-    }).then(res => {
+    }).then((res) => {
       if (res.data === null || res.data === '' || JSON.stringify(res.data) === '{}') {
         this.oneUpdateSignTaskInfo({ type: 1 })
         this.oneUpdateSignTaskInfo({ type: 2 })
