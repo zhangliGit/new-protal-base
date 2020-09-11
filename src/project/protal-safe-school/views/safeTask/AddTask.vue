@@ -9,12 +9,12 @@
           <a-form-item label="任务名称：" v-bind="formItemLayout">
             <a-input
               v-decorator="[
-              'taskName',
-              {
-                initialValue: cardInfo.taskName,
-                rules: [{ required: true, message: '请填写任务名称' }]
-              }
-            ]"
+                'taskName',
+                {
+                  initialValue: cardInfo.taskName,
+                  rules: [{ required: true, message: '请填写任务名称' }]
+                }
+              ]"
               placeholder="请填写任务名称"
             />
           </a-form-item>
@@ -120,7 +120,7 @@
                 :class="['left-content', 'u-mar-b10', 'u-tx-c', 'u-bd-1px', item.key === '0' ? 'bgc' : 'bg-fff']"
                 v-for="item in list"
                 :key="item.key"
-              >{{item.val}}</div>
+              >{{ item.val }}</div>
             </div>
           </div>
           <!-- <no-data msg="暂无题目~"></no-data> -->

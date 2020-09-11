@@ -66,6 +66,7 @@ export default {
     this.endTime = ''
     this.groupList = []
     return {
+      taskId: this.$route.query.id,
       form: this.$form.createForm(this),
       SchoolAll: [
         {
@@ -105,7 +106,7 @@ export default {
   async mounted() {
   },
   methods: {
-    ...mapActions('home', ['getItemAll', 'addSpecialTask', 'getGroup', 'getSchoolFlights', 'getTreeGroup']),
+    ...mapActions('home', ['taskPublish', 'addSpecialTask', 'getGroup', 'getSchoolFlights', 'getTreeGroup']),
     // 获取专项指标基础数据
     async _getItemAll() {
       const res = await this.getItemAll(this.userInfo.schoolCode)
@@ -150,6 +151,20 @@ export default {
       this.form.validateFields((error, values) => {
         this.isLoad = false
         if (!error) {
+          const req1 = {
+            publisherCode: this.userInfo.schoolCode,
+            publisherName: this.userInfo.userName,
+            taskId: this.taskId,
+            users: [
+              {
+                orgCode: '',
+                orgName: '',
+                schoolCode: '',
+                userCode: '',
+                userName: ''
+              }
+            ]
+          }
           const req = {
            	beginTime: this.beginTime,
             endTime: this.endTime,
@@ -159,7 +174,7 @@ export default {
             schoolCode: this.userInfo.schoolCode
           }
           this.isLoad = true
-          this.addSpecialTask(req)
+          this.taskPublish(req)
             .then(res => {
               // console.log(res)
               this.$message.success('操作成功')

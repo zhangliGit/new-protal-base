@@ -106,7 +106,7 @@ export const htmlToImg = function(ele, name, type, imgCallback) {
     }
   })
 }
-// html图片转换为流的方法
+// base转换为流的方法
 function dataURLToBlob(dataurl) {
   // console.log(dataurl)
   const arr = dataurl.split(',')

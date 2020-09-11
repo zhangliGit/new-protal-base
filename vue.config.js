@@ -309,7 +309,8 @@ module.exports = {
         }
       },
       '/lz_safe': {
-        target: 'http://canpointtest.com/lz_safe', // 吕卓-安防
+        // target: 'http://canpointtest.com/lz_safe', // 吕卓-安防
+        target: 'http://192.168.1.76:8091/', // 吕卓-安防
         changeOrigin: true,
         pathRewrite: {
           '^/lz_safe': ''

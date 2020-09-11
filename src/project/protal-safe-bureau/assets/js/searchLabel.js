@@ -242,7 +242,7 @@ export const IncidentSearchLabel = [
 // 任务下发
 export const issuanceSearchLabel = [
   {
-    value: 'accidentStatus', // 表单属性
+    value: 'taskType', // 表单属性
     type: 'select', // 表单类型
     label: '任务类型', // 表单label值
     list: [
@@ -265,7 +265,7 @@ export const issuanceSearchLabel = [
     ]
   },
   {
-    value: 'accidentStatus', // 表单属性
+    value: 'taskType', // 表单属性
     type: 'select', // 表单类型
     label: '任务状态', // 表单label值
     list: [
@@ -292,9 +292,9 @@ export const issuanceSearchLabel = [
     ]
   },
   {
-    value: 'schoolName', // 表单属性
+    value: 'taskName', // 表单属性
     type: 'input', // 表单类型
-    label: '', // 表单label值
+    label: '任务名称', // 表单label值
     placeholder: '请输入任务名称' // 表单默认值(非必选字段)
   }
 ]
