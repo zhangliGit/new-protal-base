@@ -120,76 +120,126 @@
                 :class="['left-content', 'u-mar-b10', 'u-tx-c', 'u-bd-1px', item.key === '0' ? 'bgc' : 'bg-fff']"
                 v-for="item in list"
                 :key="item.key"
+                @click="modify(0,item.key)"
               >{{item.val}}</div>
             </div>
           </div>
-          <!-- <no-data msg="暂无题目~"></no-data> -->
-          <div class="qui-fx-f1">
-            <div class="u-mar-t20 u-mar-l20 u-mar-r20">
+          <no-data
+            msg="暂无题目~"
+            v-if="radioList.length === 0 && checkList.length === 0  && fillList.length === 0  && fileList.length === 0 "
+          ></no-data>
+          <div class="qui-fx-f1" v-else>
+            <div class="u-mar-t20 u-mar-l20 u-mar-r20" v-if="radioList.length !== 0">
               <div>单选题</div>
               <div class="subject u-mar-t10 u-padd-b10">
-                <div class="project qui-fx u-mar-b10 u-padd" v-for="(list, i) in 2" :key="i">
+                <div
+                  class="project qui-fx u-mar-b10 u-padd"
+                  v-for="list in radioList"
+                  :key="list.key"
+                >
                   <div class="qui-fx-ver">题目：</div>
                   <div class="qui-fx-f1 qui-fx-ver u-mar-l20">
                     <div class="qui-fx">
                       <a-input style="width:90%" placeholder="请输入标题" />
-                      <div class="u-line u-mar-l10 u-type-primary">删除</div>
+                      <div
+                        class="u-line u-mar-l10 u-type-primary"
+                        @click="del(0, list, 'radioList')"
+                      >删除</div>
                     </div>
-                    <div class="qui-fx u-mar-t10">
+                    <div class="qui-fx u-mar-t10" v-for="item in list.pointList" :key="item.key">
                       <a-input style="width:90%" placeholder="请输入选项" />
-                      <a-icon class="u-line u-mar-l10 u-type-primary" type="minus-circle" />
+                      <a-icon
+                        class="u-line u-mar-l10 u-type-primary"
+                        type="minus-circle"
+                        @click="del(1, list, item)"
+                      />
                     </div>
                     <div class="qui-fx u-mar-t10">
-                      <a-input class="input" placeholder="新建选项" readonly />
+                      <a-input
+                        class="input"
+                        placeholder="新建选项"
+                        read-only
+                        @click="modify(1, 'radioList',list)"
+                      />
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="u-mar-l20 u-mar-r20">
+            <div class="u-mar-l20 u-mar-r20" v-if="checkList.length !== 0">
               <div>多选题</div>
               <div class="subject u-mar-t10 u-padd-b10">
-                <div class="project qui-fx u-mar-b10 u-padd" v-for="(list, i) in 2" :key="i">
+                <div
+                  class="project qui-fx u-mar-b10 u-padd"
+                  v-for="list in checkList"
+                  :key="list.key"
+                >
                   <div class="qui-fx-ver">题目：</div>
                   <div class="qui-fx-f1 qui-fx-ver u-mar-l20">
                     <div class="qui-fx">
                       <a-input style="width:90%" placeholder="请输入标题" />
-                      <div class="u-line u-mar-l10 u-type-primary">删除</div>
+                      <div
+                        class="u-line u-mar-l10 u-type-primary"
+                        @click="del(0, list, 'checkList')"
+                      >删除</div>
                     </div>
-                    <div class="qui-fx u-mar-t10">
+                    <div class="qui-fx u-mar-t10" v-for="item in list.pointList" :key="item.key">
                       <a-input style="width:90%" placeholder="请输入选项" />
-                      <a-icon class="u-line u-mar-l10 u-type-primary" type="minus-circle" />
+                      <a-icon
+                        class="u-line u-mar-l10 u-type-primary"
+                        type="minus-circle"
+                        @click="del(1, list, item)"
+                      />
                     </div>
                     <div class="qui-fx u-mar-t10">
-                      <a-input class="input" placeholder="新建选项" readonly />
+                      <a-input
+                        class="input"
+                        placeholder="新建选项"
+                        read-only
+                        @click="modify(1, 'checkList',list)"
+                      />
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="u-mar-l20 u-mar-r20">
+            <div class="u-mar-l20 u-mar-r20" v-if="fillList.length !== 0">
               <div>填空题</div>
               <div class="subject u-mar-t10 u-padd-b10">
-                <div class="project qui-fx u-mar-b10 u-padd" v-for="(list, i) in 2" :key="i">
+                <div
+                  class="project qui-fx u-mar-b10 u-padd"
+                  v-for="list in fillList"
+                  :key="list.key"
+                >
                   <div class="qui-fx-ver">题目：</div>
                   <div class="qui-fx-f1 qui-fx-ver u-mar-l20">
                     <div class="qui-fx">
                       <a-input style="width:90%" placeholder="请输入题目" />
-                      <div class="u-line u-mar-l10 u-type-primary">删除</div>
+                      <div
+                        class="u-line u-mar-l10 u-type-primary"
+                        @click="del(0, list, 'fillList')"
+                      >删除</div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="u-mar-l20 u-mar-r20">
+            <div class="u-mar-l20 u-mar-r20" v-if="fileList.length !== 0">
               <div>附件上传</div>
               <div class="subject u-mar-t10 u-padd-b10">
-                <div class="project qui-fx u-mar-b10 u-padd" v-for="(list, i) in 2" :key="i">
+                <div
+                  class="project qui-fx u-mar-b10 u-padd"
+                  v-for="list in fileList"
+                  :key="list.key"
+                >
                   <div class="qui-fx-ver">题目：</div>
                   <div class="qui-fx-f1 qui-fx-ver u-mar-l20">
                     <div class="qui-fx">
                       <a-input style="width:90%" placeholder="请输入附件标题" />
-                      <div class="u-line u-mar-l10 u-type-primary">删除</div>
+                      <div
+                        class="u-line u-mar-l10 u-type-primary"
+                        @click="del(0, list, 'fileList')"
+                      >删除</div>
                     </div>
                     <div class="qui-fx u-mar-t10">
                       <a-upload name="file">
@@ -238,19 +288,19 @@ export default {
           val: '上报常用项'
         },
         {
-          key: '1',
+          key: 'radio',
           val: '单选题'
         },
         {
-          key: '2',
+          key: 'check',
           val: '多选题'
         },
         {
-          key: '3',
+          key: 'fill',
           val: '填空题'
         },
         {
-          key: '4',
+          key: 'file',
           val: '附件上传'
         }
       ],
@@ -408,6 +458,37 @@ export default {
     },
     cancel() {
       this.$router.go(-1)
+    },
+    modify(type, key, record) {
+      if (type) {
+        let length = record.pointList.length === 0 ? 0 : record.pointList[record.pointList.length - 1].key + 1
+        console.log('record', record.pointList)
+        const newData = {
+          key: length
+        }
+        record.pointList = [...record.pointList, newData]
+        length = length + 1
+      } else {
+        if (key === '0') return false
+        const newData = {
+          key: this[`${key}Count`],
+          pointList: []
+        }
+        this[`${key}List`] = [...this[`${key}List`], newData]
+        this[`${key}Count`] = this[`${key}Count`] + 1
+      }
+    },
+    // 删除
+    del(type, list, string) {
+      if (type) {
+        list.pointList.filter((el) => {
+          if (el.key === string.key) {
+            list.pointList = list.pointList.filter((i) => i !== string)
+          }
+        })
+      } else {
+        this[string] = this[string].filter((i) => i !== list)
+      }
     },
     // 提交
     submitOk(e) {
