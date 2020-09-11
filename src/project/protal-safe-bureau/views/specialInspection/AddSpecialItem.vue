@@ -57,7 +57,7 @@
     >
     </choose-check>
     <!-- 选择督查小组 -->
-    <choose-item
+    <choose-tree
       :userData="specificAll"
       :selectLeft="selectSpecific"
       ref="supervisio"
@@ -65,7 +65,7 @@
       title="选择督查小组"
       ranname="name"
     >
-    </choose-item>
+    </choose-tree>
   </div>
 </template>
 
@@ -78,7 +78,7 @@ export default {
   components: {
     UploadMulti,
     ChooseCheck: () => import('../../component/ChooseCheck'),
-    ChooseItem: () => import('../../component/ChooseItem')
+    ChooseTree: () => import('../../component/ChooseTree')
   },
   data() {
     this.beginTime = ''
@@ -94,7 +94,7 @@ export default {
         labelCol: { span: 6 },
         wrapperCol: { span: 16 }
       },
-      xiaozuData,
+      // xiaozuData,
       isLoad: false,
       appForm: {
         supervisionTeam: '',

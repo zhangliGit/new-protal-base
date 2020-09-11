@@ -46,7 +46,9 @@ const home = {
     schoolCode: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolCode,
     userInfo: getState('userInfo', {
       schoolCode: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolCode,
-      schoolId: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolId
+      schoolId: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolId,
+      userName: JSON.parse(window.sessionStorage.getItem('loginType')).userName,
+      userCode: JSON.parse(window.sessionStorage.getItem('loginType')).userCode
     }),
     loginType: getState('loginType', {
       userName: JSON.parse(window.sessionStorage.getItem('loginType')).userName,

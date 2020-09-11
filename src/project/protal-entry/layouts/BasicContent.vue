@@ -1,32 +1,41 @@
 <template>
-  <div class="qui-fx-ver qui-fx-f1" style="padding: 10px;">
+  <div class="qui-fx-ver qui-fx-f1 notice-list" style="padding: 10px;">
     <a-modal
       mask
       :footer="null"
-      width="800px"
+      width="750px"
       :maskClosable="false"
-      :title="noticeTitle"
       :visible="isShow"
       @ok="isShow = false"
       @cancel="isShow = false"
     >
-      <div class="u-tx-c u-font-2 u-padd-b10">{{ newDetail.title }}</div>
-      <div class="u-tx-c u-padd-b10 u-font-01 u-tips-color">
-        <span>发布人：{{ newDetail.publisherName }}</span>
-        <span class="u-padd-l">发布时间：{{ $tools.getDate(newDetail.creatTime) }}</span>
-      </div>
-      <div class="u-fx-ac">
-        <div @click="seeNotice('left')" class="left-icon" v-if="currentIndex !== 0 && isIcon"></div>
-        <div class="u-line2 u-fx-f1" style="height: 500px" v-html="newDetail.content"></div>
+      <div class="notice-close" @click="isShow = false"></div>
+      <div class="notice-bg u-fx-ver">
         <div
-          @click="seeNotice('right')"
-          class="right-icon"
-          v-if="currentIndex !== unReadList.length - 1 && isIcon"
-        ></div>
-      </div>
-      <div class="u-tx-r">
-        <a-button type="default" v-if="false">不在提示</a-button>
-        <a-button type="primary" class="u-mar-l" @click="isShow = false">关闭</a-button>
+          class="u-tx-c u-font-3 u-bold"
+          style="height: 100px; line-height: 90px"
+        >{{ newDetail.title }}</div>
+        <div class="u-tx-c u-padd-b10 u-font-01 u-mar-t10 u-tips-color">
+          <span>发布人：{{ newDetail.publisherName }}</span>
+          <span class="u-padd-l">发布时间：{{ $tools.getDate(newDetail.creatTime) }}</span>
+        </div>
+        <div class="u-fx-ac notice-content">
+          <div style="width: 40px">
+            <div @click="seeNotice('left')" class="left-icon" v-if="currentIndex !== 0 && isIcon"></div>
+          </div>
+          <div
+            class="u-line2 u-fx-f1 u-auto"
+            style="height: 370px; margin: 0 10px;padding: 0 15px"
+            v-html="newDetail.content"
+          ></div>
+          <div style="width: 40px">
+            <div
+              @click="seeNotice('right')"
+              class="right-icon"
+              v-if="currentIndex !== unReadList.length - 1 && isIcon"
+            ></div>
+          </div>
+        </div>
       </div>
     </a-modal>
     <div class="banner-img">
@@ -34,7 +43,9 @@
     </div>
     <div class="qui-fx-f1 qui-fx content qui-of">
       <div class="qui-fx-f1 content-box qui-fx-ver" style="margin-right: 10px;">
-        <div class="title qui-fx-ac"><img :src="app" alt />我的应用</div>
+        <div class="title qui-fx-ac">
+          <img :src="app" alt />我的应用
+        </div>
         <div class="qui-fx-f1 app">
           <div class="pos-box" style="overflow-y: auto; padding-bottom: 10px">
             <no-data style="padding-top: 100px" v-if="menuList.length === 0" msg="暂无应用~"></no-data>
@@ -54,7 +65,9 @@
         </div>
       </div>
       <div class="content-box qui-fx-ver">
-        <div class="title qui-fx-ac"><img :src="news" alt />平台消息</div>
+        <div class="title qui-fx-ac">
+          <img :src="news" alt />平台消息
+        </div>
         <div class="qui-fx-f1 notice">
           <div class="pos-box" style="overflow: auto; padding-bottom: 10px">
             <no-data style="padding-top: 100px" v-if="newList.length === 0" msg="暂无消息~"></no-data>
@@ -119,7 +132,7 @@ export default {
     NoData
   },
   async mounted() {
-    // this._searchNotice()
+    this._searchNotice()
   },
   methods: {
     ...mapActions('home', ['searchPersonNotice', 'readPersonNotice']),
@@ -206,12 +219,67 @@ export default {
 </script>
 
 <style lang="less" scoped>
+::-webkit-scrollbar {
+  width: 1px; /*对垂直流动条有效*/
+  height: 1px; /*对水平流动条有效*/
+}
+
+/*定义滚动条的轨道颜色、内阴影及圆角*/
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+/*定义滑块颜色、内阴影及圆角*/
+::-webkit-scrollbar-thumb {
+  background-color: transparent;
+}
+
+/*定义两端按钮的样式*/
+::-webkit-scrollbar-button {
+  background-color: transparent;
+}
+
+/*定义右下角汇合处的样式*/
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+/deep/ .ant-modal-body {
+  margin-top: 100px !important;
+}
+/deep/ .ant-modal-mask {
+  background-color: rgba(0, 0, 0, 0.6);
+}
 .banner-img {
   height: 380px;
   img {
     width: 100%;
     height: 380px;
   }
+}
+.notice-close {
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  z-index: 1000;
+  top: -70px;
+  left: 790px;
+  cursor: pointer;
+  background: url(../assets/img/close.png) no-repeat;
+  background-size: 40px 40px;
+}
+.notice-content {
+  width: 780px;
+  margin: 20px auto 10px auto;
+}
+.notice-bg {
+  width: 913px;
+  height: 549px;
+  position: absolute;
+  z-index: 999;
+  top: -40px;
+  left: -80px;
+  background: url(../assets/img/notice-bg.png) no-repeat;
+  background-size: 913px 549px;
 }
 .left-icon {
   width: 30px;
@@ -226,7 +294,7 @@ export default {
   height: 30px;
   background: url('../assets/img/right.png') no-repeat;
   background-size: 30px;
-  margin-left: 20px;
+  margin-left: 10px;
   cursor: pointer;
 }
 .content-box {

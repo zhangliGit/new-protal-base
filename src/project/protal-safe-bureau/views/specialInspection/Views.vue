@@ -7,11 +7,12 @@
       <div class="cont u-fx-wp u-mar-t10">
         <div
           class="list_box u-fx-ac-jc u-mar-10"
+          :class="v.state==4||v.state==3?'green':'red'"
           v-for="(v,index2) in item.schoolAndStateList"
           :key="index2"
           @click="reviewDetails(v.taskId)">
           <div class="title u-bold u-font-1">{{ v.schoolName }}</div>
-          <div class="btn u-fx-ac-jc u-font-01" :class="v.state==4||v.state==3?'green':''">
+          <div class="btn u-fx-ac-jc u-font-01" >
             {{ v.state | taskStatus }}
           </div>
         </div>
@@ -64,11 +65,11 @@ export default {
   padding: 20px;
   .card{
     .title-tab{
-    border-bottom: 1px solid #DEDEDE;
-    height: 30px;
-    position: relative;
-    display: flex;
-    justify-content: space-between;
+      border-bottom: 1px solid #DEDEDE;
+      height: 30px;
+      position: relative;
+      display: flex;
+      justify-content: space-between;
       .title-tab-pane{
         height: 30px;
         font-size: 14px;
@@ -88,18 +89,26 @@ export default {
     .list_box{
       width: 250px;
       height: 100px;
-      background: url('../../assets/img/wanchengbg.png')  no-repeat;
-      background-size:100% 100%;
       .btn{
         margin-top: 5px;
         color: #fff;
         width: 90px;
         height: 25px;
-        background-color: #ff5454;
         border-radius: 15px;
       }
-      .green{
+    }
+    .green{
+      background: url('../../assets/img/wanchengbg.png')  no-repeat;
+      background-size:100% 100%;
+      .btn{
         background-color: #00a35f;
+      }
+    }
+    .red{
+      background: url('../../assets/img/nowangcheng.png')  no-repeat;
+      background-size:100% 100%;
+      .btn{
+        background-color: #ff5454;
       }
     }
   }

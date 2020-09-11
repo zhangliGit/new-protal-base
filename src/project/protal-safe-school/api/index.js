@@ -12,5 +12,6 @@ const apiList = {
   ...dangerApi,
   ...specialApi,
   ...accdientApi
+
 }
 export default apiList
