@@ -2,12 +2,12 @@
   <Modal title="添加检查项" ref="modal" @close="reset" @ok="submitOk">
     <a-form :form="form">
       <a-form-item label="检查项目：" v-bind="formItemLayout">
+        <!-- initialValue: appForm.name, -->
         <a-input
           :disabled="type==1"
           v-decorator="[
             'name',
             {
-              initialValue: appForm.name,
               rules: [{ required: true, message: '请输入检查项目' }]
             }
           ]"
@@ -54,10 +54,10 @@ export default {
         labelCol: { span: 6 },
         wrapperCol: { span: 16 }
       },
-      form: this.$form.createForm(this),
       appForm: {
         name: ''
       },
+      form: this.$form.createForm(this),
       normalList: [],
       count: 0,
       type: '',
@@ -77,7 +77,7 @@ export default {
       if (!this.detailId) return
       const res = await this.itemDetail(this.detailId)
       // this.$set(this.appForm, name, res.data.name)
-      this.appForm.name = res.data.name
+      this.form.setFieldsValue({ name: res.data.name })
       this.normalList = res.data.children.map((v, index) => {
         return {
           key: index,
@@ -146,14 +146,15 @@ export default {
     },
     // 置空
     reset() {
-      this.appForm = {}
+      this.form.setFieldsValue({ name: '' })
+      // this.appForm = {}
       this.normalList = []
     }
   },
   watch: {
     appForm: {
       handler(val) {
-        console.log(val)
+        console.log(val) // 打印出来数据是改变了的
       },
       // 代表在wacth里声明了firstName这个方法之后立即先去执行handler方法
       immediate: true,

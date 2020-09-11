@@ -54,6 +54,7 @@ const zqApi = {
   addSchoolActivity: '/school/activity/add#post', // 校园活动新增
   editSchoolActivity: '/school/activity/update#putJson', // 校园活动编辑
   delSchoolActivity: '/school/activity/delete#delWithQuery', // 删除校园活动
+  downloadSignUp: '/school/activity/sign/up/downloadActivitySignUp#getUrl', // 查询校园活动详情
 
   // 会议发布
   addMeetRecord: '/place/reserve/summary/add#post', // 新增会议纪要

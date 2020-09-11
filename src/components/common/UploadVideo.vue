@@ -2,7 +2,7 @@
   <div class="upload-file qui-fx">
     <a-upload
       :multiple="true"
-      name="fileList"
+      :name="fileName"
       listType="picture-card"
       class="avatar-uploader mar-t10"
       :showUploadList="false"
@@ -65,6 +65,10 @@ export default {
       default: () => {
         return []
       }
+    },
+    fileName: {
+      type: String,
+      default: 'fileList'
     },
     fileInfo: {
       type: Object,
@@ -130,7 +134,11 @@ export default {
         if (!isMp4) {
           this.$message.error('请上传mp4格式的视频文件')
         }
+        this.$emit('beforeUpload')
         return isMp4 && isLt100M
+      } else {
+        this.$emit('beforeUpload')
+        return isLt100M
       }
     },
     uploadPic (info) {

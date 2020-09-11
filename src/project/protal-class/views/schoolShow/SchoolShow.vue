@@ -14,7 +14,7 @@
       <p class="qui-fx qui-fx-ac">校园风采</p>
     </div>
     <div class="qui-fx qui-fx-ac u-mar-b10">
-      <a-radio-group name="radioGroup" default-value="image" @change="changeType">
+      <a-radio-group name="radioGroup" v-model="chooseType">
         <a-radio value="image">上传图片</a-radio>
         <a-radio value="video">上传视频</a-radio>
       </a-radio-group>
@@ -23,7 +23,28 @@
       <span class="u-mar-l10 u-font-01 u-tips-color">说明：支持上传图片或视频，视频只能上传一个，图片不超过传九张</span>
     </div>
     <div class="qui-fx qui-fx-ac">
-      <upload-video :type="chooseType" :length="chooseType === 'image' ? 9 : 1" v-model="fileList" :fileInfo="fileInfo" @delUpload="delUpload" ></upload-video>
+      <upload-video
+        v-if="chooseType === 'image'"
+        type="image"
+        fileName="file"
+        :length="9"
+        v-model="imgList"
+        :fileInfo="fileInfo"
+        @delUpload="delUpload"
+        @beforeUpload="beforeUpload"
+        @success="success" >
+      </upload-video>
+      <upload-video
+        v-if="chooseType === 'video'"
+        type="video"
+        fileName="file"
+        :length="1"
+        v-model="videoList"
+        :fileInfo="fileInfo"
+        @delUpload="delUpload"
+        @beforeUpload="beforeUpload"
+        @success="success" >
+      </upload-video>
     </div>
     <div class="button">
       <a-button type="primary" @click="save">
@@ -51,65 +72,97 @@ export default {
         h: 120,
         w: 120
       },
-      fileList: []
+      imgList: [],
+      videoList: [],
+      canUpload: true
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
   created () {
-    this.fileInfo.url = `${hostEnv.zk_oa}/study/theme/file/uploadFile?schoolCode=${this.userInfo.schoolCode}`
+    this.fileInfo.url = `${hostEnv.zq_class}/school/introduction/file/uploadFile?schoolCode=${this.userInfo.schoolCode}`
+    this.getMotto()
   },
   methods: {
-    ...mapActions('home', ['getClassMotto', 'addClassMotto', 'delFile']),
+    ...mapActions('home', ['getSchoolShow', 'addSchoolShow', 'editSchoolShow', 'delFile', 'getSchoolShowFile']),
     changeType(e) {
-      this.chooseType = e.target.value
       if (this.chooseType === 'image') {
         this.fileInfo.tip = '上传图片'
       } else if (this.chooseType === 'video') {
         this.fileInfo.tip = '上传视频'
       }
-      const arr = this.fileList
-      arr.forEach(el => {
-        this.delFile(el.id)
-      })
-      this.fileList = []
+    },
+    beforeUpload() {
+      this.canUpload = false
+    },
+    success() {
+      this.canUpload = true
     },
     delUpload(value) {
-      this.delFile(value.id)
+      this.canUpload = true
     },
     async getMotto () {
-      /* const req = {
-        ...this.classInfo,
-        schoolCode: this.userInfo.schoolCode
+      const res = await this.getSchoolShow(this.userInfo.schoolCode)
+      this.areaText = res.data.content
+      this.mottoId = res.data.id
+      const fileRes = await this.getSchoolShowFile(this.userInfo.schoolCode)
+      if (fileRes.data.length === 0) {
+        return
       }
-      const res = await this.getClassMotto(req)
-      if (!res.data) {
-        this.areaText = ''
+      if ('mp4|ogg|webm'.toLowerCase().indexOf(fileRes.data[0].fileType.toLowerCase()) !== -1) {
+        this.chooseType = 'video'
+        this.videoList = fileRes.data
       } else {
-        this.areaText = res.data.introduce
-      } */
+        this.chooseType = 'image'
+        this.imgList = fileRes.data
+      }
     },
     async save() {
       if (this.areaText === '') {
         this.$message.error('请输入学校简介')
         return
       }
+      if (!this.canUpload) {
+        this.$message.error('附件上传中')
+      }
       const req = {
-        ...this.classInfo,
-        introduce: this.areaText,
-        schoolCode: this.userInfo.schoolCode
+        content: this.areaText,
+        schoolCode: this.userInfo.schoolCode,
+        fileUrlList: [],
+        fileAddIdList: []
       }
-      if (this.addOrEditTag) {
+      if (this.chooseType === 'image') {
+        this.imgList.forEach(el => {
+          req.fileUrlList.push(el.url)
+          req.fileAddIdList.push(el.id)
+        })
+        this.videoList.forEach(el => {
+          this.delFile(el.id)
+        })
+      } else if (this.chooseType === 'video') {
+        this.videoList.forEach(el => {
+          req.fileUrlList.push(el.url)
+          req.fileAddIdList.push(el.id)
+        })
+        this.imgList.forEach(el => {
+          this.delFile(el.id)
+        })
+      }
+      console.log(req)
+      let res = null
+      if (this.mottoId) {
         req.id = this.mottoId
+        res = this.editSchoolShow(req)
+      } else {
+        res = this.addSchoolShow(req)
       }
-      console.log(this.fileList)
-      /* this.addClassMotto(req).then(() => {
+      res.then(() => {
         this.$message.success('编辑成功')
         this.$tools.goNext(() => {
           this.getMotto()
         })
-      }) */
+      })
     }
   }
 }

@@ -41,7 +41,7 @@ const getState = (state, val) => {
   return JSON.parse(localData)[state] || val
 }
 const home = {
-  namespaced: false,
+  namespaced: true,
   state: {
     schoolCode: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolCode,
     userInfo: getState('userInfo', {

@@ -161,7 +161,7 @@ export default {
     this.id = ''
     return {
       teamLeaderCode: 'QPJYJ', // 小组长Code
-      supervisionCode: 'QPJYJ1', // 小组长Code
+      supervisionCode: 'QPJYJ', // 小组长Code
       formData,
       detailInfo: [],
       processes: [],
@@ -194,7 +194,6 @@ export default {
       const res = await this.specialTaskDetail(id)
       console.log(res)
       this.detailInfo = res.data
-      this.teamLeaderCode = res.data.teamLeaderCode
       this.detailInfo.itemList = this.detailInfo.itemList.map(el => {
         return {
           ...el,

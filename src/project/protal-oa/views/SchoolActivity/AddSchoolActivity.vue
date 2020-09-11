@@ -158,6 +158,12 @@ export default {
   mounted() {
     this.maxHeight = window.screen.height - 280 + 'px'
     this.type = this.$route.query.type
+    this.getSchoolYear({ schoolCode: this.userInfo.schoolCode }).then(res => {
+      if (!res.data) {
+        return
+      }
+      this.schoolYearId = res.data.list[0].id
+    })
     if (this.type !== '0') {
       this.showData()
     }
@@ -166,7 +172,8 @@ export default {
     ...mapActions('home', [
       'addSchoolActivity',
       'schoolActivityDetail',
-      'editSchoolActivity'
+      'editSchoolActivity',
+      'getSchoolYear'
     ]),
     switchChange(val) {
       if (!val) {
@@ -200,7 +207,7 @@ export default {
             this.$message.error('请选择报名截止时间')
             return
           }
-          if (new Date(this.formData.applyEnddate).getTime() >= new Date(this.timeList[0]).getTime()) {
+          if (values.switch && new Date(this.formData.applyEnddate).getTime() >= new Date(this.timeList[0]).getTime()) {
             this.$message.error('报名截止时间不能晚于活动开始时间')
             return
           }
@@ -220,12 +227,17 @@ export default {
                 deviceSn: el.deviceSn,
                 deviceIp: el.deviceIp,
                 schoolCode: el.schoolCode,
-                activityId: this.$route.query.id
+                activityId: this.$route.query.id,
+                classCode: el.classCode,
+                gradeCode: el.gradeCode,
+                schoolYearId: this.schoolYearId
               }
             })
           }
           if (values.switch) {
             req.stopDatetime = this.formData.applyEnddate
+          } else {
+            req.stopDatetime = undefined
           }
           console.log(req)
           if (this.type === '2') {

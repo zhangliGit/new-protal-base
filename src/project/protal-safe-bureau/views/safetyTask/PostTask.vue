@@ -4,92 +4,89 @@
       <a-form-item v-bind="formItemLayout" label="任务名称" required>
         <a-input
           placeholder="请输入任务名称"
+          :disabled="true"
           v-decorator="[
             'name',
-            { initialValue: appForm.address, rules: [{max: 20,required: true, message: '请输入机构名称限20字,支持中英文数字' } ]}
+            { initialValue: appForm.address, rules: [{max: 20,required: true, message: '临时任务' } ]}
           ]"
         />
       </a-form-item>
-      <a-form-item label="检查时间：" v-bind="formItemLayout">
-        <a-range-picker
-          :show-time="{ format: 'HH:mm' }"
-          format="YYYY-MM-DD HH:mm"
-          :placeholder="['开始时间', '结束时间']"
-          @change="onChange"
-          @ok="onOk"
-          v-decorator="['range', { rules: [{ required: true, message: '请输入输入时间范围' }] }]"
-        />
-      </a-form-item>
-      <a-form-item label="专项指标：" v-bind="formItemLayout" required>
+      <a-form-item label="接受学校：" v-bind="formItemLayout" required>
         <a-input
           @click="showSpecific()"
-          placeholder="专项指标"
+          placeholder="请选择接受学校"
           v-decorator="[
             'specificIndicators',
             { initialValue: appForm.specificIndicators, rules: [ {required: true, message: '请选择专项指标' } ]}
           ]"
         />
       </a-form-item>
-      <a-form-item label="督查小组：" v-bind="formItemLayout" required>
-        <a-input
-          @click="showSupervision()"
-          placeholder="督查小组"
+      <a-form-item v-bind="formItemLayout" label="限定职务：" required>
+        <a-select
           v-decorator="[
-            'supervisionTeam',
-            { initialValue: appForm.supervisionTeam, rules: [ {required: true, message: '请选择督查小组' } ]}
+            'leaderName',
+            { initialValue: appForm.leaderName, rules: [{ required: true, message: '请选择负责人' }] },
           ]"
-        />
+          placeholder="请选择您要限定的职务，可多选"
+        >
+          <a-select-option v-for="list in userList" :key="`${list.name}+${list.code}`">
+            {{ list.name }}
+          </a-select-option>
+        </a-select>
       </a-form-item>
       <a-form-item v-bind="formItemLayout" :style="{ textAlign: 'center' }">
         <a-button @click="cancel">取消</a-button>
         <a-button class="mar-l10" type="primary" @click="submitOk" :disabled="isLoad">确定</a-button>
       </a-form-item>
     </a-form>
-    <!-- 选择专项指标 -->
+    <!-- 选择接受学校 -->
     <choose-check
-      :userData="itemAll"
+      :userData="SchoolAll"
       :selectLeft="selectItem"
-      ref="itemAll"
+      ref="SchoolAll"
       v-if="true"
       @submit="setItem"
-      title="选择专项指标"
+      title="选择学校"
       ranname="name"
     >
     </choose-check>
-    <!-- 选择督查小组 -->
-    <choose-tree
-      :userData="specificAll"
-      :selectLeft="selectSpecific"
-      ref="supervisio"
-      @submit="setSupervisio"
-      title="选择督查小组"
-      ranname="name"
-    >
-    </choose-tree>
   </div>
 </template>
 
 <script>
 import { mapState, mapActions } from 'vuex'
-import UploadMulti from '@c/UploadMulti'
 // import xiaozuData from './dubanxiaozu.json'
 export default {
   name: 'AddSpecialItem',
   components: {
-    UploadMulti,
-    ChooseCheck: () => import('../../component/ChooseCheck'),
-    ChooseTree: () => import('../../component/ChooseTree')
+    ChooseCheck: () => import('../../component/ChooseCheck')
   },
   data() {
     this.beginTime = ''
     this.endTime = ''
     this.groupList = []
     return {
+      taskId: this.$route.query.id,
       form: this.$form.createForm(this),
-      itemAll: [], // 专项指标
+      SchoolAll: [
+        {
+          id: '1',
+          index: 0,
+          name: 'eerhu'
+        },
+        {
+          id: '2',
+          index: 0,
+          name: 'eerhu'
+        },
+        {
+          id: '3',
+          index: 0,
+          name: 'eerhu'
+        }
+      ], // 学校集合
+      userList: [],
       selectItem: [],
-      specificAll: [], // 督查小组
-      selectSpecific: [],
       formItemLayout: {
         labelCol: { span: 6 },
         wrapperCol: { span: 16 }
@@ -107,59 +104,21 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   async mounted() {
-    await this._getItemAll()
-    await this._getTreeGroup()
   },
   methods: {
-    ...mapActions('home', ['getItemAll', 'addSpecialTask', 'getGroup', 'getSchoolFlights', 'getTreeGroup']),
+    ...mapActions('home', ['taskPublish', 'addSpecialTask', 'getGroup', 'getSchoolFlights', 'getTreeGroup']),
     // 获取专项指标基础数据
     async _getItemAll() {
       const res = await this.getItemAll(this.userInfo.schoolCode)
-      // this.itemAll = JSON.parse(JSON.stringify(res.data).replace(/name/g, 'name'))
-      this.itemAll = res.data
-    },
-    // 获取督办小组基础数据
-    async _getTreeGroup() {
-      const req = {
-        eduCode: this.userInfo.schoolCode // 机构编码
-      }
-      const res = await this.getTreeGroup(req)
-      console.log(this.initSpecificAll(res.data))
-      this.specificAll = this.initSpecificAll(res.data)
-      // return res.data[0].memberList && res.data[0].memberList.map(v => v.eduCode)
-    },
-    // 格式化督办小组数据
-    initSpecificAll(data) {
-      data.forEach(item => {
-        // 树组件指定属性名
-        item.leve = '1'
-        item.title = item.streetName
-        item.children = item.superviseGroupDtoList
-        item.key = item.streetCode
-        item.superviseGroupDtoList.forEach((v, index) => {
-          v.leve = '2'
-          v.key = `${v.leaderCode}`
-          v.children = []
-          v.title = v.groupName
-          // 后台用的属性名
-          v.teamLeaderCode = v.leaderCode
-          v.teamLeaderName = v.leaderName
-          v.schoolDTOList = v.memberList.map(res => {
-            return {
-              schoolCode: res.eduCode,
-              schoolName: res.eduName
-            }
-          })
-        })
-      })
-      return data
+      // this.SchoolAll = JSON.parse(JSON.stringify(res.data).replace(/name/g, 'name'))
+      this.SchoolAll = res.data
     },
     onChange(value, dateString) {
       this.beginTime = dateString[0]
       this.endTime = dateString[1]
     },
     async showSpecific(type) {
-      this.$refs.itemAll.$refs.modal.visible = true
+      this.$refs.SchoolAll.$refs.modal.visible = true
     },
     setItem(data) {
       this.selectItem = data.map(v => v.id)
@@ -192,6 +151,20 @@ export default {
       this.form.validateFields((error, values) => {
         this.isLoad = false
         if (!error) {
+          const req1 = {
+            publisherCode: this.userInfo.schoolCode,
+            publisherName: this.userInfo.userName,
+            taskId: this.taskId,
+            users: [
+              {
+                orgCode: '',
+                orgName: '',
+                schoolCode: '',
+                userCode: '',
+                userName: ''
+              }
+            ]
+          }
           const req = {
            	beginTime: this.beginTime,
             endTime: this.endTime,
@@ -201,7 +174,7 @@ export default {
             schoolCode: this.userInfo.schoolCode
           }
           this.isLoad = true
-          this.addSpecialTask(req)
+          this.taskPublish(req)
             .then(res => {
               // console.log(res)
               this.$message.success('操作成功')

@@ -364,7 +364,8 @@ export default {
             id: item.id,
             userCode: item.userCode,
             userName: item.userName,
-            hasDorm: item.hasDorm
+            hasDorm: item.hasDorm,
+            photoUrl:item.photoUrl
           })
         } else {
           this.totalList = [item]

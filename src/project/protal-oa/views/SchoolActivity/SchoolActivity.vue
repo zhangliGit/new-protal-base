@@ -71,6 +71,7 @@ import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
 import SearchForm from '@c/SearchForm'
 import Tools from '@u/tools'
+import hostEnv from '@config/host-env'
 const columns = [
   {
     title: '序号',
@@ -243,6 +244,7 @@ export default {
       })
     },
     downLoad(record) {
+      window.location.href = `${hostEnv.zk_oa}/school/activity/sign/up/downloadActivitySignUp?activityId=${record.id}`
     },
     async submitForm(values) {
       console.log(values)

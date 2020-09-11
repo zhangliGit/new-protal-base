@@ -40,9 +40,11 @@ import {
   Switch,
   Divider,
   Card,
-  Empty
+  Empty,
+  Carousel
 } from 'ant-design-vue'
 const ComList = [
+  Carousel,
   Empty,
   Card,
   Divider,
