@@ -334,6 +334,20 @@ module.exports = {
         pathRewrite: {
           '^/lz_safe': ''
         }
+      },
+      '/wxz_pay': {
+        target: 'http://192.168.1.123:10097/', // 王选章-缴费系统
+        changeOrigin: true,
+        pathRewrite: {
+          '^/wxz_pay': ''
+        }
+      },
+      '/cl_class': {
+        target: 'http://192.168.1.193:11009/', // 陈林-班牌
+        changeOrigin: true,
+        pathRewrite: {
+          '^/cl_class': ''
+        }
       }
     }
   },

@@ -144,6 +144,23 @@ const $ajax = {
       return responseRes(errMsg, obj)
     }
   },
+  async delForm(obj, tag = true) {
+    if (tag) showToast()
+    try {
+      let res = await axios({
+        url: obj.url,
+        method: 'DELETE',
+        data: obj.params,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      res = res.data
+      return responseRes(res, obj)
+    } catch (err) {
+      return responseRes(errMsg, obj)
+    }
+  },
   async postJsonQuery(obj, tag = true) {
     if (tag) showToast()
     let url = obj.url + '?'

@@ -6,7 +6,7 @@ import scheduleApi from './schedule'
 import planApi from './plan'
 import attendanceApi from './attendance'
 import year from './year'
-
+import praisec from './praisec'
 const apiList = {
   ...homeApi,
   ...baseDataApi,
@@ -15,6 +15,7 @@ const apiList = {
   ...scheduleApi,
   ...planApi,
   ...attendanceApi,
-  ...year
+  ...year,
+  ...praisec
 }
 export default apiList

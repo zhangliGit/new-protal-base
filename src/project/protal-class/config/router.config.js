@@ -27,6 +27,9 @@ const ExamPlan = resolve => require(['../views/examPlan/examPlan.vue'], resolve)
 const Addexamplan = resolve => require(['../views/examPlan/Addexamplan.vue'], resolve)
 const AttendanceRecord = resolve => require(['../views/attendance/AttendanceRecord.vue'], resolve)
 const AttendanceStatistics = resolve => require(['../views/attendance/AttendanceStatistics.vue'], resolve)
+const Classpraisec = resolve => require(['../views/praisecColumn/Classpraisec.vue'], resolve)
+const Personalpraisec = resolve => require(['../views/praisecColumn/Personalpraisec.vue'], resolve)
+const Compliments = resolve => require(['../views/praisecColumn/Compliments.vue'], resolve)
 export const asyncRouterMap = [{
   path: '/',
   name: 'index',
@@ -66,6 +69,39 @@ export const asyncRouterMap = [{
           component: ClassAlbum,
           meta: {
             title: '班级相册'
+          }
+        }
+      ]
+    },
+    {
+      path: '/classpraisec',
+      name: 'classpraisec',
+      component: RouteView,
+      meta: {
+        title: '表扬栏'
+      },
+      children: [
+        {
+          path: '/classpraisec',
+          name: 'classpraisec',
+          component: Classpraisec,
+          meta: {
+            title: '班级表扬栏'
+          }
+        },
+        {
+          path: '/personalpraisec',
+          name: 'personalpraisec',
+          component: Personalpraisec,
+          meta: {
+            title: '个人表扬栏'
+          }
+        },{
+          path: '/compliments',
+          name: 'compliments',
+          component: Compliments,
+          meta: {
+            title: '表演语设置'
           }
         }
       ]
