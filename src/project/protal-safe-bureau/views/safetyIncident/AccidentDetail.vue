@@ -52,10 +52,10 @@
             ]"
           />
         </a-form-item>
-        <a-form-item v-bind="formItemLayout" :style="{ textAlign: 'center' }" v-if="detailInfo.status === '2'">
+        <!-- <a-form-item v-bind="formItemLayout" :style="{ textAlign: 'center' }" v-if="detailInfo.status === '2'">
           <a-button @click="cancel">取消</a-button>
           <a-button class="mar-l10" type="primary" @click="submitForm" :loading="confirmLoading">保存</a-button>
-        </a-form-item>
+        </a-form-item> -->
       </a-form>
     </div>
   </div>

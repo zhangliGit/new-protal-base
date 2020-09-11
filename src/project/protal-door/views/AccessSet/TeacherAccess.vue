@@ -8,8 +8,8 @@
       :bind-obj="bindObj"
       v-model="userTag"
       @submit="chooseUser"
-      title="添加适用人员">
-    </choose-user>
+      title="添加适用人员"
+    ></choose-user>
     <div class="qui-fx-jsb qui-fx-ac">
       <div class="tips">
         <div>说明：未加入通行权限组的学校人员在任意时间不允许通行；</div>
@@ -19,10 +19,7 @@
         <a-button icon="plus" type="primary" @click="addGroup(0)">添加权限组</a-button>
       </div>
     </div>
-    <table-list
-      :page-list="pageList"
-      :columns="columns"
-      :table-list="recordList">
+    <table-list :page-list="pageList" :columns="columns" :table-list="recordList">
       <template v-slot:accessTimes="accessTime">
         <div class="qui-fx-ver">
           <div v-for="(ele, i) in accessTime.record.timeRuleList" :key="i">
@@ -31,7 +28,7 @@
               <div class="qui-fx-ver">
                 <div class="qui-fx" v-for="(item, j) in ele.timeRuleList" :key="j">
                   <span>{{ item.accessStart | getTimeString }}</span>
-                  <span> ~ </span>
+                  <span>~</span>
                   <span>{{ item.accessEnd | getTimeString }}</span>
                 </div>
               </div>
@@ -41,7 +38,11 @@
       </template>
       <template v-slot:accessEqs="accessEq">
         <div class="qui-fx-ver">
-          <div class="qu-fx" v-for="item in accessEq.record.controlGroupList" :key="item.controlGroupCode">
+          <div
+            class="qu-fx"
+            v-for="item in accessEq.record.controlGroupList"
+            :key="item.controlGroupCode"
+          >
             <span>{{ item.controlGroupName }}</span>
           </div>
         </div>
@@ -61,12 +62,20 @@
       <template v-slot:actions="action">
         <div>
           <a-tooltip placement="topLeft" title="编辑">
-            <a-button size="small" class="edit-action-btn" icon="form" @click.stop="addGroup(1,action.record.ruleGroupCode)"></a-button>
+            <a-button
+              size="small"
+              class="edit-action-btn"
+              icon="form"
+              @click.stop="addGroup(1, action.record.ruleGroupCode)"
+            ></a-button>
           </a-tooltip>
-          <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm.stop="delGroup(action.record.ruleGroupCode)">
-            <template slot="title">
-              您确定删除吗?
-            </template>
+          <a-popconfirm
+            placement="left"
+            okText="确定"
+            cancelText="取消"
+            @confirm.stop="delGroup(action.record.ruleGroupCode)"
+          >
+            <template slot="title">您确定删除吗?</template>
             <a-tooltip placement="topLeft" title="删除">
               <a-button size="small" class="del-action-btn" icon="delete"></a-button>
             </a-tooltip>
@@ -135,7 +144,7 @@ export default {
     PageNum,
     ChooseUser
   },
-  data () {
+  data() {
     return {
       columns,
       userTag: false,
@@ -154,14 +163,12 @@ export default {
   computed: {
     ...mapState('home', ['userInfo'])
   },
-  mounted () {
+  mounted() {
     this.showList()
   },
   methods: {
-    ...mapActions('home', [
-      'getGroupList', 'delRuleGroup', 'bindAccessUser'
-    ]),
-    async showList () {
+    ...mapActions('home', ['getGroupList', 'delRuleGroup', 'bindAccessUser']),
+    async showList() {
       const req = {
         pageNum: this.pageList.page,
         pageSize: this.pageList.size,
@@ -173,7 +180,7 @@ export default {
       this.recordList = res.data.list
     },
     // 添加控制组
-    addGroup (type, id) {
+    addGroup(type, id) {
       const obj = {
         path: '/teacherAccess/setGroup',
         query: type === 0 ? { type: 'teacher' } : { id, type: 'teacher' }
@@ -189,7 +196,7 @@ export default {
       })
     },
     // 适用人员管理
-    addCrew (ruleGroupCode, userGroupCode) {
+    addCrew(ruleGroupCode, userGroupCode) {
       this.ruleGroupCode = ruleGroupCode
       this.userGroupCode = userGroupCode
       this.bindObj = {
@@ -230,7 +237,7 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-.tips{
+.tips {
   font-size: 12px;
   margin-left: 20px;
   color: #909399;

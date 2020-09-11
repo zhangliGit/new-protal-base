@@ -238,3 +238,95 @@ export const IncidentSearchLabel = [
     label: '事故时间' // 表单label值
   }
 ]
+// 安全任务
+// 任务下发
+export const issuanceSearchLabel = [
+  {
+    value: 'accidentStatus', // 表单属性
+    type: 'select', // 表单类型
+    label: '任务类型', // 表单label值
+    list: [
+      {
+        key: '',
+        val: '全部'
+      },
+      {
+        key: '1',
+        val: '一次性计划'
+      },
+      {
+        key: '2',
+        val: '周计划'
+      },
+      {
+        key: '3',
+        val: '月计划'
+      }
+    ]
+  },
+  {
+    value: 'accidentStatus', // 表单属性
+    type: 'select', // 表单类型
+    label: '任务状态', // 表单label值
+    list: [
+      {
+        key: '',
+        val: '全部'
+      },
+      {
+        key: '1',
+        val: '未发布'
+      },
+      {
+        key: '2',
+        val: '未开始'
+      },
+      {
+        key: '3',
+        val: '进行中'
+      },
+      {
+        key: '4',
+        val: '已处理'
+      }
+    ]
+  },
+  {
+    value: 'schoolName', // 表单属性
+    type: 'input', // 表单类型
+    label: '', // 表单label值
+    placeholder: '请输入任务名称' // 表单默认值(非必选字段)
+  }
+]
+// 任务模板
+export const templateSearchLabel = [
+  {
+    value: 'accidentStatus', // 表单属性
+    type: 'select', // 表单类型
+    label: '任务类型', // 表单label值
+    list: [
+      {
+        key: '',
+        val: '全部'
+      },
+      {
+        key: '1',
+        val: '一次性计划'
+      },
+      {
+        key: '2',
+        val: '周计划'
+      },
+      {
+        key: '3',
+        val: '月计划'
+      }
+    ]
+  },
+  {
+    value: 'schoolName', // 表单属性
+    type: 'input', // 表单类型
+    label: '', // 表单label值
+    placeholder: '请输入任务名称' // 表单默认值(非必选字段)
+  }
+]

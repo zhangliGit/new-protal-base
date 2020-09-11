@@ -160,6 +160,13 @@ module.exports = {
           '^/zx_door': ''
         }
       },
+      '/zx_subject': {
+        target: 'http://canpointtest.com/zx_subject', // 朱旭-平台-学校学科教师管理
+        changeOrigin: true,
+        pathRewrite: {
+          '^/zx_subject': ''
+        }
+      },
       '/ljj_door': {
         target: 'http://canpointtest.com/ljj_door', // 柳继杰-门禁系统
         changeOrigin: true,

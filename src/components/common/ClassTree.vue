@@ -157,7 +157,6 @@ export default {
           resolve()
           return
         }
-
         const req = {
           schoolCode: this.schoolCode,
           schoolYearId: this.schoolYearId,
