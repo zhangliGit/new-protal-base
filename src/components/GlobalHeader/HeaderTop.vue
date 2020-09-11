@@ -90,7 +90,7 @@ export default {
     SubmitForm
   },
   computed: {
-    ...mapState('home', ['isEntryApp', 'slideTag'])
+    ...mapState('home', ['isEntryApp', 'slideTag', 'appIndex'])
   },
   data() {
     const loginInfo = JSON.parse(window.sessionStorage.getItem('loginType') || JSON.stringify({}))
@@ -167,6 +167,10 @@ export default {
       this.updateState({
         key: 'isEntryApp',
         data: false
+      })
+      this.updateState({
+        key: 'appIndex',
+        data: -1
       })
     },
     toggle() {

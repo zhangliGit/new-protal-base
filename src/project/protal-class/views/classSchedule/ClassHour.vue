@@ -126,31 +126,31 @@ import EditHour from '../../component/ScheduleComponents/EditHour'
 import SubmitForm from '@c/SubmitForm'
 var weekList = [
   {
-    key: 2,
+    key: 1,
     val: '周一'
   },
   {
-    key: 3,
+    key: 2,
     val: '周二'
   },
   {
-    key: 4,
+    key: 3,
     val: '周三'
   },
   {
-    key: 5,
+    key: 4,
     val: '周四'
   },
   {
-    key: 6,
+    key: 5,
     val: '周五'
   },
   {
-    key: 7,
+    key: 6,
     val: '周六'
   },
   {
-    key: 1,
+    key: 7,
     val: '周日'
   }
 ]

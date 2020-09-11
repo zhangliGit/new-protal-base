@@ -75,8 +75,8 @@ export default {
       })
       this.fileList = []
     },
-    delUpload(id) {
-      this.delFile(id)
+    delUpload(value) {
+      this.delFile(value.id)
     },
     async getMotto () {
       /* const req = {

@@ -1,6 +1,6 @@
 <template>
-  <div class="page-layout bg-fff">
-    <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
+  <div class="page-layout qui-fx-ver">
+    <search-form is-reset @search-form="searchForm" :search-label="dangerFindSearchLabel">
       <!-- <template v-slot:area>
         <a-form-item>
           <a-select
@@ -22,49 +22,40 @@
         </a-form-item>
       </template> -->
       <div slot="left">
-        <a-button icon="plus" class="u-mar-l10 add-action-btn" @click="exportHazards(0)">导处隐患详情</a-button>
+        <a-button icon="plus" class="u-mar-l10 add-action-btn" @click="exportHazards">导处隐患详情</a-button>
         <a-button icon="export" class="u-mar-l10 export-btn" @click="reportDangers">上报隐患</a-button>
       </div>
     </search-form>
-    <div class="qui-fx-f1 qui-fx">
-      <table-list
-        is-check
-        is-zoom
-        :page-list="pageList"
-        v-model="chooseList"
-        :columns="columns"
-        @clickRow="clickRow"
-        @selectAll="selectAll"
-        :table-list="userList"
-      >
-        <template v-slot:other1="other1">
-          {{ other1.record }}
-        </template>
-        <template v-slot:actions="action" >
-          <a-tooltip placement="topLeft" title="查看">
-            <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="goDetail(action.record)"></a-button>
-          </a-tooltip>
-          <a-tooltip placement="topLeft" title="已经下发整改通知书" @click="seeNotice(action.record)" v-if="action.record.hasSendNotification">
-            <a-button size="small" class="power-action-btn" >已经下发整改通知书</a-button>
-          </a-tooltip>
-          <a-tooltip placement="topLeft" v-else @click="rectificationNotice(action.record)" title="整改通知书">
-            <a-button size="small" class="user-action-btn" >整改通知书</a-button>
-          </a-tooltip>
-          <a-tooltip placement="topLeft" v-if="action.record.superviseState=='0'" >
-            <a-button size="small" class="user-action-btn" >{{ action.record.superviseUserName }}正在督办</a-button>
-          </a-tooltip>
-          <a-tooltip placement="topLeft" v-else @click="supervise(action.record.id)" title="督办">
-            <a-button size="small" class="user-action-btn" >{{ action.record.superviseUserName }}督办</a-button>
-          </a-tooltip>
-          <!-- <div size="u-mar-r10" v-if="action.record.hasSendNotification" @click="seeNotice(action.record)" >已经下发整改通知书</div> -->
-          <!-- <div size="u-mar-r10" v-else @click="rectificationNotice(action.record)" >整改通知书</div> -->
-          <!-- <div size="small" v-if="action.record.superviseState=='0'" >{{ action.record.superviseUserName }}正在督办</div> -->
-          <!-- <div size="small" v-else-if="action.record.superviseState=='1'" @click="supervise(action.record)">结束督办</div> -->
-          <!-- <div size="small" v-else @click="supervise(action.record.id)">督办</div> -->
-        </template>
-      </table-list>
-
-    </div>
+    <!-- is-check
+    v-model="chooseList"
+    @selectAll="selectAll" -->
+    <table-list
+      is-zoom
+      :page-list="pageList"
+      :columns="hiddenDangerColumns"
+      :table-list="userList"
+    >
+      <template v-slot:other1="other1">
+        {{ other1.record }}
+      </template>
+      <template v-slot:actions="action" >
+        <a-tooltip placement="topLeft" title="查看">
+          <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="goDetail(action.record)"></a-button>
+        </a-tooltip>
+        <a-tooltip placement="topLeft" title="已经下发整改通知书" @click="seeNotice(action.record)" v-if="action.record.hasSendNotification">
+          <a-button size="small" class="power-action-btn" >已经下发整改通知书</a-button>
+        </a-tooltip>
+        <a-tooltip placement="topLeft" v-else @click="rectificationNotice(action.record)" title="整改通知书">
+          <a-button size="small" class="user-action-btn" >整改通知书</a-button>
+        </a-tooltip>
+        <a-tooltip placement="topLeft" v-if="action.record.superviseState=='0'" >
+          <a-button size="small" class="user-action-btn" >{{ action.record.superviseUserName }}正在督办</a-button>
+        </a-tooltip>
+        <a-tooltip placement="topLeft" v-else @click="supervise(action.record.id)" title="督办">
+          <a-button size="small" class="user-action-btn" >{{ action.record.superviseUserName }}督办</a-button>
+        </a-tooltip>
+      </template>
+    </table-list>
     <page-num v-model="pageList" :total="total" @change-page="showList(searchObj)"></page-num>
     <choose-post
       type="edu"
@@ -85,18 +76,16 @@ import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import SearchForm from '@c/SearchForm'
 import PageNum from '@c/PageNum'
-import Modal from '../../component/Modal'
 import DropDown from '../../component/Dropdown'
-import { searchLabel, columns } from '../../assets/js/initData.js'
+import { dangerFindSearchLabel } from '../../assets/js/searchLabel'
+import { hiddenDangerColumns } from '../../assets/js/tableColumns'
 import ChoosePost from '@c/choose/ChoosePost'
 import hostEnv from '@config/host-env'
-// import { filter } from 'vuedraggable'
 export default {
   components: {
     TableList,
     SearchForm,
     DropDown,
-    Modal,
     PageNum,
     ChoosePost
   },
@@ -104,21 +93,20 @@ export default {
     return {
       taskId: '',
       searchObj: {
-        sourceDanger: '',
-        DangerLevel: '',
-        DangerState: '',
-        searchObj: ''
+        // sourceDanger: '',
+        // DangerLevel: '',
+        // DangerState: '',
+        // searchObj: ''
       },
       // 学校远程查询
       data: [],
       schoolName: undefined,
-      searchLabel,
-
+      dangerFindSearchLabel,
+      hiddenDangerColumns,
       pageList: {
         page: 1,
         size: 10
       },
-      columns,
       userList: [],
       chooseList: [], // 当有选择项时，被选中的项，返回每项的唯一id
       total: 0,
@@ -152,7 +140,7 @@ export default {
     await this.showList()
   },
   methods: {
-    ...mapActions('home', ['getDangerList', 'superviseDanger', 'exportDanger', 'getStreet', 'getGroup', 'underSchoolList']),
+    ...mapActions('home', ['getDangerList', 'superviseDanger', 'getStreet', 'getGroup', 'underSchoolList']),
     initBaseData() {
       return {
         schools: []
@@ -163,11 +151,11 @@ export default {
     async _getStreet() {
       const req = {
         eduCode: this.schoolCode,
-        pageNum: this.pageList.page,
-        pageSize: this.pageList.size
+        pageNum: 1,
+        pageSize: 50
       }
       const res = await this.getStreet(req)
-      this.searchLabel[2].list = res.data.list.map(item => {
+      this.dangerFindSearchLabel[2].list = res.data.list.map(item => {
         return {
           key: item.streetCode,
           val: item.streetName
@@ -219,13 +207,19 @@ export default {
       this.showList()
     },
     // 导出
-    exportHazards(type) {
+    async exportHazards(type) {
       var url = `${hostEnv.lz_safe}/dangerTask/export`
+      if (this.searchObj.streetCode) {
+        const streetSchoolCodes = await this._getSchools()
+        this.streetSchoolCodes = streetSchoolCodes
+      }
       const req = {
         ...this.searchObj,
         ...this.pageList,
-        schoolCodes: this.schoolCodes,
-        hasSupervise: true
+        schoolCode: this.schoolCode,
+        schoolName: this.schoolName,
+        schoolCodes: this.searchObj.streetCode ? this.streetSchoolCodes : this.eduSchoolCodes,
+        hasSupervise: false
       }
       var xhr = new XMLHttpRequest()
       xhr.open('POST', url, true) // 也可以使用POST方式，根据接口
@@ -319,14 +313,13 @@ export default {
       this.schoolName = value.split(',')[1]
     },
 
-    clickRow() {},
     selectAll() {}
   }
 }
 </script>
 
 <style lang="less" scoed>
-.grade-tree {
-
+.page-layout{
+  height: 100% !important;
 }
 </style>

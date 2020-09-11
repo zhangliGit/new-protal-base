@@ -58,7 +58,6 @@ import $tools from '@u/tools'
 import img from '../../assets/img/ewm.png'
 import logo from '../../assets/img/logo.png'
 import QRCode from 'qrcodejs2'
-import hostEnv from '@config/host-env'
 const columns = [
   {
     title: '序号',
@@ -191,7 +190,7 @@ export default {
       this.area = record.name
       setTimeout(() => {
         const ewm = new QRCode(this.$refs.qrCodeDiv, {
-          text: `schoolCode=${this.userInfo.schoolCode}&code=${record.code}`,
+          text: `${this.userInfo.schoolCode}&${record.code}?${record.name}`,
           width: 200,
           height: 200,
           colorDark: '#333333', // 二维码颜色

@@ -21,7 +21,7 @@
       </div>
     </no-data>
     <div class="qui-fx qui-fx-jsb" style="width:100%" v-else>
-      <div class="left">
+      <div class="left u-fx">
         <org-tree @select="select" @defaultCode="defaultCode"></org-tree>
       </div>
       <div class="right qui-fx-ver qui-fx-f1">
@@ -42,7 +42,9 @@
           :table-list="teacherList"
         >
           <template v-slot:other1="other1">
-            <a-tag :color="parseInt(other1.record.onJob) === 1 ? '#87d068' : '#f50'">{{ other1.record.onJob === '1' ? '在职' : '离职' }}</a-tag>
+            <a-tag
+              :color="parseInt(other1.record.onJob) === 1 ? '#87d068' : '#f50'"
+            >{{ other1.record.onJob === '1' ? '在职' : '离职' }}</a-tag>
           </template>
           <template v-slot:actions="action">
             <a-tooltip placement="topLeft" title="编辑">
@@ -474,6 +476,7 @@ export default {
           schoolCode: this.userInfo.schoolCode
         }).then(res => {
           this.org = res.data.orgCode
+          this.addOrgName = res.data.orgName
           this.formData[3].initValue = res.data.orgCode.split(',')
           if (this.formData[3].initValue[0] === '') {
             this.formData[3].initValue[0] = this.userInfo.schoolCode

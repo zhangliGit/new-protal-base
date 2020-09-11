@@ -51,7 +51,8 @@ export default {
   created() {},
   mounted() {
     this.id = this.$route.query.id + ''
-    this.isDetail = this.$route.query.isDetail
+    this.isDetail = this.$route.query.isDetail === 'true' ? true : false
+    console.log(typeof this.isDetail)
     if (this.isDetail) {
       this.autoKey = 3
     }

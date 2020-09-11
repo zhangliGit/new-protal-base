@@ -1,66 +1,45 @@
 // eslint-disable-next-line
 import {
-  BasicLayout
+  BasicLayout,
+  RouteView
 } from '../layouts'
-const SchoolDanger = resolve => require(['../views/dangerManage/SchoolDanger.vue'], resolve)
-const ReportDangers = resolve => require(['../views/dangerManage/ReportDangers.vue'], resolve)
-const ViewDangers = resolve => require(['../views/dangerManage/ViewDangers.vue'], resolve)
-const RectificationNotice = resolve => require(['../views/dangerManage/RectificationNotice.vue'], resolve)
-const EidtRectificationNotice = resolve => require(['../views/dangerManage/EidtRectificationNotice.vue'], resolve)
+import danger from './danger'
+import special from './special'
+import safetyTask from './safetyTask'
+
+// 安全事故
+const SafetyIncident = resolve => require(['../views/safetyIncident/SafetyIncident.vue'], resolve)
+const AccidentDetail = resolve => require(['../views/safetyIncident/AccidentDetail.vue'], resolve)
 
 export const asyncRouterMap = [{
   path: '/',
   name: 'index',
   component: BasicLayout,
   meta: {
-    title: '隐患管理'
+    title: '首页'
   },
   redirect: '/schoolDanger',
   children: [
+    danger,
+    special,
     {
-      path: '/schoolDanger',
-      name: 'schoolDanger',
-      component: SchoolDanger,
+      path: '/safetyIncident',
+      name: 'safetyIncident',
+      component: SafetyIncident,
       meta: {
-        title: '隐患管理'
+        title: '安全事故'
       }
     },
     {
-      path: '/accountList/reportDangers',
-      name: 'reportDangers',
-      component: ReportDangers,
+      path: '/safetyIncident/specialDetail',
+      name: 'specialDetail',
+      component: AccidentDetail,
       meta: {
-        title: '上报隐患',
+        title: '查看事故详情',
         isHide: true
       }
     },
-    {
-      path: '/accountList/viewDangers',
-      name: 'viewDangers',
-      component: ViewDangers,
-      meta: {
-        title: '查看隐患',
-        isHide: true
-      }
-    },
-    {
-      path: '/accountList/rectificationNotice',
-      name: 'rectificationNotice',
-      component: RectificationNotice,
-      meta: {
-        title: '整改通知书',
-        isHide: true
-      }
-    },
-    {
-      path: '/accountList/eidtRectificationNotice',
-      name: 'eidtRectificationNotice',
-      component: EidtRectificationNotice,
-      meta: {
-        title: '编辑整改通知书',
-        isHide: true
-      }
-    }
+    safetyTask
   ]
 },
 {

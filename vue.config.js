@@ -98,130 +98,119 @@ module.exports = {
     open: true,
     proxy: {
       '/ljj_dorm': {
-        target: 'http://192.168.2.242:11006/', // 柳继杰-宿管
+        target: 'http://ps.canpointlive.com/ljj_dorm', // 柳继杰-宿管
         changeOrigin: true,
         pathRewrite: {
           '^/ljj_dorm': ''
         }
       },
       '/ljj_user_center': {
-        // target: 'http://192.168.1.125:11002/', // 柳继杰-局端基础数据
-        target: 'http://192.168.2.242:11002/', // 柳继杰-
+        target: 'http://canpointtest.com/ljj_user_center', // 柳继杰-局端基础数据
         changeOrigin: true,
         pathRewrite: {
           '^/ljj_user_center': ''
         }
       },
       '/ljj_edu': {
-        // target: 'http://192.168.1.125:10050/', // 柳继杰-局端学校管理
-        target: 'http://192.168.2.242:10050/',
+        target: 'http://canpointtest.com/ljj_edu', // 柳继杰-局端学校管理
         changeOrigin: true,
         pathRewrite: {
           '^/ljj_edu': ''
         }
       },
       '/wxz_control': {
-        target: 'http://192.168.2.254:10090/',
-        // target: 'http://192.168.1.123:10090/', // 王选章-控制中心
+        target: 'http://canpointtest.com/wxz_control', // 王选章-控制中心
         changeOrigin: true,
         pathRewrite: {
           '^/wxz_control': ''
         }
       },
       '/zk_school': {
-        target: 'http://192.168.2.242:10050/',
-        // target: 'http://192.168.1.23:10050/', //  张坤-学校管理
+        target: 'http://canpointtest.com/zk_school', //  张坤-学校管理
         changeOrigin: true,
         pathRewrite: {
           '^/zk_school': ''
         }
       },
       '/zk_leave': {
-        // target: 'http://192.168.1.23:10054/', // 张坤-校历请假
-        target: 'http://192.168.2.242:10054/', // 张坤-校历请假
+        target: 'http://canpointtest.com/zk_leave', // 张坤-校历请假
         changeOrigin: true,
         pathRewrite: {
           '^/zk_leave': ''
         }
       },
       '/zx_protal': {
-        target: 'http://192.168.2.242:10060/', // 朱旭-平台应用系统
+        target: 'http://canpointtest.com/zx_protal', // 朱旭-平台应用系统
         changeOrigin: true,
         pathRewrite: {
           '^/zx_protal': ''
         }
       },
-      '/zx_subject': {
-        target: 'http://192.168.2.242:10050/',
-        // target: 'http://192.168.1.24:10050/', // 朱旭-平台-学校学科教师管理
-        changeOrigin: true,
-        pathRewrite: {
-          '^/zx_subject': ''
-        }
-      },
       '/lz_protal': {
-        target: 'http://192.168.2.242:10060/', // 吕卓-平台应用系统
-        // target: 'http://192.168.1.46:10060/', // 吕卓-平台应用系统
+        target: 'http://canpointtest.com/lz_protal', // 吕卓-平台应用系统
         changeOrigin: true,
         pathRewrite: {
           '^/lz_protal': ''
         }
       },
       '/zx_door': {
-        target: 'http://192.168.2.242:10162/', // 朱旭-门禁系统
+        target: 'http://canpointtest.com/zx_door', // 朱旭-门禁系统
         changeOrigin: true,
         pathRewrite: {
           '^/zx_door': ''
         }
       },
+      '/zx_subject': {
+        target: 'http://canpointtest.com/zx_subject', // 朱旭-平台-学校学科教师管理
+        changeOrigin: true,
+        pathRewrite: {
+          '^/zx_subject': ''
+        }
+      },
       '/ljj_door': {
-        target: 'http://192.168.2.242:10162/', // 朱旭-门禁系统
+        target: 'http://canpointtest.com/ljj_door', // 柳继杰-门禁系统
         changeOrigin: true,
         pathRewrite: {
           '^/ljj_door': ''
         }
       },
       '/zx_visitor': {
-        target: 'http://192.168.2.242:10160/', // 朱旭-访客系统
+        target: 'http://canpointtest.com/zx_visitor', // 朱旭-访客系统
         changeOrigin: true,
         pathRewrite: {
           '^/zx_visitor': ''
         }
       },
       '/ljj_visitor': {
-        // target: 'http://192.168.1.125:10160//', // 柳继杰-访客系统
-        target: 'http://192.168.2.242:10160/', // 柳继杰-访客系统
+        target: 'http://canpointtest.com/ljj_visitor', // 柳继杰-访客系统
         changeOrigin: true,
         pathRewrite: {
           '^/ljj_visitor': ''
         }
       },
       '/lz_attendance': {
-        target: 'http://192.168.2.242:11004/', // 吕卓-考勤
+        target: 'http://canpointtest.com/lz_attendance', // 吕卓-考勤
         changeOrigin: true,
         pathRewrite: {
           '^/lz_attendance': ''
         }
       },
       '/ljj_attendance': {
-        target: 'http://192.168.2.242:11004/', // 柳继杰-考勤
-        // target: 'http://192.168.1.125:10054/', // 柳继杰-考勤
+        target: 'http://canpointtest.com/ljj_attendance', // 柳继杰-考勤
         changeOrigin: true,
         pathRewrite: {
           '^/ljj_attendance': ''
         }
       },
       '/lz_user_center': {
-        target: 'http://192.168.2.242:11002/',
-        // target: 'http://192.168.1.125:11002/', // 吕卓-用户中心
+        target: 'http://canpointtest.com/lz_user_center', // 吕卓-用户中心
         changeOrigin: true,
         pathRewrite: {
           '^/lz_user_center': ''
         }
       },
       '/lz_ncov': {
-        target: 'http://192.168.2.242:11005/', // 吕卓-疫情防控
-        // target: 'http://192.168.1.23:11005/',
+        target: 'http://canpointtest.com/lz_ncov', // 吕卓-疫情防控
         changeOrigin: true,
         pathRewrite: {
           '^/lz_ncov': ''
@@ -229,85 +218,77 @@ module.exports = {
       },
       // 电子班牌
       '/zq_news': {
-        // target: 'http://192.168.1.241:11005/', // 张琦-信息发布
-        target: 'http://192.168.2.242:11011/',
+        target: 'http://canpointtest.com/zq_news', // 张琦-信息发布
         changeOrigin: true,
         pathRewrite: {
           '^/zq_news': ''
         }
       },
       '/zq_schedule': {
-        // target: 'http://192.168.1.241:11008/', // 张琦-课程表
-        target: 'http://192.168.2.242:11010/',
+        target: 'http://canpointtest.com/zq_schedule', // 张琦-课程表
         changeOrigin: true,
         pathRewrite: {
           '^/zq_schedule': ''
         }
       },
       '/zk_moral': {
-        // target: 'http://192.168.1.23:11012/', // 张坤-德育管理
-        target: 'http://192.168.2.242:11012/',
+        target: 'http://canpointtest.com/zk_moral', // 张坤-德育管理
         changeOrigin: true,
         pathRewrite: {
           '^/zk_moral': ''
         }
       },
       '/zq_class': {
-        target: 'http://192.168.2.242:11009/', // 张琦-班牌管理
-        // target: 'http://192.168.1.23:11009/',
+        target: 'http://canpointtest.com/zq_class', // 张琦-班牌管理
         changeOrigin: true,
         pathRewrite: {
           '^/zq_class': ''
         }
       },
       '/zk_examplan': {
-        target: 'http://192.168.1.23:11013/', // 张坤-考试计划
-        //target: 'http://192.168.2.242:11013/',
+        target: 'http://canpointtest.com/zk_examplan', // 张坤-考试计划
         changeOrigin: true,
         pathRewrite: {
           '^/zk_examplan': ''
         }
       },
       '/ljj_admin': {
-        target: 'http://192.168.2.242:10050/', // 柳继杰-局端模块
+        target: 'http://canpointtest.com/ljj_admin', // 柳继杰-局端模块
         changeOrigin: true,
         pathRewrite: {
           '^/ljj_admin': ''
         }
       },
       '/zq_oa': {
-        // target: 'http://192.168.1.210:11014/', // 张琦-oa系统
-        target: 'http://192.168.2.242:11014/',
+        target: 'http://canpointtest.com/zq_oa', // 张琦-oa系统
         changeOrigin: true,
         pathRewrite: {
           '^/zq_oa': ''
         }
       },
       '/hpb_card': {
-        target: 'http://192.168.2.242:11008/', // 胡鹏奔-消费
-        // target: 'http://192.168.2.134:11008/', // 胡鹏奔-消费
+        target: 'http://canpointtest.com/hpb_card', //  胡鹏奔-消费
         changeOrigin: true,
         pathRewrite: {
           '^/hpb_card': ''
         }
       },
       '/hpb_consume': {
-        // target: 'http://192.168.2.134:11007/', // 胡鹏奔-一卡通
-        target: 'http://192.168.2.242:11007/', // 胡鹏奔-一卡通
+        target: 'http://canpointtest.com/hpb_consume', //  胡鹏奔-一卡通
         changeOrigin: true,
         pathRewrite: {
           '^/hpb_consume': ''
         }
       },
       '/zx_center': {
-        target: 'http://192.168.2.147:11002/', // 王选章-平台人员统计
+        target: 'http://canpointtest.com/zx_center', // 王选章-平台人员统计
         changeOrigin: true,
         pathRewrite: {
           '^/zx_center': ''
         }
       },
       '/ljj_ncov': {
-        target: 'http://192.168.2.242:11005/', // 柳继杰-测温计划
+        target: 'http://canpointtest.com/ljj_ncov', // 柳继杰-测温计划
         changeOrigin: true,
         pathRewrite: {
           '^/ljj_ncov': ''
@@ -321,15 +302,14 @@ module.exports = {
         }
       },
       '/zk_oa': {
-        target: 'http://192.168.2.242:11014/', // 张坤-报修
+        target: 'http://canpointtest.com/zk_oa', // 张坤-报修
         changeOrigin: true,
         pathRewrite: {
           '^/zk_oa': ''
         }
       },
       '/lz_safe': {
-        // target: 'http://192.168.1.46:8091/', // 吕卓-安防
-        target: 'http://192.168.2.242:8091/', // 吕卓-安防
+        target: 'http://canpointtest.com/lz_safe', // 吕卓-安防
         changeOrigin: true,
         pathRewrite: {
           '^/lz_safe': ''

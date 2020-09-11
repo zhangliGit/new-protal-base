@@ -1,5 +1,6 @@
 <template>
   <div class="page-layout qui-fx-ver">
+    <upload-score v-if="uploadTag" :plan-id="planId" :subject-name="subjectName" v-model="uploadTag"></upload-score>
     <search-form isReset @search-form="searchForm" :search-label="searchLabel">
       <div slot="left">
         <a-button icon="plus" class="add-btn" @click="modify(0)">创建考试计划</a-button>
@@ -35,11 +36,16 @@
             ></a-button>
           </a-tooltip>
         </a-popconfirm>
+        <a-tag v-if="action.record.state === '2'" color="#2db7f5" @click="uploadScore(action.record)">录入成绩</a-tag>
       </template>
       <template v-slot:other1="other1">
-        <a-tag color="#2db7f5" v-if="parseInt(other1.record.state) === 0">未开始</a-tag>
-        <a-tag color="#87d068" v-else-if="parseInt(other1.record.state) === 1">进行中</a-tag>
-        <a-tag color="#ccc" v-else>已结束</a-tag>
+        <a-tag color="blue" v-if="parseInt(other1.record.state) === 0">未开始</a-tag>
+        <a-tag color="green" v-else-if="parseInt(other1.record.state) === 1">进行中</a-tag>
+        <a-tag color="red" v-else>已结束</a-tag>
+      </template>
+      <template v-slot:other2="other2">
+        <a-tag v-if="other2.record.ifEnter === '1'" color="#2db7f5" @click="seeScore(other2.record)">查看成绩</a-tag>
+        <div v-if="other2.record.ifEnter === '0'" class="u-content-color">未录入</div>
       </template>
       <template v-slot:other4="action">
         <div>{{ action.record.roomNumber }}个场地</div>
@@ -54,6 +60,7 @@ import moment from 'moment'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
 import SearchForm from '@c/SearchForm'
+import UploadScore from './UploadScore'
 import Tools from '@u/tools'
 const columns = [
   {
@@ -76,7 +83,7 @@ const columns = [
   {
     title: '考试学科',
     dataIndex: 'subjectName',
-    width: '25%'
+    width: '20%'
   },
   {
     title: '考试场地',
@@ -94,16 +101,24 @@ const columns = [
     }
   },
   {
+    title: '考试成绩',
+    dataIndex: 'score',
+    width: '10%',
+    scopedSlots: {
+      customRender: 'other2'
+    }
+  },
+  {
     title: '发布时间',
     dataIndex: 'createTime',
     width: '10%',
     customRender: text => {
-      return Tools.getDate(text)
+      return Tools.getDate(text).substr(5, 11)
     }
   },
   {
     title: '操作',
-    width: '15%',
+    width: '10%',
     scopedSlots: {
       customRender: 'action'
     }
@@ -146,14 +161,17 @@ export default {
   components: {
     TableList,
     PageNum,
-    SearchForm
+    SearchForm,
+    UploadScore
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
   data() {
     return {
-      uploadTag: true,
+      planId: '',
+      subjectName: [],
+      uploadTag: false,
       timeList: [],
       columns,
       searchLabel,
@@ -253,6 +271,25 @@ export default {
           isDetail: false
         }
       })
+    },
+    /**
+     * @des 查看考试成绩
+     */
+    seeScore(item) {
+      this.$router.push({
+        path: '/examPlan/scoreDetail',
+        query: {
+          planId: item.id
+        }
+      })
+    },
+    /**
+     * @des 录入成绩
+     */
+    uploadScore(item) {
+      this.subjectName = item.subjectName.split(',')
+      this.planId = item.id
+      this.uploadTag = true
     }
   }
 }

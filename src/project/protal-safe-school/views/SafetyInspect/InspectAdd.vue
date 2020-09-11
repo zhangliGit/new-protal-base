@@ -159,8 +159,8 @@
             </div>
           </div>
         </a-form-item>
-        <!-- 日常巡检的巡查时段 -->
-        <a-form-item label="巡查时段" v-bind="formItemLayout" v-if="cardInfo.timeType === '1' && url==='daily'" required>
+        <!-- 日常巡查和安全护导的巡查时段 -->
+        <a-form-item label="巡查时段" v-bind="formItemLayout" v-if="cardInfo.timeType === '1' && url !== 'equip'" required>
           <div class="project-box" >
             <a-button icon="plus" class="add-btn" size="small" @click="add(1)">添加时段</a-button>
             <a-collapse default-active-key="1">
@@ -181,40 +181,39 @@
                       <a-radio value="2">必须所有人完成才视为完成</a-radio>
                     </a-radio-group>
                   </div>
-                  <div v-if="taskTypeCodes.indexOf('1') > -1" class="mar-t15">
+                  <div class="mar-t15">
                     <span class="tip">*</span>
-                    常规检查 :
-                    <template v-for="tag in item.routineUsers">
-                      <a-tag :key="tag.code" :closable="true" :afterClose="() => userClose(1,tag,'routineUsers',item.key)">
+                    {{ title }} :
+                    <template v-for="tag in item.users">
+                      <a-tag :key="tag.code" :closable="true" :afterClose="() => userClose(1,tag,'users',item.key)">
                         {{ tag.name }}
                       </a-tag>
                     </template>
-                    <a-tag @click="addTag(1,'routineUsers',item)" class="tag"> <a-icon type="plus" />添加 </a-tag>
-                  </div>
-                  <div v-if="taskTypeCodes.indexOf('2') > -1" class="mar-t15">
-                    <span class="tip">*</span>
-                    安全检查 :
-                    <template v-for="tag in item.safeUsers">
-                      <a-tag :key="tag.code" :closable="true" :afterClose="() => userClose(1,tag,'safeUsers',item.key)">
-                        {{ tag.name }}
-                      </a-tag>
-                    </template>
-                    <a-tag @click="addTag(1,'safeUsers',item)" class="tag"> <a-icon type="plus" />添加 </a-tag>
-                  </div>
-                  <div v-if="taskTypeCodes.indexOf('3') > -1" class="mar-t15">
-                    <span class="tip">*</span>
-                    卫生检查 :
-                    <template v-for="tag in item.hygieneUsers">
-                      <a-tag :key="tag.code" :closable="true" :afterClose="() => userClose(1,tag,'hygieneUsers',item.key)">
-                        {{ tag.name }}
-                      </a-tag>
-                    </template>
-                    <a-tag @click="addTag(1,'hygieneUsers',item)" class="tag"> <a-icon type="plus" />添加 </a-tag>
+                    <a-tag @click="addTag(1,item)" class="tag"> <a-icon type="plus" />添加 </a-tag>
                   </div>
                 </div>
                 <a-button size="small" class="del-action-btn" icon="delete" slot="extra" @click.stop="handleClick($event,item)"></a-button>
               </a-collapse-panel>
             </a-collapse>
+          </div>
+        </a-form-item>
+        <!-- 日常巡查和安全护导的巡查人员 -->
+        <a-form-item label="巡查人员" v-bind="formItemLayout" v-if="cardInfo.timeType === '2' && url !== 'equip'">
+          <a-radio-group v-model="times[0].comppleteType">
+            <a-radio value="1">一个人完成则所有人完成</a-radio>
+            <a-radio value="2">必须所有人完成才视为完成</a-radio>
+          </a-radio-group>
+          <div class="user-box">
+            <div>
+              <span class="tip">*</span>
+              {{ title }} :
+              <template v-for="tag in times[0].users">
+                <a-tag :key="tag.code" :closable="true" :afterClose="() => userClose(1,tag,'users',0)">
+                  {{ tag.name }}
+                </a-tag>
+              </template>
+              <a-tag @click="addTag(1,times[0])" class="tag"> <a-icon type="plus" />添加 </a-tag>
+            </div>
           </div>
         </a-form-item>
         <!-- 设备巡检的巡查时段 -->
@@ -239,12 +238,12 @@
               <div class="mar-t15">
                 <span class="tip">*</span>
                 巡查人员 :
-                <template v-for="tag in times[0].routineUsers">
-                  <a-tag :key="tag.code" :closable="true" :afterClose="() => userClose(1,tag,'routineUsers',times[0].key)">
+                <template v-for="tag in times[0].users">
+                  <a-tag :key="tag.code" :closable="true" :afterClose="() => userClose(1,tag,'users',times[0].key)">
                     {{ tag.name }}
                   </a-tag>
                 </template>
-                <a-tag @click="addTag(1,'routineUsers',times[0])" class="tag"> <a-icon type="plus" />添加 </a-tag>
+                <a-tag @click="addTag(1,times[0])" class="tag"> <a-icon type="plus" />添加 </a-tag>
               </div>
               <div class="mar-t15">
                 <span class="tip">*</span>
@@ -256,102 +255,6 @@
                 </template>
                 <a-tag @click="addEquipTag(1,'devices',times[0])" class="tag"> <a-icon type="plus" />添加 </a-tag>
               </div>
-            </div>
-          </div>
-        </a-form-item>
-        <!-- 安全护导的巡查时段 -->
-        <a-form-item label="巡查时段" v-bind="formItemLayout" v-if="cardInfo.timeType === '1' && url==='safe'" required>
-          <div class="project-box" >
-            <a-button icon="plus" class="add-btn" size="small" @click="add(1)">添加时段</a-button>
-            <a-collapse default-active-key="1">
-              <a-collapse-panel v-for="(item,index) in times" :key="item.key" :style="customStyle" :header="`时段${index+1}`" >
-                <div class="qui-fx-ver">
-                  <div>
-                    <span class="tip">*</span>
-                    <span class="mar-r10"> 时段 : </span>
-                    <a-time-picker v-model="item.startTime"/>
-                    <span class="mar-r10 mar-l10"> 至 </span>
-                    <a-time-picker v-model="item.endTime"/>
-                  </div>
-                  <div class="mar-t15">
-                    <span class="tip">*</span>
-                    <span class="mar-r10"> 完成方式 : </span>
-                    <a-radio-group v-model="item.comppleteType">
-                      <a-radio value="1">一个人完成则所有人完成</a-radio>
-                      <a-radio value="2">必须所有人完成才视为完成</a-radio>
-                    </a-radio-group>
-                  </div>
-                  <div class="mar-t15">
-                    <span class="tip">*</span>
-                    护导队伍 :
-                    <template v-for="tag in item.routineUsers">
-                      <a-tag :key="tag.code" :closable="true" :afterClose="() => userClose(1,tag,'routineUsers',item.key)">
-                        {{ tag.name }}
-                      </a-tag>
-                    </template>
-                    <a-tag @click="addTag(1,'routineUsers',item)" class="tag"> <a-icon type="plus" />添加 </a-tag>
-                  </div>
-                </div>
-                <a-button size="small" class="del-action-btn" icon="delete" slot="extra" @click.stop="handleClick($event,item)"></a-button>
-              </a-collapse-panel>
-            </a-collapse>
-          </div>
-        </a-form-item>
-        <!-- 日常巡检的巡查人员 -->
-        <a-form-item label="巡查人员" v-bind="formItemLayout" v-if="cardInfo.timeType === '2' && url === 'daily'">
-          <a-radio-group v-model="comppleteType">
-            <a-radio value="1">一个人完成则所有人完成</a-radio>
-            <a-radio value="2">必须所有人完成才视为完成</a-radio>
-          </a-radio-group>
-          <div class="user-box" v-if="this.cardInfo.areaCode">
-            <div v-if="taskTypeCodes.indexOf('1') > -1">
-              <span class="tip">*</span>
-              常规检查 :
-              <template v-for="tag in userList.routineUsers">
-                <a-tag :key="tag.code" :closable="true" :afterClose="() => userClose(2,tag,'routineUsers')">
-                  {{ tag.name }}
-                </a-tag>
-              </template>
-              <a-tag @click="addTag(2,'routineUsers',userList.routineUsers)" class="tag"> <a-icon type="plus" />添加 </a-tag>
-            </div>
-            <div v-if="taskTypeCodes.indexOf('2') > -1">
-              <span class="tip">*</span>
-              安全检查 :
-              <template v-for="tag in userList.safeUsers">
-                <a-tag :key="tag.code" :closable="true" :afterClose="() => userClose(2,tag,'safeUsers')">
-                  {{ tag.name }}
-                </a-tag>
-              </template>
-              <a-tag @click="addTag(2,'safeUsers',userList.routineUsers)" class="tag"> <a-icon type="plus" />添加 </a-tag>
-            </div>
-            <div v-if="taskTypeCodes.indexOf('3') > -1">
-              <span class="tip">*</span>
-              卫生检查 :
-              <template v-for="tag in userList.hygieneUsers">
-                <a-tag :key="tag.code" :closable="true" :afterClose="() => userClose(2,tag,'hygieneUsers')">
-                  {{ tag.name }}
-                </a-tag>
-              </template>
-              <a-tag @click="addTag(2,'hygieneUsers',userList.hygieneUsers)" class="tag"> <a-icon type="plus" />添加 </a-tag>
-            </div>
-          </div>
-        </a-form-item>
-        <!-- 安全护导的巡查人员 -->
-        <a-form-item label="巡查人员" v-bind="formItemLayout" v-if="cardInfo.timeType === '2' && url === 'safe'">
-          <a-radio-group v-model="comppleteType">
-            <a-radio value="1">一个人完成则所有人完成</a-radio>
-            <a-radio value="2">必须所有人完成才视为完成</a-radio>
-          </a-radio-group>
-          <div class="user-box">
-            <div>
-              <span class="tip">*</span>
-              护导队伍 :
-              <template v-for="tag in userList.routineUsers">
-                <a-tag :key="tag.code" :closable="true" :afterClose="() => userClose(2,tag,'routineUsers')">
-                  {{ tag.name }}
-                </a-tag>
-              </template>
-              <a-tag @click="addTag(2,'routineUsers',userList.routineUsers)" class="tag"> <a-icon type="plus" />添加 </a-tag>
             </div>
           </div>
         </a-form-item>
@@ -402,7 +305,7 @@ export default {
       isLoad: false,
       form: this.$form.createForm(this),
       times: [],
-      count: 0,
+      count: 1,
       checkList: [],
       weekDays: [
         {
@@ -447,10 +350,7 @@ export default {
       },
       chooseType: '',
       userList: [],
-      routineUsers: [],
-      safeUsers: [],
-      hygieneUsers: [],
-      taskTypeCodes: [],
+      users: [],
       type: '',
       value: 2020,
       minValue: 2020,
@@ -471,6 +371,8 @@ export default {
       detailType: '',
       url: '',
       devices: [],
+      title: '',
+      currentRecord: {},
       customStyle:
         'background: #F5F5FB;border-radius: 4px;margin-bottom: 10px;border: 0;overflow: scroll;max-height:260px'
     }
@@ -488,7 +390,8 @@ export default {
     this.deviceCode = this.$route.query.code
     this.detailType = this.$route.query.type
     this.detailId = this.$route.query.id
-    this.times = this.url === 'equip' ? [{ key: 0 }] : []
+    this.times = [{ key: 0 }]
+    this.title = this.url === 'safe' ? '护导队伍' : '巡查人员'
     this.areaGet()
     if (this.detailId) {
       this.showDetail()
@@ -502,8 +405,8 @@ export default {
     this.getnumofweeks(this.value)
   },
   methods: {
-    ...mapActions('home', ['getTaskDetail', 'getInspectionArea', 'inspectDetail',
-      'addDailyTask', 'updateDailyTask', 'addDeviceTask', 'updateDeviceTask', 'addSafeTask', 'updateSafeTask'
+    ...mapActions('home', ['getTaskDetail', 'getInspectionArea', 'addDailyTask',
+      'updateDailyTask', 'addDeviceTask', 'updateDeviceTask', 'addSafeTask', 'updateSafeTask'
     ]),
     moment,
     // 获取每年有几周
@@ -541,6 +444,7 @@ export default {
       this.cardInfo.timeType = e.target.value
       this.cardInfo.taskTimeType1 = '1'
       this.cardInfo.taskTimeType2 = '2'
+      this.times = [{ key: 0 }]
     },
     // 自定义任务日历的创建和选择
     calendarTool(selectedTime) {
@@ -577,60 +481,33 @@ export default {
     choose(e) {
       this.cardInfo.areaCode = e.split('/')[0]
       this.cardInfo.address = e.split('/')[1]
-      if (this.url === 'daily') {
-        this.areaDetail(e.split('/')[1].split('=')[1])
-      }
-    },
-    // 巡检地点选中后获取当前数据的详情
-    async areaDetail(id) {
-      const res = await this.inspectDetail(id)
-      const data = res.data.dayList
-      this.taskTypeCodes = data.map(el => el.contents.length > 0 ? el.checkType : null)
     },
     // 人员删除
     userClose(type, removedTag, list, tagItem) {
       if (type) {
-        if (type === 1) {
-          this.times[tagItem][list] = this.times[tagItem][list].filter(tag => tag !== removedTag)
-        } else {
-          this.userList[list] = this.userList[list].filter(tag => tag !== removedTag)
-        }
+        this.times[tagItem][list] = this.times[tagItem][list].filter(tag => tag !== removedTag)
       } else {
         this.teacherList = this.teacherList.filter(tag => tag !== removedTag)
       }
     },
     // 点击添加人员
-    addTag(type, name, record) {
+    addTag(type, record) {
       this.type = type
-      this.chooseType = [name]
+      this.currentRecord = record
       this.userTag = true
       if (type) {
         this.isCheck = true
         this.isRadio = false
-        this[name] = record
-        if (type === 1) {
+        if (this.detailId) {
           setTimeout(() => {
-            this.$refs.chooseUser.chooseList = record[name].map(el => {
+            this.$refs.chooseUser.chooseList = record.users.map(el => {
               return Number(el.id)
             })
-            this.$refs.chooseUser.totalList = record[name].map(el => {
+            this.$refs.chooseUser.totalList = record.users.map(el => {
               return {
                 ...el,
                 userName: el.name,
                 userCode: el.code
-              }
-            })
-          }, 100)
-        } else {
-          setTimeout(() => {
-            this.$refs.chooseUser.chooseList = this.userList[name].map(el => {
-              return Number(el.id)
-            })
-            this.$refs.chooseUser.totalList = this.userList[name].map(el => {
-              return {
-                ...el,
-                userName: el.name,
-                userCode: el.userCode
               }
             })
           }, 100)
@@ -675,20 +552,6 @@ export default {
       this.currentWeek = date
       this.currentMonth = date
       this.dateList = data.date.map(el => el.substring(0, 11))
-      const time = data.times[0]
-      this.taskTypeCodes = []
-      if (time.hygieneUsers.length > 0) {
-        this.taskTypeCodes.push('3')
-        this.userList.hygieneUsers = time.hygieneUsers
-      }
-      if (time.routineUsers.length > 0) {
-        this.taskTypeCodes.push('1')
-        this.userList.routineUsers = time.routineUsers
-      }
-      if (time.safeUsers.length > 0) {
-        this.taskTypeCodes.push('2')
-        this.userList.safeUsers = time.safeUsers
-      }
       this.times = data.times.map((el, index) => {
         return {
           ...el,
@@ -712,11 +575,7 @@ export default {
         }
       })
       if (this.type) {
-        if (this.type === 1) {
-          this.times[this[this.chooseType].key][this.chooseType] = list
-        } else {
-          this.userList[this.chooseType] = list
-        }
+        this.currentRecord.users = list
       } else {
         this.teacherList = list
       }
@@ -748,7 +607,6 @@ export default {
       })
       this.$refs.chooseEquip.reset()
     },
-
     // 巡查时段添加
     add() {
       if (!this.cardInfo.areaCode && this.url === 'daily') return this.$message.warning('请选择巡查地点')
@@ -768,42 +626,31 @@ export default {
       this.form.validateFields((error, values) => {
         if (this.teacherList.length === 0) {
           this.$message.warning('请选择任务负责人')
-          return
         }
         if (this.cardInfo.timeType === '1' &&
         ((this.cardInfo.taskTimeType1 === '1' && this.dateList.length === 0) ||
         (this.cardInfo.taskTimeType1 === '2' && this.currentWeek.length === 0) ||
         (this.cardInfo.taskTimeType1 === '3' && this.currentMonth.length === 0))) {
           this.$message.warning('请选择任务时间')
-          return
         }
         if (this.cardInfo.timeType === '2' &&
         ((this.cardInfo.taskTimeType2 === '2' && this.weekCurrent.length === 0) ||
         (this.cardInfo.taskTimeType2 === '3' && this.monthCurrent.length === 0) ||
         (this.cardInfo.taskTimeType2 === '4' && this.quarterCurrent.length === 0))) {
           this.$message.warning('请选择任务时间')
-          return
         }
         const isList = this.times.map(el => !el.startTime || !el.endTime || el.endTime <= el.startTime || !el.comppleteType ||
-        (this.taskTypeCodes.indexOf('3') > -1 && (!el.hygieneUsers || el.hygieneUsers.length === 0)) ||
-           ((this.taskTypeCodes.indexOf('1') > -1 || this.url === 'equip') && (!el.routineUsers || el.routineUsers.length === 0)) ||
-           (this.taskTypeCodes.indexOf('2') > -1 && (!el.safeUsers || el.safeUsers.length === 0)) ||
            (this.url === 'equip' && (!el.devices || el.devices.length === 0)) ||
-           (this.url === 'safe' && (!el.routineUsers || el.routineUsers.length === 0)) ? '1' : '-1'
+           (!el.users || el.users.length === 0) ? '1' : '-1'
         )
-        if (this.cardInfo.timeType === '1' && (this.times.length === 0 || isList.indexOf('1') > -1)) {
+        if (this.cardInfo.timeType === '1' && isList.indexOf('1') > -1) {
           this.$message.warning('请完善巡查时段')
           return false
         }
-        if (this.cardInfo.timeType === '2' &&
-      ((this.taskTypeCodes.indexOf('3') > -1 && (!this.userList.hygieneUsers || this.userList.hygieneUsers.length === 0)) ||
-           (this.taskTypeCodes.indexOf('1') > -1 && (!this.userList.routineUsers || this.userList.routineUsers.length === 0)) ||
-           (this.taskTypeCodes.indexOf('2') > -1 && (!this.userList.safeUsers || this.userList.safeUsers.length === 0)) ||
-           (this.url === 'equip' && (!this.times[0].devices || !this.times[0].routineUsers || this.times[0].routineUsers.length === 0 || this.times[0].devices.length === 0)) ||
-           (this.url === 'safe' && (!this.userList.routineUsers || this.userList.routineUsers.length === 0))
-      )
+        if (this.cardInfo.timeType === '2' && (!this.times[0].users || this.times[0].users.length === 0) || !this.times[0].comppleteType ||
+        (this.url === 'equip' && (!this.times[0].devices || this.times[0].devices.length === 0))
         ) {
-          this.$message.warning(this.url === 'daily' ? '请完善巡检设置' : '请完善巡查人员')
+          this.$message.warning(this.url === 'equip' ? '请完善巡检设置' : '请完善巡查人员')
           return false
         }
         this.isLoad = false
@@ -820,14 +667,7 @@ export default {
           values.leaderName = this.teacherList[0].name
           values.leaderCode = this.teacherList[0].code
           values.areaCode = this.cardInfo.areaCode
-          const times = [{
-            comppleteType: this.comppleteType,
-            devices: this.url === 'equip' ? this.times[0].devices : [],
-            hygieneUsers: this.userList.hygieneUsers ? this.userList.hygieneUsers : [],
-            routineUsers: this.url === 'equip' ? this.times[0].routineUsers : this.userList.routineUsers,
-            safeUsers: this.userList.safeUsers ? this.userList.safeUsers : []
-          }]
-          values.times = this.cardInfo.timeType === '1' ? this.times : times
+          values.times = this.times
           values.taskTimeType = this.cardInfo.timeType === '1' ? values.taskTimeType1 : values.taskTimeType2
           this.isLoad = true
           if (!this.detailId || this.detailType === 3) {

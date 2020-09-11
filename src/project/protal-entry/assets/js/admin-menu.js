@@ -80,7 +80,7 @@ const adminMenu = [
       },
       {
         id: '600',
-        name: '通知公告',
+        name: '平台消息',
         url: ConfigEnv === 'production' ? '/pc-protal/protal-admin#/notice' : '/protal-admin.html#/notice'
       }
     ]

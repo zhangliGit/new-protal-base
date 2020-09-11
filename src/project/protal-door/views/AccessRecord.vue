@@ -73,7 +73,7 @@ const searchLabel = [
     }
   },
   {
-    value: 'accessPlace', // 表单属性
+    value: 'placeName', // 表单属性
     type: 'input', // 表单类型
     label: '出入地点', // 表单label值
     placeholder: '请输入出入地点' // 表单默认值(非必选字段)
@@ -271,11 +271,11 @@ export default {
       this.keyword = values.keyword
       this.userType = values.userType
       this.accessType = values.accessType
-      this.accessPlace = values.accessPlace
+      this.placeName = values.placeName
       this.startTime = values.rangeTime[0]
       this.endTime = values.rangeTime[1]
       const searchObj = {
-        accessPlace: this.accessPlace,
+        placeName: this.placeName,
         keyword: this.keyword,
         userType: this.userType,
         accessType: this.accessType,

@@ -124,7 +124,7 @@ export default {
       },
       total: 0,
       studyList: [],
-      title: '添加预定',
+      title: '添加预订',
       searchObj: {},
       classList: [],
       schoolYearId: '',

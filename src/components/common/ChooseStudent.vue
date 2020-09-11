@@ -23,6 +23,12 @@
           <a-select-option value="1">男</a-select-option>
           <a-select-option value="2">女</a-select-option>
         </a-select>
+        <span>是否有人脸：</span>
+        <a-select v-model="hasPhoto" style="width: 120px;margin-right: 10px">
+          <a-select-option value>全部</a-select-option>
+          <a-select-option :value="1">是</a-select-option>
+          <a-select-option :value="0">否</a-select-option>
+        </a-select>
         <span>走住读类型：</span>
         <a-select style="width: 120px;margin-right: 10px" v-model="hasDorm">
           <a-select-option value>全部</a-select-option>
@@ -53,11 +59,9 @@
           :table-list="userList"
         >
           <template v-slot:other1="other1">
-            <a-tag :color="parseInt(other1.record.hasDorm) === 1 ? '#87d068' : '#2db7f5'">
-              {{
-                $tools.hasDorm(other1.record.hasDorm)
-              }}
-            </a-tag>
+            <a-tag
+              :color="parseInt(other1.record.hasDorm) === 1 ? '#87d068' : '#2db7f5'"
+            >{{ $tools.hasDorm(other1.record.hasDorm) }}</a-tag>
           </template>
         </table-list>
         <page-num
@@ -70,7 +74,7 @@
           @change-page="changePage"
         ></page-num>
       </div>
-      <div class="user-box qui-fx-ver">
+      <div class="user-box qui-fx-ver" v-if="isTotal">
         <div class="title qui-fx-jsb">
           <span>已选择</span>
           <span>{{ totalList.length }}人</span>
@@ -145,6 +149,10 @@ export default {
     GradeTree
   },
   props: {
+    isTotal: {
+      type: Boolean,
+      default: true
+    },
     noBind: {
       type: Boolean,
       default: false
@@ -251,6 +259,7 @@ export default {
       sex: '',
       hasDorm: '',
       keyword: '',
+      hasPhoto: '',
       total: 0,
       columns,
       userList: [],
@@ -307,6 +316,7 @@ export default {
         params: {
           hasDorm: this.hasDorm,
           keyword: this.keyword,
+          hasPhoto: this.hasPhoto,
           sex: this.sex,
           schoolCode: this.schoolCode,
           gradeId: this.treeObj.gradeCode,

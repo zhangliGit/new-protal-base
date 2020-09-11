@@ -4,6 +4,7 @@
     <no-data v-if="noData" msg="暂无数据~"></no-data>
     <a-tree
       showLine
+      :style="{ maxHeight: maxHeight + 'px' }"
       v-if="treeData.length > 0"
       @select="select"
       :loadData="onLoadData"
@@ -41,7 +42,8 @@ export default {
       defaultSelectedKeys: [],
       defaultExpandedKeys: [],
       schoolYearId: '',
-      schoolYear: ''
+      schoolYear: '',
+      maxHeight: 0
     }
   },
   components: {
@@ -51,6 +53,7 @@ export default {
     ...mapState('home', ['schoolCode'])
   },
   mounted() {
+    this.maxHeight = window.screen.height - 280
     this.initMenu()
   },
   methods: {
@@ -154,7 +157,6 @@ export default {
           resolve()
           return
         }
-
         const req = {
           schoolCode: this.schoolCode,
           schoolYearId: this.schoolYearId,
@@ -193,7 +195,6 @@ export default {
 <style lang="less" scoed>
 .grade-tree {
   min-height: 600px;
-  max-height: 1000px;
   overflow-y: auto;
 }
 </style>

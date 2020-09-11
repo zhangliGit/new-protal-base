@@ -164,19 +164,19 @@ const filters = {
   },
   getWeek: val => {
     const week = parseInt(val)
-    if (week === 2) {
+    if (week === 1) {
       return '周一'
-    } else if (week === 3) {
+    } else if (week === 2) {
       return '周二'
-    } else if (week === 4) {
+    } else if (week === 3) {
       return '周三'
-    } else if (week === 5) {
+    } else if (week === 4) {
       return '周四'
-    } else if (week === 6) {
+    } else if (week === 5) {
       return '周五'
-    } else if (week === 7) {
+    } else if (week === 6) {
       return '周六'
-    } else if (week === 1) {
+    } else if (week === 7) {
       return '周日'
     }
   },
@@ -280,6 +280,19 @@ const filters = {
       return '已验收'
     } else if (parseInt(text) === 5) {
       return '已撤销'
+    }
+  },
+  // 任务状态
+  taskStatus(text) {
+    text = parseInt(text)
+    if (text === 1) {
+      return '未检查'
+    } else if (text === 2) {
+      return '检查待审核'
+    } else if (text === 3) {
+      return '小组已审核'
+    } else if (text === 4) {
+      return '督查完成'
     }
   },
   getSimpleText: html => {

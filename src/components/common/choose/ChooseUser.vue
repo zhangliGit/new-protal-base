@@ -194,6 +194,7 @@ export default {
     },
     select(item) {
       this.pageList.page = 1
+      console.log(item)
       this.orgCode = item.code
       this.getUserList()
     },

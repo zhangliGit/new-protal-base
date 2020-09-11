@@ -46,44 +46,44 @@
             <div class="class-list qui-fx-ver qui-fx-f1">
               <div class="qui-fx-f1 qui-fx" v-for="(i, index) in courseTime.morningNum" :key="'1' + index">
                 <ul class="qui-fx qui-fx-f1">
-                  <a-popover trigger="hover" v-for="(box, ind) in weekDays" :key="10 + ind" @visibleChange="hover('class10' + (ind + 1) + (index + 1))">
+                  <a-popover trigger="hover" v-for="(box, ind) in weekDays" :key="10 + ind" @visibleChange="hover('class10' + box + (index + 1))">
                     <template slot="content">
                       {{ contentHTML }}
                     </template>
-                    <li :id="'class10' + (ind + 1) + (index + 1)" class="qui-fx-f1 qui-fx-ac-jc">
+                    <li :id="'class10' + box + (index + 1)" class="qui-fx-f1 qui-fx-ac-jc">
                     </li>
                   </a-popover>
                 </ul>
               </div>
               <div class="qui-fx-f1 qui-fx" v-for="(i, index) in courseTime.forenoonNum" :key="'2' + index">
                 <ul class="qui-fx qui-fx-f1">
-                  <a-popover trigger="hover" v-for="(box, ind) in weekDays" :key="20 + ind" @visibleChange="hover('class20' + (ind + 1) + (courseTime.morningNum + index + 1))">
+                  <a-popover trigger="hover" v-for="(box, ind) in weekDays" :key="20 + ind" @visibleChange="hover('class20' + box + (courseTime.morningNum + index + 1))">
                     <template slot="content">
                       {{ contentHTML }}
                     </template>
-                    <li :id="'class20' + (ind + 1) + (courseTime.morningNum + index + 1)" class="qui-fx-f1 qui-fx-ac-jc">
+                    <li :id="'class20' + box + (courseTime.morningNum + index + 1)" class="qui-fx-f1 qui-fx-ac-jc">
                     </li>
                   </a-popover>
                 </ul>
               </div>
               <div class="qui-fx-f1 qui-fx" v-for="(i, index) in courseTime.afternoonNum" :key="'3' + index">
                 <ul class="qui-fx qui-fx-f1">
-                  <a-popover trigger="hover" v-for="(box, ind) in weekDays" :key="30 + ind" @visibleChange="hover('class30' + (ind + 1) + (courseTime.morningNum + courseTime.forenoonNum + index + 1))">
+                  <a-popover trigger="hover" v-for="(box, ind) in weekDays" :key="30 + ind" @visibleChange="hover('class30' + box + (courseTime.morningNum + courseTime.forenoonNum + index + 1))">
                     <template slot="content">
                       {{ contentHTML }}
                     </template>
-                    <li :id="'class30' + (ind + 1) + (courseTime.morningNum + courseTime.forenoonNum + index + 1)" class="qui-fx-f1 qui-fx-ac-jc">
+                    <li :id="'class30' + box + (courseTime.morningNum + courseTime.forenoonNum + index + 1)" class="qui-fx-f1 qui-fx-ac-jc">
                     </li>
                   </a-popover>
                 </ul>
               </div>
               <div class="qui-fx-f1 qui-fx" v-for="(i, index) in courseTime.nightNum" :key="'4' +index">
                 <ul class="qui-fx qui-fx-f1">
-                  <a-popover trigger="hover" v-for="(box, ind) in weekDays" :key="40 + ind" @visibleChange="hover('class40' + (ind + 1) + (courseTime.morningNum + courseTime.forenoonNum + courseTime.afternoonNum + index + 1))">
+                  <a-popover trigger="hover" v-for="(box, ind) in weekDays" :key="40 + ind" @visibleChange="hover('class40' + box + (courseTime.morningNum + courseTime.forenoonNum + courseTime.afternoonNum + index + 1))">
                     <template slot="content">
                       {{ contentHTML }}
                     </template>
-                    <li :id="'class40' + (ind + 1) + (courseTime.morningNum + courseTime.forenoonNum + courseTime.afternoonNum + index + 1)" class="qui-fx-f1 qui-fx-ac-jc">
+                    <li :id="'class40' + box+ (courseTime.morningNum + courseTime.forenoonNum + courseTime.afternoonNum + index + 1)" class="qui-fx-f1 qui-fx-ac-jc">
                     </li>
                   </a-popover>
                 </ul>
@@ -127,7 +127,7 @@ export default {
       chooseTree: {},
       isEdit: false, // 编辑状态
       tabPosition: 'class',
-      weekDays: ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'], // 每周上课天数
+      weekDays: [], // 每周上课天数
       classNum: 0, // 课程节数
       courseTime: {
         morningNum: 0,

@@ -38,9 +38,15 @@ import {
   Timeline,
   Collapse,
   Switch,
-  Divider
+  Divider,
+  Card,
+  Empty,
+  Carousel
 } from 'ant-design-vue'
 const ComList = [
+  Carousel,
+  Empty,
+  Card,
   Divider,
   Alert,
   Skeleton,

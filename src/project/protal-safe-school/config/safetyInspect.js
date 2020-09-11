@@ -1,12 +1,16 @@
-import { RouteView } from '../layouts'
-const InspectArea = resolve => require(['../views/SafetyInspect/InspectArea.vue'], resolve)
-const InspectDaily = resolve => require(['../views/SafetyInspect/InspectDaily.vue'], resolve)
-const AreaAdd = resolve => require(['../views/SafetyInspect/AreaAdd.vue'], resolve)
-const InspectAdd = resolve => require(['../views/SafetyInspect/InspectAdd.vue'], resolve)
-const InspectDetail = resolve => require(['../views/SafetyInspect/InspectDetail.vue'], resolve)
-const InspectEquip = resolve => require(['../views/SafetyInspect/InspectEquip.vue'], resolve)
-const InspectSafe = resolve => require(['../views/SafetyInspect/InspectSafe.vue'], resolve)
-const AvoidingTime = resolve => require(['../views/SafetyInspect/AvoidingTime.vue'], resolve)
+import {
+  RouteView
+} from '../layouts'
+const InspectArea = resolve => require(['../views/safetyInspect/InspectArea.vue'], resolve)
+const InspectDaily = resolve => require(['../views/safetyInspect/InspectDaily.vue'], resolve)
+const AreaAdd = resolve => require(['../views/safetyInspect/AreaAdd.vue'], resolve)
+const InspectAdd = resolve => require(['../views/safetyInspect/InspectAdd.vue'], resolve)
+const InspectDetail = resolve => require(['../views/safetyInspect/InspectDetail.vue'], resolve)
+const InspectEquip = resolve => require(['../views/safetyInspect/InspectEquip.vue'], resolve)
+const InspectSafe = resolve => require(['../views/safetyInspect/InspectSafe.vue'], resolve)
+const AvoidingTime = resolve => require(['../views/safetyInspect/AvoidingTime.vue'], resolve)
+const InspectDuty = resolve => require(['../views/safetyInspect/InspectDuty.vue'], resolve)
+const DutyDetail = resolve => require(['../views/safetyInspect/DutyDetail.vue'], resolve)
 
 const safetyInspect = {
   path: '/inspect',
@@ -15,8 +19,7 @@ const safetyInspect = {
   meta: {
     title: '安全巡检'
   },
-  children: [
-    {
+  children: [{
       path: '/inspectArea/areaAdd',
       name: 'areaAdd',
       component: AreaAdd,
@@ -73,6 +76,23 @@ const safetyInspect = {
       component: InspectSafe,
       meta: {
         title: '安全护导'
+      }
+    },
+    {
+      path: '/inspectDuty',
+      name: 'inspectDuty',
+      component: InspectDuty,
+      meta: {
+        title: '巡查值班'
+      }
+    },
+    {
+      path: '/inspectDuty/dutyDetail',
+      name: 'dutyDetail',
+      component: DutyDetail,
+      meta: {
+        title: '巡查值班详情',
+        isHide: true
       }
     },
     {

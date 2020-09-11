@@ -195,7 +195,7 @@ export default {
       },
       total: 0,
       bookingList: [],
-      title: '添加预定',
+      title: '添加预订',
       signTag: false,
       searchObj: {},
       id: 0

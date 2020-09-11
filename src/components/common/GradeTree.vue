@@ -3,6 +3,7 @@
     <a-skeleton v-if="treeData.length == 0 && !noData" active :paragraph="{rows: 10}" />
     <no-data v-if="noData" msg="暂无数据~"></no-data>
     <a-tree
+      :style="{ maxHeight: maxHeight + 'px' }"
       v-if="treeData.length > 0"
       @select="select"
       :loadData="onLoadData"
@@ -43,7 +44,8 @@ export default {
       gradeList: [],
       defaultSelectedKeys: [],
       schoolYear: '',
-      isNewYear: true
+      isNewYear: true,
+      maxHeight: 0
     }
   },
   components: {
@@ -53,6 +55,7 @@ export default {
     ...mapState('home', ['schoolCode'])
   },
   mounted () {
+    this.maxHeight = window.screen.height - 280
     this.initMenu()
   },
   methods: {
@@ -187,7 +190,6 @@ export default {
 <style lang="less" scoed>
   .grade-tree {
     min-height: 400px;
-    max-height: 800px;
     overflow-y: auto
   }
 </style>
