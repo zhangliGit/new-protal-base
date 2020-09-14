@@ -138,30 +138,26 @@ const task = {
     },
     {
       title: '任务名称',
-      dataIndex: 'name',
+      dataIndex: 'taskName',
       width: '10%'
     },
     {
       title: '任务类型',
-      dataIndex: 'taskTyps',
+      dataIndex: 'taskType',
       width: '10%',
       customRender: (text) => {
-        const arr = []
-        if (text.indexOf('1') > -1) {
-          arr.push('日常巡查')
+        if (text === '0') {
+          return '一次性计划'
+        } else if (text === '1') {
+          return '周计划'
+        } else {
+          return '月计划'
         }
-        if (text.indexOf('2') > -1) {
-          arr.push('设备巡查')
-        }
-        if (text.indexOf('3') > -1) {
-          arr.push('安全护导')
-        }
-        return arr.length > 0 ? arr.join(',') : '暂无关联'
       }
     },
     {
       title: '开始时间',
-      dataIndex: 'createTime1',
+      dataIndex: 'beginTime',
       width: '15%',
       customRender: (text) => {
         return $tools.getDate(text)
@@ -169,7 +165,7 @@ const task = {
     },
     {
       title: '结束时间',
-      dataIndex: 'createTime2',
+      dataIndex: 'endTime',
       width: '15%',
       customRender: (text) => {
         return $tools.getDate(text)
@@ -177,12 +173,12 @@ const task = {
     },
     {
       title: '发布人',
-      dataIndex: 'logoUrl',
+      dataIndex: 'publisherName',
       width: '10%'
     },
     {
       title: '发布时间',
-      dataIndex: 'createTime',
+      dataIndex: 'publishTime',
       width: '15%',
       customRender: (text) => {
         return $tools.getDate(text)
@@ -190,13 +186,19 @@ const task = {
     },
     {
       title: '状态',
-      dataIndex: 'qrcodeType',
+      dataIndex: 'state',
       width: '10%',
       customRender: (text) => {
-        if (text === '1') {
-          return '静态二维码'
+        if (text === '0') {
+          return '未发布'
+        } else if (text === '1') {
+          return '未开始'
+        } else if (text === '2') {
+          return '进行中'
+        } else if (text === '3') {
+          return '已结束'
         } else {
-          return '动态二维码'
+          return ''
         }
       }
     },
