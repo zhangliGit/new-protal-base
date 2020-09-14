@@ -166,7 +166,7 @@ export default {
             this.$message.warning('请上传封面照片')
             return
           }
-          if (type === 1) {
+          if (type === '1') {
             const req = {
               schoolCode: this.userInfo.schoolCode,
               createBy: this.userInfo.userName,
@@ -210,7 +210,7 @@ export default {
     async getDetail() {
       const id = this.$route.query.id
       const type = this.$route.query.type
-      if (type === 1) {
+      if (type === '1') {
         const res = await this.getNewsDetail(id)
         this.detailInfo = res.data
         this.appForm.title = this.detailInfo.title

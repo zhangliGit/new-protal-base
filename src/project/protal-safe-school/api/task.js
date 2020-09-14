@@ -12,6 +12,10 @@ const taskApi = {
   delSafeTasks: '/safeTaskTemplate/removes#post', // 批量删除任务
   submitMyTask: '/safeTask/submit#post', // 提交或补交
   myTaskDetail: '/safeTask/info#get', // 根据id查询我的任务
+  addSchoolTask: '/safeTaskTemplate/school/saveData#post', // 校端新增任务
+  getTaskDetail: '/safeTaskTemplate/info#getUrl', // 查看任务详情
+  modifySchoolTask: '/safeTaskTemplate/modify#post', // 修改任务
+
 }
 for (const val in taskApi) {
   taskApi[val] = `${hostEnv.lz_safe}${taskApi[val]}`
