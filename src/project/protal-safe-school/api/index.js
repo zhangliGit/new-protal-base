@@ -4,6 +4,7 @@ import inspectApi from './inspect'
 import dangerApi from './danger'
 import specialApi from './special'
 import accdientApi from './accident'
+import taskApi from './task'
 
 const apiList = {
   ...homeApi,
@@ -11,6 +12,7 @@ const apiList = {
   ...inspectApi,
   ...dangerApi,
   ...specialApi,
+  ...taskApi,
   ...accdientApi
 
 }

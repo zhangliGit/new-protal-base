@@ -31,7 +31,7 @@
           <a-button size="small" class="export-all-btn" icon="export"></a-button>
         </a-tooltip>
         <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="del(action)">
-          <template slot="title">确定删除该器材的档案记录吗？</template>
+          <template slot="title">确定删除该任务吗？</template>
           <a-tooltip placement="topLeft" title="删除">
             <a-button size="small" class="del-action-btn" icon="delete"></a-button>
           </a-tooltip>
@@ -105,11 +105,11 @@ export default {
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getInspectList']),
+    ...mapActions('home', ['getSafeTask', 'delSafeTask', 'delSafeTasks']),
     async showList() {
       this.searchList.schoolCode = this.userInfo.schoolCode
       this.searchList = Object.assign(this.searchList, this.pageList)
-      const res = await this.getInspectList(this.searchList)
+      const res = await this.getSafeTask(this.searchList)
       this.userList = res.data.records
       this.total = res.data.total
     },
@@ -134,7 +134,7 @@ export default {
     },
     // 删除单条记录
     async del(record) {
-      await this.delOtherArchive(record.record.id)
+      await this.delSafeTask(record.record.id)
       this.$message.success('操作成功')
       this.$tools.goNext(() => {
         this.showList()
@@ -144,11 +144,11 @@ export default {
     // 批量删除
     dels(record) {
       if (this.chooseList.length === 0) {
-        this.$message.warning('请选择要删除的档案记录')
+        this.$message.warning('请选择要删除的任务')
         return false
       }
-      this.$tools.delTip('确定删除选中的档案记录吗？', () => {
-        this.delOtherArchives(this.chooseList).then((res) => {
+      this.$tools.delTip('确定删除选中的任务吗？', () => {
+        this.delSafeTasks(this.chooseList).then((res) => {
           this.$message.success('操作成功')
           this.$tools.goNext(() => {
             this.showList()
