@@ -94,11 +94,10 @@ export default {
 }
 </script>
 
-<style lang="less" scoed>
+<style lang="less" scoped>
 .grade-tree {
   padding: 0 10px;
-  width: 240px;
-  min-height: 600px;
+  width: 220px;
   overflow-y: auto;
 }
 </style>

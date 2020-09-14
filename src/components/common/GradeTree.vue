@@ -8,9 +8,9 @@
       @select="select"
       :loadData="onLoadData"
       :treeData="treeData"
+      :defaultExpandedKeys="defaultSelectedKeys"
       :defaultSelectedKeys="defaultSelectedKeys"
-    >
-    </a-tree>
+    ></a-tree>
   </div>
 </template>
 
@@ -35,7 +35,7 @@ export default {
       default: ''
     }
   },
-  data () {
+  data() {
     return {
       noData: false,
       treeData: [],
@@ -54,14 +54,15 @@ export default {
   computed: {
     ...mapState('home', ['schoolCode'])
   },
-  mounted () {
+  mounted() {
     this.maxHeight = window.screen.height - 280
     this.initMenu()
   },
   methods: {
-    onExpand () {},
+    onExpand() {},
     // 点击节点
-    select (obj, tree) {
+    select(obj, tree) {
+      console.log(obj, tree)
       const gradeIds = []
       this.gradeList.forEach(el => {
         return gradeIds.push(el.gradeId)
@@ -80,9 +81,10 @@ export default {
         classCode: tree.selectedNodes[0].data.props.classCode,
         isNewYear: tree.selectedNodes[0].data.props.schoolYearId === this.schoolYear
       }
+      console.log(selectObj)
       this.$emit('select', selectObj)
     },
-    async initMenu () {
+    async initMenu() {
       const req = {
         schoolCode: this.school ? this.school : this.schoolCode
       }
@@ -116,27 +118,28 @@ export default {
       }
       this.defaultSelectedKeys = [this.gradeList[0].id]
       if (this.isOnlyNewSchoolYear) {
-        this.treeData = [{
-          title: this.gradeList[0].schoolYear + '学年',
-          code: this.gradeList[0].id,
-          key: this.gradeList[0].id,
-          schoolYearId: this.gradeList[0].id
-        }]
+        this.treeData = [
+          {
+            title: this.gradeList[0].schoolYear + '学年',
+            code: this.gradeList[0].id,
+            key: this.gradeList[0].id,
+            schoolYearId: this.gradeList[0].id
+          }
+        ]
       } else {
-        this.treeData = this.gradeList
-          .map(item => {
-            return {
-              title: item.schoolYear + '学年',
-              code: item.id,
-              key: item.id,
-              schoolYearId: item.id
-            }
-          })
+        this.treeData = this.gradeList.map(item => {
+          return {
+            title: item.schoolYear + '学年',
+            code: item.id,
+            key: item.id,
+            schoolYearId: item.id
+          }
+        })
       }
       this.$emit('select', selectObj)
     },
-    async onLoadData (treeNode) {
-      return new Promise((resolve) => {
+    async onLoadData(treeNode) {
+      return new Promise(resolve => {
         if (treeNode.dataRef.children) {
           resolve()
           return
@@ -144,43 +147,47 @@ export default {
         const req = {
           schoolCode: this.school ? this.school : this.schoolCode
         }
-        $ajax.postForm({
-          url: `${hostEnv.lz_user_center}/grade/manage/list`,
-          params: req
-        }).then(res => {
-          treeNode.dataRef.children = res.data.list.map(item => {
-            return {
-              title: item.name,
-              schoolYearId: treeNode.dataRef.schoolYearId,
-              isLeaf: this.isChoose,
-              gradeCode: item.code
-            }
+        $ajax
+          .postForm({
+            url: `${hostEnv.lz_user_center}/grade/manage/list`,
+            params: req
           })
-          treeNode.dataRef.children.forEach(item => {
-            const data = {
-              schoolCode: this.schoolCode,
-              schoolYearId: treeNode.dataRef.schoolYearId,
-              gradeCode: item.gradeCode
-            }
-            $ajax.post({
-              url: `${hostEnv.lz_user_center}/classManage/list`,
-              params: data
-            }).then(res => {
-              item.children = res.data.list.map(ele => {
-                return {
-                  title: ele.className,
-                  schoolYearId: item.schoolYearId,
-                  gradeCode: item.gradeCode,
-                  classCode: ele.classCode,
-                  isLeaf: true
-                }
-              })
-              this.treeData = [...this.treeData]
+          .then(res => {
+            treeNode.dataRef.children = res.data.list.map(item => {
+              return {
+                title: item.name,
+                schoolYearId: treeNode.dataRef.schoolYearId,
+                isLeaf: this.isChoose,
+                gradeCode: item.code
+              }
             })
+            treeNode.dataRef.children.forEach(item => {
+              const data = {
+                schoolCode: this.schoolCode,
+                schoolYearId: treeNode.dataRef.schoolYearId,
+                gradeCode: item.gradeCode
+              }
+              $ajax
+                .post({
+                  url: `${hostEnv.lz_user_center}/classManage/list`,
+                  params: data
+                })
+                .then(res => {
+                  item.children = res.data.list.map(ele => {
+                    return {
+                      title: ele.className,
+                      schoolYearId: item.schoolYearId,
+                      gradeCode: item.gradeCode,
+                      classCode: ele.classCode,
+                      isLeaf: true
+                    }
+                  })
+                  this.treeData = [...this.treeData]
+                })
+            })
+            this.treeData = [...this.treeData]
+            resolve()
           })
-          this.treeData = [...this.treeData]
-          resolve()
-        })
       })
     }
   }
@@ -188,8 +195,9 @@ export default {
 </script>
 
 <style lang="less" scoed>
-  .grade-tree {
-    min-height: 400px;
-    overflow-y: auto
-  }
+.grade-tree {
+  padding: 0 10px;
+  width: 220px;
+  overflow-y: auto;
+}
 </style>
