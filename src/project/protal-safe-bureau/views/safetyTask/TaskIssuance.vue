@@ -79,7 +79,7 @@ export default {
     }
   },
   computed: {
-    ...mapState('home', ['userInfo'])
+    ...mapState('home', ['userInfo', 'eduCode'])
   },
   mounted() {
     this.showList()
@@ -90,7 +90,8 @@ export default {
       const req = {
         ...this.pageList,
         ...this.searchList,
-        userCode: this.userInfo.schoolCode
+        // userCode: this.userInfo.userCode
+        schoolCode: this.eduCode
       }
       const res = await this.getTaskList(req)
       console.log(res)
