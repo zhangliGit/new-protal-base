@@ -2,12 +2,15 @@
   <div class="page-layout qui-fx-ver">
     <search-form is-reset @search-form="searchForm" :search-label="issuanceSearchLabel">
       <div slot="right">
-        <a-button icon="del" class="add-action-btn u-mar-l20" @click="add(0)">批量删除</a-button>
+        <a-button icon="del" class="add-action-btn u-mar-l20" @click="delTaskAll">批量删除</a-button>
         <a-button icon="plus" class="add-action-btn u-mar-l20" @click="add(0)">添加任务</a-button>
       </div>
     </search-form>
     <table-list
+      is-check
       is-zoom
+      v-model="chooseList"
+      @selectAll="selectAll"
       :page-list="pageList"
       :columns="taskColumns"
       :table-list="findList">
@@ -30,9 +33,15 @@
         <a-tooltip placement="topLeft" title="查看完成情况">
           <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="checkCompletion(action.record)"></a-button>
         </a-tooltip>
-        <a-tooltip placement="topLeft" title="删除">
-          <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="goReport(action.record.code)"></a-button>
-        </a-tooltip>
+        <a-popconfirm placement="topLeft" ok-text="确定" cancel-text="取消" @confirm="delTask(action.record)">
+          <template slot="title">
+            确定结束督办该隐患任务吗？
+          </template>
+          <a-tooltip placement="topLeft" title="删除">
+            <a-button size="small" class="detail-action-btn" icon="ellipsis" ></a-button>
+          </a-tooltip>
+        </a-popconfirm>
+
       </template>
     </table-list>
     <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
@@ -65,15 +74,8 @@ export default {
         size: 20
       },
       findList: [],
-      form: this.$form.createForm(this),
-      formStatus: false,
-      searchList: {},
-      formItemLayout: {
-        labelCol: { span: 6 },
-        wrapperCol: { span: 16 }
-      },
-      detailId: '',
-      type: ''
+      chooseList: [], // 当有选择项时，被选中的项，返回每项的唯一id
+      searchList: {}
     }
   },
   computed: {
@@ -83,12 +85,12 @@ export default {
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getTaskList', 'getGroupClass', 'getDanger', 'delDanger', 'assignDanger', 'transferDanger']),
+    ...mapActions('home', ['getTaskList', 'removeTask', 'removeTaskAll', 'assignDanger', 'transferDanger']),
     async showList() {
       const req = {
         ...this.pageList,
         ...this.searchList,
-        schoolCode: this.userInfo.schoolCode
+        userCode: this.userInfo.schoolCode
       }
       const res = await this.getTaskList(req)
       console.log(res)
@@ -97,6 +99,17 @@ export default {
     },
     searchForm(values) {
       this.searchList = values
+      this.showList()
+    },
+    selectAll() {},
+    async delTask(record) {
+      console.log(record)
+      const res = await this.removeTask(record.id)
+      this.showList()
+    },
+    async delTaskAll() {
+      console.log(this.chooseList)
+      const res = await this.removeTaskAll(this.chooseList)
       this.showList()
     },
     add(type, record) {

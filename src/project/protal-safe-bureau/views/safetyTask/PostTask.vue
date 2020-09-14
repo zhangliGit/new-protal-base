@@ -1,5 +1,5 @@
 <template>
-  <div class="add-special-item page-layout bg-fff qui-fx-ver">
+  <div class="post-task page-layout bg-fff qui-fx-ver">
     <a-form :form="form">
       <a-form-item v-bind="formItemLayout" label="任务名称" required>
         <a-input
@@ -13,11 +13,11 @@
       </a-form-item>
       <a-form-item label="接受学校：" v-bind="formItemLayout" required>
         <a-input
-          @click="showSpecific()"
+          @click="scoloolChange"
           placeholder="请选择接受学校"
           v-decorator="[
             'specificIndicators',
-            { initialValue: appForm.specificIndicators, rules: [ {required: true, message: '请选择专项指标' } ]}
+            { initialValue: appForm.schoolName, rules: [ {required: true, message: '请选择专项指标' } ]}
           ]"
         />
       </a-form-item>
@@ -29,7 +29,7 @@
           ]"
           placeholder="请选择您要限定的职务，可多选"
         >
-          <a-select-option v-for="list in userList" :key="`${list.name}+${list.code}`">
+          <a-select-option v-for="list in jobList" :key="`${list.name}+${list.code}`">
             {{ list.name }}
           </a-select-option>
         </a-select>
@@ -40,30 +40,29 @@
       </a-form-item>
     </a-form>
     <!-- 选择接受学校 -->
-    <choose-check
-      :userData="SchoolAll"
-      :selectLeft="selectItem"
-      ref="SchoolAll"
-      v-if="true"
-      @submit="setItem"
+    <choose-school
+      type="edu"
+      is-radio
+      :teacherList="chooseTeachersDeatil"
+      ref="ChooseSchool"
+      v-if="schoolTag"
+      v-model="schoolTag"
+      @submit="submitSchool"
       title="选择学校"
-      ranname="name"
     >
-    </choose-check>
+    </choose-school>
   </div>
 </template>
 
 <script>
 import { mapState, mapActions } from 'vuex'
-// import xiaozuData from './dubanxiaozu.json'
+import ChooseSchool from '@c/choose/ChooseSchool'
 export default {
-  name: 'AddSpecialItem',
+  name: 'PostTask',
   components: {
-    ChooseCheck: () => import('../../component/ChooseCheck')
+    ChooseSchool
   },
   data() {
-    this.beginTime = ''
-    this.endTime = ''
     this.groupList = []
     return {
       taskId: this.$route.query.id,
@@ -84,13 +83,17 @@ export default {
           index: 0,
           name: 'eerhu'
         }
-      ], // 学校集合
-      userList: [],
-      selectItem: [],
+      ],
+      jobList: [], // 职务集合
       formItemLayout: {
         labelCol: { span: 6 },
         wrapperCol: { span: 16 }
       },
+      // 选择学校，指定人
+      schoolCode: '', // 指定学校
+      schoolName: '', // 指定学校
+      schoolTag: false,
+      chooseTeachersDeatil: [],
       // xiaozuData,
       isLoad: false,
       appForm: {
@@ -104,48 +107,31 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   async mounted() {
+    this._getQueryjob()
   },
   methods: {
-    ...mapActions('home', ['taskPublish', 'addSpecialTask', 'getGroup', 'getSchoolFlights', 'getTreeGroup']),
-    // 获取专项指标基础数据
-    async _getItemAll() {
-      const res = await this.getItemAll(this.userInfo.schoolCode)
-      // this.SchoolAll = JSON.parse(JSON.stringify(res.data).replace(/name/g, 'name'))
-      this.SchoolAll = res.data
+    ...mapActions('home', ['taskPublish', 'addSpecialTask', 'getQueryjob']),
+    // 选择学校，负责人
+    scoloolChange(value) {
+      this.schoolTag = true
     },
-    onChange(value, dateString) {
-      this.beginTime = dateString[0]
-      this.endTime = dateString[1]
+    // 获取职务基础数据
+    async _getQueryjob() {
+      const req = {
+        eduCode: this.userInfo.eduCode,
+        category: '04' // 平台03-校端 04-局端
+      }
+      const res = await this.getQueryjob(req)
+      this.jobList = res.data
     },
-    async showSpecific(type) {
-      this.$refs.SchoolAll.$refs.modal.visible = true
+    async submitSchool(values) {
+      this.schoolCode = values[0].schoolCode
+      this.schoolName = values[0].schoolName
+      this.appForm.schoolName = this.schoolName
+      // this.getUserList(values[0].schoolCode)
+      this.$refs.ChooseSchool.reset()
     },
-    setItem(data) {
-      this.selectItem = data.map(v => v.id)
-      console.log(data.map(item => item.name) + '')
-      this.appForm.specificIndicators = data.map(item => item.name) + ''
-    },
-    async showSupervision() {
-      this.$refs.supervisio.$refs.modal.visible = true
-    },
-    setSupervisio(data) {
-      // 展示数据
-      console.log(data)
-      console.log(data.map(v => v.title) + '')
-      this.appForm.supervisionTeam = data.map(v => v.title) + ''
-      this.groupList = data.map(res => {
-        const { teamLeaderCode, teamLeaderName, schoolDTOList, streetCode, streetName } = res
-        return {
-          teamLeaderCode: teamLeaderCode,
-          teamLeaderName: teamLeaderName,
-          schoolDTOList: schoolDTOList,
-          streetCode: streetCode,
-          streetName: streetName
-        }
-      })
-      console.log(this.groupList)
-    },
-    // 提交
+
     submitOk(e) {
       e.preventDefault()
       this.form.validateFields((error, values) => {
@@ -165,14 +151,13 @@ export default {
               }
             ]
           }
-          const req = {
-           	beginTime: this.beginTime,
-            endTime: this.endTime,
-            groupList: this.groupList, // 督查小组未知
-            itemIdList: this.selectItem,
-            name: values.name,
-            schoolCode: this.userInfo.schoolCode
-          }
+          // const req = {
+          //  	beginTime: this.beginTime,
+          //   endTime: this.endTime,
+          //   itemIdList: this.selectItem,
+          //   name: values.name,
+          //   schoolCode: this.userInfo.schoolCode
+          // }
           this.isLoad = true
           this.taskPublish(req)
             .then(res => {
@@ -199,7 +184,7 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-.add-special-item {
+.post-task {
   padding: 20px;
 }
 </style>

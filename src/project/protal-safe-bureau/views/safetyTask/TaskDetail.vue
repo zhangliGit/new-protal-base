@@ -1,9 +1,11 @@
 <template>
-  <Modal title="查看任务详情" :width="1000" ref="modal" @ok="close">
+  <Modal title="xxx小学" :width="1000" ref="modal" @ok="close">
     <div class="content">
       <div class="detail-info u-bd-1px">
         <div class="detail-title u-mar-t10">
-          <div class="title">审核任务</div>
+          <div class="title u-fx-ac-jc u-bold">教育局下发演示任务</div>
+          <div class="title u-fx-ac-jc">发布人：&nbsp;admin发布时间：&nbsp;2019-05-27 &nbsp;15:44:12</div>
+          <div class="title u-fx-ac-jc">任务开始时间：&nbsp;2019-05-27&nbsp; 任务结束时间：&nbsp;2019-06-01</div>
         </div>
         <div class="info">
           <div class="qui-tx-c">{{ detailInfo.taskName }}</div>

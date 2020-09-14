@@ -26,7 +26,7 @@
 import { mapState, mapActions } from 'vuex'
 import TaskDetail from './TaskDetail'
 export default {
-  name: 'Views',
+  name: 'CheckCompletion',
   components: {
     TaskDetail
   },
