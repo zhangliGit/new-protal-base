@@ -7,6 +7,7 @@
       </div>
     </search-form>
     <table-list
+      is-check
       :page-list="pageList"
       :columns="task.assignColumns"
       :table-list="userList"
@@ -19,7 +20,7 @@
           <a-button size="small" class="detail-action-btn" icon="ellipsis"></a-button>
         </a-tooltip>
         <a-tooltip placement="topLeft" title="编辑">
-          <a-button size="small" class="edit-action-btn" icon="form"></a-button>
+          <a-button size="small" class="edit-action-btn" icon="form" @click="add(1,action)"></a-button>
         </a-tooltip>
         <a-tooltip placement="topLeft" title="发布">
           <a-button size="small" class="play-action-btn" icon="play-circle"></a-button>
@@ -119,14 +120,9 @@ export default {
       this.pageList.size = 20
       this.showList()
     },
-    add() {
+    add(type, record) {
       this.$router.push({
-        path: '/assignTask/addTask'
-      })
-    },
-    async addApp(type, record) {
-      this.$router.push({
-        path: '/inspectArea/areaAdd',
+        path: '/assignTask/addTask',
         query: {
           id: record ? record.record.id : ''
         }
@@ -152,6 +148,7 @@ export default {
           this.$message.success('操作成功')
           this.$tools.goNext(() => {
             this.showList()
+            this.chooseList = []
           })
         })
       })

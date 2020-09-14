@@ -1,7 +1,6 @@
 import { RouteView } from '../layouts'
 // 安全任务
 const TaskIssuance = resolve => require(['../views/safetyTask/TaskIssuance.vue'], resolve)
-const TaskTemplate = resolve => require(['../views/safetyTask/TaskTemplate.vue'], resolve)
 const AddTask = resolve => require(['../views/safetyTask/AddTask.vue'], resolve)
 const Preview = resolve => require(['../views/safetyTask/Preview.vue'], resolve)
 const PostTask = resolve => require(['../views/safetyTask/PostTask.vue'], resolve)
@@ -68,14 +67,6 @@ const safetyTask = {
       meta: {
         title: '查看统计',
         isHide: true
-      }
-    },
-    {
-      path: '/taskTemplate',
-      name: 'taskTemplate',
-      component: TaskTemplate,
-      meta: {
-        title: '任务模板'
       }
     }
 

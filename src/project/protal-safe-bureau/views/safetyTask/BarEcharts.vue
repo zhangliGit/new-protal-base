@@ -10,7 +10,7 @@ require('echarts/lib/component/toolbox')
 require('echarts/lib/chart/bar')
 require('echarts/lib/chart/line')
 export default {
-  name: 'PreBarEcharts',
+  name: 'BarEcharts',
   props: {
     multipleData: {}
   },
