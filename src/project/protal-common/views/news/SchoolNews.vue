@@ -19,10 +19,20 @@
             </div>
             <div class="qui-fx-f1 qui-fx-ver">
               <p class="notice-title">{{ item.title }}</p>
-              <div class="qui-fx-f1 notice-info" style="text-indent:2em" v-if="item.content.length < 60"  v-html="item.content">
+              <div
+                class="qui-fx-f1 notice-info"
+                style="text-indent:2em"
+                v-if="item.content.length < 60"
+                v-html="item.content"
+              >
                 {{ item.content }}
               </div>
-              <div class="qui-fx-f1 notice-info" style="text-indent:2em" v-if="item.content.length >= 60" v-html="item.content">
+              <div
+                class="qui-fx-f1 notice-info"
+                style="text-indent:2em"
+                v-if="item.content.length >= 60"
+                v-html="item.content"
+              >
                 {{ item.content.substring(0, 90) }}...
               </div>
               <div class="qui-fx-jsb notice-action">
@@ -132,7 +142,7 @@ export default {
         this.$router.push({
           path: '/schoolNews/Addnews',
           query: {
-            type: type,
+            type,
             id: item.id
           }
         })

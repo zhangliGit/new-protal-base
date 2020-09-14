@@ -95,13 +95,13 @@
     >
     </choose-user>
     <choose-class
-      title="添加班级"
       ref="chooseClass"
-      :classList="classList"
       is-check
       v-model="studentTag"
       v-if="studentTag"
       @submit="chooseClass"
+      :classList="classList"
+      title="添加班级"
     ></choose-class>
   </div>
 </template>
@@ -109,7 +109,7 @@
 <script>
 import moment from 'moment'
 import { mapState, mapActions } from 'vuex'
-import ChooseClass from '../../component/ChooseClass'
+import ChooseClass from '@c/choose/ChooseClass'
 import ChooseUser from '@c/ChooseUser'
 import { Switch } from 'ant-design-vue'
 export default {
@@ -234,21 +234,6 @@ export default {
     },
     studentSelect() {
       this.studentTag = true
-      setTimeout(() => {
-        this.$refs.chooseClass.chooseList = this.classList.map(el => {
-          return el.id
-        })
-        this.$refs.chooseClass.totalList = this.classList.map(el => {
-          return {
-            ...el,
-            classCode: el.classCode,
-            className: el.className,
-            gradeName: el.gradeName,
-            gradeCode: el.gradeCode,
-            schoolYearId: el.schoolYearId
-          }
-        })
-      }, 100)
     },
     onChange(value, dateString) {
       this.appForm.startTime = dateString[0]
@@ -262,7 +247,7 @@ export default {
       e.preventDefault()
       this.form.validateFields((err, values) => {
         if (!err) {
-          const type = this.$route.query.type
+          const adType = this.$route.query.type
           if (this.teacherList.length === 0 && this.classList.length === 0) {
             this.$message.warning('请选择发布对象')
             return
@@ -278,7 +263,7 @@ export default {
           this.teacherList.forEach(el => {
             this.userList.push(el.userCode)
           })
-          if (type === 1) {
+          if (adType === '1') {
             const req = {
               schoolCode: this.userInfo.schoolCode,
               createBy: this.userInfo.userName,
@@ -329,8 +314,8 @@ export default {
     },
     async getDetail() {
       const id = this.$route.query.id
-      const type = this.$route.query.type
-      if (type === 1) {
+      const adType = this.$route.query.type
+      if (adType === '1') {
         const res = await this.getNoticeDetail(id)
         this.detailInfo = res.data
         this.teacherList = res.data.noticeUserList
