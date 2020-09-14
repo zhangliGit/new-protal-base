@@ -51,13 +51,19 @@ const showApi = {
 
   getNewspaperList: '/electronic/newspaper/list#post', // 查询班级电子板报列表
   addNewspaper: '/electronic/newspaper/add#post', // 添加电子板报
-  deleNewspaper: '/electronic/newspaper/delete#delWithQuery' // 删除电子板报
+  deleNewspaper: '/electronic/newspaper/delete#delWithQuery', // 删除电子板报
+
+  // 校园概况
+  getSchoolShow: '/school/introduction/detail#getUrl', // 校园概况查询
+  getSchoolShowFile: '/school/introduction/file/getFileBySchoolCode#getUrl', // 校园概况附件查询
+  addSchoolShow: '/school/introduction/add#post', // 校园概况新增
+  editSchoolShow: '/school/introduction/update#post', // 校园概况编辑
+  delFile: `/school/introduction/file/deleteByUrl#delWithQuery` // 文件删除
 }
 
 for (const val in showApi) {
   showApi[val] = `${hostEnv.zq_class}${showApi[val]}`
 }
 export default {
-  ...showApi,
-  delFile: `${hostEnv.zk_oa}/study/theme/file/delete#delWithQuery` // 文件删除
+  ...showApi
 }
