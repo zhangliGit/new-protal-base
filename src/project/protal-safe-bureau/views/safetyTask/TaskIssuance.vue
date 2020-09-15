@@ -25,7 +25,7 @@
           <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="viewStatistics(action.record)"></a-button>
         </a-tooltip>
         <a-tooltip placement="topLeft" title="编辑">
-          <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="add(2,action.record)"></a-button>
+          <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="add(1,action.record)"></a-button>
         </a-tooltip>
         <a-tooltip placement="topLeft" title="发布">
           <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="release(action.record)"></a-button>
