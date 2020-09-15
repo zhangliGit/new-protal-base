@@ -1,120 +1,37 @@
 <template>
-  <Modal title="查看任务详情" :width="1000" ref="modal" @ok="close">
+  <Modal title="xxx小学" :width="800" ref="modal" @ok="close">
     <div class="content">
-      <div class="detail-info u-bd-1px">
-        <div class="detail-title u-mar-t10">
-          <div class="title">审核任务</div>
-        </div>
-        <div class="info">
-          <div class="qui-tx-c">{{ detailInfo.taskName }}</div>
-          <div class="qui-fx-jsb u-mar-t10 u-mar-b10">
-            <div>检查对象：{{ detailInfo.schoolName }}</div>
-            <div>{{ detailInfo.state === '1' ? '未开始检查' : detailInfo.checkTime }}</div>
-          </div>
-          <div>
-            <a-collapse v-model="activeKey" expand-icon-position="right">
-              <template #expandIcon="props">
-                <a-icon type="caret-right" :rotate="props.isActive ? 90 : 0" />
-              </template>
-              <!-- 检查项信息列表 -->
-              <a-collapse-panel :key="`'${index+1}'`" :header="list.name" :style="customStyle" v-for="(list,index) in detailInfo.itemList">
-                <div class="collapse-title qui-fx-jsb">
-
-                  <div>检查标准</div>
-                  <div class="qui-fx">
-                    <div class="collapse-state u-mar-l10" v-if="!(detailInfo.state === '1' )">自查结果</div>
-                    <div
-                      class="collapse-state u-mar-l10"
-                      v-if="(detailInfo.state === '2'&& teamLeaderCode==userCode)|| detailInfo.state === '3' || detailInfo.state === '4'">
-                      审核结果
-                    </div>
-                    <div
-                      class="collapse-state u-mar-l10"
-                      v-if="(detailInfo.state === '3'&& supervisionCode==userCode) || detailInfo.state === '4'">督查结果</div>
-                  </div>
-                </div>
-                <!-- 指示信息列表 -->
-                <div class="collapse-content qui-fx-jsb" v-for="item in list.standardList" :key="item.id">
-                  <div>
-                    <div> {{ item.itemName }} </div>
-                    <div v-if="!item.selfResult || !item.examineResult">
-                      <!-- 隐患列表 -->
-                      <span v-for="el in item.dangerList" :key="el.dangerCode" @click="goDetail(el)">
-                        ({{ el.userName }}上报隐患：
-                        <span style="color:#fa3534">{{ el.dangerCode }})</span>
-                      </span>
-                    </div>
-                  </div>
-                  <div class="qui-fx">
-                    <!-- 自查结果 -->
-                    <div class="collapse-state u-mar-l10 u-mar-r10" v-if="detailInfo.state !== '1'">
-                      <a-switch size="small" :disabled="true" v-model="item.selfResult"/>
-                    </div>
-                    <!-- 审核结果 -->
-                    <div
-                      class="collapse-state u-mar-l10"
-                      v-if="(detailInfo.state === '2'&& teamLeaderCode==userCode)|| detailInfo.state === '3' || detailInfo.state === '4'" >
-                      <a-switch size="small" :disabled="!(detailInfo.state === '2'&& teamLeaderCode==userCode)" v-model="item.examineResult"/>
-                      <!-- {{ !(detailInfo.state === '2'&&userInfo.userCode==detailInfo.teamLeaderCode) }} -->
-                    </div>
-                    <!-- 督查结果 -->
-                    <div
-                      class="collapse-state u-mar-l10"
-                      v-if="(detailInfo.state === '3'&& supervisionCode==userCode) || detailInfo.state === '4'">
-                      <a-switch size="small" :disabled="!(detailInfo.state === '3'&& teamLeaderCode==userCode)" v-model="item.inspectionResult"/>
+      <div class="detail-info">
+        <div class="u-fx-ac-jc u-bold u-font-3 u-mar-b10">教育局下发演示任务</div>
+        <div class="u-fx-ac-jc u-mar-b10">发布人：&nbsp;admin发布时间：&nbsp;2019-05-27 &nbsp;15:44:12</div>
+        <div class="u-fx-ac-jc u-mar-b10">任务开始时间：&nbsp;2019-05-27&nbsp; 任务结束时间：&nbsp;2019-06-01</div>
+        <div class=" report-cont  u-mar-t30">
+          <div class="title u-bold">要求上报内容</div>
+          <div class="u-mar  wh">
+            <div class="u-fx">
+              <div class="u-mar-r10">单选题</div>
+              <div class="subject u-bd-1px u-padd-l20  u-padd-b10">
+                <div class="qui-fx u-mar-t10" >
+                  <div class="qui-fx-ver">题目是：</div>
+                  <div class="qui-fx-ver u-mar-l20">
+                    <div>是否发现过黑恶势力行为？</div>
+                    <div class="u-mar-t10">
+                      <a-radio-group>
+                        <a-radio :value="1">发现</a-radio>
+                        <a-radio :value="2">未发现</a-radio>
+                      </a-radio-group>
                     </div>
                   </div>
                 </div>
-              </a-collapse-panel>
-            </a-collapse>
-          </div>
-        </div>
-      </div>
-
-      <div class="detail-deal  u-bd-1px">
-        <div class="detail-title ">
-          <div class="title">处理流程</div>
-        </div>
-        <a-timeline class="time-line" v-if="detailInfo.processList && detailInfo.processList.length > 0">
-          <a-timeline-item v-for="(item,index) in detailInfo.processList" :key="index">
-            <div class="qui-fx">
-              <div class="time-left">{{ item.content }}</div>
-              <div class="qui-fx-f1">{{ item.time | gmtToDate }}</div>
+              </div>
             </div>
-          </a-timeline-item>
-        </a-timeline>
-        <no-data v-else msg="未检查，暂无处理流程记录~"></no-data>
-      </div>
-      <!-- v-if="(userInfo.userCode== detailInfo.stat && detailInfo.state=='2')||
-            (userInfo.userCode== detailInfo.stat && detailInfo.state=='2')" -->
-      <div class="qui-tx-c u-mar-t" >
-        <a-button
-          type="primary"
-          v-if="detailInfo.state=='2'&&teamLeaderCode==userCode"
-          @click="submitOk('2')"
-          :disabled="isLoad">
-          审核
-        </a-button>
-        <a-button
-          type="primary"
-          v-if="detailInfo.state=='3'&&userCode==supervisionCode"
-          @click="submitOk('3')"
-          :disabled="isLoad">
-          督查
-        </a-button>
+            <div class="div u-bold u-mar-t20">填报流水</div>
+            <div>校歌演示学校已经上报</div>
+            <div>校歌演示学校已经上报</div>
+          </div>
+        </div>
       </div>
     </div>
-    <!-- <submit-form
-      ref="form"
-      @submit-form="submitForm"
-      :title="title"
-      v-model="formStatus"
-      :form-data="formData"
-    >
-      <div slot="upload">
-        <upload-multi :length="9" v-model="fileList" :fileInfo="fileInfo"></upload-multi>
-      </div>
-    </submit-form> -->
   </Modal>
 </template>
 
@@ -248,106 +165,17 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-
   .content {
-    // height: calc(100% - 10px);
-    // overflow-y: scroll;
+    height: calc(100% - 10px);
+    overflow-y: scroll;
     .detail-info {
       // padding-top: 20px;
       // min-height: 500px;
-      // overflow-y: scroll;
+      overflow-y: scroll;
       background-color: #fff;
-      .info {
-        padding: 20px 40px;
-        .info-box {
-          border-top: 1px solid #9698d6;
-          height: 55px;
-          line-height: 53px;
-          width: 50%;
-          float: left;
-          &:nth-child(2n) {
-            border-right: 1px solid #9698d6;
-          }
-        }
-        .img-content {
-          margin-top: 220px;
-        }
-        .info-title {
-          width: 150px;
-          background-color: #f5f5fb;
-          border-right: 1px solid #9698d6;
-          border-left: 1px solid #9698d6;
-          text-align: right;
-          padding: 0 5px;
-          color: #575758;
-        }
-        .info-content {
-          padding: 0 10px;
-          color: #333;
-          width: 100%;
-          overflow-x: scroll;
-          img {
-            width: 60px;
-            height: 60px;
-            margin-right: 10px;
-          }
-        }
-        .img-box {
-          border: 1px solid #9698d6;
-          height: 80px;
-          line-height: 70px;
-          border-bottom: none;
-          &:last-child {
-            border-bottom: 1px solid #9698d6;
-          }
-          .info-title {
-            &:last-child {
-              border-bottom: 1px solid #9698d6 !important;
-            }
-          }
-        }
+      .report-cont{
+        padding-left: 100px;
       }
-    }
-    .detail-title {
-      height: 35px;
-      border-bottom: 1px solid #ddd;
-      .title {
-        margin-left: 40px;
-        position: relative;
-        &::before{
-          content: '';
-          position: absolute;
-          height: 20px;
-          width: 5px;
-          background-color: #4D4CAC;
-          left: -20px;
-        }
-      }
-    }
-    .detail-deal {
-      margin-top: 20px;
-      padding: 20px 0;
-      background-color: #fff;
-      .time-line {
-        margin: 30px 0 0 20px;
-        .time-left {
-          width: 360px;
-        }
-      }
-    }
-    .collapse-title {
-      height: 40px;
-      line-height: 40px;
-      background: #f5f5fb;
-      padding: 0 20px;
-    }
-    .collapse-content {
-      padding: 10px 20px;
-      border-bottom: 1px solid #ccc;
-    }
-    .collapse-state {
-      width: 60px;
-      text-align: center;
     }
   }
 </style>

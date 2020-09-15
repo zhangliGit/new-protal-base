@@ -18,7 +18,7 @@
         </div>
       </div>
     </div>
-    <special-detail ref="TaskDetail" ></special-detail>
+    <task-detail ref="TaskDetail" ></task-detail>
   </div>
 </template>
 
@@ -26,7 +26,7 @@
 import { mapState, mapActions } from 'vuex'
 import TaskDetail from './TaskDetail'
 export default {
-  name: 'Views',
+  name: 'CheckCompletion',
   components: {
     TaskDetail
   },
@@ -59,7 +59,7 @@ export default {
     },
     reviewDetails(id) {
       this.$refs.TaskDetail.$refs.modal.visible = true
-      this.$refs.TaskDetail.showDetail(id)
+      // this.$refs.TaskDetail.showDetail(id)
     },
     cancel() {
       this.$router.go(-1)

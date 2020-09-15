@@ -30,7 +30,7 @@
                     </div>
                     <div
                       class="collapse-state u-mar-l10"
-                      v-if="(detailInfo.state === '3'&& supervisionCode==userCode) || detailInfo.state === '4'">督查结果</div>
+                      v-if="(detailInfo.state === '3'&& supervisionCode) || detailInfo.state === '4'">督查结果</div>
                   </div>
                 </div>
                 <!-- 指示信息列表 -->
@@ -55,12 +55,11 @@
                       class="collapse-state u-mar-l10"
                       v-if="(detailInfo.state === '2'&& teamLeaderCode==userCode)|| detailInfo.state === '3' || detailInfo.state === '4'" >
                       <a-switch size="small" :disabled="!(detailInfo.state === '2'&& teamLeaderCode==userCode)" v-model="item.examineResult"/>
-                      <!-- {{ !(detailInfo.state === '2'&&userInfo.userCode==detailInfo.teamLeaderCode) }} -->
                     </div>
                     <!-- 督查结果 -->
                     <div
                       class="collapse-state u-mar-l10"
-                      v-if="(detailInfo.state === '3'&& supervisionCode==userCode) || detailInfo.state === '4'">
+                      v-if="(detailInfo.state === '3'&& supervisionCode) || detailInfo.state === '4'">
                       <a-switch size="small" :disabled="!(detailInfo.state === '3'&& teamLeaderCode==userCode)" v-model="item.inspectionResult"/>
                     </div>
                   </div>
@@ -97,7 +96,7 @@
         </a-button>
         <a-button
           type="primary"
-          v-if="detailInfo.state=='3'&&userCode==supervisionCode"
+          v-if="detailInfo.state=='3'&&supervisionCode"
           @click="submitOk('3')"
           :disabled="isLoad">
           督查
@@ -160,8 +159,8 @@ export default {
   data() {
     this.id = ''
     return {
-      teamLeaderCode: 'QPJYJ', // 小组长Code
-      supervisionCode: 'QPJYJ1', // 小组长Code
+      teamLeaderCode: '', // 小组长Code
+      // supervisionCode: 'QPJYJ1', // 是否是督察员
       formData,
       detailInfo: [],
       processes: [],
@@ -181,13 +180,20 @@ export default {
       set() {
         this.$emit('input', false)
       }
+    },
+    supervisionCode() {
+      const a = this.userInfo.postList.some(v => v.postCode == 'J14x1qwxj8izet')
+      return a
     }
   },
   mounted() {
-
   },
   methods: {
     ...mapActions('home', ['specialTaskDetail', 'updateInspect', 'modifySpecial']),
+    getsupervisionCode() {
+      const a = this.userInfo.postList.some(v => v.postCode == 'J14x1qwxj8izet')
+      return a
+    },
     moment,
     async showDetail(id) {
       this.id = id

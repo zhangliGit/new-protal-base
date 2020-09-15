@@ -6,94 +6,99 @@
         <div>月计划：</div>
         <div><a-input placeholder="Basic usage" /></div>
       </div>
-      <div class="list-box  u-mar-20 ">
-        <div class="list-title u-type-primary-bg u-main-color u-bold u-padd-10">
-          Q1、(单选题)近一周是否出现体温异常的情况？
-        </div>
-        <div class="list-cont u-fx-ac-jc">
-          <pre-echarts v-if="Object.keys(dangerSchool).length>0" :dataList="dangerSchool"></pre-echarts>
-          <a-empty v-else :image="simpleImage" />
-        </div>
-        <div class="list-cont u-mar-t20">
-          <table border="0" class="u-bd-1px" width="100%" cellspacing:="0">
-            <tr class="u-type-primary-light-bg">
-              <th class="u-padd-10 u-bd-r u-bd-b" width="60%" >选项</th>
-              <th class="u-padd-10 u-bd-r u-bd-b" >计数</th>
-              <th class="u-padd-10 u-bd-b ">占比</th>
-            </tr>
-            <tr>
-              <td class="u-padd-10 u-bd-r u-bd-b " width="60%">是</td>
-              <td class="u-padd-10 u-bd-r u-bd-b " >1人</td>
-              <td class="u-padd-10  u-bd-b ">1%</td>
-            </tr>
-            <tr>
-              <td class="u-padd-10 u-bd-r u-bd-b ">否</td>
-              <td class="u-padd-10 u-bd-r u-bd-b ">99人</td>
-              <td class="u-padd-10  u-bd-b ">900%</td>
-            </tr>
-            <tr>
-              <td class="u-padd-10 " :colspan="3">答题人数：100</td>
-            </tr>
-          </table>
-        </div>
-        <div class="list-cont u-mar-t20">
-          <a-table :columns="columns" :pagination="false" :data-source="dangerDetail" bordered>
-          </a-table>
-        </div>
-      </div>
-      <div class="list-box  u-mar-20 ">
-        <div class="list-title u-type-primary-bg u-main-color u-bold u-padd-10">
-          Q2、(单选题)近一周是否出现体温异常的情况？
-        </div>
-        <div class="list-cont u-fx-ac-jc">
-          <!-- v-if="multipleData.length>0" -->
-          <bar-echarts :multipleData="multipleData"></bar-echarts>
-          <!-- <a-empty v-else :image="simpleImage" /> -->
-        </div>
-        <div class="list-cont u-mar-t20">
-          <table border="0" class="u-bd-1px" width="100%" cellspacing:="0">
-            <tr class="u-type-primary-light-bg">
-              <th class="u-padd-10 u-bd-r u-bd-b" width="60%" >选项</th>
-              <th class="u-padd-10 u-bd-r u-bd-b" >计数</th>
-              <th class="u-padd-10 u-bd-b ">占比</th>
-            </tr>
-            <tr>
-              <td class="u-padd-10 u-bd-r u-bd-b " width="60%">是</td>
-              <td class="u-padd-10 u-bd-r u-bd-b " >1人</td>
-              <td class="u-padd-10  u-bd-b ">1%</td>
-            </tr>
-            <tr>
-              <td class="u-padd-10 u-bd-r u-bd-b ">否</td>
-              <td class="u-padd-10 u-bd-r u-bd-b ">99人</td>
-              <td class="u-padd-10  u-bd-b ">900%</td>
-            </tr>
-            <tr>
-              <td class="u-padd-10 " :colspan="3">答题人数：100</td>
-            </tr>
-          </table>
-        </div>
-        <div class="list-cont u-mar-t20">
-          <a-table :columns="columns" :pagination="false" :data-source="dangerDetail" bordered>
-          </a-table>
-        </div>
-      </div>
-      <div class="list-box  u-mar-20 ">
-        <div class="list-title u-type-primary-bg u-main-color u-bold u-padd-10">
-          Q3、(单选题)近一周是否出现体温异常的情况？
-        </div>
-        <div class="list-cont u-mar-t20">
-          <a-table :columns="columns" :pagination="false" :data-source="dangerDetail" bordered>
-          </a-table>
-        </div>
-      </div>
-      <div class="list-box  u-mar-20 ">
-        <div class="list-title u-type-primary-bg u-main-color u-bold u-padd-10">
-          Q4、附件
-        </div>
-        <div class="list-cont u-mar-t20">
-          <a-table :columns="columns" :pagination="false" :data-source="dangerDetail" bordered>
-          </a-table>
-        </div>
+      <div class="a-collapse-box u-padd-20">
+        <a-collapse @change="changeActivekey" activeKey="1">
+          <template #expandIcon="props">
+            <a-icon type="caret-right" :rotate="props.isActive ? 90 : 0" />
+          </template>
+          <a-collapse-panel class="u-mar-b20" key="1" header="Q1、(单选题)近一周是否出现体温异常的情况？">
+            <div class="list-box  u-mar-20 ">
+              <div class="list-cont u-fx-ac-jc">
+                <pre-echarts v-if="Object.keys(dangerSchool).length>0" :dataList="dangerSchool"></pre-echarts>
+                <a-empty v-else :image="simpleImage" />
+              </div>
+              <div class="list-cont u-mar-t20">
+                <table border="0" class="u-bd-1px" width="100%" cellspacing:="0">
+                  <tr class="u-type-primary-light-bg">
+                    <th class="u-padd-10 u-bd-r u-bd-b" width="60%" >选项</th>
+                    <th class="u-padd-10 u-bd-r u-bd-b" >计数</th>
+                    <th class="u-padd-10 u-bd-b ">占比</th>
+                  </tr>
+                  <tr>
+                    <td class="u-padd-10 u-bd-r u-bd-b " width="60%">是</td>
+                    <td class="u-padd-10 u-bd-r u-bd-b " >1人</td>
+                    <td class="u-padd-10  u-bd-b ">1%</td>
+                  </tr>
+                  <tr>
+                    <td class="u-padd-10 u-bd-r u-bd-b ">否</td>
+                    <td class="u-padd-10 u-bd-r u-bd-b ">99人</td>
+                    <td class="u-padd-10  u-bd-b ">900%</td>
+                  </tr>
+                  <tr>
+                    <td class="u-padd-10 " :colspan="3">答题人数：100</td>
+                  </tr>
+                </table>
+              </div>
+              <div class="list-cont u-mar-t20">
+                <a-table :columns="columns" :pagination="false" :data-source="dangerDetail" bordered>
+                </a-table>
+              </div>
+            </div>
+
+          </a-collapse-panel>
+          <a-collapse-panel class="u-mar-b20" key="2" header="Q2、(单选题)近一周是否出现体温异常的情况？" :disabled="false">
+            <div class="list-box  u-mar-20 ">
+              <!-- <div class="list-title u-type-primary-bg u-main-color u-bold u-padd-10">
+              </div> -->
+              <div class="list-cont u-fx-ac-jc">
+                <bar-echarts v-if="multipleData.length>0" :multipleData="multipleData"></bar-echarts>
+                <a-empty v-else :image="simpleImage" />
+              </div>
+              <div class="list-cont u-mar-t20">
+                <table border="0" class="u-bd-1px" width="100%" cellspacing:="0">
+                  <tr class="u-type-primary-light-bg">
+                    <th class="u-padd-10 u-bd-r u-bd-b" width="60%" >选项</th>
+                    <th class="u-padd-10 u-bd-r u-bd-b" >计数</th>
+                    <th class="u-padd-10 u-bd-b ">占比</th>
+                  </tr>
+                  <tr>
+                    <td class="u-padd-10 u-bd-r u-bd-b " width="60%">是</td>
+                    <td class="u-padd-10 u-bd-r u-bd-b " >1人</td>
+                    <td class="u-padd-10  u-bd-b ">1%</td>
+                  </tr>
+                  <tr>
+                    <td class="u-padd-10 u-bd-r u-bd-b ">否</td>
+                    <td class="u-padd-10 u-bd-r u-bd-b ">99人</td>
+                    <td class="u-padd-10  u-bd-b ">900%</td>
+                  </tr>
+                  <tr>
+                    <td class="u-padd-10 " :colspan="3">答题人数：100</td>
+                  </tr>
+                </table>
+              </div>
+              <div class="list-cont u-mar-t20">
+                <a-table :columns="columns" :pagination="false" :data-source="dangerDetail" bordered>
+                </a-table>
+              </div>
+            </div>
+          </a-collapse-panel>
+          <a-collapse-panel class="u-mar-b20" key="3" header="Q3、(单选题)近一周是否出现体温异常的情况？">
+            <div class="list-box  u-mar-20 ">
+              <div class="list-cont u-mar-t20">
+                <a-table :columns="columns" :pagination="false" :data-source="dangerDetail" bordered>
+                </a-table>
+              </div>
+            </div>
+          </a-collapse-panel>
+          <a-collapse-panel key="4" header="Q3、(单选题)近一周是否出现体温异常的情况？">
+            <div class="list-box  u-mar-20 ">
+              <div class="list-cont u-mar-t20">
+                <a-table :columns="columns" :pagination="false" :data-source="dangerDetail" bordered>
+                </a-table>
+              </div>
+            </div>
+          </a-collapse-panel>
+        </a-collapse>
       </div>
     </div>
   </div>
@@ -245,6 +250,9 @@ export default {
       // Highcharts.chart('area', area)
       // Highcharts.chart('circle', circle)
     },
+    changeActivekey(key) {
+      console.log(key)
+    },
     cancel() {
       this.$router.go(-1)
     }
@@ -260,11 +268,19 @@ export default {
   .content {
     height: calc(100% - 10px);
     overflow-y: scroll;
-     .list-box{
-      .list-cont{
-          //修改表头文字、背景颜色
-          @{deep} .ant-table-thead > tr >th{
-          background: #ecf5ff !important;
+
+    .a-collapse-box{
+      @{deep} .ant-collapse > .ant-collapse-item > .ant-collapse-header{
+        background: #ecf5ff !important;
+         background: #6882da !important;
+            color: #fff;
+      }
+      .list-box{
+          .list-cont{
+            //修改表头文字、背景颜色
+            @{deep} .ant-table-thead > tr >th{
+            background: #ecf5ff !important;
+          }
         }
       }
     }

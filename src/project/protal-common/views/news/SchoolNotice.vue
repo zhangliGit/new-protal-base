@@ -139,7 +139,7 @@ export default {
         this.$router.push({
           path: '/schoolNotice/Addnotice',
           query: {
-            type: type,
+            type,
             id: item.id
           }
         })

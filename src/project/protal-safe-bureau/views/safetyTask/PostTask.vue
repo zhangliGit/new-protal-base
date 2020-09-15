@@ -1,5 +1,5 @@
 <template>
-  <div class="add-special-item page-layout bg-fff qui-fx-ver">
+  <div class="post-task page-layout bg-fff qui-fx-ver">
     <a-form :form="form">
       <a-form-item v-bind="formItemLayout" label="任务名称" required>
         <a-input
@@ -7,30 +7,31 @@
           :disabled="true"
           v-decorator="[
             'name',
-            { initialValue: appForm.address, rules: [{max: 20,required: true, message: '临时任务' } ]}
+            { initialValue: appForm.address, rules: [{max: 20,required: false, message: '临时任务' } ]}
           ]"
         />
       </a-form-item>
       <a-form-item label="接受学校：" v-bind="formItemLayout" required>
         <a-input
-          @click="showSpecific()"
+          @click="scoloolChange"
           placeholder="请选择接受学校"
           v-decorator="[
             'specificIndicators',
-            { initialValue: appForm.specificIndicators, rules: [ {required: true, message: '请选择专项指标' } ]}
+            { initialValue: appForm.schoolName, rules: [ {required: true, message: '请选择专项指标' } ]}
           ]"
         />
       </a-form-item>
       <a-form-item v-bind="formItemLayout" label="限定职务：" required>
         <a-select
+          mode="multiple"
           v-decorator="[
-            'leaderName',
+            'checkJobList',
             { initialValue: appForm.leaderName, rules: [{ required: true, message: '请选择负责人' }] },
           ]"
           placeholder="请选择您要限定的职务，可多选"
         >
-          <a-select-option v-for="list in userList" :key="`${list.name}+${list.code}`">
-            {{ list.name }}
+          <a-select-option v-for="list in jobList" :key="`${list.jobName}`">
+            {{ list.jobName }}
           </a-select-option>
         </a-select>
       </a-form-item>
@@ -40,57 +41,110 @@
       </a-form-item>
     </a-form>
     <!-- 选择接受学校 -->
-    <choose-check
-      :userData="SchoolAll"
-      :selectLeft="selectItem"
-      ref="SchoolAll"
-      v-if="true"
-      @submit="setItem"
+    <choose-school
+      type="edu"
+      is-check
+      :teacherList="chooseTeachersDeatil"
+      ref="ChooseSchool"
+      v-if="schoolTag"
+      v-model="schoolTag"
+      @submit="submitSchool"
       title="选择学校"
-      ranname="name"
     >
-    </choose-check>
+    </choose-school>
   </div>
 </template>
 
 <script>
 import { mapState, mapActions } from 'vuex'
-// import xiaozuData from './dubanxiaozu.json'
+import ChooseSchool from '@c/choose/ChooseSchool'
 export default {
-  name: 'AddSpecialItem',
+  name: 'PostTask',
   components: {
-    ChooseCheck: () => import('../../component/ChooseCheck')
+    ChooseSchool
   },
   data() {
-    this.beginTime = ''
-    this.endTime = ''
     this.groupList = []
     return {
       taskId: this.$route.query.id,
       form: this.$form.createForm(this),
-      SchoolAll: [
-        {
-          id: '1',
-          index: 0,
-          name: 'eerhu'
-        },
-        {
-          id: '2',
-          index: 0,
-          name: 'eerhu'
-        },
-        {
-          id: '3',
-          index: 0,
-          name: 'eerhu'
-        }
-      ], // 学校集合
-      userList: [],
-      selectItem: [],
+      SchoolAll: [],
+      jobList: [
+        // {
+        //   'id': 100,
+        //   'jobCode': 'J14x1qwxj8izeq',
+        //   'jobName': '局领导',
+        //   'remark': '系统预设',
+        //   'createTime': 1599554672000,
+        //   'employeesNum': null,
+        //   'eduCode': 'QPJYJ',
+        //   'eduName': '全品教育局',
+        //   'userCodes': '',
+        //   'userNames': '',
+        //   'defaultState': '0'
+        // },
+        // {
+        //   'id': 101,
+        //   'jobCode': 'J14x1qwxj8izer',
+        //   'jobName': '安保科科长',
+        //   'remark': '系统预设',
+        //   'createTime': 1599554672000,
+        //   'employeesNum': null,
+        //   'eduCode': 'QPJYJ',
+        //   'eduName': '全品教育局',
+        //   'userCodes': '',
+        //   'userNames': '',
+        //   'defaultState': '0'
+        // },
+        // {
+        //   'id': 102,
+        //   'jobCode': 'J14x1qwxj8izes',
+        //   'jobName': '安保科科长',
+        //   'remark': '系统预设',
+        //   'createTime': 1599554672000,
+        //   'employeesNum': null,
+        //   'eduCode': 'QPJYJ',
+        //   'eduName': '全品教育局',
+        //   'userCodes': '',
+        //   'userNames': '',
+        //   'defaultState': '0'
+        // },
+        // {
+        //   'id': 103,
+        //   'jobCode': 'J14x1qwxj8izet',
+        //   'jobName': '督察员',
+        //   'remark': '系统预设',
+        //   'createTime': 1599554672000,
+        //   'employeesNum': null,
+        //   'eduCode': 'QPJYJ',
+        //   'eduName': '全品教育局',
+        //   'userCodes': 'U14omcc5vig05s,',
+        //   'userNames': '刘老师,',
+        //   'defaultState': '0'
+        // },
+        // {
+        //   'id': 104,
+        //   'jobCode': 'J14x1qwxj8izeu',
+        //   'jobName': '局职员',
+        //   'remark': '系统预设',
+        //   'createTime': 1599554672000,
+        //   'employeesNum': null,
+        //   'eduCode': 'QPJYJ',
+        //   'eduName': '全品教育局',
+        //   'userCodes': '',
+        //   'userNames': '',
+        //   'defaultState': '0'
+        // }
+      ], // 职务集合
       formItemLayout: {
         labelCol: { span: 6 },
         wrapperCol: { span: 16 }
       },
+      // 选择学校，指定人
+      schoolCode: '', // 指定学校
+      schoolName: '', // 指定学校
+      schoolTag: false,
+      chooseTeachersDeatil: [],
       // xiaozuData,
       isLoad: false,
       appForm: {
@@ -101,90 +155,68 @@ export default {
     }
   },
   computed: {
-    ...mapState('home', ['userInfo'])
+    ...mapState('home', ['userInfo', 'eduCode'])
+  },
+  async created() {
   },
   async mounted() {
   },
   methods: {
-    ...mapActions('home', ['taskPublish', 'addSpecialTask', 'getGroup', 'getSchoolFlights', 'getTreeGroup']),
-    // 获取专项指标基础数据
-    async _getItemAll() {
-      const res = await this.getItemAll(this.userInfo.schoolCode)
-      // this.SchoolAll = JSON.parse(JSON.stringify(res.data).replace(/name/g, 'name'))
-      this.SchoolAll = res.data
+    ...mapActions('home', ['taskPublish', 'getQueryjob']),
+    // 选择学校，负责人
+    scoloolChange(value) {
+      this.schoolTag = true
     },
-    onChange(value, dateString) {
-      this.beginTime = dateString[0]
-      this.endTime = dateString[1]
+    async submitSchool(values) {
+      this.appForm.schoolName = values.map(v => v.schoolName) + ''
+      this.SchoolAll = values
+      this.$refs.ChooseSchool.reset()
+      if (values.length === 0) return
+      this._getJobAll(values[0].schoolCode) // 用第一个学校差所有的学校预设职务
     },
-    async showSpecific(type) {
-      this.$refs.SchoolAll.$refs.modal.visible = true
+    // 获取职务基础数据
+    async _getJobAll(schoolCode) {
+      const req = {
+        eduCode: schoolCode,
+        category: '03' // 平台03-校端 04-局端
+      }
+      const res = await this.getQueryjob(req)
+      this.jobList = res.data
     },
-    setItem(data) {
-      this.selectItem = data.map(v => v.id)
-      console.log(data.map(item => item.name) + '')
-      this.appForm.specificIndicators = data.map(item => item.name) + ''
-    },
-    async showSupervision() {
-      this.$refs.supervisio.$refs.modal.visible = true
-    },
-    setSupervisio(data) {
-      // 展示数据
-      console.log(data)
-      console.log(data.map(v => v.title) + '')
-      this.appForm.supervisionTeam = data.map(v => v.title) + ''
-      this.groupList = data.map(res => {
-        const { teamLeaderCode, teamLeaderName, schoolDTOList, streetCode, streetName } = res
-        return {
-          teamLeaderCode: teamLeaderCode,
-          teamLeaderName: teamLeaderName,
-          schoolDTOList: schoolDTOList,
-          streetCode: streetCode,
-          streetName: streetName
-        }
-      })
-      console.log(this.groupList)
-    },
-    // 提交
+    // 根据选中的学校
     submitOk(e) {
       e.preventDefault()
       this.form.validateFields((error, values) => {
         this.isLoad = false
+        console.log(values)
+        this.searchPeople(values.checkJobList, this.SchoolAll)
         if (!error) {
-          const req1 = {
-            publisherCode: this.userInfo.schoolCode,
-            publisherName: this.userInfo.userName,
-            taskId: this.taskId,
-            users: [
-              {
-                orgCode: '',
-                orgName: '',
-                schoolCode: '',
-                userCode: '',
-                userName: ''
-              }
-            ]
-          }
-          const req = {
-           	beginTime: this.beginTime,
-            endTime: this.endTime,
-            groupList: this.groupList, // 督查小组未知
-            itemIdList: this.selectItem,
-            name: values.name,
-            schoolCode: this.userInfo.schoolCode
-          }
-          this.isLoad = true
-          this.taskPublish(req)
-            .then(res => {
-              // console.log(res)
-              this.$message.success('操作成功')
-              this.$tools.goNext(() => {
-                this.$router.go(-1)
-              })
-            })
-            .catch(res => {
-              this.isLoad = false
-            })
+          // const req1 = {
+          //   publisherCode: this.userInfo.userCode,
+          //   publisherName: this.userInfo.userName,
+          //   taskId: this.taskId,
+          //   users: [
+          //     {
+          //       orgCode: '',
+          //       orgName: '',
+          //       schoolCode: '',
+          //       userCode: '',
+          //       userName: ''
+          //     }
+          //   ]
+          // }
+          // this.isLoad = true
+          // this.taskPublish(req)
+          //   .then(res => {
+          //     // console.log(res)
+          //     this.$message.success('操作成功')
+          //     this.$tools.goNext(() => {
+          //       this.$router.go(-1)
+          //     })
+          //   })
+          //   .catch(res => {
+          //     this.isLoad = false
+          //   })
         }
       })
     },
@@ -199,7 +231,7 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-.add-special-item {
+.post-task {
   padding: 20px;
 }
 </style>

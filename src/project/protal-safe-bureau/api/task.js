@@ -10,11 +10,12 @@ const taskApi = {
   eidtTask: '/safeTaskTemplate/modify#post', // 修改任务模板
   getTaskList: '/safeTaskTemplate/edu/list#post', // 局端任务下发列表
   getTaskinfo: '/safeTaskTemplate/info/#get', // 查看任务模板详情 预览
-  removeTask: '/safeTaskTemplate/remove/#get', // 删除任务模板
+  removeTask: '/safeTaskTemplate/remove/#getUrl', // 删除任务模板
   removeTaskAll: '/safeTaskTemplate/removes#post', // 批量删除任务模板
+  getJobAll: '/edu/job/manage/queryjob/by/educode/and/definded#get', // 根据机构编码查询岗位获取预设岗位  限定职务基础数据
   taskPublish: '/safeTaskTemplate/publish#post' // 任务发布
-
 }
+
 for (const val in taskApi) {
   taskApi[val] = `${hostEnv.lz_safe}${taskApi[val]}`
 }
