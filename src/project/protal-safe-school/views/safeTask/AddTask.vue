@@ -563,6 +563,7 @@ export default {
       e.preventDefault()
       this.form.validateFields((error, values) => {
         let list = this.radioList.concat(this.checkList).concat(this.fillList)
+        console.log('list', list)
         list = list.map((el) => {
           return {
             content:
@@ -581,8 +582,8 @@ export default {
         values.docName = this.docName
         values.questions = list
         values.des = this.cardInfo.des
-        values.startTime = moment(values.data[0]).format('YYYY-MM-DD')
-        values.endTime = moment(values.data[1]).format('YYYY-MM-DD')
+        values.startTime = this.cardInfo.taskType === '1' ? moment(values.data[0]).format('YYYY-MM-DD') : undefined
+        values.endTime = this.cardInfo.taskType === '1' ? moment(values.data[1]).format('YYYY-MM-DD') : undefined
         values.dateNums =
           this.cardInfo.taskType === '2'
             ? this.weekCurrent
