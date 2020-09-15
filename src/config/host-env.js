@@ -35,6 +35,7 @@ let lz_safe = ''
 let cl_oa=''
 let wxz_pay=''
 let cl_class=''
+let zk_class=''
 if (ConfigEnv === 'test') {
   wxz_control = '/wxz_control'
   zk_school = '/zk_school'
@@ -70,6 +71,7 @@ if (ConfigEnv === 'test') {
   cl_oa='/cl_oa'
   wxz_pay='/wxz_pay'
   cl_class='/cl_class'
+  zk_class='/zk_class'
 } else if (ConfigEnv === 'prod') {
   wxz_control = '/wxz_control'
   zk_school = '/zk_school'
@@ -105,6 +107,7 @@ if (ConfigEnv === 'test') {
   cl_oa='/cl_oa'
   wxz_pay='/wxz_pay'
   cl_class='/cl_class'
+  zk_class='/zk_class'
 } else {
   wxz_control = '/wxz_control'
   zk_school = '/zk_school'
@@ -139,6 +142,7 @@ if (ConfigEnv === 'test') {
   cl_oa='/cl_oa'
   wxz_pay='/wxz_pay'
   cl_class='/cl_class'
+  zk_class='/zk_class'
 }
 
 export default {
@@ -175,5 +179,6 @@ export default {
   lz_safe,
   cl_oa,
   wxz_pay,
-  cl_class
+  cl_class,
+  zk_class
 }

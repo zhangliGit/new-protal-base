@@ -243,6 +243,9 @@ export default {
     end (ev) {
       console.log(ev)
       if (ev.to.className === 'dragArea11') {
+        console.log(ev.item.id)
+        console.log(ev.to.childNodes[ev.newIndex].offsetLeft, ev.to.childNodes[ev.newIndex].offsetTop)
+        console.log(ev.to.childNodes)
         this.setList = Array.prototype.slice.call(ev.to.childNodes).map(ele => {
           return {
             name: ele.innerText,
@@ -256,8 +259,6 @@ export default {
       }
     },
     yzSize(item) {
-      console.log(item)
-      console.log(this.setList)
       if (item.position > 0 && item.position < 5 && ((item.position + item.width) > 5 || item.height > 3)) {
         return false
       }
@@ -270,27 +271,14 @@ export default {
       if (item.position > 8 && item.height > 1) {
         return false
       }
-      if (item.position > 8 && item.height > 1) {
-        return false
-      }
       return true
     },
     allowMove(ev) {
-      console.log(ev.draggedContext)
+      console.log(ev.draggedContext.futureIndex)
       if (ev.draggedContext.futureIndex < this.setList.length) {
         return false
       }
       if (this.setList.length > 0 && this.setList[this.setList.length - 1].position + 1 > 12) {
-        return false
-      }
-      let num = 0
-      const position = this.setList.length === 0 ? 1 : this.setList[this.setList.length - 1].position * this.setList[this.setList.length - 1].width + 1
-      this.setList.forEach(el => {
-        num += (el.width * el.height)
-      })
-      console.log(num)
-      console.log(position * this.transform('size', ev.draggedContext.element.y))
-      if (num > 0 && num < (position - 1) * this.transform('size', ev.draggedContext.element.y)) {
         return false
       }
       let allowTag = true
@@ -298,7 +286,7 @@ export default {
         name: ev.draggedContext.element.title,
         width: this.transform('size', ev.draggedContext.element.x),
         height: this.transform('size', ev.draggedContext.element.y),
-        position: position
+        position: this.setList.length === 0 ? 1 : this.setList[this.setList.length - 1].position + 1
       })
       this.setList.forEach(el => {
         if (!this.yzSize(el)) {
@@ -341,12 +329,9 @@ export default {
     },
     addSubmit () {
       console.log(this.setList)
-      let num = 0
-      this.setList.forEach(el => {
-        num += (el.width * el.height)
-      })
-      console.log(num)
-      if (num !== 12) {
+      if (!this.setList.some(el => {
+        return el.position === 12
+      })) {
         this.$message.warning('模板不完整')
         return
       }
