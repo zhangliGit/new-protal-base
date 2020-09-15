@@ -95,7 +95,7 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
-    // this.showList()
+    this.showList()
   },
   methods: {
     ...mapActions('home', ['getMySafeTask', 'submitMyTask']),

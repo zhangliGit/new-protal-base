@@ -69,7 +69,7 @@ module.exports = {
       }
       // 压缩代码 电子班牌特殊处理
       const buildModule = process.argv[process.argv.length - 1]
-      if (buildModule !== 'protal-class' && buildModule !== 'protal-oa') {
+      if (buildModule !== 'protal-class' && buildModule !== 'protal-oa' && buildModule !== 'protal-safe-bureau') {
         config.optimization = {
           minimizer: [
             new UglifyJsPlugin({
@@ -337,7 +337,8 @@ module.exports = {
       },
       '/lz_safe': {
         // target: 'http://192.168.1.46:8091/', // 吕卓-安防
-        target: 'http://192.168.2.242:8091/', // 吕卓-安防
+        target: 'http://192.168.1.76:8091/', // ljj-安防
+        // target: 'http://192.168.2.242:8091/', // 吕卓-安防
         changeOrigin: true,
         pathRewrite: {
           '^/lz_safe': ''
