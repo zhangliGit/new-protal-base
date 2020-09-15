@@ -63,13 +63,13 @@ const showApi = {
 
 const classApi = {
   // 模板管理
-  getTemplateList: '/template/list#getUrl', // 查询模板列表
+  getTemplateList: '/template/list#post', // 查询模板列表
   getTemplateDetail: '/template/detail#getUrl', // 查询模板详情
   addTemplate: '/template/add#post', // 创建模板
-  editTemplate: '/template/update#putJosn', // 编辑模板
+  editTemplate: '/template/update#putJson', // 编辑模板
   delTemplate: `/template/delete#delWithQuery`, // 删除模板
   bindTemplate: `/template/deviceBatchBindTemplate#post`, // 设备绑定模板
-  bindTemplateDetail: `/template/getDeviceByTemplateId#getUrl` // 模板绑定设备详情
+  bindTemplateDetail: `/template/getDeviceByTemplateId#postWithQuery` // 模板绑定设备详情
 }
 for (const val in showApi) {
   showApi[val] = `${hostEnv.zk_class}${showApi[val]}`
@@ -79,5 +79,6 @@ for (const val in classApi) {
 }
 export default {
   ...showApi,
-  ...classApi
+  ...classApi,
+  delFile: `${hostEnv.zq_oa}/study/theme/file/delete#delWithQuery` // 文件删除
 }
