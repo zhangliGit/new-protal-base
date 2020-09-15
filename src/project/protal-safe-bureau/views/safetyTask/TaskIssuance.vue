@@ -109,9 +109,18 @@ export default {
       this.showList()
     },
     async delTaskAll() {
-      console.log(this.chooseList)
-      const res = await this.removeTaskAll(this.chooseList)
-      this.showList()
+      this.$confirm({
+        title: '提示',
+        content: '确定删除该任务吗?',
+        onOk () {
+          this.removeTaskAll(this.chooseList).then(res => {
+            this.$message.success('操作成功')
+            this.showList()
+          })
+        },
+        onCancel () {
+        }
+      })
     },
     add(type, record) {
       this.$router.push({
