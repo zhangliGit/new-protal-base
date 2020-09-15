@@ -381,7 +381,7 @@ export default {
   methods: {
     ...mapActions('home', [
       'getTaskDetail',
-      'addSchoolTask',
+      'addTask',
       'updateDailyTask',
       'addSafeTask',
       'updateSafeTask',
@@ -607,7 +607,7 @@ export default {
                 this.isLoad = false
               })
           } else {
-            this.addSchoolTask(values)
+            this.addTask(values)
               .then((res) => {
                 this.$message.success('操作成功')
                 this.$tools.goNext(() => {
