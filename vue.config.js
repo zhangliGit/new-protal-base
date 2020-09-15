@@ -69,7 +69,7 @@ module.exports = {
       }
       // 压缩代码 电子班牌特殊处理
       const buildModule = process.argv[process.argv.length - 1]
-      if (buildModule !== 'protal-class' && buildModule !== 'protal-oa') {
+      if (buildModule !== 'protal-class' && buildModule !== 'protal-oa' && buildModule !== 'protal-safe-bureau') {
         config.optimization = {
           minimizer: [
             new UglifyJsPlugin({
@@ -253,11 +253,19 @@ module.exports = {
         }
       },
       '/zq_class': {
-        target: 'http://192.168.2.242:11009/', // 张琦-班牌管理
-        // target: 'http://192.168.1.23:11009/',
+        // target: 'http://192.168.2.242:11009/', // 张琦-班牌管理
+        target: 'http://192.168.1.193:11009/',
         changeOrigin: true,
         pathRewrite: {
           '^/zq_class': ''
+        }
+      },
+      '/zk_class': {
+        // target: 'http://192.168.2.242:11009/', // 张坤-班牌管理
+        target: 'http://192.168.1.23:11009/',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/zk_class': ''
         }
       },
       '/zk_examplan': {
@@ -329,7 +337,7 @@ module.exports = {
         }
       },
       '/zk_oa': {
-        target: 'http://192.168.2.242:11014/', // 张坤-报修
+        target: 'http://192.168.1.23:11014/', // 张坤-报修
         changeOrigin: true,
         pathRewrite: {
           '^/zk_oa': ''
@@ -337,7 +345,8 @@ module.exports = {
       },
       '/lz_safe': {
         // target: 'http://192.168.1.46:8091/', // 吕卓-安防
-        target: 'http://192.168.2.242:8091/', // 吕卓-安防
+        target: 'http://192.168.1.76:8091/', // ljj-安防
+        // target: 'http://192.168.2.242:8091/', // 吕卓-安防
         changeOrigin: true,
         pathRewrite: {
           '^/lz_safe': ''

@@ -2,6 +2,7 @@
   <div class="page-layout qui-fx-ver">
     <search-form is-reset @search-form="searchForm" :search-label="task.assignSearchLabel">
       <div slot="left">
+        <a-button type="primary" icon="plus" @click="check">完成情况</a-button>
         <a-button type="primary" icon="plus" @click="add(0)">添加任务</a-button>
         <a-button icon="delete" class="del-btn mar-l10" @click="dels">批量删除</a-button>
       </div>
@@ -43,6 +44,7 @@
       </template>
     </table-list>
     <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
+    <task-status ref="taskStatus"></task-status>
     <!-- <a-modal
       :visible="visible"
       :footer="null"
@@ -66,6 +68,7 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
+import TaskStatus from '../../component/TaskStatus'
 import SearchForm from '@c/SearchForm'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
@@ -76,7 +79,8 @@ export default {
   components: {
     TableList,
     PageNum,
-    SearchForm
+    SearchForm,
+    TaskStatus
   },
   data() {
     return {
@@ -107,6 +111,10 @@ export default {
   },
   methods: {
     ...mapActions('home', ['getSafeTask', 'delSafeTask', 'delSafeTasks']),
+    check() {
+      this.$refs.taskStatus.showDetail()
+      this.$refs.taskStatus.visible = true
+    },
     async showList() {
       this.searchList.schoolCode = this.userInfo.schoolCode
       this.searchList = Object.assign(this.searchList, this.pageList)
