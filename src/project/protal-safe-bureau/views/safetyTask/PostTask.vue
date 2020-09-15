@@ -28,6 +28,7 @@
             'checkJobList',
             { initialValue: appForm.leaderName, rules: [{ required: true, message: '请选择负责人' }] },
           ]"
+          @blur="handleChange"
           placeholder="请选择您要限定的职务，可多选"
         >
           <a-select-option v-for="list in jobList" :key="`${list.jobName}`">
@@ -64,77 +65,12 @@ export default {
     ChooseSchool
   },
   data() {
-    this.groupList = []
+    this.peopleList = []
     return {
       taskId: this.$route.query.id,
       form: this.$form.createForm(this),
       SchoolAll: [],
       jobList: [
-        // {
-        //   'id': 100,
-        //   'jobCode': 'J14x1qwxj8izeq',
-        //   'jobName': '局领导',
-        //   'remark': '系统预设',
-        //   'createTime': 1599554672000,
-        //   'employeesNum': null,
-        //   'eduCode': 'QPJYJ',
-        //   'eduName': '全品教育局',
-        //   'userCodes': '',
-        //   'userNames': '',
-        //   'defaultState': '0'
-        // },
-        // {
-        //   'id': 101,
-        //   'jobCode': 'J14x1qwxj8izer',
-        //   'jobName': '安保科科长',
-        //   'remark': '系统预设',
-        //   'createTime': 1599554672000,
-        //   'employeesNum': null,
-        //   'eduCode': 'QPJYJ',
-        //   'eduName': '全品教育局',
-        //   'userCodes': '',
-        //   'userNames': '',
-        //   'defaultState': '0'
-        // },
-        // {
-        //   'id': 102,
-        //   'jobCode': 'J14x1qwxj8izes',
-        //   'jobName': '安保科科长',
-        //   'remark': '系统预设',
-        //   'createTime': 1599554672000,
-        //   'employeesNum': null,
-        //   'eduCode': 'QPJYJ',
-        //   'eduName': '全品教育局',
-        //   'userCodes': '',
-        //   'userNames': '',
-        //   'defaultState': '0'
-        // },
-        // {
-        //   'id': 103,
-        //   'jobCode': 'J14x1qwxj8izet',
-        //   'jobName': '督察员',
-        //   'remark': '系统预设',
-        //   'createTime': 1599554672000,
-        //   'employeesNum': null,
-        //   'eduCode': 'QPJYJ',
-        //   'eduName': '全品教育局',
-        //   'userCodes': 'U14omcc5vig05s,',
-        //   'userNames': '刘老师,',
-        //   'defaultState': '0'
-        // },
-        // {
-        //   'id': 104,
-        //   'jobCode': 'J14x1qwxj8izeu',
-        //   'jobName': '局职员',
-        //   'remark': '系统预设',
-        //   'createTime': 1599554672000,
-        //   'employeesNum': null,
-        //   'eduCode': 'QPJYJ',
-        //   'eduName': '全品教育局',
-        //   'userCodes': '',
-        //   'userNames': '',
-        //   'defaultState': '0'
-        // }
       ], // 职务集合
       formItemLayout: {
         labelCol: { span: 6 },
@@ -150,8 +86,7 @@ export default {
       appForm: {
         supervisionTeam: '',
         specificIndicators: ''
-      },
-      count: 0
+      }
     }
   },
   computed: {
@@ -162,7 +97,7 @@ export default {
   async mounted() {
   },
   methods: {
-    ...mapActions('home', ['taskPublish', 'getQueryjob']),
+    ...mapActions('home', ['taskPublish', 'getQueryjob', 'schoolorJobSearchPeople']),
     // 选择学校，负责人
     scoloolChange(value) {
       this.schoolTag = true
@@ -183,40 +118,43 @@ export default {
       const res = await this.getQueryjob(req)
       this.jobList = res.data
     },
-    // 根据选中的学校
+    // 选中职务
+    handleChange(values) {
+      this.searchPeople(values, this.SchoolAll)
+    },
+    // 根据选中的学校职务找人
+    async searchPeople(JobNames, SchoolCodes) {
+      const req = {
+        schoolCodes: SchoolCodes.map(v => v.schoolCode).join(','),
+        jobNames: JobNames.join(',')
+      }
+      const res = await this.schoolorJobSearchPeople(req)
+      this.peopleList = res.data
+    },
     submitOk(e) {
       e.preventDefault()
       this.form.validateFields((error, values) => {
         this.isLoad = false
-        console.log(values)
-        this.searchPeople(values.checkJobList, this.SchoolAll)
+        // console.log(peopleLists)
         if (!error) {
-          // const req1 = {
-          //   publisherCode: this.userInfo.userCode,
-          //   publisherName: this.userInfo.userName,
-          //   taskId: this.taskId,
-          //   users: [
-          //     {
-          //       orgCode: '',
-          //       orgName: '',
-          //       schoolCode: '',
-          //       userCode: '',
-          //       userName: ''
-          //     }
-          //   ]
-          // }
-          // this.isLoad = true
-          // this.taskPublish(req)
-          //   .then(res => {
-          //     // console.log(res)
-          //     this.$message.success('操作成功')
-          //     this.$tools.goNext(() => {
-          //       this.$router.go(-1)
-          //     })
-          //   })
-          //   .catch(res => {
-          //     this.isLoad = false
-          //   })
+          const req = {
+            publisherCode: this.userInfo.userCode,
+            publisherName: this.userInfo.userName,
+            taskId: this.taskId,
+            users: this.peopleList
+          }
+          this.isLoad = true
+          this.taskPublish(req)
+            .then(res => {
+              console.log(res)
+              this.$message.success('操作成功')
+              this.$tools.goNext(() => {
+                this.$router.go(-1)
+              })
+            })
+            .catch(res => {
+              this.isLoad = false
+            })
         }
       })
     },

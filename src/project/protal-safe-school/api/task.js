@@ -15,6 +15,7 @@ const taskApi = {
   addSchoolTask: '/safeTaskTemplate/school/saveData#post', // 校端新增任务
   getTaskDetail: '/safeTaskTemplate/info#getUrl', // 查看任务详情
   modifySchoolTask: '/safeTaskTemplate/modify#post', // 修改任务
+  reportTaskDetail: '/userAnswers/report/result#get', // 上报结果查看
 
 }
 for (const val in taskApi) {
