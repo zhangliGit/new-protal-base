@@ -8,7 +8,7 @@ export const dangerFindSearchLabel = [
     list: [
       {
         key: '',
-        val: '隐患来源'
+        val: '全部'
       },
       {
         key: '1',
@@ -274,19 +274,19 @@ export const issuanceSearchLabel = [
         val: '全部'
       },
       {
-        key: '1',
+        key: '0',
         val: '未发布'
       },
       {
-        key: '2',
+        key: '1',
         val: '未开始'
       },
       {
-        key: '3',
+        key: '2',
         val: '进行中'
       },
       {
-        key: '4',
+        key: '3',
         val: '已处理'
       }
     ]

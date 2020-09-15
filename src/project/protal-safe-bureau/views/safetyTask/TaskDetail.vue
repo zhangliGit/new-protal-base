@@ -37,49 +37,15 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
-import moment from 'moment'
 import Modal from '../../component/Modal'
-import NoData from '@c/NoData'
-const formData = [
-  {
-    value: 'description',
-    initValue: '',
-    type: 'input',
-    label: '隐患描述',
-    placeholder: '请输入隐患描述'
-  },
-  {
-    value: 'address',
-    initValue: '',
-    type: 'input',
-    label: '隐患位置',
-    placeholder: '请输入隐患位置'
-  },
-  {
-    type: 'upload',
-    label: '隐患图片上传'
-  },
-  {
-    value: 'leaderName',
-    initValue: [],
-    list: [],
-    type: 'select',
-    label: '负责人',
-    placeholder: '请选择负责人'
-  }
-]
 export default {
-  name: 'SpecialDetail',
+  name: 'TaskDetail',
   components: {
-    Modal,
-    NoData
+    Modal
   },
   data() {
     this.id = ''
     return {
-      teamLeaderCode: 'QPJYJ', // 小组长Code
-      supervisionCode: 'QPJYJ', // 小组长Code
-      formData,
       detailInfo: [],
       processes: [],
       activeKey: ['1'],
@@ -105,61 +71,13 @@ export default {
   },
   methods: {
     ...mapActions('home', ['specialTaskDetail', 'updateInspect', 'modifySpecial']),
-    moment,
     async showDetail(id) {
       this.id = id
       const res = await this.specialTaskDetail(id)
       console.log(res)
-      this.detailInfo = res.data
-      this.detailInfo.itemList = this.detailInfo.itemList.map(el => {
-        return {
-          ...el,
-          standardList: el.standardList.map(item => {
-            return {
-              ...item,
-              examineResult: item.examineResult !== '0',
-              inspectionResult: item.inspectionResult !== '0',
-              selfResult: item.selfResult !== '0'
-            }
-          })
-        }
-      })
     },
     close() {
       this.$refs.modal.close()
-    },
-    // 提交
-    submitOk(type) {
-      this.isLoad = true
-      const resultList = []
-      this.detailInfo.itemList.map(el => {
-        el.standardList.map(item => {
-          if (this.type === '1') {
-            resultList.push({ id: item.id, result: item.selfResult ? '1' : '0' })
-          } else {
-            resultList.push({ id: item.id, result: item.examineResult ? '1' : '0' })
-          }
-        })
-      })
-      const req = {
-        resultList: resultList,
-        submitType: type,
-        taskId: this.detailInfo.taskId,
-        userCode: this.userInfo.schoolCode,
-        userName: this.userInfo.schoolName
-      }
-      this.modifySpecial(req)
-        .then(res => {
-          this.isLoad = false
-          this.$message.success('操作成功')
-          this.$tools.goNext(() => {
-            this.$refs.modal.visible = false
-            this.$parent.showList()
-          })
-        })
-        .catch(res => {
-          this.isLoad = false
-        })
     }
   }
 }

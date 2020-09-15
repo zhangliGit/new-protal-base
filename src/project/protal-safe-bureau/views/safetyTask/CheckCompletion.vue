@@ -1,5 +1,5 @@
 <template>
-  <div class="add-find page-layout bg-fff qui-fx-ver">
+  <div class="check-completion page-layout bg-fff qui-fx-ver">
     <div class="card" v-for="(item,index) in dataList" :key="index">
       <div class="title-tab">
         <span class="title-tab-pane on u-type-primary">{{ item.name }}</span>
@@ -7,7 +7,7 @@
       <div class="cont u-fx-wp u-mar-t10">
         <div
           class="list_box u-fx-ac-jc u-mar-10"
-          :class="v.state==4||v.state==3?'green':'red'"
+          :class="v.state==='4'||v.state==='3'?'green':'red'"
           v-for="(v,index2) in item.schoolAndStateList"
           :key="index2"
           @click="reviewDetails(v.taskId)">
@@ -31,14 +31,15 @@ export default {
     TaskDetail
   },
   data() {
-    this.code = this.$route.query.code || ''
+    this.state = this.$route.query.state
+    this.taskCode = this.$route.query.taskCode
     return {
       dataList: [
         { name: '2',
           schoolAndStateList:
           [
-            { name: '云校园', state: 3 },
-            { name: '云校园', state: 4 }
+            { name: '云校园', state: '3' },
+            { name: '云校园', state: '4' }
           ]
         }
       ]
@@ -48,18 +49,24 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
-    // this.showList()
+    this.showList()
   },
   methods: {
-    ...mapActions('home', ['getStreetStatus']),
+    ...mapActions('home', ['TaskCompletedStatus']),
     async showList() {
-      const res = await this.getStreetStatus(this.code)
+      const req = {
+        schoolCode: this.userInfo.schoolCode,
+        status: this.state,
+        taskTemplateCode: this.taskCode
+      }
+      console.log(this.TaskCompletedStatus)
+      const res = await this.TaskCompletedStatus(req)
       console.log(res)
-      this.dataList = res.data
+      // this.dataList = res.data
     },
-    reviewDetails(id) {
+    //
+    reviewDetails() {
       this.$refs.TaskDetail.$refs.modal.visible = true
-      // this.$refs.TaskDetail.showDetail(id)
     },
     cancel() {
       this.$router.go(-1)
@@ -68,7 +75,7 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-.add-find {
+.check-completion {
   padding: 20px;
   .card{
     .title-tab{
