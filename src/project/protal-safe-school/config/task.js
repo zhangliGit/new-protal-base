@@ -1,11 +1,11 @@
-import {
-  RouteView
-} from '../layouts'
+import { RouteView } from '../layouts'
 const AssignTask = resolve => require(['../views/safeTask/AssignTask.vue'], resolve)
 const MyTask = resolve => require(['../views/safeTask/MyTask.vue'], resolve)
 const AddTask = resolve => require(['../views/safeTask/AddTask.vue'], resolve)
 const FillTask = resolve => require(['../views/safeTask/FillTask.vue'], resolve)
-
+const TaskDetail = resolve => require(['../views/safeTask/TaskDetail.vue'], resolve)
+const TaskComplete = resolve => require(['../views/safeTask/TaskComplete.vue'], resolve)
+const TaskStatistics = resolve => require(['../views/safeTask/TaskStatistics.vue'], resolve)
 const task = {
   path: '/task',
   name: 'task',
@@ -13,7 +13,17 @@ const task = {
   meta: {
     title: '安全任务'
   },
-  children: [{
+  children: [
+    {
+      path: '/assignTask/taskDetail',
+      name: 'taskDetail',
+      component: TaskDetail,
+      meta: {
+        title: '预览',
+        isHide: true
+      }
+    },
+    {
       path: '/myTask',
       name: 'myTask',
       component: MyTask,
@@ -44,6 +54,24 @@ const task = {
       component: AddTask,
       meta: {
         title: '下发任务',
+        isHide: true
+      }
+    },
+    {
+      path: '/assignTask/taskComplete',
+      name: 'taskComplete',
+      component: TaskComplete,
+      meta: {
+        title: '任务完成情况',
+        isHide: true
+      }
+    },
+    {
+      path: '/assignTask/taskStatistics',
+      name: 'taskStatistics',
+      component: TaskStatistics,
+      meta: {
+        title: '查看统计',
         isHide: true
       }
     }

@@ -15,7 +15,7 @@
               <div class="qui-fx-f1 qui-fx-ver qui-fx-jsb right-img" :style="{'backgroundImage': 'url('+item.img+')'}"></div>
               <div class="notice-title qui-fx-jc qui-je" style="background: #fff">{{ item.title }}</div>
               <div v-if="item.img && delTag">
-                <a-button icon="delete" class="del-btn" @click="handleDel(i, item.key)"></a-button>
+                <a-button icon="delete" class="del-btn" @click="handleDel(i, item.title)"></a-button>
               </div>
             </div>
           </draggable>
@@ -26,14 +26,14 @@
               <a-input
                 placeholder="请输入模板名称"
                 type="text"
-                v-decorator="['name',{rules: [{max: 10,required: true,message: '请输入模板名称'}]}]"
+                v-decorator="['name',{initialValue: formData.name, rules: [{max: 10,required: true,message: '请输入模板名称,不超过10个字符'}]}]"
               />
             </a-form-item>
             <a-form-item :label-col="{ span: 2 }" :wrapper-col="{ span: 16 }" label="模板简介">
               <a-input
                 placeholder="请输入模板简介"
                 type="text"
-                v-decorator="['remark',{rules: [{max: 10,required: true,message: '请输入模板简介'}]}]"
+                v-decorator="['remark',{initialValue: formData.remark, rules: [{max: 30,required: true,message: '请输入模板简介,不超过30个字符'}]}]"
               />
             </a-form-item>
             <a-form-item :wrapper-col="{ span: 12, offset: 4 }">
@@ -93,6 +93,10 @@ export default {
   data () {
     return {
       form: this.$form.createForm(this),
+      formData: {
+        name: '',
+        remark: ''
+      },
       gridImg,
       scrollH: 0,
       appForm: {},
@@ -192,11 +196,50 @@ export default {
   mounted() {
     this.showList()
     this.scrollH = document.documentElement.offsetHeight
+    this.id = this.$route.query.id
+    this.type = this.$route.query.type
+    if (this.type === '1') {
+      this._getTemplateDetail()
+    }
   },
   methods: {
     ...mapActions('home', [
-      'addWelcome'
+      'addTemplate', 'editTemplate', 'getTemplateDetail'
     ]),
+    async _getTemplateDetail() {
+      const res = await this.getTemplateDetail(this.id)
+      console.log(res.data)
+      this.formData = {
+        name: res.data.template.name,
+        remark: res.data.template.description
+      }
+      this.isDefault = res.data.template.isDefault
+      this.setList = res.data.templateDetailList.map(el => {
+        return {
+          name: el.name,
+          width: parseInt(el.width),
+          height: parseInt(el.height),
+          position: parseInt(el.position)
+        }
+      })
+      this.list = res.data.templateDetailList.map(el => {
+        return {
+          x: el.width === '1' ? 200 : 420,
+          y: el.height === '1' ? 200 : 420,
+          title: el.name,
+          img: this.imgList.filter(item => {
+            return item.title === el.name
+          })[0].img
+        }
+      })
+      this.imgList.forEach((el, index) => {
+        if (res.data.templateDetailList.filter(item => {
+          return item.name === el.title
+        }).length > 0) {
+          this.$set(this.imgList[index], 'flag', true)
+        }
+      })
+    },
     transform(type, val) {
       if (type === 'size') {
         const data = {
@@ -276,21 +319,24 @@ export default {
       return true
     },
     allowMove(ev) {
-      console.log(ev.draggedContext)
+      console.log(this.setList)
       if (ev.draggedContext.futureIndex < this.setList.length) {
         return false
       }
-      if (this.setList.length > 0 && this.setList[this.setList.length - 1].position + 1 > 12) {
-        return false
-      }
       let num = 0
-      const position = this.setList.length === 0 ? 1 : this.setList[this.setList.length - 1].position * this.setList[this.setList.length - 1].width + 1
       this.setList.forEach(el => {
         num += (el.width * el.height)
       })
       console.log(num)
-      console.log(position * this.transform('size', ev.draggedContext.element.y))
-      if (num > 0 && num < (position - 1) * this.transform('size', ev.draggedContext.element.y)) {
+      if (num >= 12) {
+        return false
+      }
+      const position = this.setList.length === 0 ? 1 : parseInt(this.setList[this.setList.length - 1].position) + parseInt(this.setList[this.setList.length - 1].width)
+      console.log(position)
+      if (position <= 4 && this.setList.some(el => { return el.height === 1 }) && this.transform('size', ev.draggedContext.element.y) > 1) {
+        return false
+      }
+      if (position > 4 && num % 2 !== 0 && this.transform('size', ev.draggedContext.element.y) > 1) {
         return false
       }
       let allowTag = true
@@ -323,10 +369,10 @@ export default {
     allowMove22(ev) {
       return false
     },
-    handleDel (index, key) {
+    handleDel (index, title) {
       this.list.splice(index, 1)
       const q = this.imgList.find((value, index, arr) => {
-        return value.key === key
+        return value.title === title
       })
       const i = this.setList.findIndex((value, index, arr) => {
         return value.name === q.title
@@ -356,13 +402,37 @@ export default {
           this.delTag = false
           this.$nextTick(() => {
             html2canvas(this.$refs.imageWrapper, {
-              scale: 0.8,
+              scale: 0.6,
               width: 900,
               height: 660
             }).then(canvas => {
               const dataURL = canvas.toDataURL('image/png')
               this.imgUrl = dataURL
               console.log(this.imgUrl)
+              const req = {
+                schoolCode: this.userInfo.schoolCode,
+                description: values.remark,
+                name: values.name,
+                photoUrl: this.imgUrl.split(',')[1],
+                templateDetailList: this.setList,
+                isDefault: this.isDefault
+              }
+              if (this.type === '0') {
+                this.addTemplate(req).then(() => {
+                  this.$message.success('添加成功')
+                  this.$tools.goNext(() => {
+                    this.$router.push({ path: '/templateManage' })
+                  })
+                })
+              } else if (this.type === '1') {
+                req.id = this.id
+                this.editTemplate(req).then(() => {
+                  this.$message.success('编辑成功')
+                  this.$tools.goNext(() => {
+                    this.$router.push({ path: '/templateManage' })
+                  })
+                })
+              }
             })
             this.delTag = true
           })

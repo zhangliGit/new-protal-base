@@ -1,6 +1,4 @@
-import {
-  RouteView
-} from '../layouts'
+import { RouteView } from '../layouts'
 const InspectArea = resolve => require(['../views/safetyInspect/InspectArea.vue'], resolve)
 const InspectDaily = resolve => require(['../views/safetyInspect/InspectDaily.vue'], resolve)
 const AreaAdd = resolve => require(['../views/safetyInspect/AreaAdd.vue'], resolve)
@@ -19,7 +17,8 @@ const safetyInspect = {
   meta: {
     title: '安全巡检'
   },
-  children: [{
+  children: [
+    {
       path: '/inspectArea/areaAdd',
       name: 'areaAdd',
       component: AreaAdd,

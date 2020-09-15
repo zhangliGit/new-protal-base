@@ -1,6 +1,7 @@
 import $tools from '@u/tools'
 const dutyColumns = {
-  columns: [{
+  columns: [
+    {
       title: '序号',
       scopedSlots: {
         customRender: 'index'
@@ -64,7 +65,8 @@ const dutyColumns = {
       }
     }
   ],
-  searchLabel: [{
+  searchLabel: [
+    {
       value: 'rangeTime',
       type: 'rangeTime',
       label: '上报时间'
@@ -73,7 +75,8 @@ const dutyColumns = {
       value: 'name',
       initValue: '',
       type: 'selectInput',
-      selectType: [{
+      selectType: [
+        {
           key: 'schoolName',
           val: '上报人'
         },
@@ -89,7 +92,8 @@ const dutyColumns = {
       placeholder: '请输入'
     },
     {
-      list: [{
+      list: [
+        {
           key: '',
           val: '全部'
         },
@@ -107,7 +111,8 @@ const dutyColumns = {
       label: '状态'
     }
   ],
-  inspectColumns: [{
+  inspectColumns: [
+    {
       title: '巡查地点名称',
       dataIndex: 'patrolPointName',
       width: '30'
