@@ -1,7 +1,10 @@
 <template>
-  <a-modal width="800px" :title="title" v-model="visible" :footer="null" @cancel="visible=false">
-    <div class="qui-fx-ver">
+  <div class="page-layout qui-fx-ver">
+    <div class="content pos-box">
       <div class="top bg-fff u-padd-10 u-padd-l20">
+        <div class="fill-top u-mar-b20">
+          <div class="fill-head task">任务内容</div>
+        </div>
         <div class="u-tx-c">{{ detailInfo.taskName }}</div>
         <div class="qui-fx-jc u-mar-t10">
           <div class="qui-fx-ver">
@@ -13,8 +16,21 @@
             <div class="u-mar-t10">任务结束时间：{{ detailInfo.endTime | gmtToDate }}</div>
           </div>
         </div>
+        <div class="u-mar-t20">
+          <div class="upload u-mar-l20 u-mar-r20 u-mar-b10">
+            <div class="upload-title">附件上传</div>
+          </div>
+          <div class="u-mar-l20">
+            <img class="u-mar-r10" :src="img" alt />
+            {{ detailInfo.docName }}
+            <span class="u-type-primary">下载</span>
+          </div>
+        </div>
       </div>
       <div class="u-mar-t10 bg-fff u-padd-10 u-padd-l20">
+        <div class="fill-top">
+          <div class="fill-head report">要求上报内容</div>
+        </div>
         <div class="qui-fx">
           <no-data
             msg="暂无题目~"
@@ -91,107 +107,99 @@
             </div>
           </div>
         </div>
-        <div class="detail-deal">
-          <div class="detail-title">
-            <div class="title">处理流程</div>
-          </div>
-          <a-timeline class="time-line">
-            <a-timeline-item v-for="(item,index) in processes" :key="index">
-              <div class="qui-fx">
-                <div class="time-left">{{ item.content }}</div>
-                <div class="qui-fx-f1">{{ item.createTime | gmtToDate }}</div>
-              </div>
-            </a-timeline-item>
-          </a-timeline>
-        </div>
       </div>
     </div>
-  </a-modal>
+  </div>
 </template>
 
 <script>
 import { mapState, mapActions } from 'vuex'
 import NoData from '@c/NoData'
 import moment from 'moment'
+import img from '../../assets/img/wenjian.png'
 export default {
-  name: 'TaskStatus',
+  name: 'TaskDetail',
   components: {
     NoData
   },
   data() {
     return {
+      img,
       radioList: [],
       checkList: [],
       fillList: [],
       fileList: [],
+      form: this.$form.createForm(this),
+      times: [],
       taskCode: '',
-      params: {},
+      url: '',
       docUrl: '',
       show: true,
       flag: false,
       docName: '',
-      detailInfo: {},
-      visible: false,
-      processes: {},
-      title: ''
+      detailInfo: {}
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
+  mounted() {
+    this.taskCode = this.$route.query.id
+    this.showDetail()
+  },
   methods: {
     ...mapActions('home', ['reportTaskDetail']),
     moment,
     // 获取详情
-    async showDetail(taskCode) {
+    async showDetail() {
       const req = {
         schoolCode: this.userInfo.schoolCode,
-        // taskCode: taskCode
+        // taskCode: this.taskCode
         taskCode: 'S9x0weqfc2oe9'
       }
       const res = await this.reportTaskDetail(req)
       this.detailInfo = res.data
-      let questions = []
-      this.radioList = []
-      this.checkList = []
-      this.fillList = []
-      this.fileList = []
-      questions = res.data.outUserAnswersDtoList.map((el, index) => {
+      const questions = res.data.outUserAnswersDtoList.map((el, index) => {
         return {
           ...el,
           key: index,
           pointList: el.content
             ? el.content.map((item, i) => {
-                return {
-                  key: i,
-                  content: item
-                }
-              })
+              return {
+                key: i,
+                content: item
+              }
+            })
             : undefined
         }
       })
       questions.map((el) => {
         if (el.questionType === '1') {
           this.radioList.push(el)
+          this.radioCount = this.radioList.length
         } else if (el.questionType === '2') {
           this.checkList.push(el)
+          this.checkCount = this.checkList.length
         } else if (el.questionType === '3') {
           this.fillList.push(el)
+          this.fillCount = this.fillList.length
         } else {
           this.fileList.push(el)
+          this.fileCount = this.fileList.length
         }
       })
       this.docName = 'res.data.docName'
       this.show = !res.data.docUrl
       this.flag = !res.data.docUrl
-    }
+    },
+    handleChange() {}
   }
 }
 </script>
 <style lang="less" scoped>
 .content {
-  // height: calc(100% - 10px);
-  // overflow-y: scroll;
+  height: calc(100% - 10px);
+  overflow-y: scroll;
   .fill-top {
     height: 30px;
     line-height: 30px;
@@ -218,5 +226,26 @@ export default {
 }
 .subject {
   background-color: #fafafa;
+}
+.upload {
+  height: 25px;
+  border-bottom: 1px solid #4d4cac;
+  .upload-title {
+    margin-left: 15px;
+    position: relative;
+    &::before {
+      content: '';
+      position: absolute;
+      height: 18px;
+      width: 5px;
+      background-color: #4d4cac;
+      left: -15px;
+      top: 3px;
+    }
+  }
+}
+img {
+  width: 30px;
+  height: 30px;
 }
 </style>

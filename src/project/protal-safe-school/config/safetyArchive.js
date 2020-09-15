@@ -5,7 +5,6 @@ const InstrumentArchive = resolve => require(['../views/safetyArchive/Instrument
 const FireAdd = resolve => require(['../views/safetyArchive/FireAdd.vue'], resolve)
 const SchoolAdd = resolve => require(['../views/safetyArchive/SchoolAdd.vue'], resolve)
 const InstrumentAdd = resolve => require(['../views/safetyArchive/InstrumentAdd.vue'], resolve)
-
 const safetyArchive = {
   path: '/archive',
   name: 'archive',

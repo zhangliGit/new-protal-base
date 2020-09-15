@@ -1,6 +1,7 @@
 import $tools from '@u/tools'
 const task = {
-  taskColumns: [{
+  taskColumns: [
+    {
       title: '序号',
       scopedSlots: {
         customRender: 'index'
@@ -16,7 +17,7 @@ const task = {
       title: '任务类型',
       dataIndex: 'taskType',
       width: '10%',
-      customRender: (text) => {
+      customRender: text => {
         if (text === '0') {
           return '一次性计划'
         } else if (text === '1') {
@@ -30,7 +31,7 @@ const task = {
       title: '开始时间',
       dataIndex: 'beginTime',
       width: '15%',
-      customRender: (text) => {
+      customRender: text => {
         return $tools.getDate(text)
       }
     },
@@ -38,7 +39,7 @@ const task = {
       title: '结束时间',
       dataIndex: 'endTime',
       width: '15%',
-      customRender: (text) => {
+      customRender: text => {
         return $tools.getDate(text)
       }
     },
@@ -51,7 +52,7 @@ const task = {
       title: '提交时间',
       dataIndex: 'completeTime',
       width: '15%',
-      customRender: (text) => {
+      customRender: text => {
         return $tools.getDate(text)
       }
     },
@@ -59,7 +60,7 @@ const task = {
       title: '状态',
       dataIndex: 'state',
       width: '10%',
-      customRender: (text) => {
+      customRender: text => {
         if (text === '1') {
           return '静态二维码'
         } else {
@@ -75,13 +76,16 @@ const task = {
       }
     }
   ],
-  taskSearchLabel: [{
+  taskSearchLabel: [
+    {
       value: 'userName',
       type: 'input',
       label: '任务名称',
       placeholder: '请输入'
-    }, {
-      list: [{
+    },
+    {
+      list: [
+        {
           key: '',
           val: '全部'
         },
@@ -111,7 +115,8 @@ const task = {
       label: '状态'
     },
     {
-      list: [{
+      list: [
+        {
           key: '',
           val: '全部'
         },
@@ -129,7 +134,8 @@ const task = {
       label: '任务来源'
     }
   ],
-  assignColumns: [{
+  assignColumns: [
+    {
       title: '序号',
       scopedSlots: {
         customRender: 'index'
@@ -145,7 +151,7 @@ const task = {
       title: '任务类型',
       dataIndex: 'taskType',
       width: '10%',
-      customRender: (text) => {
+      customRender: text => {
         if (text === '0') {
           return '一次性计划'
         } else if (text === '1') {
@@ -159,7 +165,7 @@ const task = {
       title: '开始时间',
       dataIndex: 'beginTime',
       width: '15%',
-      customRender: (text) => {
+      customRender: text => {
         return $tools.getDate(text)
       }
     },
@@ -167,7 +173,7 @@ const task = {
       title: '结束时间',
       dataIndex: 'endTime',
       width: '15%',
-      customRender: (text) => {
+      customRender: text => {
         return $tools.getDate(text)
       }
     },
@@ -180,7 +186,7 @@ const task = {
       title: '发布时间',
       dataIndex: 'publishTime',
       width: '15%',
-      customRender: (text) => {
+      customRender: text => {
         return $tools.getDate(text)
       }
     },
@@ -188,7 +194,7 @@ const task = {
       title: '状态',
       dataIndex: 'state',
       width: '10%',
-      customRender: (text) => {
+      customRender: text => {
         if (text === '0') {
           return '未发布'
         } else if (text === '1') {
@@ -210,13 +216,16 @@ const task = {
       }
     }
   ],
-  assignSearchLabel: [{
+  assignSearchLabel: [
+    {
       value: 'userName',
       type: 'input',
       label: '任务名称',
       placeholder: '请输入'
-    }, {
-      list: [{
+    },
+    {
+      list: [
+        {
           key: '',
           val: '全部'
         },
@@ -238,7 +247,8 @@ const task = {
       label: '任务类型'
     },
     {
-      list: [{
+      list: [
+        {
           key: '',
           val: '全部'
         },

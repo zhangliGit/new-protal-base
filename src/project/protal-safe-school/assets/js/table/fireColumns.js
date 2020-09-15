@@ -114,7 +114,7 @@ const fireColumns = {
       title: '是否流畅',
       dataIndex: 'hasFluent',
       width: '15%',
-      customRender: (text) => {
+      customRender: text => {
         return text ? '是' : '否'
       }
     },
@@ -122,7 +122,7 @@ const fireColumns = {
       title: '有无消防门',
       dataIndex: 'hasFireDoor',
       width: '15%',
-      customRender: (text) => {
+      customRender: text => {
         return text ? '有' : '无'
       }
     },
@@ -130,7 +130,7 @@ const fireColumns = {
       title: '发布时间',
       dataIndex: 'createTime',
       width: '20%',
-      customRender: (text) => {
+      customRender: text => {
         return Tools.getDate(text).substring(0, 10)
       }
     },

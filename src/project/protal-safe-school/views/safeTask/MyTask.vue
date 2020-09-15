@@ -3,35 +3,54 @@
     <search-form is-reset @search-form="searchForm" :search-label="task.taskSearchLabel"></search-form>
     <table-list :page-list="pageList" :columns="task.taskColumns" :table-list="taskList">
       <template v-slot:actions="action">
-        <a-tooltip placement="topLeft" title="预览">
+        <a-tooltip
+          placement="topLeft"
+          title="预览"
+          v-if="action.record.state === '2' || action.record.state === '3' || action.record.state === '4'"
+        >
           <a-button
             size="small"
             class="detail-action-btn"
             icon="ellipsis"
-            @click="add(action.record)"
+            @click="add(0, action.record)"
           ></a-button>
         </a-tooltip>
-        <a-tooltip placement="topLeft" title="填报">
-          <a-button size="small" class="add-action-btn" icon="plus" @click="add(action.record)"></a-button>
+        <a-tooltip
+          placement="topLeft"
+          title="填报"
+          v-if="action.record.state === '1' && new Date().getTime() <= action.record.endTime"
+        >
+          <a-button size="small" class="add-action-btn" icon="plus" @click="add(1, action.record)"></a-button>
         </a-tooltip>
-        <a-tooltip placement="topLeft" title="修改">
-          <a-button size="small" class="edit-action-btn" icon="form" @click="add(action.record)"></a-button>
+        <a-tooltip placement="topLeft" title="修改" v-if="action.record.state === '2'">
+          <a-button size="small" class="edit-action-btn" icon="form" @click="add(2, action.record)"></a-button>
         </a-tooltip>
-        <a-popconfirm placement="left" okText="确定" cancelText="取消">
+        <a-popconfirm
+          placement="left"
+          okText="确定"
+          cancelText="取消"
+          v-if="action.record.state === '2' || action.record.state === '5'"
+        >
           <template slot="title">提交之后不允许再次编辑内容，确定提交么？</template>
           <a-tooltip placement="topLeft" title="提交">
             <a-button size="small" class="play-action-btn" icon="play-circle" @click="submit"></a-button>
           </a-tooltip>
         </a-popconfirm>
-        <a-tooltip placement="topLeft" title="补填">
-          <a-button size="small" class="copy-action-btn" icon="copy" @click="add(action.record)"></a-button>
+        <a-tooltip
+          placement="topLeft"
+          title="补填"
+          v-if="action.record.state === '1' && new Date().getTime() >action.record.endTime"
+        >
+          <a-button size="small" class="copy-action-btn" icon="copy" @click="add(3, action.record)"></a-button>
         </a-tooltip>
-        <a-tooltip placement="topLeft" title="重报">
-          <a-button size="small" class="export-all-btn" icon="export" @click="add(action.record)"></a-button>
+        <a-tooltip placement="topLeft" title="重报" v-if="action.record.state === '5'">
+          <a-button
+            size="small"
+            class="export-all-btn"
+            icon="export"
+            @click="add(4, action.record)"
+          ></a-button>
         </a-tooltip>
-      </template>
-      <template v-slot:other1="other1">
-        <img class="ewm" :src="img" alt />
       </template>
     </table-list>
     <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
@@ -61,7 +80,6 @@ import { mapState, mapActions } from 'vuex'
 import SearchForm from '@c/SearchForm'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
-import $tools from '@u/tools'
 import task from '../../assets/js/table/task'
 export default {
   name: 'MyTask',
@@ -83,7 +101,7 @@ export default {
         size: 20
       },
       searchList: {},
-      taskList: [{ id: '1' }],
+      taskList: [],
       form: this.$form.createForm(this),
       areaList: [],
       disabled: false,
@@ -112,11 +130,12 @@ export default {
       this.pageList.size = 20
       this.showList()
     },
-    add(record) {
+    add(type, record) {
       this.$router.push({
         path: '/myTask/fillTask',
         query: {
-          id: record ? record.id : ''
+          id: record ? record.id : '',
+          state: type
         }
       })
     },

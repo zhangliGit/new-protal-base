@@ -8,29 +8,19 @@
               <div class="fill-head task">任务内容</div>
             </div>
             <div>
-              <div class="title">{{detailInfo.taskName}}</div>
+              <div class="title">{{ detailInfo.taskName }}</div>
               <div class="qui-fx-jc u-mar-t10">
                 <div class="qui-fx-ver">
-                  <div>发布人：{{detailInfo.userName}}</div>
-                  <div>任务开始时间：{{detailInfo.beginTime | gmtToDate}}</div>
+                  <div>发布人：{{ detailInfo.userName }}</div>
+                  <div>任务开始时间：{{ detailInfo.beginTime | gmtToDate }}</div>
                 </div>
                 <div class="qui-fx-ver u-mar-l20">
-                  <div>发布时间：{{detailInfo.completeTime | gmtToDate}}</div>
-                  <div>任务结束时间：{{detailInfo.endTime | gmtToDate}}</div>
+                  <div>发布时间：{{ detailInfo.completeTime | gmtToDate }}</div>
+                  <div>任务结束时间：{{ detailInfo.endTime | gmtToDate }}</div>
                 </div>
               </div>
-              <div class="fill-describe u-mar-t10 u-padd-l10 u-padd-r10">
-                市城乡建设委员会欢迎大家积极举报涉黑涉恶问题线索：
-                1.在工程项目建设过程中，强揽土石方、劳务施工，垄断建筑机械设备租赁和建筑砂石料供应，强收“保护费”、敲诈勒索、恶意阻拦施工。
-                电话：0531-66605634；电子邮箱：sjwjgc@163.com；
-                邮寄地址：济南历下区龙鼎大道1号龙奥大厦F435室
-                2.在工程项目招投标过程中，以威胁、恐吓、暴力等手段，强迫他人接受限定条件或退出竞争，强迫中标人放弃中标或转包，交易过程寻衅滋事、恶意投诉。
-                电话：0531-68967002；电子邮箱：sjwzbtb7002@163.com；
-                邮寄地址：济南市站前街9号政务中心2号楼1002室
-                3.在工程款结算和农民工工资支付过程中，恶意拖欠、暴力讨薪、聚众滋事。
-                电话：0531-61378850；电子邮箱：qingqianban8869@163.com；
-              </div>
-              <div class="u-mar-t20">
+              <div class="fill-describe u-mar-t10 u-padd-l10 u-padd-r10">{{ detailInfo.reason }}</div>
+              <!-- <div class="u-mar-t20">
                 <div class="upload u-mar-l20 u-mar-r20 u-mar-b10">
                   <div class="upload-title">附件上传</div>
                 </div>
@@ -39,63 +29,94 @@
                     <a-icon type="upload" />文件上传
                   </a-button>
                 </a-upload>
-              </div>
+              </div>-->
             </div>
           </div>
           <div class="u-mar-t10 bg-fff u-padd-10 u-padd-l20">
             <div class="fill-top">
               <div class="fill-head report">要求上报内容</div>
             </div>
-            <div class="u-mar">
+            <div class="u-mar" v-if="radioList.length !== 0">
               <div>单选题</div>
               <div class="subject u-mar-t10 u-padd-l20 u-padd-t10 u-padd-b10">
-                <div class="qui-fx u-mar-t10" v-for="(list, i) in 2" :key="i">
+                <div class="qui-fx u-mar-t10" v-for="(list, i) in radioList" :key="i">
                   <div class="qui-fx-ver">题目是：</div>
                   <div class="qui-fx-ver u-mar-l20">
-                    <div>是否发现过黑恶势力行为？</div>
+                    <div>{{ list.title }}</div>
                     <div class="u-mar-t10">
-                      <a-radio-group>
-                        <a-radio :value="1">Option A</a-radio>
-                        <a-radio :value="2">Option B</a-radio>
+                      <a-radio-group v-model="list.answer" :disabled="state">
+                        <a-radio
+                          v-for="(element,index) in list.content"
+                          :value="element"
+                          :key="index"
+                        >{{ element }}</a-radio>
                       </a-radio-group>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="u-mar">
+            <div class="u-mar" v-if="checkList.length !== 0">
               <div>多选题</div>
               <div class="subject u-mar-t10 u-padd-l20 u-padd-t10 u-padd-b10">
-                <div class="qui-fx u-mar-t10" v-for="(list, i) in 2" :key="i">
+                <div class="qui-fx u-mar-t10" v-for="(list, i) in checkList" :key="i">
                   <div class="qui-fx-ver">题目是：</div>
                   <div class="qui-fx-ver u-mar-l20">
-                    <div>是否发现过黑恶势力行为？</div>
+                    <div>{{ list.title }}</div>
                     <div class="u-mar-t10">
-                      <a-checkbox-group>
-                        <a-checkbox :value="1">Option A</a-checkbox>
-                        <a-checkbox :value="2">Option B</a-checkbox>
+                      <a-checkbox-group v-model="list.answer" :disabled="state">
+                        <a-checkbox
+                          v-for="(element,index) in list.content"
+                          :value="element"
+                          :key="index"
+                        >{{ element }}</a-checkbox>
                       </a-checkbox-group>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="u-mar">
+            <div class="u-mar" v-if="fillList.length !== 0">
               <div>填空题</div>
               <div class="subject u-mar-t10 u-padd-l20 u-padd-t10 u-padd-b10">
-                <div class="qui-fx u-mar-t10" v-for="(list, i) in 2" :key="i">
+                <div class="qui-fx u-mar-t10" v-for="(list, i) in fillList" :key="i">
                   <div class="qui-fx-ver">题目是：</div>
-                  <div class="qui-fx u-mar-l20">
-                    <div>是否发现过黑恶势力行为？</div>
-                    <div class="qui-fx-f1">
-                      <a-input placeholder="Basic usage" />
+                  <div class="qui-fx-ver u-mar-l20">
+                    <div>{{ list.title }}</div>
+                    <div class="u-mar-t10">
+                      <a-input placeholder="请填写答案" v-model="list.answer" :disabled="state" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="u-mar" v-if="fileList.length !== 0">
+              <div>附件</div>
+              <div class="subject u-mar-t10 u-padd-l20 u-padd-t10 u-padd-b10">
+                <div class="qui-fx u-mar-t10" v-for="(list, i) in fileList" :key="i">
+                  <div class="qui-fx-ver">题目是：</div>
+                  <div class="qui-fx-ver u-mar-l20">
+                    <div>{{ list.title }}</div>
+                    <div class="u-mar-t10">
+                      <a-upload
+                        name="fileList"
+                        :multiple="false"
+                        :action="url"
+                        :data="params"
+                        :remove="handleRemove($event, i)"
+                        @change="handleChange($event, i)"
+                      >
+                        <a-button v-if="list.show && state">
+                          <a-icon type="upload" />上传附件
+                        </a-button>
+                      </a-upload>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div class="u-tx-c u-mar-t20">
+          <div class="u-tx-c u-mar-t20" v-if="!state">
             <a-button @click="cancel">取消</a-button>
             <a-button class="mar-l10" type="primary" @click="submitOk" :disabled="isLoad">保存</a-button>
           </div>
@@ -106,24 +127,36 @@
 </template>
 
 <script>
+import hostEnv from '@config/host-env'
 import { mapState, mapActions } from 'vuex'
-import img from '../../assets/img/choose.png'
-import $tools from '@u/tools'
+import UploadMulti from '@c/UploadMulti'
 export default {
-  name: 'AvoidingTime',
-  components: {},
+  name: 'FillTask',
+  components: {
+    UploadMulti
+  },
   data() {
     return {
-      img,
       params: {},
       isLoad: false,
-      detailInfo: {}
+      detailInfo: {},
+      radioList: [],
+      checkList: [],
+      fillList: [],
+      fileList: [],
+      url: '',
+      show: true,
+      state: false
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
+    this.url = `${hostEnv.zx_subject}/file/upload/doc`
+    this.params.schoolCode = this.userInfo.schoolCode
+    this.state = this.$route.query.state === '0'
+    console.log('aaa', this.state)
     this.detailId = this.$route.query.id
     if (this.detailId) {
       this.showDetail()
@@ -134,17 +167,57 @@ export default {
     async showDetail() {
       const res = await this.myTaskDetail({ id: this.detailId })
       this.detailInfo = res.data
+      const questions = res.data.userAnswersList.map((el, index) => {
+        return {
+          ...el,
+          key: index,
+          pointList: el.content
+            ? el.content.map((item, i) => {
+                return {
+                  key: i,
+                  content: item
+                }
+              })
+            : undefined
+        }
+      })
+      questions.map((el) => {
+        if (el.questionType === '1') {
+          this.radioList.push(el)
+        } else if (el.questionType === '2') {
+          this.checkList.push(el)
+        } else if (el.questionType === '3') {
+          this.fillList.push(el)
+        } else {
+          this.fileList.push({ ...el, show: true })
+        }
+      })
+      console.log('11', this.radioList)
+      console.log('22', this.checkList)
+      console.log('33', this.fillList)
+      console.log('44', this.fileList)
     },
-    handleChange(info) {
-      console.log('111', info)
-      // if (info.file.status !== 'uploading') {
-      //   console.log(info.file, info.fileList)
-      // }
-      // if (info.file.status === 'done') {
-      //   this.$message.success(`${info.file.name} file uploaded successfully`)
-      // } else if (info.file.status === 'error') {
-      //   this.$message.error(`${info.file.name} file upload failed.`)
-      // }
+    handleRemove(info, i) {
+      this.fileList[i].show = true
+    },
+    handleChange(info, i) {
+      if (info.file.status !== 'uploading' && info.file.status !== 'removed') {
+        if (info.file.response) {
+          this.$message.error(info.file.response.message)
+        }
+      }
+      if (info.file.status === 'done') {
+        if (info.file.response.code === 200) {
+          this.fileList[i].show = false
+          this.$message.success(`${info.file.name} 上传成功`)
+          this.docUrl = info.file.response.data[0]
+          this.docName = info.file.name
+        } else {
+          this.$message.error(info.file.response.message)
+        }
+      } else if (info.file.status === 'error') {
+        this.$message.error(`${info.file.name} 上传失败`)
+      }
     },
     cancel() {
       this.$router.go(-1)
