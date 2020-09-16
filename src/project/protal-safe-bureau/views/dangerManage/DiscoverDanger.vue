@@ -32,7 +32,7 @@
           <a-button size="small" class="user-action-btn" >{{ action.record.superviseUserName }}正在督办</a-button>
         </a-tooltip>
         <a-tooltip placement="topLeft" v-else @click="supervise(action.record.id)" title="督办">
-          <a-button size="small" class="user-action-btn" >{{ action.record.superviseUserName }}督办 {{ action.record.superviseState }}</a-button>
+          <a-button size="small" class="user-action-btn" >督办</a-button>
         </a-tooltip>
       </template>
     </table-list>
@@ -260,6 +260,7 @@ export default {
     async submit() {
       const req = {
         taskId: this.taskId,
+        superviseState: '0',
         userCode: this.chooseUserList[0].userCode || '',
         userName: this.chooseUserList[0].userName || ''
       }

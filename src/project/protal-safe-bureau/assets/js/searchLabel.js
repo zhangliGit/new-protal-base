@@ -251,15 +251,15 @@ export const issuanceSearchLabel = [
         val: '全部'
       },
       {
-        key: '1',
+        key: '0',
         val: '一次性计划'
       },
       {
-        key: '2',
+        key: '1',
         val: '周计划'
       },
       {
-        key: '3',
+        key: '2',
         val: '月计划'
       }
     ]
