@@ -6,6 +6,8 @@ const FillTask = resolve => require(['../views/safeTask/FillTask.vue'], resolve)
 const TaskDetail = resolve => require(['../views/safeTask/TaskDetail.vue'], resolve)
 const TaskComplete = resolve => require(['../views/safeTask/TaskComplete.vue'], resolve)
 const TaskStatistics = resolve => require(['../views/safeTask/TaskStatistics.vue'], resolve)
+const PostTask = resolve => require(['../views/safeTask/PostTask.vue'], resolve)
+const TaskPreview = resolve => require(['../views/safeTask/TaskPreview.vue'], resolve)
 const task = {
   path: '/task',
   name: 'task',
@@ -29,6 +31,24 @@ const task = {
       component: MyTask,
       meta: {
         title: '我的任务'
+      }
+    },
+    {
+      path: '/assignTask/postTask',
+      name: 'postTask',
+      component: PostTask,
+      meta: {
+        title: '发布任务',
+        isHide: true
+      }
+    },
+    {
+      path: '/myTask/taskPreview',
+      name: 'taskPreview',
+      component: TaskPreview,
+      meta: {
+        title: '任务预览',
+        isHide: true
       }
     },
     {

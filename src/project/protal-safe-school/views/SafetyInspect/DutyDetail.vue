@@ -7,17 +7,17 @@
             v-decorator="['patrolStatus', {initialValue: detailInfo.patrolStatus }]"
             disabled
           >
-            <a-radio :value="list.id" v-for="(list, ind) in list" :key="ind">{{ list.val }}</a-radio>
+            <a-radio :value="list.id" v-for="(item, ind) in list" :key="ind">{{ list.val }}</a-radio>
           </a-radio-group>
         </a-form-item>
         <a-form-item
           v-bind="formItemLayout"
           :label="list.label"
-          v-for="(list, index) in formData"
+          v-for="(item, index) in formData"
           :key="index"
           required
         >
-          <a-input v-decorator="['value', { initialValue: list.value }]" readonly />
+          <a-input v-decorator="['value', { initialValue: item.value }]" readonly />
         </a-form-item>
         <a-form-item v-bind="formItemLayout" label="巡查点数量">
           <a-tag color="cyan" @click="look">{{ detailInfo.patrolPointNum }}</a-tag>
