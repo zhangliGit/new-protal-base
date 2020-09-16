@@ -402,7 +402,7 @@ export default {
           this.delTag = false
           this.$nextTick(() => {
             html2canvas(this.$refs.imageWrapper, {
-              scale: 0.6,
+              scale: 0.8,
               width: 900,
               height: 660
             }).then(canvas => {
