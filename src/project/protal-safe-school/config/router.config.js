@@ -1,6 +1,4 @@
-import {
-  BasicLayout
-} from '../layouts'
+import { BasicLayout } from '../layouts'
 import safetyArchive from './safetyArchive'
 import safetyInspect from './safetyInspect'
 import danger from './danger'
@@ -10,7 +8,8 @@ const SpecialDetail = resolve => require(['../views/specialTask/SpecialDetail.vu
 const SafeAccident = resolve => require(['../views/safeAccident/SafeAccident.vue'], resolve)
 const AccidentDetail = resolve => require(['../views/safeAccident/AccidentDetail.vue'], resolve)
 const AddAccident = resolve => require(['../views/safeAccident/AddAccident.vue'], resolve)
-export const asyncRouterMap = [{
+export const asyncRouterMap = [
+  {
     path: '/',
     name: 'index',
     component: BasicLayout,

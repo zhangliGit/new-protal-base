@@ -18,16 +18,6 @@
               placeholder="请填写任务名称"
             />
           </a-form-item>
-          <a-form-item
-            label="时间："
-            v-bind="formItemLayout"
-            :style="{ textAlign: 'center' }"
-            v-if="cardInfo.taskType === '1'"
-          >
-            <a-range-picker
-              v-decorator="['data', {initialValue: [moment(new Date(), 'YYYY-MM-DD'), moment( new Date(), 'YYYY-MM-DD')], rules: [{ required: 'required', message: '请选择时间' }]}]"
-            />
-          </a-form-item>
           <a-form-item label="任务类型" v-bind="formItemLayout">
             <a-radio-group
               v-decorator="[
@@ -90,7 +80,16 @@
               </div>
             </div>
           </a-form-item>
-
+          <a-form-item
+            label="时间："
+            v-bind="formItemLayout"
+            :style="{ textAlign: 'center' }"
+            v-if="cardInfo.taskType === '1'"
+          >
+            <a-range-picker
+              v-decorator="['data', {initialValue: [moment(new Date(), 'YYYY-MM-DD'), moment( new Date(), 'YYYY-MM-DD')], rules: [{ required: 'required', message: '请选择时间' }]}]"
+            />
+          </a-form-item>
           <a-form-item
             label="任务描述："
             v-bind="formItemLayout"
@@ -292,6 +291,7 @@ export default {
     NoData
   },
   data() {
+    this.type = this.$route.query.type
     return {
       list: [
         {
@@ -564,6 +564,7 @@ export default {
       e.preventDefault()
       this.form.validateFields((error, values) => {
         let list = this.radioList.concat(this.checkList).concat(this.fillList)
+        console.log('list', list)
         list = list.map((el) => {
           return {
             content:
@@ -582,8 +583,8 @@ export default {
         values.docName = this.docName
         values.questions = list
         values.des = this.cardInfo.des
-        values.startTime = moment(values.data[0]).format('YYYY-MM-DD')
-        values.endTime = moment(values.data[1]).format('YYYY-MM-DD')
+        values.startTime = this.cardInfo.taskType === '1' ? moment(values.data[0]).format('YYYY-MM-DD') : undefined
+        values.endTime = this.cardInfo.taskType === '1' ? moment(values.data[1]).format('YYYY-MM-DD') : undefined
         values.dateNums =
           this.cardInfo.taskType === '2'
             ? this.weekCurrent
@@ -595,17 +596,21 @@ export default {
         if (!error) {
           this.isLoad = true
           if (this.detailId) {
-            values.id = this.detailId
-            this.modifySchoolTask(values)
-              .then((res) => {
-                this.$message.success('操作成功')
-                this.$tools.goNext(() => {
-                  this.$router.go(-1)
+            if (this.type == 2) {
+              // 复用任务
+            } else {
+              values.id = this.detailId
+              this.modifySchoolTask(values)
+                .then((res) => {
+                  this.$message.success('操作成功')
+                  this.$tools.goNext(() => {
+                    this.$router.go(-1)
+                  })
                 })
-              })
-              .catch((res) => {
-                this.isLoad = false
-              })
+                .catch((res) => {
+                  this.isLoad = false
+                })
+            }
           } else {
             this.addTask(values)
               .then((res) => {

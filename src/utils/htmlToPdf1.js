@@ -32,7 +32,7 @@ export const getPdfFromHtml = function(ele, pdfFileName, type, callback) {
     var contentWidth = canvas.width
     var contentHeight = canvas.height
     // 一页pdf显示html页面生成的canvas高度;
-    var pageHeight = (contentWidth / 400) * 841.89 // 这样写的目的在于保持宽高比例一致 pageHeight/canvas.width = a4纸高度/a4纸宽度// 宽度和canvas.width保持一致
+    var pageHeight = (contentWidth / 592.28) * 841.89 // 这样写的目的在于保持宽高比例一致 pageHeight/canvas.width = a4纸高度/a4纸宽度// 宽度和canvas.width保持一致
     // 未生成pdf的html页面高度
     var leftHeight = contentHeight
     // 页面偏移

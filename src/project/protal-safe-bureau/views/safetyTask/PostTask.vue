@@ -6,8 +6,8 @@
           placeholder="请输入任务名称"
           :disabled="true"
           v-decorator="[
-            'name',
-            { initialValue: appForm.address, rules: [{max: 20,required: false, message: '临时任务' } ]}
+            'taskName',
+            { initialValue: taskName, rules: [{max: 20,required: false, message: '临时任务' } ]}
           ]"
         />
       </a-form-item>
@@ -68,17 +68,15 @@ export default {
     this.peopleList = []
     return {
       taskId: this.$route.query.id,
+      taskName: this.$route.query.taskName,
       form: this.$form.createForm(this),
       SchoolAll: [],
-      jobList: [
-      ], // 职务集合
+      jobList: [], // 职务集合
       formItemLayout: {
         labelCol: { span: 6 },
         wrapperCol: { span: 16 }
       },
-      // 选择学校，指定人
-      schoolCode: '', // 指定学校
-      schoolName: '', // 指定学校
+      // 选择学校
       schoolTag: false,
       chooseTeachersDeatil: [],
       // xiaozuData,
@@ -107,7 +105,7 @@ export default {
       this.SchoolAll = values
       this.$refs.ChooseSchool.reset()
       if (values.length === 0) return
-      this._getJobAll(values[0].schoolCode) // 用第一个学校差所有的学校预设职务
+      this._getJobAll(values[0].schoolCode) // 用第一个学校查所有的学校预设职务
     },
     // 获取职务基础数据
     async _getJobAll(schoolCode) {
@@ -158,13 +156,9 @@ export default {
         }
       })
     },
-    onOk(value) {
-      // console.log('onOk: ', value)
-    },
     cancel() {
       this.$router.go(-1)
     }
-
   }
 }
 </script>

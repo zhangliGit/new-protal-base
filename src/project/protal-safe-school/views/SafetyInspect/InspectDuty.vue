@@ -54,6 +54,7 @@
 </template>
 
 <script>
+import maps from 'qqmap'
 import { mapState, mapActions } from 'vuex'
 import SearchForm from '@c/SearchForm'
 import TableList from '@c/TableList'
@@ -93,22 +94,21 @@ export default {
   methods: {
     ...mapActions('home', ['getDuty', 'getDutyPoint', 'delDutyPoint', 'delsDutyPoint']),
     async showList() {
-      this.searchList.schoolCode = 'AITEST'
-      // this.searchList.schoolCode = this.userInfo.schoolCode
+      this.searchList.schoolCode = this.userInfo.schoolCode
       this.searchList = Object.assign(this.searchList, this.pageList)
       const res = await this.getDuty(this.searchList)
       this.dutyList = res.data.records
       this.total = res.data.total
       res.data.records.map((el, index) => {
         if (el.track.length > 0) {
-          el.map = new qq.maps.Map(document.getElementById(el.id), {
-            center: new qq.maps.LatLng(),
+          el.map = new maps.maps.Map(document.getElementById(el.id), {
+            center: new maps.maps.LatLng(),
             zoom: 16
           })
           const arr = el.track.map((item) => {
-            return new qq.maps.LatLng(item.latitude, item.longitude)
+            return new maps.maps.LatLng(item.latitude, item.longitude)
           })
-          var polyline = new qq.maps.Polyline({
+          let polyline = new maps.maps.Polyline({
             path: arr,
             strokeColor: '#3385ff',
             strokeWeight: 4,

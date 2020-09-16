@@ -1,5 +1,5 @@
 <template>
-  <div class="view-statistics page-layout  bg-fff qui-fx-ver">
+  <div class="accident-add page-layout  bg-fff qui-fx-ver">
     <div class="content pos-box">
       <div class="title u-fx-ac-jc u-mar-t40 u-bold u-font-1 u-mar-b40">开学需要注意事项</div>
       <div class="search-box u-fx-ac u-mar-l20">
@@ -44,6 +44,7 @@
                 </a-table>
               </div>
             </div>
+
           </a-collapse-panel>
           <a-collapse-panel class="u-mar-b20" key="2" header="Q2、(单选题)近一周是否出现体温异常的情况？" :disabled="false">
             <div class="list-box  u-mar-20 ">
@@ -128,7 +129,7 @@ const columns = [
   }
 ]
 export default {
-  name: 'ViewStatistics',
+  name: 'ViewsReport',
   components: {
     NoData,
     PreEcharts,
@@ -136,7 +137,6 @@ export default {
     // PreBarEcharts
   },
   data() {
-    this.taskCode = this.$route.query.taskCode
     return {
       simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
       form: this.$form.createForm(this),
@@ -185,16 +185,65 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
-    this.getDetails()
+    // this.code = this.$route.query.code
+    // this.getDetails()
   },
   methods: {
-    ...mapActions('home', ['seeStatistics']),
+    ...mapActions('home', ['seeReport']),
     async getDetails() {
-      const req = {
-        taskTemplateCode: this.taskCode
+      const res = await this.seeReport(this.code)
+      const { findDanger, general, mainIssues, name, reform, time } = res.data
+      this.dangerLevel = findDanger.dangerLevel
+      this.dangerDetail = findDanger.dangerDetail
+      const dangerSchool = [
+        {
+          biggerCount: '3',
+          generalCount: '1',
+          heavyCount: '4',
+          lowCount: '9',
+          schoolName: '学校A'
+        },
+        {
+          biggerCount: '3',
+          generalCount: '1',
+          heavyCount: '8',
+          lowCount: '9',
+          schoolName: '学校B'
+        },
+        {
+          biggerCount: '3',
+          generalCount: '1',
+          heavyCount: '4',
+          lowCount: '9',
+          schoolName: '学校C'
+        },
+        {
+          biggerCount: '3',
+          generalCount: '4',
+          heavyCount: '4',
+          lowCount: '9',
+          schoolName: '学校D'
+        },
+        {
+          biggerCount: '1',
+          generalCount: '1',
+          heavyCount: '4',
+          lowCount: '9',
+          schoolName: '学校f'
+        }
+      ]
+      // this.dangerSchool = dangerSchool
+      if (findDanger.dangerSchool.length > 0 && findDanger.dangerSchool.length <= 5) {
+        this.dangerSchool = findDanger.dangerSchool
+      } else if (findDanger.dangerSchool.length > 5) {
+        findDanger.dangerSchool.length = 5
+        this.dangerSchool = findDanger.dangerSchool
       }
-      const res = await this.seeStatistics(req)
-      console.log(res)
+      this.general = general
+      this.mainIssues = mainIssues
+      this.name = name
+      this.reform = reform
+      this.time = time
     },
     setBi() {
       // Highcharts.chart('backSchool', backSchool)
@@ -213,29 +262,30 @@ export default {
 </script>
 <style lang="less" scoped>
 @deep: ~'>>>';
-.view-statistics {
+.accident-add {
   // padding: 20px;
   box-sizing: content-box;
   .content {
     height: calc(100% - 10px);
     overflow-y: scroll;
-
-    .a-collapse-box{
-      @{deep} .ant-collapse > .ant-collapse-item > .ant-collapse-header{
+    .a-collapse-box {
+      @{deep} .ant-collapse > .ant-collapse-item > .ant-collapse-header {
         background: #ecf5ff !important;
-         background: #6882da !important;
-            color: #fff;
+        background: #6882da !important;
+        color: #fff;
       }
-      .list-box{
-          .list-cont{
-            //修改表头文字、背景颜色
-            @{deep} .ant-table-thead > tr >th{
+      .list-box {
+        .list-cont {
+          //修改表头文字、背景颜色
+          @{deep} .ant-table-thead > tr > th {
             background: #ecf5ff !important;
           }
         }
       }
     }
   }
+  .u-line50 {
+    line-height: 50px !important;
+  }
 }
-
 </style>

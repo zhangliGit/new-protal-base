@@ -81,7 +81,7 @@ export default {
   height: 100%;
   padding: 40px;
   .img-box{
-    width: 800px;
+    width: 1000px;
     height:600px;
     margin: 0 auto;
     img{

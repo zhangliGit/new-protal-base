@@ -66,6 +66,7 @@
 
 <script>
 import maps from 'qqmap'
+import $tools from '@u/tools'
 import TableList from '@c/TableList'
 import { mapState, mapActions } from 'vuex'
 const columns = [
@@ -110,7 +111,7 @@ export default {
       },
       inspectList: [],
       mapVisible: false,
-      //腾讯地图
+      // 腾讯地图
       map: null,
       getAddress: null,
       getAddCode: null,
@@ -146,14 +147,14 @@ export default {
       this.visible = true
     },
     init(data, id) {
-      this.map = new qq.maps.Map(document.getElementById(id), {
-        center: new qq.maps.LatLng(),
+      this.map = new maps.maps.Map(document.getElementById(id), {
+        center: new maps.maps.LatLng(),
         zoom: 16
       })
       const arr = data.map((item) => {
-        return new qq.maps.LatLng(item.latitude, item.longitude)
+        return new maps.maps.LatLng(item.latitude, item.longitude)
       })
-      var polyline = new qq.maps.Polyline({
+      var polyline = new maps.maps.Polyline({
         path: arr,
         strokeColor: '#3385ff',
         strokeWeight: 4,
