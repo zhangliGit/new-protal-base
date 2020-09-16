@@ -69,7 +69,8 @@ const classApi = {
   editTemplate: '/template/update#putJson', // 编辑模板
   delTemplate: `/template/delete#delWithQuery`, // 删除模板
   bindTemplate: `/template/deviceBatchBindTemplate#post`, // 设备绑定模板
-  bindTemplateDetail: `/template/getDeviceByTemplateId#postWithQuery` // 模板绑定设备详情
+  bindTemplateDetail: `/template/getDeviceByTemplateId#postWithQuery`, // 模板绑定设备详情
+  bindAllTemplate: '/template/allDeviceBatchBindTemplate#postQuery' // 模板应用全部班牌
 }
 for (const val in showApi) {
   showApi[val] = `${hostEnv.zk_class}${showApi[val]}`

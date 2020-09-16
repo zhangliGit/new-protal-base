@@ -1,7 +1,7 @@
 <template>
   <div class="page-layout qui-fx-ver">
     <bind-template
-      is-check
+      isCheck
       ref="bindTemplate"
       v-if="bindTag"
       v-model="bindTag"
@@ -31,9 +31,19 @@
                 </a-popover>
               </div>
               <div class="notice-img qui-fx-ac-jc" :style="{'backgroundImage': 'url('+item.photoUrl+')'}">
+                <!-- <a-popover placement="left">
+                  <template slot="content">
+                    <img :src="item.photoUrl" style="max-width: 560px; max-height: 400px; display: block; " alt />
+                  </template>
+                  <img
+                    :src="item.photoUrl"
+                    :style="{ width: `280px`, height: `200px`, display: 'block', backgroundColor: '#eee' }"
+                    alt
+                  />
+                </a-popover> -->
               </div>
               <div class="qui-fx-jsb qui-fx-ac">
-                <div>
+                <div @click.stop="useTemplate(item)">
                   <div class="disable" v-if="item.count === 0">未启用</div>
                   <div class="useNum" v-else>{{ item.count }}台设备使用中</div>
                 </div>
@@ -91,7 +101,7 @@ export default {
     this._getTemplateList()
   },
   methods: {
-    ...mapActions('home', ['getTemplateList', 'delTemplate', 'bindTemplateDetail', 'bindTemplate']),
+    ...mapActions('home', ['getTemplateList', 'delTemplate', 'bindTemplateDetail', 'bindTemplate', 'bindAllTemplate']),
     async _getTemplateList () {
       const res = await this.getTemplateList({
         schoolCode: this.userInfo.schoolCode
@@ -117,7 +127,6 @@ export default {
       this.templateRemark = item.content
       this.id = item.id
       const res = await this.bindTemplateDetail({ query: item.id })
-      console.log(res)
       this.deviceList = res.data
       this.bindTag = true
     },
@@ -135,9 +144,16 @@ export default {
         this._getTemplateList()
       })
     },
-    userToAll() {
-      console.log(this.id)
-      this.$refs.bindTemplate.reset()
+    async userToAll() {
+      await this.bindAllTemplate({
+        schoolCode: this.userInfo.schoolCode,
+        templateId: this.id
+      })
+      this.$message.success('绑定成功')
+      this.$tools.goNext(() => {
+        this.$refs.bindTemplate.reset()
+        this._getTemplateList()
+      })
     },
     _delTemplate (id, isDefault, count) {
       if (parseInt(isDefault) === 1) {

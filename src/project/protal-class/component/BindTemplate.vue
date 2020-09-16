@@ -127,6 +127,10 @@ export default {
     SearchForm
   },
   props: {
+    isCheck: {
+      type: Boolean,
+      default: true
+    },
     chooseType: {
       type: String,
       default: ''
@@ -342,7 +346,9 @@ export default {
       this.$emit('submit', this.totalList)
     },
     userToAll() {
-      this.$emit('userToAll')
+      this.$tools.delTip(`确定将${this.templateName}应用于全部班牌?`, () => {
+        this.$emit('userToAll')
+      })
     }
   }
 }
