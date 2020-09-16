@@ -46,7 +46,7 @@
                   <div class="qui-fx-ver u-mar-l20">
                     <div>{{ list.title }}</div>
                     <div class="u-mar-t10">
-                      <a-radio-group>
+                      <a-radio-group v-model="list.answers[0]" :disabled="disabled">
                         <a-radio
                           v-for="(element,index) in list.content"
                           :value="element"
@@ -66,7 +66,7 @@
                   <div class="qui-fx-ver u-mar-l20">
                     <div>{{ list.title }}</div>
                     <div class="u-mar-t10">
-                      <a-checkbox-group>
+                      <a-checkbox-group v-model="list.answers" :disabled="disabled">
                         <a-checkbox
                           v-for="(element,index) in list.content"
                           :value="element"
@@ -84,7 +84,8 @@
                 <div class="qui-fx u-mar-t10" v-for="(list, i) in fillList" :key="i">
                   <div class="qui-fx-ver">题目是：</div>
                   <div class="qui-fx-ver u-mar-l20">
-                    <div>{{ list.title }}</div>
+                    <div class="u-mar-b10">{{ list.title }}</div>
+                    <a-input :read-only="disabled" v-model="list.answers[0]" />
                   </div>
                 </div>
               </div>
@@ -114,7 +115,7 @@ import NoData from '@c/NoData'
 import moment from 'moment'
 import img from '../../assets/img/wenjian.png'
 export default {
-  name: 'TaskDetail',
+  name: 'TaskPreview',
   components: {
     NoData
   },
@@ -129,10 +130,9 @@ export default {
       times: [],
       url: '',
       docUrl: '',
-      show: true,
-      flag: false,
       docName: '',
-      detailInfo: {}
+      detailInfo: {},
+      disabled: false
     }
   },
   computed: {
@@ -140,19 +140,20 @@ export default {
   },
   mounted() {
     this.taskId = this.$route.query.id
+    this.disabled = this.$route.query.state === '0'
     this.showDetail()
   },
   methods: {
-    ...mapActions('home', ['previewTask']),
+    ...mapActions('home', ['previewTask', 'previewMyTask']),
     moment,
-    // 获取详情
+    // 获取详情 previewMyTask
     async showDetail() {
       const req = {
         query: this.taskId
       }
-      const res = await this.previewTask(req)
+      const res = await this.previewMyTask(req)
       this.detailInfo = res.data
-      const questions = res.data.questions.map((el, index) => {
+      const questions = res.data.answers.map((el, index) => {
         return {
           ...el,
           key: index,
@@ -169,21 +170,15 @@ export default {
       questions.map((el) => {
         if (el.questionType === '1') {
           this.radioList.push(el)
-          this.radioCount = this.radioList.length
         } else if (el.questionType === '2') {
           this.checkList.push(el)
-          this.checkCount = this.checkList.length
         } else if (el.questionType === '3') {
           this.fillList.push(el)
-          this.fillCount = this.fillList.length
         } else {
           this.fileList.push(el)
-          this.fileCount = this.fileList.length
         }
       })
-      this.docName = 'res.data.docName'
-      this.show = !res.data.docUrl
-      this.flag = !res.data.docUrl
+      this.docName = res.data.docName
     },
     handleChange() {},
     exportClick (docUrl) {

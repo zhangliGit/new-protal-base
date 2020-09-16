@@ -136,7 +136,7 @@ const columns = [
     customRender: (text, record) => {
       if (text === '1') {
         return `督办完成(督办员：${record.superviseUserName})`
-      } else {
+      } else if (text === '0') {
         return `正在督办(督办员：${record.superviseUserName})`
       }
     }

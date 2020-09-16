@@ -391,6 +391,8 @@ export default {
     async showDetail() {
       const res = await this.getTaskDetail(this.detailId)
       this.cardInfo = res.data
+      this.weekCurrent = res.data.dateNums
+      this.monthCurrent = res.data.dateNums
       const questions = res.data.questions.map((el, index) => {
         return {
           ...el,
@@ -420,9 +422,10 @@ export default {
           this.fileCount = this.fileList.length
         }
       })
-      this.docName = 'res.data.docName'
+      this.docName = res.data.docName
+      this.docUrl = res.data.docUrl
       this.show = !res.data.docUrl
-      this.flag = !res.data.docUrl
+      this.flag = !!res.data.docUrl
     },
     // 富文本编辑器方法
     onEditorFocus(data) {},
@@ -509,6 +512,7 @@ export default {
       this.show = true
     },
     handleChange(info) {
+      console.log('aa', info)
       if (info.file.status !== 'uploading' && info.file.status !== 'removed') {
         if (info.file.response) {
           this.$message.error(info.file.response.message)
@@ -562,7 +566,7 @@ export default {
     submitOk(e) {
       e.preventDefault()
       this.form.validateFields((error, values) => {
-        let list = this.radioList.concat(this.checkList).concat(this.fillList)
+        let list = this.radioList.concat(this.checkList).concat(this.fillList).concat(this.fileList)
         console.log('list', list)
         list = list.map((el) => {
           return {
@@ -576,6 +580,8 @@ export default {
             questionType: el.questionType
           }
         })
+        values.userName = this.userInfo.userName
+        values.userCode = this.userInfo.userCode
         values.schoolCode = this.userInfo.schoolCode
         values.year = this.value
         values.docUrl = this.docUrl

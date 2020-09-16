@@ -20,16 +20,16 @@
                 </div>
               </div>
               <div class="fill-describe u-mar-t10 u-padd-l10 u-padd-r10">{{ detailInfo.reason }}</div>
-              <!-- <div class="u-mar-t20">
+              <div class="u-mar-t20">
                 <div class="upload u-mar-l20 u-mar-r20 u-mar-b10">
                   <div class="upload-title">附件上传</div>
                 </div>
-                <a-upload class="u-mar-l10" name="file" :multiple="true" @change="handleChange">
-                  <a-button>
-                    <a-icon type="upload" />文件上传
-                  </a-button>
-                </a-upload>
-              </div>-->
+                <div class="u-mar-l20">
+                  <img class="u-mar-r10" :src="img" alt />
+                  {{ detailInfo.docName }}
+                  <span class="u-type-primary" @click="exportClick(detailInfo.docUrl)">下载</span>
+                </div>
+              </div>
             </div>
           </div>
           <div class="u-mar-t10 bg-fff u-padd-10 u-padd-l20">
@@ -130,6 +130,7 @@
 import hostEnv from '@config/host-env'
 import { mapState, mapActions } from 'vuex'
 import UploadMulti from '@c/UploadMulti'
+import img from '../../assets/img/wenjian.png'
 export default {
   name: 'FillTask',
   components: {
@@ -137,6 +138,7 @@ export default {
   },
   data() {
     return {
+      img,
       params: {},
       isLoad: false,
       detailInfo: {},
@@ -156,29 +158,28 @@ export default {
     this.url = `${hostEnv.zx_subject}/file/upload/doc`
     this.params.schoolCode = this.userInfo.schoolCode
     this.state = this.$route.query.state === '0'
-    console.log('aaa', this.state)
-    this.detailId = this.$route.query.id
-    if (this.detailId) {
+    this.taskId = this.$route.query.id
+    this.taskCode = this.$route.query.taskCode
+    this.taskTemplateCode = this.$route.query.taskTemplateCode
+    if (this.taskId) {
       this.showDetail()
     }
   },
   methods: {
-    ...mapActions('home', ['myTaskDetail']),
+    ...mapActions('home', ['myTaskDetail', 'answerTask']),
     async showDetail() {
-      const res = await this.myTaskDetail({ id: this.detailId })
+      const res = await this.myTaskDetail({ id: this.taskId })
       this.detailInfo = res.data
-      const questions = res.data.userAnswersList.map((el, index) => {
+      const questions = res.data.questions.map((el, index) => {
         return {
           ...el,
           key: index,
-          pointList: el.content
-            ? el.content.map((item, i) => {
-                return {
-                  key: i,
-                  content: item
-                }
-              })
-            : undefined
+          pointList: el.content ? el.content.map((item, i) => {
+            return {
+              key: i,
+              content: item
+            }
+          }) : undefined
         }
       })
       questions.map((el) => {
@@ -192,10 +193,6 @@ export default {
           this.fileList.push({ ...el, show: true })
         }
       })
-      console.log('11', this.radioList)
-      console.log('22', this.checkList)
-      console.log('33', this.fillList)
-      console.log('44', this.fileList)
     },
     handleRemove(info, i) {
       this.fileList[i].show = true
@@ -222,7 +219,41 @@ export default {
     cancel() {
       this.$router.go(-1)
     },
-    submitOk() {}
+    submitOk() {
+      this.isLoad = true
+      const req = {
+        taskCode: this.taskCode,
+        taskId: this.taskId,
+        taskTemplateCode: this.taskTemplateCode,
+        userCode: this.userInfo.userCode
+      }
+      const arr = this.radioList.concat(this.checkList).concat(this.fillList).concat(this.fileList)
+      const answers = arr.map(el => {
+        return {
+          answers: Array.isArray(el.answer) ? el.answer : [el.answer],
+          questionTemplateId: el.questionTemplateId,
+          questionType: el.questionType
+        }
+      })
+      req.answers = answers
+      this.answerTask(req)
+        .then(res => {
+          this.isLoad = false
+          this.$message.success('操作成功')
+          this.$tools.goNext(() => {
+            this.cancel()
+          })
+        })
+        .catch(res => {
+          this.isLoad = false
+        })
+    },
+    exportClick (docUrl) {
+      if (docUrl) {
+        const url = `${hostEnv.zx_subject}/file/downLoad/doc?url=${docUrl}`
+        window.open(url)
+      }
+    }
   }
 }
 </script>
