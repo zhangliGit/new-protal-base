@@ -30,20 +30,21 @@
                   <span class="content">{{ item.content }}</span>
                 </a-popover>
               </div>
-              <div class="notice-img qui-fx-ac-jc" :style="{'backgroundImage': 'url('+item.photoUrl+')'}">
-                <!-- <a-popover placement="left">
+              <!-- <div class="notice-img qui-fx-ac-jc" :style="{'backgroundImage': 'url('+item.photoUrl+')'}"> -->
+              <div class="notice-img qui-fx-ac-jc">
+                <a-popover placement="left">
                   <template slot="content">
-                    <img :src="item.photoUrl" style="max-width: 560px; max-height: 400px; display: block; " alt />
+                    <img :src="item.photoUrl" style="max-width: 900px; max-height: 660px; display: block; " alt />
                   </template>
                   <img
                     :src="item.photoUrl"
                     :style="{ width: `280px`, height: `200px`, display: 'block', backgroundColor: '#eee' }"
                     alt
                   />
-                </a-popover> -->
+                </a-popover>
               </div>
               <div class="qui-fx-jsb qui-fx-ac">
-                <div @click.stop="useTemplate(item)">
+                <div>
                   <div class="disable" v-if="item.count === 0">未启用</div>
                   <div class="useNum" v-else>{{ item.count }}台设备使用中</div>
                 </div>
