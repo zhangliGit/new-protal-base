@@ -29,7 +29,7 @@
           </template>
           <a-tooltip placement="topLeft" title="撤销">
             <a-button
-              v-if="action.record.superviseState == '0' || action.record.superviseUserCode == userInfo.userCode"
+              v-if="action.record.superviseState === '0' || action.record.superviseUserCode == userInfo.userCode"
               size="small"
               class="del-action-btn"
               icon="delete"

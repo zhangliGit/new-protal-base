@@ -1,6 +1,7 @@
 import $tools from '@u/tools'
 const accident = {
-  columns: [{
+  columns: [
+    {
       title: '序号',
       scopedSlots: {
         customRender: 'index'
@@ -67,8 +68,10 @@ const accident = {
       }
     }
   ],
-  searchLabel: [{
-      list: [{
+  searchLabel: [
+    {
+      list: [
+        {
           key: '',
           val: '全部'
         },
@@ -95,15 +98,17 @@ const accident = {
       label: '事故时间'
     }
   ],
-  formData: [{
-    value: 'content',
-    initValue: '',
-    type: 'textarea',
-    label: '续报内容',
-    placeholder: '请填写续报内容',
-    minRows: 2,
-    maxRows: 6,
-    max: 100
-  }]
+  formData: [
+    {
+      value: 'content',
+      initValue: '',
+      type: 'textarea',
+      label: '续报内容',
+      placeholder: '请填写续报内容',
+      minRows: 2,
+      maxRows: 6,
+      max: 100
+    }
+  ]
 }
 export default accident

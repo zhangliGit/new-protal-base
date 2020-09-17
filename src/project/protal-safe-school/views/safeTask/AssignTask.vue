@@ -2,6 +2,7 @@
   <div class="page-layout qui-fx-ver">
     <search-form is-reset @search-form="searchForm" :search-label="task.assignSearchLabel">
       <div slot="left">
+        <!-- <a-button type="primary" icon="plus" @click="check">完成情况</a-button> -->
         <a-button type="primary" icon="plus" @click="add(0)">添加任务</a-button>
         <a-button icon="delete" class="del-btn mar-l10" @click="dels">批量删除</a-button>
       </div>
@@ -16,51 +17,54 @@
       @selectAll="selectAll"
     >
       <template v-slot:actions="action">
-        <a-tooltip placement="topLeft" title="预览">
-          <a-button size="small" class="detail-action-btn" icon="ellipsis"></a-button>
+        <a-tooltip placement="topLeft" title="预览" v-if="action.record.state !== '0' ">
+          <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="add(1,action)"></a-button>
         </a-tooltip>
-        <a-tooltip placement="topLeft" title="编辑">
-          <a-button size="small" class="edit-action-btn" icon="form" @click="add(1,action)"></a-button>
+        <a-tooltip
+          placement="topLeft"
+          title="编辑"
+          v-if="action.record.state === '0'"
+        >
+          <a-button size="small" class="edit-action-btn" icon="form" @click="add(2,action)"></a-button>
         </a-tooltip>
-        <a-tooltip placement="topLeft" title="发布">
-          <a-button size="small" class="play-action-btn" icon="play-circle"></a-button>
+        <a-tooltip
+          placement="topLeft"
+          title="发布"
+          v-if="action.record.state === '0' && new Date().getTime() <= action.record.endDate"
+        >
+          <a-button
+            size="small"
+            class="play-action-btn"
+            icon="play-circle"
+            @click="check(2, action)"
+          ></a-button>
         </a-tooltip>
-        <a-tooltip placement="topLeft" title="查看完成情况">
+        <a-tooltip
+          placement="topLeft"
+          title="查看完成情况"
+          v-if="action.record.state !== '0' "
+          @click="check(0, action)"
+        >
           <a-button size="small" class="copy-action-btn" icon="copy"></a-button>
         </a-tooltip>
-        <a-tooltip placement="topLeft" title="产看统计">
+        <a-tooltip placement="topLeft" title="查看统计" v-if="action.record.state !== '0' " @click="check(1, action)">
           <a-button size="small" class="export-all-btn" icon="export"></a-button>
         </a-tooltip>
-        <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="del(action)">
+        <a-popconfirm
+          placement="left"
+          okText="确定"
+          cancelText="取消"
+          @confirm="del(action)"
+          v-if="action.record.state === '0'"
+        >
           <template slot="title">确定删除该任务吗？</template>
           <a-tooltip placement="topLeft" title="删除">
             <a-button size="small" class="del-action-btn" icon="delete"></a-button>
           </a-tooltip>
         </a-popconfirm>
       </template>
-      <template v-slot:other1="other1">
-        <img class="ewm" :src="img" alt />
-      </template>
     </table-list>
     <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
-    <!-- <a-modal
-      :visible="visible"
-      :footer="null"
-      centered
-      @cancel="visible = false"
-      :bodyStyle="bodyStyle"
-      width="360px"
-      :closable="false"
-      :destroyOnClose="true"
-    >
-      <div class="erm-box qui-fx-ver">
-        <div class="logo">
-          <img :src="logo" alt />
-        </div>
-        <div class="qr-code" id="qrCode" ref="qrCodeDiv"></div>
-        <div class="area">巡检点：{{ area }}</div>
-      </div>
-    </a-modal>-->
   </div>
 </template>
 
@@ -69,7 +73,6 @@ import { mapState, mapActions } from 'vuex'
 import SearchForm from '@c/SearchForm'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
-import $tools from '@u/tools'
 import task from '../../assets/js/table/task'
 export default {
   name: 'AssignTask',
@@ -107,6 +110,17 @@ export default {
   },
   methods: {
     ...mapActions('home', ['getSafeTask', 'delSafeTask', 'delSafeTasks']),
+    check(type, record) {
+      const url = type === 0 ? '/assignTask/taskComplete' : type === 1 ? '/assignTask/taskStatistics' : '/assignTask/postTask'
+      this.$router.push({
+        path: url,
+        query: {
+          id: record ? record.record.id : '',
+          taskType: record ? record.record.taskType : '',
+          name: record ? record.record.taskName : ''
+        }
+      })
+    },
     async showList() {
       this.searchList.schoolCode = this.userInfo.schoolCode
       this.searchList = Object.assign(this.searchList, this.pageList)
@@ -121,8 +135,9 @@ export default {
       this.showList()
     },
     add(type, record) {
+      const path = type === 1 ? '/assignTask/taskDetail' : '/assignTask/addTask'
       this.$router.push({
-        path: '/assignTask/addTask',
+        path: path,
         query: {
           id: record ? record.record.id : ''
         }

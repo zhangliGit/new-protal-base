@@ -46,8 +46,8 @@
             />
           </a-form-item>
           <a-form-item v-bind="formItemLayout" label="隐患图片上传" >
-            <a-row :gutter="[50,100]" type="flex" >
-              <a-col :span="4" >
+            <a-row :gutter="[50,100]" >
+              <a-col :span="24" >
                 <upload-multi
                   :length="9"
                   v-model="photoUrl"

@@ -89,14 +89,14 @@
       <div class="qui-tx-c u-mar-t" >
         <a-button
           type="primary"
-          v-if="detailInfo.state=='2'&&teamLeaderCode==userCode"
+          v-if="detailInfo.state==='2'&&teamLeaderCode==userCode"
           @click="submitOk('2')"
           :disabled="isLoad">
           审核
         </a-button>
         <a-button
           type="primary"
-          v-if="detailInfo.state=='3'&&supervisionCode"
+          v-if="detailInfo.state==='3'&&supervisionCode"
           @click="submitOk('3')"
           :disabled="isLoad">
           督查

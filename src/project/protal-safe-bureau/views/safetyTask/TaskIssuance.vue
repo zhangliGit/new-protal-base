@@ -12,36 +12,40 @@
       v-model="chooseList"
       @selectAll="selectAll"
       :page-list="pageList"
-      :columns="taskColumns"
+      :columns="issuanceColumns"
       :table-list="findList">
       <template v-slot:actions="action">
+        <a-tooltip v-if="action.record.state==='0'" placement="topLeft" title="编辑">
+          <a-button size="small" class="edit-action-btn" icon="form" @click="add(1,action.record)"></a-button>
+        </a-tooltip>
+        <a-tooltip v-if="action.record.state==='0'&&action.record.endDate>new Date().getTime()" placement="topLeft" title="发布">
+          <a-button size="small" class="play-action-btn" icon="play-circle" @click="release(action.record)"></a-button>
+        </a-tooltip>
+        <a-popconfirm
+          v-if="action.record.state==='0'"
+          placement="topLeft"
+          ok-text="确定"
+          cancel-text="取消"
+          @confirm="delTask(action.record)">
+          <template slot="title">
+            确定结束督办该隐患任务吗？
+          </template>
+          <a-tooltip placement="topLeft" title="删除">
+            <a-button size="small" class="del-action-btn" icon="delete" ></a-button>
+          </a-tooltip>
+        </a-popconfirm>
         <a-tooltip placement="topLeft" title="复用">
-          <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="goDetail(action.record)"></a-button>
+          <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="add(2,action.record)"></a-button>
         </a-tooltip>
         <a-tooltip placement="topLeft" title="预览">
           <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="preview(action.record)"></a-button>
         </a-tooltip>
         <a-tooltip placement="topLeft" title="查看统计">
-          <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="viewStatistics(action.record)"></a-button>
-        </a-tooltip>
-        <a-tooltip placement="topLeft" title="编辑">
-          <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="add(2,action.record)"></a-button>
-        </a-tooltip>
-        <a-tooltip placement="topLeft" title="发布">
-          <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="release(action.record)"></a-button>
+          <a-button size="small" class="export-all-btn" icon="export" @click="viewStatistics(action.record)"></a-button>
         </a-tooltip>
         <a-tooltip placement="topLeft" title="查看完成情况">
-          <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="checkCompletion(action.record)"></a-button>
+          <a-button size="small" class="copy-action-btn" icon="copy" @click="checkCompletion(action.record)"></a-button>
         </a-tooltip>
-        <a-popconfirm placement="topLeft" ok-text="确定" cancel-text="取消" @confirm="delTask(action.record)">
-          <template slot="title">
-            确定结束督办该隐患任务吗？
-          </template>
-          <a-tooltip placement="topLeft" title="删除">
-            <a-button size="small" class="detail-action-btn" icon="ellipsis" ></a-button>
-          </a-tooltip>
-        </a-popconfirm>
-
       </template>
     </table-list>
     <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
@@ -55,7 +59,7 @@ import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
 import SearchForm from '@c/SearchForm'
 import { issuanceSearchLabel } from '../../assets/js/searchLabel.js'
-import { taskColumns } from '../../assets/js/tableColumns'
+import { issuanceColumns } from '../../assets/js/tableColumns'
 
 export default {
   name: 'TaskRecord',
@@ -66,7 +70,7 @@ export default {
   },
   data() {
     return {
-      taskColumns,
+      issuanceColumns,
       issuanceSearchLabel,
       total: 0,
       pageList: {
@@ -85,16 +89,16 @@ export default {
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getTaskList', 'removeTask', 'removeTaskAll', 'assignDanger', 'transferDanger']),
+    ...mapActions('home', ['getTaskList', 'removeTask', 'removeTaskAll' ]),
     async showList() {
       const req = {
         ...this.pageList,
         ...this.searchList,
         // userCode: this.userInfo.userCode
-        schoolCode: this.eduCode
+        schoolCode: this.userInfo.schoolCode
+
       }
       const res = await this.getTaskList(req)
-      console.log(res)
       this.findList = res.data.records
       this.total = res.data.total
     },
@@ -109,9 +113,19 @@ export default {
       this.showList()
     },
     async delTaskAll() {
-      console.log(this.chooseList)
-      const res = await this.removeTaskAll(this.chooseList)
-      this.showList()
+      const that = this
+      this.$confirm({
+        title: '提示',
+        content: '确定删除该任务吗?',
+        onOk () {
+          that.removeTaskAll(that.chooseList).then(res => {
+            that.$message.success('操作成功')
+            that.showList()
+          })
+        },
+        onCancel () {
+        }
+      })
     },
     add(type, record) {
       this.$router.push({
@@ -137,7 +151,9 @@ export default {
       this.$router.push({
         path: '/taskIssuance/postTask',
         query: {
-          id: record ? record.id : ''
+          id: record ? record.id : '',
+
+          taskName: record.taskName
           // type: type
         }
       })
@@ -147,7 +163,8 @@ export default {
       this.$router.push({
         path: '/taskIssuance/checkCompletion',
         query: {
-          id: record ? record.id : ''
+          state: record ? record.state : '',
+          taskCode: record ? record.taskCode : ''
           // type: type
         }
       })
@@ -157,17 +174,8 @@ export default {
       this.$router.push({
         path: '/taskIssuance/viewStatistics',
         query: {
-          id: record ? record.id : ''
+          taskCode: record ? record.taskCode : ''
           // type: type
-        }
-      })
-    },
-    goDetail(record) {
-      this.$router.push({
-        path: '/specialInspection/views',
-        query: {
-          code: record.code,
-          teamLeaderName: record.teamLeaderName
         }
       })
     },

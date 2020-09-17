@@ -18,18 +18,18 @@ const task = {
       dataIndex: 'taskType',
       width: '10%',
       customRender: text => {
-        if (text === '0') {
+        if (text === '1') {
           return '一次性计划'
-        } else if (text === '1') {
+        } else if (text === '2') {
           return '周计划'
-        } else {
+        } else if (text === '3') {
           return '月计划'
         }
       }
     },
     {
       title: '开始时间',
-      dataIndex: 'beginTime',
+      dataIndex: 'beginDate',
       width: '15%',
       customRender: text => {
         return $tools.getDate(text)
@@ -37,7 +37,7 @@ const task = {
     },
     {
       title: '结束时间',
-      dataIndex: 'endTime',
+      dataIndex: 'endDate',
       width: '15%',
       customRender: text => {
         return $tools.getDate(text)
@@ -45,12 +45,12 @@ const task = {
     },
     {
       title: '提交人',
-      dataIndex: 'userName',
+      dataIndex: 'completeUserName',
       width: '10%'
     },
     {
       title: '提交时间',
-      dataIndex: 'completeTime',
+      dataIndex: 'completeDate',
       width: '15%',
       customRender: text => {
         return $tools.getDate(text)
@@ -61,10 +61,21 @@ const task = {
       dataIndex: 'state',
       width: '10%',
       customRender: text => {
+<<<<<<< HEAD
         if (text === '1') {
           return '静态二维码'
+=======
+        if (text === '0') {
+          return '未发布'
+        } else if (text === '1') {
+          return '未开始'
+        } else if (text === '2') {
+          return '进行中'
+        } else if (text === '3') {
+          return '已结束'
+>>>>>>> 4f868611137952bf57ee84ec7e3489cf71d257ba
         } else {
-          return '动态二维码'
+          return ''
         }
       }
     },
@@ -152,18 +163,22 @@ const task = {
       dataIndex: 'taskType',
       width: '10%',
       customRender: text => {
+<<<<<<< HEAD
         if (text === '0') {
+=======
+        if (text === '1') {
+>>>>>>> 4f868611137952bf57ee84ec7e3489cf71d257ba
           return '一次性计划'
-        } else if (text === '1') {
+        } else if (text === '2') {
           return '周计划'
-        } else {
+        } else if (text === '3') {
           return '月计划'
         }
       }
     },
     {
       title: '开始时间',
-      dataIndex: 'beginTime',
+      dataIndex: 'beginDate',
       width: '15%',
       customRender: text => {
         return $tools.getDate(text)
@@ -171,7 +186,7 @@ const task = {
     },
     {
       title: '结束时间',
-      dataIndex: 'endTime',
+      dataIndex: 'endDate',
       width: '15%',
       customRender: text => {
         return $tools.getDate(text)
@@ -184,7 +199,7 @@ const task = {
     },
     {
       title: '发布时间',
-      dataIndex: 'publishTime',
+      dataIndex: 'publishDate',
       width: '15%',
       customRender: text => {
         return $tools.getDate(text)

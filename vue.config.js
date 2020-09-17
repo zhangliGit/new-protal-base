@@ -69,7 +69,7 @@ module.exports = {
       }
       // 压缩代码 电子班牌特殊处理
       const buildModule = process.argv[process.argv.length - 1]
-      if (buildModule !== 'protal-class' && buildModule !== 'protal-oa') {
+      if (buildModule !== 'protal-class' && buildModule !== 'protal-oa' && buildModule !== 'protal-safe-bureau') {
         config.optimization = {
           minimizer: [
             new UglifyJsPlugin({
@@ -253,11 +253,19 @@ module.exports = {
         }
       },
       '/zq_class': {
-        target: 'http://192.168.2.242:11009/', // 张琦-班牌管理
-        // target: 'http://192.168.1.23:11009/',
+        // target: 'http://192.168.2.242:11009/', // 张琦-班牌管理
+        target: 'http://192.168.1.193:11009/',
         changeOrigin: true,
         pathRewrite: {
           '^/zq_class': ''
+        }
+      },
+      '/zk_class': {
+        // target: 'http://192.168.2.242:11009/', // 张坤-班牌管理
+        target: 'http://192.168.1.23:11009/',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/zk_class': ''
         }
       },
       '/zk_examplan': {
@@ -329,7 +337,10 @@ module.exports = {
         }
       },
       '/zk_oa': {
+<<<<<<< HEAD
         // target: 'http://192.168.2.242:11014/', // 张坤-报修
+=======
+>>>>>>> 4f868611137952bf57ee84ec7e3489cf71d257ba
         target: 'http://192.168.1.23:11014/', // 张坤-报修
         changeOrigin: true,
         pathRewrite: {
@@ -338,6 +349,7 @@ module.exports = {
       },
       '/lz_safe': {
         // target: 'http://192.168.1.46:8091/', // 吕卓-安防
+        // target: 'http://192.168.1.76:8091/', // ljj-安防
         target: 'http://192.168.2.242:8091/', // 吕卓-安防
         changeOrigin: true,
         pathRewrite: {
@@ -345,7 +357,7 @@ module.exports = {
         }
       },
       '/ljj_people': {
-        target: 'http://http://192.168.1.76:11002/', // 刘继杰-局端安全任务根据选中的学校职务查人
+        target: 'http://192.168.1.76:11002/', // 刘继杰-局端安全任务根据选中的学校职务查人
         changeOrigin: true,
         pathRewrite: {
           '^/ljj_people': ''

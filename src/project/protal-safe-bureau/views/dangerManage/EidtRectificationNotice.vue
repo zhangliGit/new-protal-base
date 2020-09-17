@@ -34,7 +34,7 @@
             <a-upload
               :multiple="false"
               class="upload-img"
-              v-if="form.officialSeal=='1'"
+              v-if="form.officialSeal==='1'"
               :showUploadList="false"
               name="file"
               :beforeUpload="beforeUpload"
@@ -54,7 +54,7 @@
             </a-radio>
             <a-radio value="3">
               自定义
-              <div class="customize" v-if="form.theTerm=='3'">
+              <div class="customize" v-if="form.theTerm==='3'">
                 <a-input size="small" @change="changeTimeCustomize" v-model="form.customWorkingDay" placeholder="3" />
                 <span>个工作日</span>
               </div>
@@ -64,7 +64,7 @@
       </a-form-model>
       <div class="notice-box" ref="canvasPic" id="canvasPic">
         <div class="border-notice">
-          <div v-if="form.resource=='1'" class="title">
+          <div v-if="form.resource==='1'" class="title">
             <a-input class="text text-input  u-fx-ac-jc" v-if="isEidt" v-model="noticeData.redHeader">{{ noticeData.redHeader }}</a-input>
             <div class="text u-fx-ac-jc" v-else>{{ noticeData.redHeader }}</div>
             <!-- <div ></div> -->
@@ -89,7 +89,7 @@
               <div class="r-t">{{ noticeData.redHeader }}</div>
               <div class="r-m">{{ noticeData.currentTime }}</div>
               <div class="r-b">签收人：</div>
-              <div class="dongzhang-img" v-if="form.officialSeal=='1'&&this.noticeData.url">
+              <div class="dongzhang-img" v-if="form.officialSeal==='1'&&this.noticeData.url">
                 <!-- <img :src="this.noticeData.url" alt=""> -->
                 <img :src="`data:image/jpeg;base64,${this.noticeData.url}`" alt="">
               </div>
@@ -220,7 +220,8 @@ export default {
     },
     // 自定义时间
     changeTimeCustomize(value) {
-      this.noticeData.rectificationTime = Tools.getDate(new Date().getTime() + 86400 * value.data * 1000, 1)
+      const count = this.form.customWorkingDay
+      this.noticeData.rectificationTime = Tools.getDate(new Date().getTime() + 86400 * count * 1000, 1)
     },
     reset() {
       this.$router.go(0)

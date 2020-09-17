@@ -1,26 +1,6 @@
 <template>
   <div class="page-layout qui-fx-ver">
     <search-form is-reset @search-form="searchForm" :search-label="dangerFindSearchLabel">
-      <!-- <template v-slot:area>
-        <a-form-item>
-          <a-select
-            show-search
-            :value="schoolName"
-            placeholder="请输入学校名字"
-            style="width: 150px"
-            :default-active-first-option="false"
-            :show-arrow="false"
-            :filter-option="false"
-            :not-found-content="null"
-            @search="handleSearch"
-            @change="handleChange"
-          >
-            <a-select-option v-for="d in data" :key="`${d.key},${d.schoolName}`">
-              {{ d.schoolName }}
-            </a-select-option>
-          </a-select>
-        </a-form-item>
-      </template> -->
       <div slot="left">
         <a-button icon="plus" class="u-mar-l10 add-action-btn" @click="exportHazards">导处隐患详情</a-button>
         <a-button icon="export" class="u-mar-l10 export-btn" @click="reportDangers">上报隐患</a-button>
@@ -48,11 +28,11 @@
         <a-tooltip placement="topLeft" v-else @click="rectificationNotice(action.record)" title="整改通知书">
           <a-button size="small" class="user-action-btn" >整改通知书</a-button>
         </a-tooltip>
-        <a-tooltip placement="topLeft" v-if="action.record.superviseState=='0'" >
+        <a-tooltip placement="topLeft" v-if="action.record.superviseState==='0'" >
           <a-button size="small" class="user-action-btn" >{{ action.record.superviseUserName }}正在督办</a-button>
         </a-tooltip>
         <a-tooltip placement="topLeft" v-else @click="supervise(action.record.id)" title="督办">
-          <a-button size="small" class="user-action-btn" >{{ action.record.superviseUserName }}督办</a-button>
+          <a-button size="small" class="user-action-btn" >督办</a-button>
         </a-tooltip>
       </template>
     </table-list>
@@ -92,15 +72,7 @@ export default {
   data() {
     return {
       taskId: '',
-      searchObj: {
-        // sourceDanger: '',
-        // DangerLevel: '',
-        // DangerState: '',
-        // searchObj: ''
-      },
-      // 学校远程查询
-      data: [],
-      schoolName: undefined,
+      searchObj: {},
       dangerFindSearchLabel,
       hiddenDangerColumns,
       pageList: {
@@ -115,24 +87,15 @@ export default {
       userTag: false,
       chooseUserList: [],
       // 学校code集合
-      eduSchoolCodes: [],
+      eduSchoolCodes: [], // 根据教育局查的所有的学校
       streetSchoolCodes: [],
       SchoolCodes: []
-      // frameData: {
-      //   okText: '',
-      //   showFrame: false,
-      //   formData: {}
-      // }
     }
   },
   computed: {
-    ...mapState('home', ['schoolCode'])
+    ...mapState('home', ['userInfo', 'schoolCode'])
   },
   created() {
-    const baseData = this.initBaseData()
-    for (const key in baseData) {
-      this[key] = baseData[key]
-    }
   },
   async  mounted() {
     await this._getStreet()
@@ -141,12 +104,6 @@ export default {
   },
   methods: {
     ...mapActions('home', ['getDangerList', 'superviseDanger', 'getStreet', 'getGroup', 'underSchoolList']),
-    initBaseData() {
-      return {
-        schools: []
-        // schoolCodes: ''
-      }
-    },
     // 查询所有街道
     async _getStreet() {
       const req = {
@@ -165,16 +122,20 @@ export default {
     // 根据街道查所有学校
     async _getSchools() {
       const req = {
-        eduCode: this.schoolCode,
+        eduCode: this.userInfo.schoolCode,
         streetCode: this.searchObj.streetCode
       }
       const res = await this.getGroup(req)
-      return res.data[0].memberList && res.data[0].memberList.map(v => v.eduCode)
+      if (res.data.length > 0) {
+        return res.data[0].memberList && res.data[0].memberList.map(v => v.eduCode)
+      } else {
+        return []
+      }
     },
     // 根据教育局查所有学校
     async _getEndSchools() {
       const req = {
-        eduCode: this.schoolCode,
+        eduCode: this.userInfo.schoolCode,
         areas: [],
         keyWord: '',
         page: 1,
@@ -193,10 +154,15 @@ export default {
       const req = {
         ...this.searchObj,
         ...this.pageList,
-        schoolCode: this.schoolCode,
-        schoolName: this.schoolName,
+        schoolCode: this.userInfo.schoolCode,
+        // 有选择的街道根据街道查学校否则根据教育局查学校
         schoolCodes: this.searchObj.streetCode ? this.streetSchoolCodes : this.eduSchoolCodes,
         hasSupervise: false
+      }
+      if (req.schoolCodes.length === 0) {
+        this.userList = []
+        this.total = 0
+        return
       }
       const res = await this.getDangerList(req)
       this.userList = res.data.records
@@ -217,7 +183,7 @@ export default {
         ...this.searchObj,
         ...this.pageList,
         schoolCode: this.schoolCode,
-        schoolName: this.schoolName,
+        // schoolName: this.schoolName,
         schoolCodes: this.searchObj.streetCode ? this.streetSchoolCodes : this.eduSchoolCodes,
         hasSupervise: false
       }
@@ -294,6 +260,7 @@ export default {
     async submit() {
       const req = {
         taskId: this.taskId,
+        superviseState: '0',
         userCode: this.chooseUserList[0].userCode || '',
         userName: this.chooseUserList[0].userName || ''
       }
@@ -303,16 +270,6 @@ export default {
       })
       this.showList()
     },
-    // 学校远程查询
-    handleSearch(value) {
-      const a = this.schools.filter(item => item.schoolName.indexOf(value) !== -1)
-      this.data = a
-    },
-    handleChange(value, option) {
-      // this.searchObj.schoolName = value
-      this.schoolName = value.split(',')[1]
-    },
-
     selectAll() {}
   }
 }

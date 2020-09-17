@@ -146,9 +146,14 @@ export default {
         this.uploadTag = true
         return
       }
+      if (info.file.status === 'error') {
+        this.uploadTag = false
+        return
+      }
       if (info.file.status === 'done') {
         if (info.file.response.code === 400) {
           this.$message.warning(info.file.response.message)
+          this.uploadTag = false
           return
         }
         this.fileList.unshift({
