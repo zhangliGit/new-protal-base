@@ -8,75 +8,68 @@
     :destroyOnClose="true"
     :confirmLoading="confirmLoading"
   >
-    <div class="u-fx u-fx-ac">
-      <div class="u-mar-r20 u-font-2">{{ templateName }}</div>
-      <div>{{ templateRemark }}</div>
-    </div>
-    <search-form isReset @search-form="searchForm">
-      <div slot="left">
-        <a-button class="add-btn" @click="userToAll">应用到全部班牌</a-button>
+    <no-data v-if="noData" msg="暂无数据，请去发布对象添加设备~"></no-data>
+    <div v-else>
+      <div class="choose-user qui-fx">
+        <div class="qui-fx-ver qui-fx-f1">
+          <table-list
+            is-check
+            :scroll-h="500"
+            :page-list="pageList"
+            v-model="chooseList"
+            :columns="columns"
+            @clickRow="clickRow"
+            @selectAll="selectAll"
+            :table-list="tableList"
+          >
+            <template
+              v-slot:other2="record"
+            >{{ record.record.gradeName }}{{ record.record.className }}</template>
+          </table-list>
+          <page-num
+            :jumper="false"
+            v-model="pageList"
+            :mar-top="20"
+            :mar-bot="0"
+            size="small"
+            :total="total"
+            @change-page="showList"
+          ></page-num>
+        </div>
+        <div class="user-box qui-fx-ver">
+          <div class="title qui-fx-jsb">
+            <span>已选择</span>
+            <span>{{ totalList.length }}个</span>
+          </div>
+          <div class="qui-fx-f1" style="overflow: auto">
+            <ul>
+              <li
+                v-for="(item, index) in totalList"
+                :key="item.deviceSn"
+                class="qui-fx-jsb qui-fx-ac"
+              >
+                <span>{{ item.gradeName }}{{ item.className }}</span>
+                <a-tag @click="delUser(item.deviceSn, index)" color="#f50">删除</a-tag>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
-      <template v-slot:place>
-        <a-form-item label="绑定场地">
-          <a-cascader
-            :options="buildList"
-            @click.stop="onFocus"
-            :loadData="loadData"
-            placeholder="请选择绑定场地"
-            v-decorator="['places']"
-          />
-        </a-form-item>
-        <a-form-item label="关联数据">
-          <a-cascader
-            :options="classList"
-            @click.stop="classOnFocus"
-            :loadData="classLoadData"
-            placeholder="请选择关联数据"
-            v-decorator="['classes']"
-          />
-        </a-form-item>
-      </template>
-    </search-form>
-    <div class="choose-user qui-fx">
-      <no-data v-if="noData" msg="暂无设备~"></no-data>
       <div class="qui-fx-ver qui-fx-f1">
-        <table-list
-          is-check
-          :scroll-h="500"
-          :page-list="pageList"
-          v-model="chooseList"
-          :columns="columns"
-          @clickRow="clickRow"
-          @selectAll="selectAll"
-          :table-list="tableList"
-        >
-          <template v-slot:other2="record">
-            {{ record.record.gradeName }}{{ record.record.className }}
-          </template>
-        </table-list>
-        <page-num
-          :jumper="false"
-          v-model="pageList"
-          :mar-top="20"
-          :mar-bot="0"
-          size="small"
-          :total="total"
-          @change-page="showList"
-        ></page-num>
-      </div>
-      <div class="user-box qui-fx-ver">
-        <div class="title qui-fx-jsb">
-          <span>已选择</span>
-          <span>{{ totalList.length }}个</span>
-        </div>
-        <div class="qui-fx-f1" style="overflow: auto">
-          <ul>
-            <li v-for="(item, index) in totalList" :key="item.deviceSn" class="qui-fx-jsb qui-fx-ac">
-              <span>{{ item.gradeName }}{{ item.className }}</span>
-              <a-tag @click="delUser(item.id, index)" color="#f50">删除</a-tag>
-            </li>
-          </ul>
-        </div>
+        <a-form :form="form">
+          <a-form-item label="选择全屏展示的时间：" :label-col="{ span: 4 }" :wrapper-col="{ span: 18 }">
+            <a-range-picker
+              v-decorator="[
+                'time',
+                {initialValue: [appForm.startTime, appForm.endTime ], rules: [{ required: true, message: '请选择时间' }]}
+              ]"
+              :showTime="{ format: 'HH:mm' }"
+              format="YYYY-MM-DD HH:mm"
+              @change="onChange"
+              @ok="onOk"
+            />
+          </a-form-item>
+        </a-form>
       </div>
     </div>
   </a-modal>
@@ -88,6 +81,8 @@ import NoData from '@c/NoData'
 import PageNum from '@c/PageNum'
 import TableList from '@c/TableList'
 import { mapState, mapActions } from 'vuex'
+import moment from 'moment'
+import 'moment/locale/zh-cn'
 const columns = [
   {
     title: '序号',
@@ -105,7 +100,7 @@ const columns = [
     title: '安装位置',
     dataIndex: 'site',
     width: '25%',
-    customRender: text => {
+    customRender: (text) => {
       return parseInt(text) === 1 ? '室内' : '室外'
     }
   },
@@ -136,14 +131,6 @@ export default {
       default: ''
     },
     title: {
-      type: String,
-      default: ''
-    },
-    templateName: {
-      type: String,
-      default: ''
-    },
-    templateRemark: {
       type: String,
       default: ''
     },
@@ -184,21 +171,24 @@ export default {
       tableList: [],
       totalList: [],
       buildList: [],
-      classList: []
+      classList: [],
+      form: this.$form.createForm(this),
+      appForm: {}
     }
   },
   created() {
-    this.totalList = this.deviceList
-    this.deviceList.forEach(item => {
-      this.chooseList.push(item.id)
+    this.deviceList.forEach((item) => {
+      this.chooseList.push(item.deviceSn)
+      this.totalList.push({
+        ...item,
+        id: item.deviceSn
+      })
     })
     this.showList()
   },
-  async mounted() {
-  },
+  async mounted() {},
   methods: {
-    ...mapActions('home', ['getSiteList', 'getChildSite', 'getClassCardList', 'getGradeData', 'getClassData'
-    ]),
+    ...mapActions('home', ['getSiteList', 'getChildSite', 'getClassCardList', 'getGradeData', 'getClassData']),
     async onFocus(value) {
       this.buildList = []
       const req = {
@@ -207,7 +197,7 @@ export default {
       }
       const res = await this.getSiteList(req)
       this.buildList = res.data
-      this.buildList.forEach(el => {
+      this.buildList.forEach((el) => {
         el.label = el.name
         el.value = el.id
         el.isLeaf = false
@@ -220,11 +210,11 @@ export default {
         parentId: targetOption.id,
         schoolCode: this.userInfo.schoolCode
       }
-      this.getChildSite(req).then(res => {
+      this.getChildSite(req).then((res) => {
         targetOption.loading = false
         targetOption.children = res.data.list
         // 处理第三层没有子节点的情况
-        targetOption.children.forEach(el => {
+        targetOption.children.forEach((el) => {
           el.label = el.name + (el.type === '2' ? '楼' : '')
           el.value = el.id
           el.isLeaf = el.type === '3'
@@ -243,7 +233,7 @@ export default {
       }
       const res = await this.getGradeData(req)
       this.classList = res.data.list
-      this.classList.forEach(el => {
+      this.classList.forEach((el) => {
         el.label = el.name
         el.value = el.code
         el.isLeaf = false
@@ -257,10 +247,10 @@ export default {
         schoolCode: this.userInfo.schoolCode,
         schoolYearId: this.schoolYearId
       }
-      this.getClassData(req).then(res => {
+      this.getClassData(req).then((res) => {
         targetOption.loading = false
         targetOption.children = res.data.list
-        targetOption.children.forEach(el => {
+        targetOption.children.forEach((el) => {
           el.label = el.className
           el.value = el.classCode
           el.isLeaf = true
@@ -272,7 +262,7 @@ export default {
         this.classList = [...this.classList]
       })
     },
-    async showList () {
+    async showList() {
       const req = {
         ...this.pageList,
         schoolCode: this.userInfo.schoolCode,
@@ -286,10 +276,15 @@ export default {
       if (!res.data) {
         return
       }
-      this.tableList = res.data.list
+      this.tableList = res.data.list.map((el) => {
+        return {
+          ...el,
+          id: el.deviceSn
+        }
+      })
       this.total = res.data.total
     },
-    searchForm (values) {
+    searchForm(values) {
       this.searchList = values
       this.showList()
     },
@@ -313,9 +308,9 @@ export default {
       if (type) {
         this.totalList = this.totalList.concat(item)
       } else {
-        item.forEach(item => {
-          const index = this.totalList.findIndex(list => {
-            return list.id === item.id
+        item.forEach((item) => {
+          const index = this.totalList.findIndex((list) => {
+            return list.deviceSn === item.deviceSn
           })
           this.totalList.splice(index, 1)
         })
@@ -332,22 +327,29 @@ export default {
           this.totalList = [item]
         }
       } else {
-        const index = this.totalList.findIndex(list => list.id === item.id)
+        const index = this.totalList.findIndex((list) => list.deviceSn === item.deviceSn)
         this.totalList.splice(index, 1)
       }
+    },
+    onChange (value, dateString) {
+      this.appForm.startTime = dateString[0]
+      this.appForm.endTime = dateString[1]
+    },
+    onOk (value) {
+      this.appForm.startTime = moment(value[0]).format('YYYY-MM-DD HH:mm')
+      this.appForm.endTime = moment(value[1]).format('YYYY-MM-DD HH:mm')
     },
     submitOk() {
       if (this.totalList.length === 0) {
         this.$message.warning('请选择设备')
         return
       }
+      if (!this.appForm.startTime || !this.appForm.endTime) {
+        this.$message.warning('请选择全屏展示的时间')
+        return
+      }
       this.confirmLoading = true
-      this.$emit('submit', this.totalList)
-    },
-    userToAll() {
-      this.$tools.delTip(`确定将${this.templateName}应用于全部班牌?`, () => {
-        this.$emit('userToAll')
-      })
+      this.$emit('submit', this.totalList, this.appForm)
     }
   }
 }

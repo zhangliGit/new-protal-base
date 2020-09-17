@@ -1,5 +1,5 @@
 <template>
-  <div class="qui-fx-f1" style="min-height: 400px">
+  <div class="qui-fx-f1" :style="{'minHeight': minHeight + 'px'}">
     <div
       id="tableList"
       :style="{
@@ -11,7 +11,7 @@
       }"
     >
       <a-table
-        style="height: 400px"
+        :style="{'height': minHeight + 'px'}"
         :scroll="{ y: scrollH || this.$tools.setScroll('tableList') }"
         :customRow="customRow"
         :pagination="false"
@@ -114,6 +114,11 @@ export default {
       type: Number,
       required: false,
       default: 0
+    },
+    minHeight: {
+      type: Number,
+      required: false,
+      default: 400
     },
     isZoom: {
       type: Boolean,
