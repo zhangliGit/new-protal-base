@@ -93,11 +93,15 @@
             <div class="u-mar" v-if="fileList.length !== 0">
               <div>附件</div>
               <div class="subject u-mar-t10 u-padd-l20 u-padd-t10 u-padd-b10">
-                <div class="qui-fx u-mar-t10" v-for="(list, i) in fileList" :key="i">
+                <div class="qui-fx u-mar-t10 u-padd-r20" v-for="(list, i) in fileList" :key="i">
                   <div class="qui-fx-ver">题目是：</div>
-                  <div class="qui-fx-ver u-mar-l20">
+                  <div class="qui-fx-f1 qui-fx-ver u-mar-l20">
                     <div>{{ list.title }}</div>
-                    <div class="u-mar-t10" >
+                    <div class="u-mar-t10" v-if="disabled">
+                      <img class="u-mar-r10" :src="img" alt /> 附件
+                      <span class="u-type-primary" @click="exportClick(list.answers[0])">下载</span>
+                    </div>
+                    <div class="u-mar-t10" v-else>
                       <a-upload
                         name="fileList"
                         :multiple="false"
@@ -105,15 +109,16 @@
                         :data="params"
                         :remove="value => handleRemove(value, i)"
                         @change="value => handleChange(value, i)"
-                        v-if="list.show && !disabled"
+                        v-if="list.show"
                       >
-                        <a-button>
+                        <a-button :disabled="flag">
                           <a-icon type="upload" />上传附件
                         </a-button>
                       </a-upload>
-                      <div>
-                        {{ list.docName }}
-                        <a-button class="del-action-btn mar-l10" icon="delete" size="small" @click="delFile(i)"></a-button>
+                      <div v-else>
+                        <img class="u-mar-r10" :src="img" alt /> 附件
+                        <span class="u-type-primary" @click="exportClick(list.answers[0])">下载</span>
+                        <a-button class="del-action-btn mar-l10" icon="delete" size="small" @click="delFile(i)" ></a-button>
                       </div>
                     </div>
                   </div>
@@ -158,13 +163,17 @@ export default {
       disabled: false,
       show: true,
       params: {},
-      isLoad: false
+      isLoad: false,
+      flag: false
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
+    this.taskTemplateCode = this.$route.query.taskTemplateCode
+    this.taskCode = this.$route.query.taskCode
+    this.url = `${hostEnv.zx_subject}/file/upload/doc`
     this.taskId = this.$route.query.id
     this.disabled = this.$route.query.state === '0'
     console.log('aa',this.disabled)
@@ -172,7 +181,7 @@ export default {
     this.showDetail()
   },
   methods: {
-    ...mapActions('home', ['previewTask', 'previewMyTask']),
+    ...mapActions('home', ['previewTask', 'previewMyTask', 'answerTask']),
     moment,
     // 获取详情 previewMyTask
     async showDetail() {
@@ -216,12 +225,15 @@ export default {
       this.fileList[i].show = true
     },
     handleChange(info, i) {
+      this.flag = true
       if (info.file.status !== 'uploading' && info.file.status !== 'removed') {
+        this.flag = false
         if (info.file.response) {
           this.$message.error(info.file.response.message)
         }
       }
       if (info.file.status === 'done') {
+        this.flag = false
         if (info.file.response.code === 200) {
           this.fileList[i].show = false
           this.fileList[i].docName = info.file.name
@@ -232,6 +244,7 @@ export default {
           this.$message.error(info.file.response.message)
         }
       } else if (info.file.status === 'error') {
+        this.flag = false
         this.$message.error(`${info.file.name} 上传失败`)
       }
     },
@@ -254,7 +267,7 @@ export default {
       const arr = this.radioList.concat(this.checkList).concat(this.fillList).concat(this.fileList)
       const answers = arr.map(el => {
         return {
-          answers: Array.isArray(el.answer) ? el.answer : [el.answer],
+          answers: el.answers,
           questionTemplateId: el.questionTemplateId,
           questionType: el.questionType
         }
