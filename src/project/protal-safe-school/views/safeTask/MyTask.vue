@@ -133,7 +133,7 @@ export default {
       this.showList()
     },
     add(type, record) {
-      if (type === 0 || type === 2) {
+      if (type === 0 || type === 2 || type === 4) {
         this.$router.push({
           path: '/myTask/taskPreview',
           query: {

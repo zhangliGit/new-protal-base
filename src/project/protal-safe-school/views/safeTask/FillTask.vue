@@ -44,7 +44,7 @@
                   <div class="qui-fx-ver u-mar-l20">
                     <div>{{ list.title }}</div>
                     <div class="u-mar-t10">
-                      <a-radio-group v-model="list.answer" :disabled="state">
+                      <a-radio-group v-model="list.answer">
                         <a-radio
                           v-for="(element,index) in list.content"
                           :value="element"
@@ -64,7 +64,7 @@
                   <div class="qui-fx-ver u-mar-l20">
                     <div>{{ list.title }}</div>
                     <div class="u-mar-t10">
-                      <a-checkbox-group v-model="list.answer" :disabled="state">
+                      <a-checkbox-group v-model="list.answer">
                         <a-checkbox
                           v-for="(element,index) in list.content"
                           :value="element"
@@ -79,12 +79,12 @@
             <div class="u-mar" v-if="fillList.length !== 0">
               <div>填空题</div>
               <div class="subject u-mar-t10 u-padd-l20 u-padd-t10 u-padd-b10">
-                <div class="qui-fx u-mar-t10" v-for="(list, i) in fillList" :key="i">
+                <div class="qui-fx u-mar-t10 u-padd-r20" v-for="(list, i) in fillList" :key="i">
                   <div class="qui-fx-ver">题目是：</div>
-                  <div class="qui-fx-ver u-mar-l20">
+                  <div class="qui-fx-f1 qui-fx-ver u-mar-l20">
                     <div>{{ list.title }}</div>
                     <div class="u-mar-t10">
-                      <a-input placeholder="请填写答案" v-model="list.answer" :disabled="state" />
+                      <a-input style="width:100%" placeholder="请填写答案" v-model="list.answer"/>
                     </div>
                   </div>
                 </div>
@@ -97,26 +97,31 @@
                   <div class="qui-fx-ver">题目是：</div>
                   <div class="qui-fx-ver u-mar-l20">
                     <div>{{ list.title }}</div>
-                    <div class="u-mar-t10">
+                    <div class="u-mar-t10" >
                       <a-upload
                         name="fileList"
                         :multiple="false"
                         :action="url"
                         :data="params"
-                        :remove="handleRemove($event, i)"
-                        @change="handleChange($event, i)"
+                        :remove="value => handleRemove(value, i)"
+                        @change="value => handleChange(value, i)"
+                        v-if="list.show"
                       >
-                        <a-button v-if="list.show && state">
+                        <a-button>
                           <a-icon type="upload" />上传附件
                         </a-button>
                       </a-upload>
+                      <div v-if="!list.show">
+                        {{ list.docName }}
+                        <a-button class="del-action-btn mar-l10" icon="delete" size="small" @click="delFile(i)"></a-button>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div class="u-tx-c u-mar-t20" v-if="!state">
+          <div class="u-tx-c u-mar-t20">
             <a-button @click="cancel">取消</a-button>
             <a-button class="mar-l10" type="primary" @click="submitOk" :disabled="isLoad">保存</a-button>
           </div>
@@ -147,8 +152,7 @@ export default {
       fillList: [],
       fileList: [],
       url: '',
-      show: true,
-      state: false
+      show: true
     }
   },
   computed: {
@@ -157,7 +161,6 @@ export default {
   mounted() {
     this.url = `${hostEnv.zx_subject}/file/upload/doc`
     this.params.schoolCode = this.userInfo.schoolCode
-    this.state = this.$route.query.state === '0'
     this.taskId = this.$route.query.id
     this.taskCode = this.$route.query.taskCode
     this.taskTemplateCode = this.$route.query.taskTemplateCode
@@ -191,6 +194,7 @@ export default {
           this.fillList.push(el)
         } else {
           this.fileList.push({ ...el, show: true })
+          console.log('aaa', this.fileList)
         }
       })
     },
@@ -206,9 +210,10 @@ export default {
       if (info.file.status === 'done') {
         if (info.file.response.code === 200) {
           this.fileList[i].show = false
+          this.fileList[i].docName = info.file.name
+          this.fileList[i].docUrl = info.file.response.data[0]
+          this.fileList[i].answers = [info.file.response.data[0]]
           this.$message.success(`${info.file.name} 上传成功`)
-          this.docUrl = info.file.response.data[0]
-          this.docName = info.file.name
         } else {
           this.$message.error(info.file.response.message)
         }
@@ -216,11 +221,14 @@ export default {
         this.$message.error(`${info.file.name} 上传失败`)
       }
     },
+    delFile(i) {
+      this.fileList[i].show = true
+      this.fileList[i].docName = ''
+    },
     cancel() {
       this.$router.go(-1)
     },
     submitOk() {
-      this.isLoad = true
       const req = {
         taskCode: this.taskCode,
         taskId: this.taskId,
@@ -236,6 +244,7 @@ export default {
         }
       })
       req.answers = answers
+      this.isLoad = true
       this.answerTask(req)
         .then(res => {
           this.isLoad = false

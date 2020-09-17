@@ -85,7 +85,7 @@
                   <div class="qui-fx-ver">题目是：</div>
                   <div class="qui-fx-ver u-mar-l20">
                     <div class="u-mar-b10">{{ list.title }}</div>
-                    <a-input :read-only="disabled" v-model="list.answers[0]" />
+                    <a-input :disabled="disabled" v-model="list.answers[0]" />
                   </div>
                 </div>
               </div>
@@ -95,14 +95,37 @@
               <div class="subject u-mar-t10 u-padd-l20 u-padd-t10 u-padd-b10">
                 <div class="qui-fx u-mar-t10" v-for="(list, i) in fileList" :key="i">
                   <div class="qui-fx-ver">题目是：</div>
-                  <div class="qui-fx u-mar-l20">
+                  <div class="qui-fx-ver u-mar-l20">
                     <div>{{ list.title }}</div>
+                    <div class="u-mar-t10" >
+                      <a-upload
+                        name="fileList"
+                        :multiple="false"
+                        :action="url"
+                        :data="params"
+                        :remove="value => handleRemove(value, i)"
+                        @change="value => handleChange(value, i)"
+                        v-if="list.show && !disabled"
+                      >
+                        <a-button>
+                          <a-icon type="upload" />上传附件
+                        </a-button>
+                      </a-upload>
+                      <div>
+                        {{ list.docName }}
+                        <a-button class="del-action-btn mar-l10" icon="delete" size="small" @click="delFile(i)"></a-button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
+      <div class="u-tx-c u-mar-t20" v-if="!disabled">
+        <a-button @click="cancel">取消</a-button>
+        <a-button class="mar-l10" type="primary" @click="submitOk" :disabled="isLoad">保存</a-button>
       </div>
     </div>
   </div>
@@ -132,7 +155,10 @@ export default {
       docUrl: '',
       docName: '',
       detailInfo: {},
-      disabled: false
+      disabled: false,
+      show: true,
+      params: {},
+      isLoad: false
     }
   },
   computed: {
@@ -141,6 +167,8 @@ export default {
   mounted() {
     this.taskId = this.$route.query.id
     this.disabled = this.$route.query.state === '0'
+    console.log('aa',this.disabled)
+    this.params.schoolCode = this.userInfo.schoolCode
     this.showDetail()
   },
   methods: {
@@ -164,7 +192,7 @@ export default {
                 content: item
               }
             })
-            : undefined
+            : []
         }
       })
       questions.map((el) => {
@@ -175,17 +203,75 @@ export default {
         } else if (el.questionType === '3') {
           this.fillList.push(el)
         } else {
-          this.fileList.push(el)
+          this.fileList.push({ ...el, show: false })
         }
       })
       this.docName = res.data.docName
     },
-    handleChange() {},
+    delFile(i) {
+      this.fileList[i].show = true
+      this.fileList[i].docName = ''
+    },
+    handleRemove(info, i) {
+      this.fileList[i].show = true
+    },
+    handleChange(info, i) {
+      if (info.file.status !== 'uploading' && info.file.status !== 'removed') {
+        if (info.file.response) {
+          this.$message.error(info.file.response.message)
+        }
+      }
+      if (info.file.status === 'done') {
+        if (info.file.response.code === 200) {
+          this.fileList[i].show = false
+          this.fileList[i].docName = info.file.name
+          this.fileList[i].docUrl = info.file.response.data[0]
+          this.fileList[i].answers = [info.file.response.data[0]]
+          this.$message.success(`${info.file.name} 上传成功`)
+        } else {
+          this.$message.error(info.file.response.message)
+        }
+      } else if (info.file.status === 'error') {
+        this.$message.error(`${info.file.name} 上传失败`)
+      }
+    },
     exportClick (docUrl) {
       if (docUrl) {
         const url = `${hostEnv.zx_subject}/file/downLoad/doc?url=${docUrl}`
         window.open(url)
       }
+    },
+    cancel() {
+      this.$router.go(-1)
+    },
+    submitOk() {
+      const req = {
+        taskCode: this.taskCode,
+        taskId: this.taskId,
+        taskTemplateCode: this.taskTemplateCode,
+        userCode: this.userInfo.userCode
+      }
+      const arr = this.radioList.concat(this.checkList).concat(this.fillList).concat(this.fileList)
+      const answers = arr.map(el => {
+        return {
+          answers: Array.isArray(el.answer) ? el.answer : [el.answer],
+          questionTemplateId: el.questionTemplateId,
+          questionType: el.questionType
+        }
+      })
+      req.answers = answers
+      this.isLoad = true
+      this.answerTask(req)
+        .then(res => {
+          this.isLoad = false
+          this.$message.success('操作成功')
+          this.$tools.goNext(() => {
+            this.cancel()
+          })
+        })
+        .catch(res => {
+          this.isLoad = false
+        })
     }
   }
 }

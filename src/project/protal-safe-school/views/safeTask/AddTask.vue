@@ -87,7 +87,7 @@
             v-if="cardInfo.taskType === '1'"
           >
             <a-range-picker
-              v-decorator="['data', {initialValue: [moment(new Date(), 'YYYY-MM-DD'), moment( new Date(), 'YYYY-MM-DD')], rules: [{ required: 'required', message: '请选择时间' }]}]"
+              v-decorator="['data', {initialValue: [moment(new Date(cardInfo.startTime), 'YYYY-MM-DD'), moment( new Date(cardInfo.endTime), 'YYYY-MM-DD')], rules: [{ required: 'required', message: '请选择时间' }]}]"
             />
           </a-form-item>
           <a-form-item
@@ -378,14 +378,7 @@ export default {
     this.getnumofweeks(this.value)
   },
   methods: {
-    ...mapActions('home', [
-      'getTaskDetail',
-      'addSchoolTask',
-      'updateDailyTask',
-      'addSafeTask',
-      'updateSafeTask',
-      'modifySchoolTask'
-    ]),
+    ...mapActions('home', [ 'getTaskDetail', 'addSchoolTask', 'modifySchoolTask' ]),
     moment,
     // 获取详情
     async showDetail() {
@@ -512,7 +505,6 @@ export default {
       this.show = true
     },
     handleChange(info) {
-      console.log('aa', info)
       if (info.file.status !== 'uploading' && info.file.status !== 'removed') {
         if (info.file.response) {
           this.$message.error(info.file.response.message)
@@ -575,7 +567,7 @@ export default {
                 ? el.pointList.map((item) => {
                   return item.content
                 })
-                : undefined,
+                : [],
             title: el.title,
             questionType: el.questionType
           }
@@ -588,15 +580,14 @@ export default {
         values.docName = this.docName
         values.questions = list
         values.des = this.cardInfo.des
-        values.startTime = this.cardInfo.taskType === '1' ? moment(values.data[0]).format('YYYY-MM-DD') : undefined
-        values.endTime = this.cardInfo.taskType === '1' ? moment(values.data[1]).format('YYYY-MM-DD') : undefined
+        values.startTime = this.cardInfo.taskType === '1' ? moment(values.data[0]).format('YYYY-MM-DD') : ''
+        values.endTime = this.cardInfo.taskType === '1' ? moment(values.data[1]).format('YYYY-MM-DD') : ''
         values.dateNums =
           this.cardInfo.taskType === '2'
             ? this.weekCurrent
             : this.cardInfo.taskType === '3'
               ? this.monthCurrent
-              : undefined
-        console.log('values', values)
+              : ''
         this.isLoad = false
         if (!error) {
           this.isLoad = true
