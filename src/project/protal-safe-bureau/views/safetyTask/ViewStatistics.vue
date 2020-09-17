@@ -295,13 +295,13 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   async mounted() {
-    // await this.getDetails()
-    this._seeStatistics()
+    await this.getDetails()
+    // this._seeStatistics()
   },
   methods: {
     ...mapActions('home', ['seeStatistics', 'seeStatisticsLists']),
     async getDetails() {
-      const res = await this.seeStatisticsLists({ taskCode: 'S9x7ya0g0dlvk' })
+      const res = await this.seeStatisticsLists({ taskCode: this.taskCode })
       this.dataLists = res.data
     },
     async _seeStatistics() {

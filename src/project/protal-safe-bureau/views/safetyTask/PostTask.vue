@@ -53,6 +53,7 @@
       title="选择学校"
     >
     </choose-school>
+
   </div>
 </template>
 
@@ -69,6 +70,8 @@ export default {
     return {
       taskId: this.$route.query.id,
       taskName: this.$route.query.taskName,
+      publisherCode: this.$route.query.publisherCode,
+      publisherName: this.$route.query.publisherName,
       form: this.$form.createForm(this),
       SchoolAll: [],
       jobList: [], // 职务集合
@@ -118,6 +121,7 @@ export default {
     },
     // 选中职务
     handleChange(values) {
+      if (values.length <= 0) return
       this.searchPeople(values, this.SchoolAll)
     },
     // 根据选中的学校职务找人
@@ -136,8 +140,8 @@ export default {
         // console.log(peopleLists)
         if (!error) {
           const req = {
-            publisherCode: this.userInfo.userCode,
-            publisherName: this.userInfo.userName,
+            publisherCode: this.publisherCode,
+            publisherName: this.publisherName,
             taskId: this.taskId,
             users: this.peopleList
           }
