@@ -8,14 +8,13 @@
     :destroyOnClose="true"
     :confirmLoading="confirmLoading"
   >
-    <no-data v-if="noData" msg="暂无数据，请去发布对象添加设备~"></no-data>
+    <no-data class="u-fx-ac-jc" style="width: 300px" v-if="noData" msg="暂无数据，请去发布对象添加设备~"></no-data>
     <div v-else>
       <div class="choose-user qui-fx">
         <div class="qui-fx-ver qui-fx-f1">
           <table-list
             is-check
             :scroll-h="500"
-            :page-list="pageList"
             v-model="chooseList"
             :columns="columns"
             @clickRow="clickRow"
@@ -26,15 +25,6 @@
               v-slot:other2="record"
             >{{ record.record.gradeName }}{{ record.record.className }}</template>
           </table-list>
-          <page-num
-            :jumper="false"
-            v-model="pageList"
-            :mar-top="20"
-            :mar-bot="0"
-            size="small"
-            :total="total"
-            @change-page="showList"
-          ></page-num>
         </div>
         <div class="user-box qui-fx-ver">
           <div class="title qui-fx-jsb">
@@ -45,11 +35,11 @@
             <ul>
               <li
                 v-for="(item, index) in totalList"
-                :key="item.deviceSn"
+                :key="item.id"
                 class="qui-fx-jsb qui-fx-ac"
               >
                 <span>{{ item.gradeName }}{{ item.className }}</span>
-                <a-tag @click="delUser(item.deviceSn, index)" color="#f50">删除</a-tag>
+                <a-tag @click="delUser(item.id, index)" color="#f50">删除</a-tag>
               </li>
             </ul>
           </div>
@@ -76,9 +66,7 @@
 </template>
 
 <script>
-import SearchForm from '@c/SearchForm'
 import NoData from '@c/NoData'
-import PageNum from '@c/PageNum'
 import TableList from '@c/TableList'
 import { mapState, mapActions } from 'vuex'
 import moment from 'moment'
@@ -116,10 +104,8 @@ const columns = [
 export default {
   name: 'ChooseSubteacher',
   components: {
-    PageNum,
     TableList,
-    NoData,
-    SearchForm
+    NoData
   },
   props: {
     isCheck: {
@@ -131,6 +117,10 @@ export default {
       default: ''
     },
     title: {
+      type: String,
+      default: ''
+    },
+    mediaCode: {
       type: String,
       default: ''
     },
@@ -161,128 +151,33 @@ export default {
       confirmLoading: false,
       noData: false,
       chooseList: [],
-      pageList: {
-        page: 1,
-        size: 20
-      },
-      total: 0,
       columns,
-      searchList: {},
       tableList: [],
       totalList: [],
-      buildList: [],
-      classList: [],
       form: this.$form.createForm(this),
       appForm: {}
     }
   },
   created() {
+    this.totalList = this.deviceList
     this.deviceList.forEach((item) => {
-      this.chooseList.push(item.deviceSn)
-      this.totalList.push({
-        ...item,
-        id: item.deviceSn
-      })
+      this.chooseList.push(item.id)
     })
     this.showList()
   },
   async mounted() {},
   methods: {
-    ...mapActions('home', ['getSiteList', 'getChildSite', 'getClassCardList', 'getGradeData', 'getClassData']),
-    async onFocus(value) {
-      this.buildList = []
-      const req = {
-        name: '',
-        schoolCode: this.userInfo.schoolCode
-      }
-      const res = await this.getSiteList(req)
-      this.buildList = res.data
-      this.buildList.forEach((el) => {
-        el.label = el.name
-        el.value = el.id
-        el.isLeaf = false
-      })
-    },
-    loadData(selectedOptions) {
-      const targetOption = selectedOptions[selectedOptions.length - 1]
-      targetOption.loading = true
-      const req = {
-        parentId: targetOption.id,
-        schoolCode: this.userInfo.schoolCode
-      }
-      this.getChildSite(req).then((res) => {
-        targetOption.loading = false
-        targetOption.children = res.data.list
-        // 处理第三层没有子节点的情况
-        targetOption.children.forEach((el) => {
-          el.label = el.name + (el.type === '2' ? '楼' : '')
-          el.value = el.id
-          el.isLeaf = el.type === '3'
-        })
-        targetOption.children.unshift({
-          label: '全部',
-          value: ''
-        })
-        this.buildList = [...this.buildList]
-      })
-    },
-    async classOnFocus(value) {
-      this.classList = []
-      const req = {
-        schoolCode: this.userInfo.schoolCode
-      }
-      const res = await this.getGradeData(req)
-      this.classList = res.data.list
-      this.classList.forEach((el) => {
-        el.label = el.name
-        el.value = el.code
-        el.isLeaf = false
-      })
-    },
-    classLoadData(selectedOptions) {
-      const targetOption = selectedOptions[selectedOptions.length - 1]
-      targetOption.loading = true
-      const req = {
-        gradeCode: targetOption.code,
-        schoolCode: this.userInfo.schoolCode,
-        schoolYearId: this.schoolYearId
-      }
-      this.getClassData(req).then((res) => {
-        targetOption.loading = false
-        targetOption.children = res.data.list
-        targetOption.children.forEach((el) => {
-          el.label = el.className
-          el.value = el.classCode
-          el.isLeaf = true
-        })
-        targetOption.children.unshift({
-          label: '全部',
-          value: ''
-        })
-        this.classList = [...this.classList]
-      })
-    },
+    ...mapActions('home', ['getDeviceData']),
     async showList() {
       const req = {
-        ...this.pageList,
-        schoolCode: this.userInfo.schoolCode,
-        ...this.searchList,
-        placeId: this.searchList.places ? this.searchList.places.join(',') : undefined,
-        gradeCode: this.searchList.classes ? this.searchList.classes[0] : undefined,
-        classCode: this.searchList.classes ? this.searchList.classes[1] : undefined,
-        bindStatus: '1'
+        mediaCode: this.mediaCode
       }
-      const res = await this.getClassCardList(req)
-      if (!res.data) {
+      const res = await this.getDeviceData(req)
+      if (!res.data || res.data.list.length === 0) {
+        this.noData = true
         return
       }
-      this.tableList = res.data.list.map((el) => {
-        return {
-          ...el,
-          id: el.deviceSn
-        }
-      })
-      this.total = res.data.total
+      this.tableList = res.data.list
     },
     searchForm(values) {
       this.searchList = values
@@ -310,7 +205,7 @@ export default {
       } else {
         item.forEach((item) => {
           const index = this.totalList.findIndex((list) => {
-            return list.deviceSn === item.deviceSn
+            return list.id === item.id
           })
           this.totalList.splice(index, 1)
         })
@@ -318,7 +213,6 @@ export default {
     },
     // 监听选中或取消
     clickRow(item, type) {
-      console.log(item)
       if (type) {
         if (this.isCheck) {
           this.totalList.push(item)
@@ -327,7 +221,7 @@ export default {
           this.totalList = [item]
         }
       } else {
-        const index = this.totalList.findIndex((list) => list.deviceSn === item.deviceSn)
+        const index = this.totalList.findIndex((list) => list.id === item.id)
         this.totalList.splice(index, 1)
       }
     },
@@ -357,7 +251,7 @@ export default {
 
 <style lang="less" scoped>
 .choose-user {
-  height: 600px;
+  height: 500px;
   .org-box {
     width: 200px;
   }

@@ -8,22 +8,6 @@
     :destroyOnClose="true"
     :confirmLoading="confirmLoading"
   >
-    <a-row type="flex" justify="start" style="margin-bottom: 15px;">
-      <a-col>
-        <span>设备名称：</span>
-        <a-input v-model="keyword" style="width: 120px;margin-right: 20px" placeholder="请输入设备名称" />
-      </a-col>
-      <a-col>
-        <span>设备类型：</span>
-        <a-select v-model="deviceType" style="width: 120px;margin-right: 20px">
-          <a-select-option v-for="(item, i) in typeList" :key="i" :value="item.key">{{ item.val }}</a-select-option>
-        </a-select>
-      </a-col>
-      <a-col>
-        <a-button type="primary" @click="getControlList">查询</a-button>
-        <a-button type="default" @click="resetBtn">重置</a-button>
-      </a-col>
-    </a-row>
     <div class="choose-user qui-fx">
       <div class="qui-fx-ver qui-fx-f1">
         <table-list

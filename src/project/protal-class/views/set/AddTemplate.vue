@@ -10,9 +10,19 @@
             @end="end22"
             :move="allowMove22"
             class="dragArea11"
-            :style="{'backgroundImage' : 'url('+gridImg+')','height': '660px', 'width':'100%'}">
-            <div :name="item.name" class="notice-card qui-fx-ver" v-for="(item,i) in list" :key="i" :style="{'width':''+(item.x)+'px','height':''+(item.y)+'px'}">
-              <div class="qui-fx-f1 qui-fx-ver qui-fx-jsb right-img" :style="{'backgroundImage': 'url('+item.img+')'}"></div>
+            :style="{'backgroundImage' : 'url('+gridImg+')','height': '660px', 'width':'100%'}"
+          >
+            <div
+              :name="item.name"
+              class="notice-card qui-fx-ver"
+              v-for="(item,i) in list"
+              :key="i"
+              :style="{'width':''+(item.x)+'px','height':''+(item.y)+'px'}"
+            >
+              <div
+                class="qui-fx-f1 qui-fx-ver qui-fx-jsb right-img"
+                :style="{'backgroundImage': 'url('+item.img+')'}"
+              ></div>
               <div class="notice-title qui-fx-jc qui-je" style="background: #fff">{{ item.title }}</div>
               <div v-if="item.img && delTag">
                 <a-button icon="delete" class="del-btn" @click="handleDel(i, item.title)"></a-button>
@@ -37,12 +47,8 @@
               />
             </a-form-item>
             <a-form-item :wrapper-col="{ span: 12, offset: 4 }">
-              <a-button class="mar-r10">
-                取消
-              </a-button>
-              <a-button type="primary" @click="addSubmit">
-                保存
-              </a-button>
+              <a-button class="mar-r10">取消</a-button>
+              <a-button type="primary" @click="addSubmit">保存</a-button>
             </a-form-item>
           </a-form>
         </div>
@@ -56,16 +62,23 @@
           @end="end"
           class="dragArea box"
           :move="allowMove"
-          :style="{height: (scrollH - 150) + 'px'}">
+          :style="{height: (scrollH - 150) + 'px'}"
+        >
           <div
             :id="item.x + '^' + item.y"
             :class="item.flag ? 'undraggable notice-card qui-fx-ver choose' : 'notice-card qui-fx-ver ' "
             v-for="(item, index) in imgList"
             :key="item.key"
-            @click="chooseImg(item, index)">
-            <div class="qui-fx-f1 qui-fx-ver qui-fx-jsb right-img" :style="{'backgroundImage': 'url('+item.img+')'}"></div>
+            @click="chooseImg(item, index)"
+          >
+            <div
+              class="qui-fx-f1 qui-fx-ver qui-fx-jsb right-img"
+              :style="{'backgroundImage': 'url('+item.img+')'}"
+            ></div>
             <div class="notice-title qui-fx-jc qui-je">{{ item.title }}</div>
-            <div class="notice-title qui-fx-jc qui-je u-font-01">尺寸{{ item.x === 200 ? 1 : item.x === 420 ? 2 : 0 }} * {{ item.y === 200 ? 1 : item.y === 420 ? 2 : 0 }}</div>
+            <div
+              class="notice-title qui-fx-jc qui-je u-font-01"
+            >尺寸{{ item.x === 200 ? 1 : item.x === 420 ? 2 : 0 }} * {{ item.y === 200 ? 1 : item.y === 420 ? 2 : 0 }}</div>
           </div>
         </draggable>
       </div>
@@ -93,9 +106,8 @@ export default {
     draggable,
     html2canvas
   },
-  props: {
-  },
-  data () {
+  props: {},
+  data() {
     return {
       form: this.$form.createForm(this),
       formData: {
@@ -198,15 +210,13 @@ export default {
           img: classShow,
           x: 200,
           y: 200,
-          name: 'Student'
+          name: 'ClassInfo'
         }
       ]
     }
   },
   computed: {
-    ...mapState('home', [
-      'userInfo'
-    ])
+    ...mapState('home', ['userInfo'])
   },
   mounted() {
     this.showList()
@@ -218,16 +228,14 @@ export default {
     }
   },
   methods: {
-    ...mapActions('home', [
-      'addTemplate', 'editTemplate', 'getTemplateDetail'
-    ]),
+    ...mapActions('home', ['addTemplate', 'editTemplate', 'getTemplateDetail']),
     async _getTemplateDetail() {
       const res = await this.getTemplateDetail(this.id)
       this.formData = {
         name: res.data.template.name,
         remark: res.data.template.description
       }
-      this.setList = res.data.templateDetailList.map(el => {
+      this.setList = res.data.templateDetailList.map((el) => {
         return {
           name: el.name,
           title: el.title,
@@ -236,21 +244,27 @@ export default {
           position: parseInt(el.position)
         }
       })
-      this.list = res.data.templateDetailList.map(el => {
+      this.list = res.data.templateDetailList.map((el) => {
         return {
           x: el.width === '1' ? 200 : 420,
           y: el.height === '1' ? 200 : 420,
           name: el.name,
           title: el.title,
-          img: this.imgList.filter(item => {
+          img: this.imgList.filter((item) => {
             return item.name === el.name
-          })[0].img
+          })[0]
+            ? this.imgList.filter((item) => {
+              return item.name === el.name
+            })[0].img
+            : ''
         }
       })
       this.imgList.forEach((el, index) => {
-        if (res.data.templateDetailList.filter(item => {
-          return item.name === el.name
-        }).length > 0) {
+        if (
+          res.data.templateDetailList.filter((item) => {
+            return item.name === el.name
+          }).length > 0
+        ) {
           this.$set(this.imgList[index], 'flag', true)
         }
       })
@@ -258,8 +272,8 @@ export default {
     transform(type, val) {
       if (type === 'size') {
         const data = {
-          '200': 1,
-          '420': 2
+          200: 1,
+          420: 2
         }
         return data[val]
       } else if (type === 'position') {
@@ -296,12 +310,11 @@ export default {
         }
       }
     },
-    start (event) {
-    },
-    end (ev) {
+    start(event) {},
+    end(ev) {
       console.log(ev)
       if (ev.to.className === 'dragArea11') {
-        this.setList = Array.prototype.slice.call(ev.to.childNodes).map(ele => {
+        this.setList = Array.prototype.slice.call(ev.to.childNodes).map((ele) => {
           return {
             name: ele.getAttribute('name'),
             title: ele.innerText,
@@ -315,13 +328,13 @@ export default {
       }
     },
     yzSize(item) {
-      if (item.position > 0 && item.position < 5 && ((item.position + item.width) > 5 || item.height > 3)) {
+      if (item.position > 0 && item.position < 5 && (item.position + item.width > 5 || item.height > 3)) {
         return false
       }
-      if (item.position > 4 && item.position < 9 && ((item.position - 4 + item.width) > 5 || item.height > 2)) {
+      if (item.position > 4 && item.position < 9 && (item.position - 4 + item.width > 5 || item.height > 2)) {
         return false
       }
-      if (item.position > 8 && item.position < 13 && ((item.position - 8 + item.width) > 5 || item.height > 1)) {
+      if (item.position > 8 && item.position < 13 && (item.position - 8 + item.width > 5 || item.height > 1)) {
         return false
       }
       if (item.position > 8 && item.height > 1) {
@@ -338,14 +351,24 @@ export default {
         return false
       }
       let num = 0
-      this.setList.forEach(el => {
-        num += (el.width * el.height)
+      this.setList.forEach((el) => {
+        num += el.width * el.height
       })
       if (num >= 12) {
         return false
       }
-      const position = this.setList.length === 0 ? 1 : parseInt(this.setList[this.setList.length - 1].position) + parseInt(this.setList[this.setList.length - 1].width)
-      if (position <= 4 && this.setList.some(el => { return el.height === 1 }) && this.transform('size', ev.draggedContext.element.y) > 1) {
+      const position =
+        this.setList.length === 0
+          ? 1
+          : parseInt(this.setList[this.setList.length - 1].position) +
+            parseInt(this.setList[this.setList.length - 1].width)
+      if (
+        position <= 4 &&
+        this.setList.some((el) => {
+          return el.height === 1
+        }) &&
+        this.transform('size', ev.draggedContext.element.y) > 1
+      ) {
         return false
       }
       if (position > 4 && num % 2 !== 0 && this.transform('size', ev.draggedContext.element.y) > 1) {
@@ -359,7 +382,7 @@ export default {
         height: this.transform('size', ev.draggedContext.element.y),
         position: position
       })
-      this.setList.forEach(el => {
+      this.setList.forEach((el) => {
         if (!this.yzSize(el)) {
           allowTag = false
         }
@@ -370,16 +393,16 @@ export default {
       this.setList.splice(i, 1)
       return allowTag
     },
-    start22 (ev) {
+    start22(ev) {
       this.falgs = '222222'
     },
-    end22 (ev) {
+    end22(ev) {
       this.falgs = 'article'
     },
     allowMove22(ev) {
       return false
     },
-    handleDel (index, title) {
+    handleDel(index, title) {
       this.list.splice(index, 1)
       const q = this.imgList.find((value, index, arr) => {
         return value.title === title
@@ -390,16 +413,15 @@ export default {
       this.setList.splice(i, 1)
       this.$set(q, 'flag', false)
     },
-    async showList () {
-    },
-    chooseImg (item, index) {
+    async showList() {},
+    chooseImg(item, index) {
       this.active = index
     },
-    addSubmit () {
+    addSubmit() {
       console.log(this.setList)
       let num = 0
-      this.setList.forEach(el => {
-        num += (el.width * el.height)
+      this.setList.forEach((el) => {
+        num += el.width * el.height
       })
       if (num !== 12) {
         this.$message.warning('模板不完整')
@@ -413,7 +435,7 @@ export default {
               scale: 0.8,
               width: 900,
               height: 660
-            }).then(canvas => {
+            }).then((canvas) => {
               const dataURL = canvas.toDataURL('image/png')
               this.imgUrl = dataURL
               console.log(this.imgUrl)
@@ -451,105 +473,105 @@ export default {
 </script>
 
 <style lang="less" scoped>
-  .control-tab {
-    width: 180px;
-    background-color:#fff;
-  }
-  .mode-content{
-    background-color:#fff;
-    padding: 20px 0px 20px 20px;
-    overflow-y: auto;
-  }
-  .go-back{
-    margin-bottom: 5px;
-    color: #1890ff;
-    cursor: pointer;
-  }
-  .content-left{
+.control-tab {
+  width: 180px;
+  background-color: #fff;
+}
+.mode-content {
+  background-color: #fff;
+  padding: 20px 0px 20px 20px;
+  overflow-y: auto;
+}
+.go-back {
+  margin-bottom: 5px;
+  color: #1890ff;
+  cursor: pointer;
+}
+.content-left {
+  width: 900px;
+  height: 100%;
+  overflow: auto;
+  margin-right: 20px;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  .imageWrapper {
     width: 900px;
-    height: 100%;
-    overflow: auto;
-    margin-right: 20px;
-    background-repeat: no-repeat;
-    background-size: 100% 100%;
-    .imageWrapper{
-      width: 900px;
-      height: 660px;
-    }
-    .dragArea11{
-      margin-bottom: 20px;
-      overflow: hidden;
-    }
-    .content-input{
-      margin-bottom:40px;
-      width: 60%;
-      height: 10%;
-      text-align: center;
-      font-size: 18px;
-      border-radius: 8px;
-    }
+    height: 660px;
   }
-  .notice-card {
-    border-radius: 4px;
-    float: left;
-    width: 200px;
-    height: 200px;
-    margin: 10px;
+  .dragArea11 {
+    margin-bottom: 20px;
     overflow: hidden;
-    border: 1px solid #ccc;
-    height: 200px;
-    cursor: pointer;
-    position: relative;
-    .del-btn{
-      position: absolute;
-      bottom: 0;
-      left: 0;
+  }
+  .content-input {
+    margin-bottom: 40px;
+    width: 60%;
+    height: 10%;
+    text-align: center;
+    font-size: 18px;
+    border-radius: 8px;
+  }
+}
+.notice-card {
+  border-radius: 4px;
+  float: left;
+  width: 200px;
+  height: 200px;
+  margin: 10px;
+  overflow: hidden;
+  border: 1px solid #ccc;
+  height: 200px;
+  cursor: pointer;
+  position: relative;
+  .del-btn {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+  }
+  .notice-title {
+    padding: 3px 0;
+  }
+  .add {
+    p {
+      margin-top: 5px;
     }
-    .notice-title{
-      padding: 3px 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #ddd;
+  }
+}
+.active {
+  border: 2px solid @main-color;
+}
+.qui-fx-f6 {
+  min-width: 0px;
+  flex: 6;
+  position: relative;
+}
+.right-img {
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+.content-right {
+  background: #f5f5f5;
+  padding: 10px;
+  margin: 0 10px;
+  .box {
+    overflow: auto;
+    margin: 10px 0;
+    border-radius: 8px;
+    .notice-card {
+      max-width: 200px;
+      width: calc(50% - 20px);
     }
-    .add{
-      p{
-        margin-top: 5px;
-      }
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: #ddd;
-    }
-  }
-  .active{
-    border: 2px solid @main-color;
-  }
-  .qui-fx-f6 {
-    min-width: 0px;
-    flex: 6;
-    position: relative;
-  }
-  .right-img{
-    background-repeat: no-repeat;
-    background-size: 100% 100%;
-  }
-  .content-right{
-    background: #f5f5f5;
-    padding: 10px;
-    margin: 0 10px;
-    .box{
-      overflow: auto;
-      margin: 10px 0;
-      border-radius: 8px;
-      .notice-card {
-        max-width: 200px;
-        width: calc( 50% - 20px);
-      }
-      .choose{
-        border: 1px solid @main-color;
-      }
+    .choose {
+      border: 1px solid @main-color;
     }
   }
-  .wrap-table{
-    width: 100%;
-  }
+}
+.wrap-table {
+  width: 100%;
+}
 </style>
