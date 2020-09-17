@@ -50,7 +50,12 @@
             <a-timeline class="time-line">
               <a-timeline-item v-for="(item,index) in processes" :key="index">
                 <div class="qui-fx">
-                  <div class="time-left">{{ item.content }}</div>
+                  <div class="time-left">
+                    {{ item.content }}
+                    <a-tooltip placement="topLeft" :title="item.remark" v-if="item.remark">
+                      <span class="u-type-error">备注</span>
+                    </a-tooltip>
+                  </div>
                   <div class="qui-fx-f1">{{ item.createTime | gmtToDate }}</div>
                 </div>
               </a-timeline-item>
@@ -101,7 +106,7 @@ export default {
   },
   mounted() {
     this.detailId = this.$route.query.id
-    this.title = this.$route.query.type === '1' ? '验收隐患' : '处理隐患'
+    this.title = this.$route.query.type === '1' ? '处理隐患' : '验收隐患'
     if (this.detailId) {
       this.showDetail()
     }

@@ -16,6 +16,7 @@
             <div class="u-mar-t10">任务结束时间：{{ detailInfo.endTime | gmtToDate }}</div>
           </div>
         </div>
+        <div class="u-padd-l40 u-padd-r40" v-html="detailInfo.des"></div>
         <div class="u-mar-t20">
           <div class="upload u-mar-l20 u-mar-r20 u-mar-b10">
             <div class="upload-title">附件上传</div>
@@ -23,7 +24,7 @@
           <div class="u-mar-l20">
             <img class="u-mar-r10" :src="img" alt />
             {{ detailInfo.docName }}
-            <span class="u-type-primary">下载</span>
+            <span class="u-type-primary" @click="exportClick(detailInfo.docUrl)">下载</span>
           </div>
         </div>
       </div>
@@ -84,9 +85,6 @@
                   <div class="qui-fx-ver">题目是：</div>
                   <div class="qui-fx-ver u-mar-l20">
                     <div>{{ list.title }}</div>
-                    <div class="u-mar-t10">
-                      <a-input placeholder="请填写答案" />
-                    </div>
                   </div>
                 </div>
               </div>
@@ -98,9 +96,6 @@
                   <div class="qui-fx-ver">题目是：</div>
                   <div class="qui-fx u-mar-l20">
                     <div>{{ list.title }}</div>
-                    <div class="qui-fx-f1">
-                      <a-input placeholder="Basic usage" />
-                    </div>
                   </div>
                 </div>
               </div>
@@ -114,6 +109,7 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
+import hostEnv from '@config/host-env'
 import NoData from '@c/NoData'
 import moment from 'moment'
 import img from '../../assets/img/wenjian.png'
@@ -131,7 +127,6 @@ export default {
       fileList: [],
       form: this.$form.createForm(this),
       times: [],
-      taskCode: '',
       url: '',
       docUrl: '',
       show: true,
@@ -144,22 +139,20 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
-    this.taskCode = this.$route.query.id
+    this.taskId = this.$route.query.id
     this.showDetail()
   },
   methods: {
-    ...mapActions('home', ['reportTaskDetail']),
+    ...mapActions('home', ['previewTask']),
     moment,
     // 获取详情
     async showDetail() {
       const req = {
-        schoolCode: this.userInfo.schoolCode,
-        // taskCode: this.taskCode
-        taskCode: 'S9x0weqfc2oe9'
+        query: this.taskId
       }
-      const res = await this.reportTaskDetail(req)
+      const res = await this.previewTask(req)
       this.detailInfo = res.data
-      const questions = res.data.outUserAnswersDtoList.map((el, index) => {
+      const questions = res.data.questions.map((el, index) => {
         return {
           ...el,
           key: index,
@@ -192,7 +185,13 @@ export default {
       this.show = !res.data.docUrl
       this.flag = !res.data.docUrl
     },
-    handleChange() {}
+    handleChange() {},
+    exportClick (docUrl) {
+      if (docUrl) {
+        const url = `${hostEnv.zx_subject}/file/downLoad/doc?url=${docUrl}`
+        window.open(url)
+      }
+    }
   }
 }
 </script>

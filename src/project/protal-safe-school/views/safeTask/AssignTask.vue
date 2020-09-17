@@ -17,37 +17,37 @@
       @selectAll="selectAll"
     >
       <template v-slot:actions="action">
-        <a-tooltip placement="topLeft" title="预览" v-if="action.state !== '0' ">
+        <a-tooltip placement="topLeft" title="预览" v-if="action.record.state !== '0' ">
           <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="add(1,action)"></a-button>
         </a-tooltip>
         <a-tooltip
           placement="topLeft"
           title="编辑"
-          v-if="action.state === '0' && new Date().getTime() > action.record.endTime"
+          v-if="action.record.state === '0'"
         >
           <a-button size="small" class="edit-action-btn" icon="form" @click="add(2,action)"></a-button>
         </a-tooltip>
         <a-tooltip
           placement="topLeft"
           title="发布"
-          v-if="action.state === '0' && new Date().getTime() <= action.record.endTime"
+          v-if="action.record.state === '0' && new Date().getTime() <= action.record.endDate"
         >
           <a-button
             size="small"
             class="play-action-btn"
             icon="play-circle"
-            @click="publish(action)"
+            @click="check(2, action)"
           ></a-button>
         </a-tooltip>
         <a-tooltip
           placement="topLeft"
           title="查看完成情况"
-          v-if="action.state !== '0' "
-          @click="check(action)"
+          v-if="action.record.state !== '0' "
+          @click="check(0, action)"
         >
           <a-button size="small" class="copy-action-btn" icon="copy"></a-button>
         </a-tooltip>
-        <a-tooltip placement="topLeft" title="查看统计" v-if="action.state !== '0' " @click="look(action)">
+        <a-tooltip placement="topLeft" title="查看统计" v-if="action.record.state !== '0' " @click="check(1, action)">
           <a-button size="small" class="export-all-btn" icon="export"></a-button>
         </a-tooltip>
         <a-popconfirm
@@ -55,7 +55,7 @@
           okText="确定"
           cancelText="取消"
           @confirm="del(action)"
-          v-if="action.state === '0'"
+          v-if="action.record.state === '0'"
         >
           <template slot="title">确定删除该任务吗？</template>
           <a-tooltip placement="topLeft" title="删除">
@@ -110,21 +110,14 @@ export default {
   },
   methods: {
     ...mapActions('home', ['getSafeTask', 'delSafeTask', 'delSafeTasks']),
-    check(record) {
+    check(type, record) {
+      const url = type === 0 ? '/assignTask/taskComplete' : type === 1 ? '/assignTask/taskStatistics' : '/assignTask/postTask'
       this.$router.push({
-        path: '/assignTask/taskComplete',
+        path: url,
         query: {
-          id: record ? record.record.taskCode : '',
-          taskType: record ? record.record.taskType : ''
-        }
-      })
-    },
-    look(record) {
-      this.$router.push({
-        path: '/assignTask/taskStatistics',
-        query: {
-          id: record ? record.record.taskCode : '',
-          taskType: record ? record.record.taskType : ''
+          id: record ? record.record.id : '',
+          taskType: record ? record.record.taskType : '',
+          name: record ? record.record.taskName : ''
         }
       })
     },
@@ -146,7 +139,7 @@ export default {
       this.$router.push({
         path: path,
         query: {
-          id: record ? record.record.taskCode : ''
+          id: record ? record.record.id : ''
         }
       })
     },

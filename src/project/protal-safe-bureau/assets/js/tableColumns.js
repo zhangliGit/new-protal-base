@@ -38,8 +38,8 @@ export const hiddenDangerColumns = [
   {
     title: '隐患描述',
     dataIndex: 'description',
-    ellipsis: true
-    // width: '10%'
+    ellipsis: true,
+    width: '10%'
   },
   {
     title: '隐患来源',
@@ -134,7 +134,9 @@ export const SuperviseColumns = [
   },
   {
     title: '隐患描述',
-    dataIndex: 'description'
+    dataIndex: 'description',
+    ellipsis: true,
+    width: '10%'
     // width: '10%'
   },
   {

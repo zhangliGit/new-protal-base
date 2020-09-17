@@ -87,7 +87,7 @@
             v-if="cardInfo.taskType === '1'"
           >
             <a-range-picker
-              v-decorator="['data', {initialValue: [moment(new Date(), 'YYYY-MM-DD'), moment( new Date(), 'YYYY-MM-DD')], rules: [{ required: 'required', message: '请选择时间' }]}]"
+              v-decorator="['data', {initialValue: [moment(new Date(cardInfo.startTime), 'YYYY-MM-DD'), moment( new Date(cardInfo.endTime), 'YYYY-MM-DD')], rules: [{ required: 'required', message: '请选择时间' }]}]"
             />
           </a-form-item>
           <a-form-item
@@ -378,19 +378,14 @@ export default {
     this.getnumofweeks(this.value)
   },
   methods: {
-    ...mapActions('home', [
-      'getTaskDetail',
-      'addSchoolTask',
-      'updateDailyTask',
-      'addSafeTask',
-      'updateSafeTask',
-      'modifySchoolTask'
-    ]),
+    ...mapActions('home', [ 'getTaskDetail', 'addSchoolTask', 'modifySchoolTask' ]),
     moment,
     // 获取详情
     async showDetail() {
       const res = await this.getTaskDetail(this.detailId)
       this.cardInfo = res.data
+      this.weekCurrent = res.data.dateNums
+      this.monthCurrent = res.data.dateNums
       const questions = res.data.questions.map((el, index) => {
         return {
           ...el,
@@ -420,9 +415,10 @@ export default {
           this.fileCount = this.fileList.length
         }
       })
-      this.docName = 'res.data.docName'
+      this.docName = res.data.docName
+      this.docUrl = res.data.docUrl
       this.show = !res.data.docUrl
-      this.flag = !res.data.docUrl
+      this.flag = !!res.data.docUrl
     },
     // 富文本编辑器方法
     onEditorFocus(data) {},
@@ -562,7 +558,7 @@ export default {
     submitOk(e) {
       e.preventDefault()
       this.form.validateFields((error, values) => {
-        let list = this.radioList.concat(this.checkList).concat(this.fillList)
+        let list = this.radioList.concat(this.checkList).concat(this.fillList).concat(this.fileList)
         console.log('list', list)
         list = list.map((el) => {
           return {
@@ -571,26 +567,27 @@ export default {
                 ? el.pointList.map((item) => {
                   return item.content
                 })
-                : undefined,
+                : [],
             title: el.title,
             questionType: el.questionType
           }
         })
+        values.userName = this.userInfo.userName
+        values.userCode = this.userInfo.userCode
         values.schoolCode = this.userInfo.schoolCode
         values.year = this.value
         values.docUrl = this.docUrl
         values.docName = this.docName
         values.questions = list
         values.des = this.cardInfo.des
-        values.startTime = this.cardInfo.taskType === '1' ? moment(values.data[0]).format('YYYY-MM-DD') : undefined
-        values.endTime = this.cardInfo.taskType === '1' ? moment(values.data[1]).format('YYYY-MM-DD') : undefined
+        values.startTime = this.cardInfo.taskType === '1' ? moment(values.data[0]).format('YYYY-MM-DD') : ''
+        values.endTime = this.cardInfo.taskType === '1' ? moment(values.data[1]).format('YYYY-MM-DD') : ''
         values.dateNums =
           this.cardInfo.taskType === '2'
             ? this.weekCurrent
             : this.cardInfo.taskType === '3'
               ? this.monthCurrent
-              : undefined
-        console.log('values', values)
+              : ''
         this.isLoad = false
         if (!error) {
           this.isLoad = true

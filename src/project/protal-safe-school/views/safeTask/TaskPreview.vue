@@ -1,41 +1,43 @@
 <template>
-  <div class="fill page-layout">
-    <div class="pos-box content">
-      <div class="qui-fx-ver">
-        <div class="qui-fx-f1">
-          <div class="bg-fff u-padd-10 u-padd-l20">
-            <div class="fill-top">
-              <div class="fill-head task">任务内容</div>
-            </div>
-            <div>
-              <div class="title">{{ detailInfo.taskName }}</div>
-              <div class="qui-fx-jc u-mar-t10">
-                <div class="qui-fx-ver">
-                  <div>发布人：{{ detailInfo.userName }}</div>
-                  <div>任务开始时间：{{ detailInfo.beginTime | gmtToDate }}</div>
-                </div>
-                <div class="qui-fx-ver u-mar-l20">
-                  <div>发布时间：{{ detailInfo.completeTime | gmtToDate }}</div>
-                  <div>任务结束时间：{{ detailInfo.endTime | gmtToDate }}</div>
-                </div>
-              </div>
-              <div class="fill-describe u-mar-t10 u-padd-l10 u-padd-r10">{{ detailInfo.reason }}</div>
-              <div class="u-mar-t20">
-                <div class="upload u-mar-l20 u-mar-r20 u-mar-b10">
-                  <div class="upload-title">附件上传</div>
-                </div>
-                <div class="u-mar-l20">
-                  <img class="u-mar-r10" :src="img" alt />
-                  {{ detailInfo.docName }}
-                  <span class="u-type-primary" @click="exportClick(detailInfo.docUrl)">下载</span>
-                </div>
-              </div>
-            </div>
+  <div class="page-layout qui-fx-ver">
+    <div class="content pos-box">
+      <div class="top bg-fff u-padd-10 u-padd-l20">
+        <div class="fill-top u-mar-b20">
+          <div class="fill-head task">任务内容</div>
+        </div>
+        <div class="u-tx-c">{{ detailInfo.taskName }}</div>
+        <div class="qui-fx-jc u-mar-t10">
+          <div class="qui-fx-ver">
+            <div>发布人：{{ detailInfo.userName }}</div>
+            <div class="u-mar-t10">任务开始时间：{{ detailInfo.beginTime | gmtToDate }}</div>
           </div>
-          <div class="u-mar-t10 bg-fff u-padd-10 u-padd-l20">
-            <div class="fill-top">
-              <div class="fill-head report">要求上报内容</div>
-            </div>
+          <div class="qui-fx-ver u-mar-l20">
+            <div>发布时间：{{ detailInfo.completeTime | gmtToDate }}</div>
+            <div class="u-mar-t10">任务结束时间：{{ detailInfo.endTime | gmtToDate }}</div>
+          </div>
+        </div>
+        <div class="u-padd-l40 u-padd-r40" v-html="detailInfo.des"></div>
+        <div class="u-mar-t20">
+          <div class="upload u-mar-l20 u-mar-r20 u-mar-b10">
+            <div class="upload-title">附件上传</div>
+          </div>
+          <div class="u-mar-l20">
+            <img class="u-mar-r10" :src="img" alt />
+            {{ detailInfo.docName }}
+            <span class="u-type-primary" @click="exportClick(detailInfo.docUrl)">下载</span>
+          </div>
+        </div>
+      </div>
+      <div class="u-mar-t10 bg-fff u-padd-10 u-padd-l20">
+        <div class="fill-top">
+          <div class="fill-head report">要求上报内容</div>
+        </div>
+        <div class="qui-fx">
+          <no-data
+            msg="暂无题目~"
+            v-if="radioList && checkList && fillList && fileList && radioList.length === 0 && checkList.length === 0 && fillList.length === 0 && fileList.length === 0 "
+          ></no-data>
+          <div class="qui-fx-f1" v-else>
             <div class="u-mar" v-if="radioList.length !== 0">
               <div>单选题</div>
               <div class="subject u-mar-t10 u-padd-l20 u-padd-t10 u-padd-b10">
@@ -44,7 +46,7 @@
                   <div class="qui-fx-ver u-mar-l20">
                     <div>{{ list.title }}</div>
                     <div class="u-mar-t10">
-                      <a-radio-group v-model="list.answer">
+                      <a-radio-group v-model="list.answers[0]" :disabled="disabled">
                         <a-radio
                           v-for="(element,index) in list.content"
                           :value="element"
@@ -64,7 +66,7 @@
                   <div class="qui-fx-ver u-mar-l20">
                     <div>{{ list.title }}</div>
                     <div class="u-mar-t10">
-                      <a-checkbox-group v-model="list.answer">
+                      <a-checkbox-group v-model="list.answers" :disabled="disabled">
                         <a-checkbox
                           v-for="(element,index) in list.content"
                           :value="element"
@@ -79,13 +81,11 @@
             <div class="u-mar" v-if="fillList.length !== 0">
               <div>填空题</div>
               <div class="subject u-mar-t10 u-padd-l20 u-padd-t10 u-padd-b10">
-                <div class="qui-fx u-mar-t10 u-padd-r20" v-for="(list, i) in fillList" :key="i">
+                <div class="qui-fx u-mar-t10" v-for="(list, i) in fillList" :key="i">
                   <div class="qui-fx-ver">题目是：</div>
-                  <div class="qui-fx-f1 qui-fx-ver u-mar-l20">
-                    <div>{{ list.title }}</div>
-                    <div class="u-mar-t10">
-                      <a-input style="width:100%" placeholder="请填写答案" v-model="list.answer"/>
-                    </div>
+                  <div class="qui-fx-ver u-mar-l20">
+                    <div class="u-mar-b10">{{ list.title }}</div>
+                    <a-input :disabled="disabled" v-model="list.answers[0]" />
                   </div>
                 </div>
               </div>
@@ -105,13 +105,13 @@
                         :data="params"
                         :remove="value => handleRemove(value, i)"
                         @change="value => handleChange(value, i)"
-                        v-if="list.show"
+                        v-if="list.show && !disabled"
                       >
                         <a-button>
                           <a-icon type="upload" />上传附件
                         </a-button>
                       </a-upload>
-                      <div v-if="!list.show">
+                      <div>
                         {{ list.docName }}
                         <a-button class="del-action-btn mar-l10" icon="delete" size="small" @click="delFile(i)"></a-button>
                       </div>
@@ -121,68 +121,78 @@
               </div>
             </div>
           </div>
-          <div class="u-tx-c u-mar-t20">
-            <a-button @click="cancel">取消</a-button>
-            <a-button class="mar-l10" type="primary" @click="submitOk" :disabled="isLoad">保存</a-button>
-          </div>
         </div>
+      </div>
+      <div class="u-tx-c u-mar-t20" v-if="!disabled">
+        <a-button @click="cancel">取消</a-button>
+        <a-button class="mar-l10" type="primary" @click="submitOk" :disabled="isLoad">保存</a-button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import hostEnv from '@config/host-env'
 import { mapState, mapActions } from 'vuex'
-import UploadMulti from '@c/UploadMulti'
+import hostEnv from '@config/host-env'
+import NoData from '@c/NoData'
+import moment from 'moment'
 import img from '../../assets/img/wenjian.png'
 export default {
-  name: 'FillTask',
+  name: 'TaskPreview',
   components: {
-    UploadMulti
+    NoData
   },
   data() {
     return {
       img,
-      params: {},
-      isLoad: false,
-      detailInfo: {},
       radioList: [],
       checkList: [],
       fillList: [],
       fileList: [],
+      form: this.$form.createForm(this),
+      times: [],
       url: '',
-      show: true
+      docUrl: '',
+      docName: '',
+      detailInfo: {},
+      disabled: false,
+      show: true,
+      params: {},
+      isLoad: false
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
-    this.url = `${hostEnv.zx_subject}/file/upload/doc`
-    this.params.schoolCode = this.userInfo.schoolCode
     this.taskId = this.$route.query.id
-    this.taskCode = this.$route.query.taskCode
-    this.taskTemplateCode = this.$route.query.taskTemplateCode
-    if (this.taskId) {
-      this.showDetail()
-    }
+    this.disabled = this.$route.query.state === '0'
+    console.log('aa',this.disabled)
+    this.params.schoolCode = this.userInfo.schoolCode
+    this.showDetail()
   },
   methods: {
-    ...mapActions('home', ['myTaskDetail', 'answerTask']),
+    ...mapActions('home', ['previewTask', 'previewMyTask']),
+    moment,
+    // 获取详情 previewMyTask
     async showDetail() {
-      const res = await this.myTaskDetail({ id: this.taskId })
+      const req = {
+        query: this.taskId
+      }
+      const res = await this.previewMyTask(req)
       this.detailInfo = res.data
-      const questions = res.data.questions.map((el, index) => {
+      const questions = res.data.answers.map((el, index) => {
         return {
           ...el,
           key: index,
-          pointList: el.content ? el.content.map((item, i) => {
-            return {
-              key: i,
-              content: item
-            }
-          }) : undefined
+          pointList: el.content
+            ? el.content.map((item, i) => {
+              return {
+                key: i,
+                content: item
+              }
+            })
+            : []
         }
       })
       questions.map((el) => {
@@ -193,10 +203,14 @@ export default {
         } else if (el.questionType === '3') {
           this.fillList.push(el)
         } else {
-          this.fileList.push({ ...el, show: true })
-          console.log('aaa', this.fileList)
+          this.fileList.push({ ...el, show: false })
         }
       })
+      this.docName = res.data.docName
+    },
+    delFile(i) {
+      this.fileList[i].show = true
+      this.fileList[i].docName = ''
     },
     handleRemove(info, i) {
       this.fileList[i].show = true
@@ -221,9 +235,11 @@ export default {
         this.$message.error(`${info.file.name} 上传失败`)
       }
     },
-    delFile(i) {
-      this.fileList[i].show = true
-      this.fileList[i].docName = ''
+    exportClick (docUrl) {
+      if (docUrl) {
+        const url = `${hostEnv.zx_subject}/file/downLoad/doc?url=${docUrl}`
+        window.open(url)
+      }
     },
     cancel() {
       this.$router.go(-1)
@@ -256,23 +272,14 @@ export default {
         .catch(res => {
           this.isLoad = false
         })
-    },
-    exportClick (docUrl) {
-      if (docUrl) {
-        const url = `${hostEnv.zx_subject}/file/downLoad/doc?url=${docUrl}`
-        window.open(url)
-      }
     }
   }
 }
 </script>
 <style lang="less" scoped>
-.fill {
-  background-color: #f4f7fc;
-  .content {
-    height: calc(100% - 10px);
-    overflow-y: scroll;
-  }
+.content {
+  height: calc(100% - 10px);
+  overflow-y: scroll;
   .fill-top {
     height: 30px;
     line-height: 30px;
@@ -283,22 +290,22 @@ export default {
       text-align: center;
       border-bottom: 3px solid #4d4cac;
     }
+    .task {
+      width: 70px;
+    }
+    .report {
+      width: 100px;
+    }
   }
-  .title {
-    height: 35px;
-    font-size: 18px;
-    text-align: center;
-    margin: 20px 10px 0 10px;
-    border-bottom: 1px solid #4d4cac;
+  .ant-calendar-picker {
+    width: 100% !important;
   }
 }
-.tip {
-  text-align: center;
-  color: #4d4cac;
-  font-size: 20px;
+.top {
+  border-bottom: 1px solid #ccc;
 }
-.fill-describe {
-  text-indent: 2em;
+.subject {
+  background-color: #fafafa;
 }
 .upload {
   height: 25px;
@@ -317,13 +324,8 @@ export default {
     }
   }
 }
-.task {
-  width: 70px;
-}
-.report {
-  width: 100px;
-}
-.subject {
-  background-color: #fafafa;
+img {
+  width: 30px;
+  height: 30px;
 }
 </style>

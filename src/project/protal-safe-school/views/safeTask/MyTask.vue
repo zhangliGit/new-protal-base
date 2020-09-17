@@ -18,7 +18,7 @@
         <a-tooltip
           placement="topLeft"
           title="填报"
-          v-if="action.record.state === '1' && new Date().getTime() <= action.record.endTime"
+          v-if="action.record.state === '1' && new Date().getTime() <= action.record.endDate"
         >
           <a-button size="small" class="add-action-btn" icon="plus" @click="add(1, action.record)"></a-button>
         </a-tooltip>
@@ -30,16 +30,17 @@
           okText="确定"
           cancelText="取消"
           v-if="action.record.state === '2' || action.record.state === '5'"
+          @confirm="submit(action)"
         >
           <template slot="title">提交之后不允许再次编辑内容，确定提交么？</template>
           <a-tooltip placement="topLeft" title="提交">
-            <a-button size="small" class="play-action-btn" icon="play-circle" @click="submit"></a-button>
+            <a-button size="small" class="play-action-btn" icon="play-circle"></a-button>
           </a-tooltip>
         </a-popconfirm>
         <a-tooltip
           placement="topLeft"
           title="补填"
-          v-if="action.record.state === '1' && new Date().getTime() >action.record.endTime"
+          v-if="action.record.state === '1' && new Date().getTime() >action.record.endDate"
         >
           <a-button size="small" class="copy-action-btn" icon="copy" @click="add(3, action.record)"></a-button>
         </a-tooltip>
@@ -119,6 +120,7 @@ export default {
     ...mapActions('home', ['getMySafeTask', 'submitMyTask']),
     async showList() {
       this.searchList.schoolCode = this.userInfo.schoolCode
+      this.searchList.userCode = this.userInfo.userCode
       this.searchList = Object.assign(this.searchList, this.pageList)
       const res = await this.getMySafeTask(this.searchList)
       this.taskList = res.data.records
@@ -131,13 +133,25 @@ export default {
       this.showList()
     },
     add(type, record) {
-      this.$router.push({
-        path: '/myTask/fillTask',
-        query: {
-          id: record ? record.id : '',
-          state: type
-        }
-      })
+      if (type === 0 || type === 2 || type === 4) {
+        this.$router.push({
+          path: '/myTask/taskPreview',
+          query: {
+            id: record ? record.id : '',
+            state: type
+          }
+        })
+      } else {
+        this.$router.push({
+          path: '/myTask/fillTask',
+          query: {
+            id: record ? record.id : '',
+            taskCode: record ? record.taskCode : '',
+            taskTemplateCode: record ? record.taskTemplateCode : '',
+            state: type
+          }
+        })
+      }
     },
     async addApp(type, record) {
       this.$router.push({
@@ -147,8 +161,8 @@ export default {
         }
       })
     },
-    async submit() {
-      await this.submitMyTask()
+    async submit(record) {
+      await this.submitMyTask({ id: record.record.id })
       this.$message.success('操作成功')
       this.$tools.goNext(() => {
         this.showList()
