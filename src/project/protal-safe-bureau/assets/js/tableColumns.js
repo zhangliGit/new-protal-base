@@ -44,7 +44,7 @@ export const hiddenDangerColumns = [
   {
     title: '隐患来源',
     dataIndex: 'source',
-    customRender: (text) => {
+    customRender: text => {
       return Tools.sourceDanger(text)
     }
     // width: '10%'
@@ -63,7 +63,7 @@ export const hiddenDangerColumns = [
   {
     title: '隐患状态',
     dataIndex: 'state',
-    customRender: (text) => {
+    customRender: text => {
       return Tools.dangerState(text)
     }
     // width: '10%'
@@ -71,7 +71,7 @@ export const hiddenDangerColumns = [
   {
     title: '隐患等级',
     dataIndex: 'level',
-    customRender: (text) => {
+    customRender: text => {
       return Tools.dangerLevel(text)
     }
     // width: '10%'
@@ -84,7 +84,7 @@ export const hiddenDangerColumns = [
   {
     title: '最近操作时间',
     dataIndex: 'optTime',
-    customRender: (text) => {
+    customRender: text => {
       return Tools.getDate(text)
     },
     width: 200
@@ -140,7 +140,7 @@ export const SuperviseColumns = [
   {
     title: '隐患来源',
     dataIndex: 'source',
-    customRender: (text) => {
+    customRender: text => {
       return Tools.sourceDanger(text)
     }
     // width: '10%'
@@ -153,7 +153,7 @@ export const SuperviseColumns = [
   {
     title: '隐患状态',
     dataIndex: 'state',
-    customRender: (text) => {
+    customRender: text => {
       return Tools.dangerState(text)
     }
     // width: '10%'
@@ -161,7 +161,7 @@ export const SuperviseColumns = [
   {
     title: '隐患等级',
     dataIndex: 'level',
-    customRender: (text) => {
+    customRender: text => {
       return Tools.dangerLevel(text)
     }
     // width: '10%'
@@ -174,7 +174,7 @@ export const SuperviseColumns = [
   {
     title: '最近操作时间',
     dataIndex: 'optTime',
-    customRender: (text) => {
+    customRender: text => {
       return Tools.getDate(text)
     }
     // width: '10%'
@@ -182,7 +182,7 @@ export const SuperviseColumns = [
   {
     title: '督办状态',
     dataIndex: 'superviseState',
-    customRender: (text) => {
+    customRender: text => {
       if (text === '0') {
         return '正在督办'
       } else if (text === '1') {
@@ -220,7 +220,7 @@ export const taskColumns = [
   {
     title: '开始时间',
     dataIndex: 'beginTime',
-    customRender: (text) => {
+    customRender: text => {
       return Tools.getDate(text)
     }
     // width: '10%'
@@ -228,7 +228,7 @@ export const taskColumns = [
   {
     title: '结束时间',
     dataIndex: 'endTime',
-    customRender: (text) => {
+    customRender: text => {
       return Tools.getDate(text)
     }
     // width: '10%'
@@ -278,7 +278,7 @@ export const checkColumns = [
   {
     title: '创建时间',
     dataIndex: 'createTime',
-    customRender: (text) => {
+    customRender: text => {
       return Tools.getDate(text)
     }
   },

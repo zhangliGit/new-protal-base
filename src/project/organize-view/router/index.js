@@ -11,7 +11,7 @@ const RouterPage = [...Home]
  * @des 路由界面遍历配置
  */
 let RouterConfig = []
-RouterPage.forEach((page) => {
+RouterPage.forEach(page => {
   let pagePath = page.path.replace(page.path[0], page.path[0].toLowerCase())
   RouterConfig.push({
     path: page.type ? '/' : `/${pagePath}`,
@@ -19,8 +19,8 @@ RouterPage.forEach((page) => {
     component: () => import(`../views/${page.module}/${page.path}.vue`),
     meta: {
       title: page.title,
-      keepAlive: page.keepAlive || false,
-    },
+      keepAlive: page.keepAlive || false
+    }
   })
 })
 
@@ -28,7 +28,7 @@ Vue.use(Router)
 
 const router = new Router({
   mode: 'hash',
-  routes: [...RouterConfig],
+  routes: [...RouterConfig]
 })
 
 export default router

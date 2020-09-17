@@ -32,7 +32,8 @@ export const dangerFindSearchLabel = [
     label: '隐患等级',
     type: 'select',
     value: 'level',
-    list: [ // 选择列表项，select控件必传
+    list: [
+      // 选择列表项，select控件必传
       {
         key: '',
         val: '全部'
@@ -59,7 +60,8 @@ export const dangerFindSearchLabel = [
     value: 'streetCode',
     type: 'select',
     label: '所属街道',
-    list: [ // 选择列表项，select控件必传
+    list: [
+      // 选择列表项，select控件必传
       {
         key: '',
         val: '全部'
@@ -90,7 +92,8 @@ export const dangerFindSearchLabel = [
     value: 'state',
     type: 'select',
     label: '隐患状态',
-    list: [ // 选择列表项，select控件必传
+    list: [
+      // 选择列表项，select控件必传
       {
         key: '',
         val: '全部'
@@ -126,12 +129,12 @@ export const dangerFindSearchLabel = [
 ]
 // 隐患督办查询条件
 export const searchLabelSupervise = [
-
   {
     value: 'state',
     type: 'select',
     label: '隐患状态',
-    list: [ // 选择列表项，select控件必传
+    list: [
+      // 选择列表项，select控件必传
       {
         key: '',
         val: '全部'
@@ -162,7 +165,8 @@ export const searchLabelSupervise = [
     value: 'superviseState',
     type: 'select',
     label: '督办状态',
-    list: [ // 选择列表项，select控件必传
+    list: [
+      // 选择列表项，select控件必传
       {
         key: '',
         val: '全部'
