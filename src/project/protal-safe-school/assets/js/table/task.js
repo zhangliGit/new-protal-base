@@ -61,6 +61,10 @@ const task = {
       dataIndex: 'state',
       width: '10%',
       customRender: text => {
+<<<<<<< HEAD
+        if (text === '1') {
+          return '静态二维码'
+=======
         if (text === '0') {
           return '未发布'
         } else if (text === '1') {
@@ -69,6 +73,7 @@ const task = {
           return '进行中'
         } else if (text === '3') {
           return '已结束'
+>>>>>>> 4f868611137952bf57ee84ec7e3489cf71d257ba
         } else {
           return ''
         }
@@ -158,7 +163,11 @@ const task = {
       dataIndex: 'taskType',
       width: '10%',
       customRender: text => {
+<<<<<<< HEAD
+        if (text === '0') {
+=======
         if (text === '1') {
+>>>>>>> 4f868611137952bf57ee84ec7e3489cf71d257ba
           return '一次性计划'
         } else if (text === '2') {
           return '周计划'

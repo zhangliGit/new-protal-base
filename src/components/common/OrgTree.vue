@@ -94,7 +94,7 @@ export default {
 }
 </script>
 
-<style lang="less" scoed>
+<style lang="less" scoped>
 .grade-tree {
   padding: 0 10px;
   width: 240px;

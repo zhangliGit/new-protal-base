@@ -10,7 +10,11 @@
         </div>
         <div>
           <span class="mar-r10">日期:</span>
-          <a-date-picker @change="dateChange" :default-value="moment(new Date())" :allowClear="false" />
+          <a-date-picker
+            @change="dateChange"
+            :default-value="moment(new Date())"
+            :allowClear="false"
+          />
           <span v-if="tempList.length !== 0">
             <span class="mar-r10 mar-l10">测温计划:</span>
             <a-radio-group @change="typeChange" button-style="solid" :value="timeType">
@@ -18,16 +22,14 @@
                 v-for="list in tempList"
                 :key="list.planCode"
                 :value="`${list.startTime}+${list.endTime}`"
-              >
-                {{ list.planName }}
-              </a-radio-button>
+              >{{ list.planName }}</a-radio-button>
             </a-radio-group>
           </span>
           <span class="mar-r10 mar-l10">上报情况:</span>
           <a-radio-group @change="statusChange" button-style="solid" :defaultValue="statusType">
-            <a-radio-button value="1"> 未上报 </a-radio-button>
-            <a-radio-button value="2"> 已上报 </a-radio-button>
-            <a-radio-button value="3"> 发热 </a-radio-button>
+            <a-radio-button value="1">未上报</a-radio-button>
+            <a-radio-button value="2">已上报</a-radio-button>
+            <a-radio-button value="3">发热</a-radio-button>
           </a-radio-group>
         </div>
       </div>
@@ -51,7 +53,6 @@
 
 <script>
 import hostEnv from '@config/host-env'
-import $tools from '@u/tools'
 import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
@@ -333,12 +334,6 @@ export default {
 .page-left {
   background: #fff;
   margin-right: 10px;
-}
-.grade-tree {
-  width: 220px;
-  min-height: 400px;
-  max-height: 800px;
-  overflow-y: auto;
 }
 .temp-color {
   color: red;

@@ -27,7 +27,7 @@
         <a-button style="margin-right:50px;" @click="cancle">
           取消
         </a-button>
-        <a-button type="primary" @click="handleSubmit">
+        <a-button type="primary" :loading="loading" @click="handleSubmit">
           保存
         </a-button>
       </a-form-item>
@@ -93,6 +93,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       bussCode: '',
       recordTag: false,
       columns,
@@ -160,23 +161,33 @@ export default {
             schoolCode: this.userInfo.schoolCode,
             type: this.$route.query.type === 'teacher' ? 4 : 8
           }
-          console.log(req)
+          this.loading = true
           const path = this.$route.query.type === 'teacher' ? '/teacherTemperatureSet' : '/studentTemperatureSet'
           if (this.groupId) {
             req.id = this.groupId
-            this.updateAccess(req).then(res => {
-              this.$message.success('编辑成功')
-              this.$tools.goNext(() => {
-                this.$router.push({ path })
+            this.updateAccess(req)
+              .then(res => {
+                this.$message.success('编辑成功')
+                this.$tools.goNext(() => {
+                  this.loading = false
+                  this.$router.push({ path })
+                })
               })
-            })
+              .catch(() => {
+                this.loading = false
+              })
           } else {
-            this.addAccess(req).then(res => {
-              this.$message.success('添加成功')
-              this.$tools.goNext(() => {
-                this.$router.push({ path })
+            this.addAccess(req)
+              .then(res => {
+                this.$message.success('添加成功')
+                this.$tools.goNext(() => {
+                  this.loading = false
+                  this.$router.push({ path })
+                })
               })
-            })
+              .catch(() => {
+                this.loading = false
+              })
           }
         }
       })
