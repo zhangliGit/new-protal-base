@@ -116,6 +116,7 @@ export default {
         path: url,
         query: {
           id: record ? record.record.id : '',
+          code: record ? record.record.taskCode : '',
           taskType: record ? record.record.taskType : '',
           name: record ? record.record.taskName : ''
         }

@@ -185,13 +185,14 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
-    // this.code = this.$route.query.code
-    // this.getDetails()
+    this.code = this.$route.query.code
+    this.getDetails()
   },
   methods: {
-    ...mapActions('home', ['seeReport']),
+    ...mapActions('home', ['seeReport','answerTaskDetail']),
     async getDetails() {
-      const res = await this.seeReport(this.code)
+      const res = await this.answerTaskDetail({ taskCode: this.code })
+      
       const { findDanger, general, mainIssues, name, reform, time } = res.data
       this.dangerLevel = findDanger.dangerLevel
       this.dangerDetail = findDanger.dangerDetail
