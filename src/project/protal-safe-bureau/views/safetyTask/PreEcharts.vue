@@ -13,7 +13,12 @@ require('echarts/lib/chart/line')
 export default {
   name: 'PreBarEcharts',
   props: {
-    dataList: {}
+    dataList: {
+      type: Array,
+      default: function() {
+        return []
+      }
+    }
   },
   data() {
     return {
@@ -36,10 +41,6 @@ export default {
     initPieData(data) {
       // 对饼状图dom，初始化echarts实例
       var myChart1 = echarts.init(document.getElementById('main1'), 'shine')
-      const preData1 = [
-        { value: data.yes, name: '选"是"' },
-        { value: data.no, name: '选"否"' }
-      ]
       myChart1.setOption({
         // 图表标题
         title: {
@@ -64,11 +65,11 @@ export default {
         calculable: true,
         series: [
           {
-            name: '风险等级',
+            name: '选项',
             type: 'pie',
             radius: '65%',
             center: ['50%', '50%'],
-            data: preData1,
+            data: data,
             itemStyle: {
               emphasis: {
                 shadowBlur: 10,

@@ -295,6 +295,19 @@ const filters = {
       return '督查完成'
     }
   },
+  // 题目类型
+  questionType(text) {
+    text = parseInt(text)
+    if (text === 1) {
+      return '单选题'
+    } else if (text === 2) {
+      return '多选题'
+    } else if (text === 3) {
+      return '填空题'
+    } else if (text === 4) {
+      return '附件'
+    }
+  },
   getSimpleText: html => {
     var re1 = new RegExp(/<img.src\s=\s*(.?)[^>]?>/g)
     var msg = html.replace(re1, '')

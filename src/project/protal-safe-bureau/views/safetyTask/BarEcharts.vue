@@ -79,7 +79,7 @@ export default {
                 }
               }
             },
-            data: data.map(v => v.schoolName)
+            data: data.map(v => v.answer)
           }
         ],
         grid: {
@@ -125,7 +125,7 @@ export default {
             name: data.map(v => v.schoolName),
             type: 'bar',
             stack: '总量',
-            data: data.map(v => v.biggerCount),
+            data: data.map(v => v.count),
             itemStyle: {
               normal: {
                 color: function(params) {

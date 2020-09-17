@@ -595,23 +595,19 @@ export default {
         this.isLoad = false
         if (!error) {
           this.isLoad = true
-          if (this.detailId) {
-            if (this.type == 2) {
-              // 复用任务
-            } else {
-              values.id = this.detailId
-              this.modifySchoolTask(values)
-                .then((res) => {
-                  this.$message.success('操作成功')
-                  this.$tools.goNext(() => {
-                    this.$router.go(-1)
-                  })
+          if (this.type === '1') {
+            values.id = this.detailId
+            this.modifySchoolTask(values)
+              .then((res) => {
+                this.$message.success('操作成功')
+                this.$tools.goNext(() => {
+                  this.$router.go(-1)
                 })
-                .catch((res) => {
-                  this.isLoad = false
-                })
-            }
-          } else {
+              })
+              .catch((res) => {
+                this.isLoad = false
+              })
+          } else if (this.type === '2' || this.type === '0') {
             this.addTask(values)
               .then((res) => {
                 this.$message.success('操作成功')

@@ -37,7 +37,7 @@ export default {
   .ant-tabs{
     height: 100%;
     @{deep} .ant-tabs-top-content.ant-tabs-content-animated{
-       height: calc(100% - 100px);
+       height: calc(100% - 50px);
     }
   }
 }
