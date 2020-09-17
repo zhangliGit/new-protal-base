@@ -2,7 +2,7 @@
   <div class="page-layout qui-fx-ver">
     <div class="mode-content qui-fx">
       <div id="content" class="box-scroll content-left" :style="{height: (scrollH - 60) + 'px'}">
-        <div ref="imageWrapper" class="imageWrapper" @click="clickGrid($event)">
+        <div ref="imageWrapper" class="imageWrapper">
           <draggable
             :list="list"
             :options="{group:'article', disabled: disabled, sort: false}"
@@ -11,7 +11,7 @@
             :move="allowMove22"
             class="dragArea11"
             :style="{'backgroundImage' : 'url('+gridImg+')','height': '660px', 'width':'100%'}">
-            <div class="notice-card qui-fx-ver" v-for="(item,i) in list" :key="i" :style="{'width':''+(item.x)+'px','height':''+(item.y)+'px'}">
+            <div :name="item.name" class="notice-card qui-fx-ver" v-for="(item,i) in list" :key="i" :style="{'width':''+(item.x)+'px','height':''+(item.y)+'px'}">
               <div class="qui-fx-f1 qui-fx-ver qui-fx-jsb right-img" :style="{'backgroundImage': 'url('+item.img+')'}"></div>
               <div class="notice-title qui-fx-jc qui-je" style="background: #fff">{{ item.title }}</div>
               <div v-if="item.img && delTag">
@@ -57,7 +57,12 @@
           class="dragArea box"
           :move="allowMove"
           :style="{height: (scrollH - 150) + 'px'}">
-          <div :id="item.x + '^' + item.y + '^' + item.key" :class="item.flag ? 'undraggable notice-card qui-fx-ver choose' : 'notice-card qui-fx-ver ' " v-for="(item, index) in imgList" :key="item.key" @click="chooseImg(item, index)">
+          <div
+            :id="item.x + '^' + item.y"
+            :class="item.flag ? 'undraggable notice-card qui-fx-ver choose' : 'notice-card qui-fx-ver ' "
+            v-for="(item, index) in imgList"
+            :key="item.key"
+            @click="chooseImg(item, index)">
             <div class="qui-fx-f1 qui-fx-ver qui-fx-jsb right-img" :style="{'backgroundImage': 'url('+item.img+')'}"></div>
             <div class="notice-title qui-fx-jc qui-je">{{ item.title }}</div>
             <div class="notice-title qui-fx-jc qui-je u-font-01">尺寸{{ item.x === 200 ? 1 : item.x === 420 ? 2 : 0 }} * {{ item.y === 200 ? 1 : item.y === 420 ? 2 : 0 }}</div>
@@ -120,70 +125,80 @@ export default {
           title: '相册',
           img: classAlbum,
           x: 420,
-          y: 420
+          y: 420,
+          name: 'Banner'
         },
         {
           key: '0',
           title: '课程表',
           img: classSchedule,
           x: 200,
-          y: 420
+          y: 420,
+          name: 'Schedule'
         },
         {
           key: '6',
           title: '通知公告',
           img: classInform,
           x: 200,
-          y: 420
+          y: 420,
+          name: 'News'
         },
         {
           key: '1',
           title: '今日作业',
           img: chassHomework,
           x: 200,
-          y: 200
+          y: 200,
+          name: 'TodayTask'
         },
         {
           key: '3',
           title: '倒计时',
           img: classCount,
           x: 200,
-          y: 200
+          y: 200,
+          name: 'CountDown'
         },
         {
           key: '4',
           title: '值日生',
           img: classDuty,
           x: 200,
-          y: 200
+          y: 200,
+          name: 'Duty'
         },
         {
           key: '5',
           title: '作业统计',
           img: classHomeworkTj,
           x: 200,
-          y: 200
+          y: 200,
+          name: 'TaskTotal'
         },
         {
           key: '7',
           title: '留言',
           img: classMessage,
           x: 200,
-          y: 200
+          y: 200,
+          name: 'Message'
         },
         {
           key: '8',
           title: '表扬栏',
           img: classPraise,
           x: 200,
-          y: 200
+          y: 200,
+          name: 'PraiseList'
         },
         {
           key: '9',
           title: '班级简介',
           img: classShow,
           x: 200,
-          y: 200
+          y: 200,
+          name: 'Student'
         }
       ]
     }
@@ -208,15 +223,14 @@ export default {
     ]),
     async _getTemplateDetail() {
       const res = await this.getTemplateDetail(this.id)
-      console.log(res.data)
       this.formData = {
         name: res.data.template.name,
         remark: res.data.template.description
       }
-      this.isDefault = res.data.template.isDefault
       this.setList = res.data.templateDetailList.map(el => {
         return {
           name: el.name,
+          title: el.title,
           width: parseInt(el.width),
           height: parseInt(el.height),
           position: parseInt(el.position)
@@ -226,15 +240,16 @@ export default {
         return {
           x: el.width === '1' ? 200 : 420,
           y: el.height === '1' ? 200 : 420,
-          title: el.name,
+          name: el.name,
+          title: el.title,
           img: this.imgList.filter(item => {
-            return item.title === el.name
+            return item.name === el.name
           })[0].img
         }
       })
       this.imgList.forEach((el, index) => {
         if (res.data.templateDetailList.filter(item => {
-          return item.name === el.title
+          return item.name === el.name
         }).length > 0) {
           this.$set(this.imgList[index], 'flag', true)
         }
@@ -288,7 +303,8 @@ export default {
       if (ev.to.className === 'dragArea11') {
         this.setList = Array.prototype.slice.call(ev.to.childNodes).map(ele => {
           return {
-            name: ele.innerText,
+            name: ele.getAttribute('name'),
+            title: ele.innerText,
             width: this.transform('size', ele.offsetWidth),
             height: this.transform('size', ele.offsetHeight),
             position: this.transform('position', { x: ele.offsetLeft, y: ele.offsetTop })
@@ -299,8 +315,6 @@ export default {
       }
     },
     yzSize(item) {
-      console.log(item)
-      console.log(this.setList)
       if (item.position > 0 && item.position < 5 && ((item.position + item.width) > 5 || item.height > 3)) {
         return false
       }
@@ -327,12 +341,10 @@ export default {
       this.setList.forEach(el => {
         num += (el.width * el.height)
       })
-      console.log(num)
       if (num >= 12) {
         return false
       }
       const position = this.setList.length === 0 ? 1 : parseInt(this.setList[this.setList.length - 1].position) + parseInt(this.setList[this.setList.length - 1].width)
-      console.log(position)
       if (position <= 4 && this.setList.some(el => { return el.height === 1 }) && this.transform('size', ev.draggedContext.element.y) > 1) {
         return false
       }
@@ -341,7 +353,8 @@ export default {
       }
       let allowTag = true
       this.setList.push({
-        name: ev.draggedContext.element.title,
+        name: ev.draggedContext.element.name,
+        title: ev.draggedContext.element.title,
         width: this.transform('size', ev.draggedContext.element.x),
         height: this.transform('size', ev.draggedContext.element.y),
         position: position
@@ -352,13 +365,10 @@ export default {
         }
       })
       const i = this.setList.findIndex((value, index, arr) => {
-        return value.name === ev.draggedContext.element.title
+        return value.title === ev.draggedContext.element.title
       })
       this.setList.splice(i, 1)
       return allowTag
-    },
-    clickGrid(e) {
-      console.log(e)
     },
     start22 (ev) {
       this.falgs = '222222'
@@ -375,7 +385,7 @@ export default {
         return value.title === title
       })
       const i = this.setList.findIndex((value, index, arr) => {
-        return value.name === q.title
+        return value.name === q.name
       })
       this.setList.splice(i, 1)
       this.$set(q, 'flag', false)
@@ -391,14 +401,12 @@ export default {
       this.setList.forEach(el => {
         num += (el.width * el.height)
       })
-      console.log(num)
       if (num !== 12) {
         this.$message.warning('模板不完整')
         return
       }
       this.form.validateFields((err, values) => {
         if (!err) {
-          console.log(values)
           this.delTag = false
           this.$nextTick(() => {
             html2canvas(this.$refs.imageWrapper, {
@@ -414,8 +422,7 @@ export default {
                 description: values.remark,
                 name: values.name,
                 photoUrl: this.imgUrl.split(',')[1],
-                templateDetailList: this.setList,
-                isDefault: this.isDefault
+                templateDetailList: this.setList
               }
               if (this.type === '0') {
                 this.addTemplate(req).then(() => {

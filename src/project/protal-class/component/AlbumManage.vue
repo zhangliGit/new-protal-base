@@ -253,7 +253,7 @@ export default {
         })
       } else {
         if (this.fileList.length === 0) {
-          this.$message.error('人脸照片不能为空')
+          this.$message.error('照片不能为空')
           this.$refs.form.error()
           return
         }

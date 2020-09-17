@@ -1,10 +1,13 @@
 // eslint-disable-next-line
 import { BasicLayout } from '../layouts'
-const Home = resolve => require(['../views/Home.vue'], resolve)
+// const Home = resolve => require(['../views/Home.vue'], resolve)
 const SchoolNotice = resolve => require(['../views/news/SchoolNotice.vue'], resolve)
 const SchoolNews = resolve => require(['../views/news/SchoolNews.vue'], resolve)
 const Addnews = resolve => require(['../views/news/Addnews.vue'], resolve)
 const Addnotice = resolve => require(['../views/news/Addnotice.vue'], resolve)
+const AlbumManage = resolve => require(['../views/albumManage/AlbumManage.vue'], resolve)
+const AlbumPhoto = resolve => require(['../views/albumManage/AlbumPhoto.vue'], resolve)
+const VideoManage = resolve => require(['../views/videoManage/VideoManage.vue'], resolve)
 export const asyncRouterMap = [
   {
     path: '/',
@@ -56,6 +59,31 @@ export const asyncRouterMap = [
           title: '发布公告'
         },
         hidden: true
+      },
+      {
+        path: '/albumManage',
+        name: 'albumManage',
+        component: AlbumManage,
+        meta: {
+          title: '相册管理'
+        }
+      },
+      {
+        path: '/albumManage/albumPhoto',
+        name: 'albumPhoto',
+        component: AlbumPhoto,
+        meta: {
+          title: '查看照片'
+        },
+        hidden: true
+      },
+      {
+        path: '/videoManage',
+        name: 'videoManage',
+        component: VideoManage,
+        meta: {
+          title: '视频管理'
+        }
       }
     ]
   },
