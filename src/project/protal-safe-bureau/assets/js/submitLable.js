@@ -93,13 +93,15 @@ export const reportDangerForm = [
   }
 ]
 // 安全事故批示表单
-export const accidentFormData = [{
-  value: 'content',
-  initValue: '',
-  type: 'textarea',
-  label: '批示内容',
-  placeholder: '请填写批示内容',
-  minRows: 2,
-  maxRows: 6,
-  max: 100
-}]
+export const accidentFormData = [
+  {
+    value: 'content',
+    initValue: '',
+    type: 'textarea',
+    label: '批示内容',
+    placeholder: '请填写批示内容',
+    minRows: 2,
+    maxRows: 6,
+    max: 100
+  }
+]

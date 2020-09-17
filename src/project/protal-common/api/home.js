@@ -23,7 +23,31 @@ const homeApi = {
   getTeaList: '/notice/teacherCode#getUrl', // 查询职工列表
   getStuList: '/notice/classCode#getUrl' // 查询学生列表
 }
+const zkApi = {
+  getAlbumList: '/school/album/list#postQuery', // 查询相册列表
+  addNewAlbum: '/school/album/add#post', // 创建相册
+  deleteAlbum: '/school/album/delete#delWithQuery', // 删除相册
+  detailAlbum: '/school/album/detail#getUrl', // 查询相册
+  editAlbum: '/school/album/update#post', // 更新相册
+  getPhotoList: '/school/album/photo/list#get', // 查询相册照片列表
+  addPhotos: '/school/album/photo/addPhoto#post', // 上传照片
+  deletePhoto: '/school/album/photo/delete#delWithQuery', // 删除照片
+  deletePhotos: '/school/album/photo/batchDelete#delWithQuery', // 批量删除照片
+  getCover: '/school/album/photo/getCoverBySchoolCode#getUrl', // 查询轮播图
+  setCover: '/school/album/photo/setUpRotation#get', // 设置轮播图
+  addRelationData: '/school/media/class/addRelationData#post', // 保存发布对象
+  getRelationData: '/school/media/class/getRelationData#getUrl', // 查询发布对象
+  getDeviceData: '/school/media/device/getDeviceList#get', // 查询发布设备
+  getFullDevice: '/school/media/device/getFullScreenDeviceList#get', // 查询全屏设备列表
+  setFullShow: '/school/media/device/updateMediaDevice#post' // 设置全屏展示
+}
 for (const val in homeApi) {
   homeApi[val] = `${hostEnv.zq_news}${homeApi[val]}`
 }
-export default homeApi
+for (const val in zkApi) {
+  zkApi[val] = `${hostEnv.zk_news}${zkApi[val]}`
+}
+export default {
+  ...homeApi,
+  ...zkApi
+}

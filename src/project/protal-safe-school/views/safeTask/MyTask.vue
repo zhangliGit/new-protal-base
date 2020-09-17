@@ -77,6 +77,7 @@
 </template>
 
 <script>
+import hostEnv from '@config/host-env'
 import { mapState, mapActions } from 'vuex'
 import SearchForm from '@c/SearchForm'
 import TableList from '@c/TableList'
@@ -133,25 +134,16 @@ export default {
       this.showList()
     },
     add(type, record) {
-      if (type === 0 || type === 2) {
-        this.$router.push({
-          path: '/myTask/taskPreview',
-          query: {
-            id: record ? record.id : '',
-            state: type
-          }
-        })
-      } else {
-        this.$router.push({
-          path: '/myTask/fillTask',
-          query: {
-            id: record ? record.id : '',
-            taskCode: record ? record.taskCode : '',
-            taskTemplateCode: record ? record.taskTemplateCode : '',
-            state: type
-          }
-        })
-      }
+      const url = type === 0 || type === 2 || type === 4 ? '/myTask/taskPreview' : '/myTask/fillTask'
+      this.$router.push({
+        path: url,
+        query: {
+          id: record ? record.id : '',
+          taskCode: record ? record.taskCode : '',
+          taskTemplateCode: record ? record.taskTemplateCode : '',
+          state: type
+        }
+      })
     },
     async addApp(type, record) {
       this.$router.push({

@@ -87,7 +87,15 @@
             v-if="cardInfo.taskType === '1'"
           >
             <a-range-picker
-              v-decorator="['data', {initialValue: [moment(new Date(), 'YYYY-MM-DD'), moment( new Date(), 'YYYY-MM-DD')], rules: [{ required: 'required', message: '请选择时间' }]}]"
+              v-decorator="[
+                'data',
+                {
+                  initialValue:
+                    [ moment(cardInfo.startTime ? new Date(cardInfo.startTime) : new Date(), 'YYYY-MM-DD'),
+                      moment(cardInfo.endTime ? new Date(cardInfo.endTime) :new Date(), 'YYYY-MM-DD')],
+                  rules: [{ required: 'required', message: '请选择时间' }]
+                }
+              ]"
             />
           </a-form-item>
           <a-form-item
@@ -378,14 +386,7 @@ export default {
     this.getnumofweeks(this.value)
   },
   methods: {
-    ...mapActions('home', [
-      'getTaskDetail',
-      'addSchoolTask',
-      'updateDailyTask',
-      'addSafeTask',
-      'updateSafeTask',
-      'modifySchoolTask'
-    ]),
+    ...mapActions('home', [ 'getTaskDetail', 'addSchoolTask', 'modifySchoolTask' ]),
     moment,
     // 获取详情
     async showDetail() {
@@ -404,7 +405,7 @@ export default {
                 content: item
               }
             })
-            : undefined
+            : []
         }
       })
       questions.map((el) => {
@@ -512,7 +513,6 @@ export default {
       this.show = true
     },
     handleChange(info) {
-      console.log('aa', info)
       if (info.file.status !== 'uploading' && info.file.status !== 'removed') {
         if (info.file.response) {
           this.$message.error(info.file.response.message)
@@ -543,7 +543,7 @@ export default {
         if (key === '0') return false
         const newData = {
           key: this[`${key}Count`],
-          pointList: key === 'radio' || key === 'check' ? [] : undefined,
+          pointList: [],
           questionType: key === 'radio' ? '1' : key === 'check' ? '2' : key === 'fill' ? '3' : '4'
         }
         this[`${key}List`] = [...this[`${key}List`], newData]
@@ -566,18 +566,38 @@ export default {
     submitOk(e) {
       e.preventDefault()
       this.form.validateFields((error, values) => {
+        if (!this.cardInfo.des) {
+          this.$message.warning('请填写任务描述')
+          return false
+        }
         let list = this.radioList.concat(this.checkList).concat(this.fillList).concat(this.fileList)
-        console.log('list', list)
+        if (list.length === 0) {
+          this.$message.warning('请点击题目控件添加题目')
+          return false
+        }
         list = list.map((el) => {
           return {
             content:
               el.questionType === '1' || el.questionType === '2'
                 ? el.pointList.map((item) => {
-                  return item.content
+                  return item.content ? item.content : ''
                 })
-                : undefined,
+                : [],
             title: el.title,
             questionType: el.questionType
+          }
+        })
+        list.forEach((el) => {
+          if (!el.title || ((el.questionType === '1' || el.questionType === '2') && el.content.length === 0)) {
+            this.$message.warning('请填写完整题目')
+            return false
+          } else if (el.content && el.content.length !== 0) {
+            el.content.forEach(element => {
+              if (element === '') {
+                this.$message.warning('请填写完整题目')
+                return false
+              }
+            })
           }
         })
         values.userName = this.userInfo.userName
@@ -588,15 +608,18 @@ export default {
         values.docName = this.docName
         values.questions = list
         values.des = this.cardInfo.des
-        values.startTime = this.cardInfo.taskType === '1' ? moment(values.data[0]).format('YYYY-MM-DD') : undefined
-        values.endTime = this.cardInfo.taskType === '1' ? moment(values.data[1]).format('YYYY-MM-DD') : undefined
+        values.startTime = this.cardInfo.taskType === '1' ? moment(values.data[0]).format('YYYY-MM-DD') : ''
+        values.endTime = this.cardInfo.taskType === '1' ? moment(values.data[1]).format('YYYY-MM-DD') : ''
         values.dateNums =
           this.cardInfo.taskType === '2'
             ? this.weekCurrent
             : this.cardInfo.taskType === '3'
               ? this.monthCurrent
-              : undefined
-        console.log('values', values)
+              : ''
+        if (this.cardInfo.taskType !== '1' && values.dateNums === '') {
+          this.$message.warning('请选择任务时间')
+          return false
+        }
         this.isLoad = false
         if (!error) {
           this.isLoad = true

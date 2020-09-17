@@ -118,7 +118,7 @@ export default {
     del (file) {
       this.$tools.delTip('确定删除吗?', () => {
         const index = this.fileList.findIndex(item => {
-          return item.uid === file.uid
+          return item.id === file.id
         })
         this.$emit('delUpload', this.fileList[index])
         this.fileList.splice(index, 1)

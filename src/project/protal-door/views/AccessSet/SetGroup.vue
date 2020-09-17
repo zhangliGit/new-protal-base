@@ -1,25 +1,15 @@
 <template>
   <div class="set-group page-layout qui-fx-ver">
-    <down-record
-      v-if="recordTag"
-      :device-sn="bussCode"
-      buss-code="access-control"
-      v-model="recordTag"
-    ></down-record>
+    <down-record v-if="recordTag" :device-sn="bussCode" buss-code="access-control" v-model="recordTag"></down-record>
     <a-form :form="form" :style="{ maxHeight: maxHeight }">
       <a-form-item label="权限组名称" :label-col="{ span: 3 }" :wrapper-col="{ span: 15 }">
         <a-input
           placeholder="请输入权限组名称"
           maxlength="15"
-          v-decorator="['name', {initialValue: groupName, rules: [{ required: true, message: '请输入权限组名称' }] }]"
+          v-decorator="['name', { initialValue: groupName, rules: [{ required: true, message: '请输入权限组名称' }] }]"
         />
       </a-form-item>
-      <a-form-item
-        label="通行时间"
-        :label-col="{ span: 3 }"
-        :wrapper-col="{ span: 15 }"
-        :required="true"
-      >
+      <a-form-item label="通行时间" :label-col="{ span: 3 }" :wrapper-col="{ span: 15 }" :required="true">
         <a-table
           :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
           :columns="columns"
@@ -30,28 +20,24 @@
         >
           <template slot="action" slot-scope="text, record">
             <div v-if="record.accessTimeList.length > 0">
-              <div
-                class="action qui-fx-jsb qui-fx-ac"
-                v-for="(item, i) in record.accessTimeList"
-                :key="i"
-              >
+              <div class="action qui-fx-jsb qui-fx-ac" v-for="(item, i) in record.accessTimeList" :key="i">
                 <div class="left">
                   <template>
                     <a-time-picker
                       format="HH:mm"
                       :defaultValue="moment(item.startTime, 'HH:mm')"
-                      @change="(val,dateStrings)=>changeTime(val,dateStrings,'startTime',record.id, i)"
-                      :disabledMinutes="(val)=>getStartMinutes(val,record.id, i)"
-                      :disabledHours="(val)=>getStartHours(val,record.id, i)"
+                      @change="(val, dateStrings) => changeTime(val, dateStrings, 'startTime', record.id, i)"
+                      :disabledMinutes="val => getStartMinutes(val, record.id, i)"
+                      :disabledHours="val => getStartHours(val, record.id, i)"
                       :value="item.startTime"
                     />
                     <span>至</span>
                     <a-time-picker
                       format="HH:mm"
-                      :disabledHours="(val)=>getDisabledHours(val,record.id, i)"
-                      :disabledMinutes="(val)=>getDisabledMinutes(val,record.id, i)"
+                      :disabledHours="val => getDisabledHours(val, record.id, i)"
+                      :disabledMinutes="val => getDisabledMinutes(val, record.id, i)"
                       :defaultValue="moment(item.endTime, 'HH:mm')"
-                      @change="(val,dateStrings)=>changeTime(val,dateStrings,'endTime',record.id, i)"
+                      @change="(val, dateStrings) => changeTime(val, dateStrings, 'endTime', record.id, i)"
                       :value="item.endTime"
                     />
                   </template>
@@ -68,12 +54,7 @@
           </template>
         </a-table>
       </a-form-item>
-      <a-form-item
-        label="通行设备"
-        :label-col="{ span: 3 }"
-        :wrapper-col="{ span: 15 }"
-        :required="true"
-      >
+      <a-form-item label="通行设备" :label-col="{ span: 3 }" :wrapper-col="{ span: 15 }" :required="true">
         <device-list
           @getRecordList="getRecordList"
           :table-list="groupList"
@@ -88,7 +69,7 @@
       </a-form-item>
       <a-form-item :wrapper-col="{ span: 15, offset: 3 }">
         <a-button style="margin-right:50px;" @click="cancle">取消</a-button>
-        <a-button type="primary" @click="handleSubmit">保存</a-button>
+        <a-button type="primary" @click="handleSubmit" :loading="loading">保存</a-button>
       </a-form-item>
     </a-form>
   </div>
@@ -184,6 +165,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       bussCode: '',
       recordTag: false,
       moment,
@@ -290,16 +272,24 @@ export default {
         this.selectedRowKeys.push(parseInt(item.weekCode))
         if (parseInt(item.weekCode) === 1) {
           if (item.timeRuleList.length === 0) {
-            this.data[6].accessTimeList[0] = { startTime: moment('00:00', 'HH:mm'), endTime: moment('00:00', 'HH:mm'), canAdd: true }
+            this.data[6].accessTimeList[0] = {
+              startTime: moment('00:00', 'HH:mm'),
+              endTime: moment('00:00', 'HH:mm'),
+              canAdd: true
+            }
           } else {
             this.data[6].accessTimeList = []
             this.$nextTick(() => {
               item.timeRuleList.forEach((ele, index) => {
                 this.data[6].accessTimeList.push({
-                  startTime: moment(ele.accessStart
-                    ? ele.accessStart.split(':')[0] + ':' + ele.accessStart.split(':')[1]
-                    : '00:00', 'HH:mm'),
-                  endTime: moment(ele.accessEnd ? ele.accessEnd.split(':')[0] + ':' + ele.accessEnd.split(':')[1] : '00:00', 'HH:mm'),
+                  startTime: moment(
+                    ele.accessStart ? ele.accessStart.split(':')[0] + ':' + ele.accessStart.split(':')[1] : '00:00',
+                    'HH:mm'
+                  ),
+                  endTime: moment(
+                    ele.accessEnd ? ele.accessEnd.split(':')[0] + ':' + ele.accessEnd.split(':')[1] : '00:00',
+                    'HH:mm'
+                  ),
                   canAdd: index === item.timeRuleList.length - 1
                 })
               })
@@ -317,10 +307,16 @@ export default {
             this.$nextTick(() => {
               item.timeRuleList.forEach((ele, index) => {
                 this.data[parseInt(item.weekCode) - 2].accessTimeList.push({
-                  startTime: moment(ele.accessStart
-                    ? ele.accessStart.toString().split(':')[0] + ':' + ele.accessStart.split(':')[1]
-                    : '00:00', 'HH:mm'),
-                  endTime: moment(ele.accessEnd ? ele.accessEnd.split(':')[0] + ':' + ele.accessEnd.split(':')[1] : '00:00', 'HH:mm'),
+                  startTime: moment(
+                    ele.accessStart
+                      ? ele.accessStart.toString().split(':')[0] + ':' + ele.accessStart.split(':')[1]
+                      : '00:00',
+                    'HH:mm'
+                  ),
+                  endTime: moment(
+                    ele.accessEnd ? ele.accessEnd.split(':')[0] + ':' + ele.accessEnd.split(':')[1] : '00:00',
+                    'HH:mm'
+                  ),
                   canAdd: index === item.timeRuleList.length - 1
                 })
               })
@@ -414,14 +410,19 @@ export default {
             ruleGroupType: this.$route.query.type === 'teacher' ? 1 : 2,
             ruleGroupCode: this.ruleGroupCode ? this.ruleGroupCode : null
           }
-          console.log(req)
-          this.addGroup(req).then(res => {
-            this.$message.success('添加成功')
-            const path = this.$route.query.type === 'teacher' ? '/teacherAccess' : '/studentAccess'
-            this.$tools.goNext(() => {
-              this.$router.push({ path })
+          this.loading = true
+          this.addGroup(req)
+            .then(res => {
+              this.$message.success('添加成功')
+              const path = this.$route.query.type === 'teacher' ? '/teacherAccess' : '/studentAccess'
+              this.$tools.goNext(() => {
+                this.loading = true
+                this.$router.push({ path })
+              })
             })
-          })
+            .catch(() => {
+              this.loading = false
+            })
         }
       })
     },
@@ -435,7 +436,12 @@ export default {
         this.data[id].accessTimeList[index].startTime = val
       } else {
         console.log(dateStrings)
-        if (parseInt(dateStrings.split(':')[0]) < moment(this.data[id].accessTimeList[index].startTime).format('HH:mm').split(':')[0]) {
+        if (
+          parseInt(dateStrings.split(':')[0]) <
+          moment(this.data[id].accessTimeList[index].startTime)
+            .format('HH:mm')
+            .split(':')[0]
+        ) {
           this.$message.warning('开始时间不能大于结束时间')
         }
         this.data[id].accessTimeList[index].endTime = val

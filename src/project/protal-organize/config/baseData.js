@@ -9,7 +9,8 @@ const UserManage = resolve => require(['../views/basedata/UserManage.vue'], reso
 const Post = resolve => require(['../views/basedata/Post.vue'], resolve)
 const Street = resolve => require(['../views/basedata/Street.vue'], resolve)
 const Group = resolve => require(['../views/basedata/Group.vue'], resolve)
-const basedata = [{
+const basedata = [
+  {
     path: '/organ',
     name: 'organ',
     component: Organ,

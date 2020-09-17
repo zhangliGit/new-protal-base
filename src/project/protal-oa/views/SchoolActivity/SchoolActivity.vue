@@ -112,7 +112,7 @@ const columns = [
     dataIndex: 'stopDatetime',
     width: '10%',
     customRender: text => {
-      return Tools.getDate(text, 6)
+      return text ? Tools.getDate(text, 6) : '--'
     }
   },
   {

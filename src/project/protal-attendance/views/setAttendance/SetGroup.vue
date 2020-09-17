@@ -6,15 +6,10 @@
         <a-input
           placeholder="请输入考勤组名称"
           maxlength="15"
-          v-decorator="['name', {initialValue: groupName, rules: [{ required: true, message: '请输入考勤组名称' }] }]"
+          v-decorator="['name', { initialValue: groupName, rules: [{ required: true, message: '请输入考勤组名称' }] }]"
         />
       </a-form-item>
-      <a-form-item
-        label="考勤时间"
-        :label-col="{ span: 3 }"
-        :wrapper-col="{ span: 15 }"
-        :required="true"
-      >
+      <a-form-item label="考勤时间" :label-col="{ span: 3 }" :wrapper-col="{ span: 15 }" :required="true">
         <a-table
           :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
           :columns="columns"
@@ -24,36 +19,27 @@
           class="table"
         >
           <template slot="action" slot-scope="text, record">
-            <div
-              class="action qui-fx-jsa qui-fx-ac"
-              v-for="(item, i) in record.accessTimeList"
-              :key="i"
-            >
+            <div class="action qui-fx-jsa qui-fx-ac" v-for="(item, i) in record.accessTimeList" :key="i">
               <template>
                 <a-time-picker
                   format="HH:mm"
                   :defaultValue="moment(item.startTime, 'HH:mm')"
-                  @change="(val,dateStrings)=>changeTime(val,dateStrings,'startTime',record.id, i)"
+                  @change="(val, dateStrings) => changeTime(val, dateStrings, 'startTime', record.id, i)"
                 />
                 <span>至</span>
                 <a-time-picker
                   format="HH:mm"
-                  :disabledHours="(val)=>getDisabledHours(val,record.id, i)"
-                  :disabledMinutes="(val)=>getDisabledMinutes(val,record.id, i)"
+                  :disabledHours="val => getDisabledHours(val, record.id, i)"
+                  :disabledMinutes="val => getDisabledMinutes(val, record.id, i)"
                   :defaultValue="moment(item.endTime, 'HH:mm')"
-                  @change="(val,dateStrings)=>changeTime(val,dateStrings,'endTime',record.id, i)"
+                  @change="(val, dateStrings) => changeTime(val, dateStrings, 'endTime', record.id, i)"
                 />
               </template>
             </div>
           </template>
         </a-table>
       </a-form-item>
-      <a-form-item
-        label="考勤设备"
-        :label-col="{ span: 3 }"
-        :wrapper-col="{ span: 18 }"
-        :required="true"
-      >
+      <a-form-item label="考勤设备" :label-col="{ span: 3 }" :wrapper-col="{ span: 18 }" :required="true">
         <device-list
           :table-list="groupList"
           :columns="type === 'teacher' ? deviceColumns : stuDeviceColumns"
@@ -79,7 +65,7 @@
       </a-form-item>
       <a-form-item :wrapper-col="{ span: 15, offset: 3 }">
         <a-button style="margin-right:50px;" @click="cancle">取消</a-button>
-        <a-button type="primary" @click="handleSubmit">保存</a-button>
+        <a-button type="primary" :loading="loading" @click="handleSubmit">保存</a-button>
       </a-form-item>
     </a-form>
   </div>
@@ -200,6 +186,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       recordTag: false,
       bussCode: '',
       moment,
@@ -391,22 +378,33 @@ export default {
             type: this.type === 'teacher' ? 1 : 2
           }
           console.log(req)
+          this.loading = true
           const path = this.type === 'teacher' ? '/teacherAccessSet' : '/studentAttendanceSet'
           if (this.groupId) {
             req.id = this.groupId
-            this.updateAccess(req).then(res => {
-              this.$message.success('编辑成功')
-              this.$tools.goNext(() => {
-                this.$router.push({ path })
+            this.updateAccess(req)
+              .then(res => {
+                this.$message.success('编辑成功')
+                this.$tools.goNext(() => {
+                  this.loading = true
+                  this.$router.push({ path })
+                })
               })
-            })
+              .catch(() => {
+                this.loading = false
+              })
           } else {
-            this.addAccess(req).then(res => {
-              this.$message.success('添加成功')
-              this.$tools.goNext(() => {
-                this.$router.push({ path })
+            this.addAccess(req)
+              .then(res => {
+                this.$message.success('添加成功')
+                this.$tools.goNext(() => {
+                  this.loading = true
+                  this.$router.push({ path })
+                })
               })
-            })
+              .catch(() => {
+                this.loading = false
+              })
           }
         }
       })
