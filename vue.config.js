@@ -236,6 +236,14 @@ module.exports = {
           '^/zq_news': ''
         }
       },
+      '/zk_news': {
+        // target: 'http://192.168.1.241:11005/', // 张坤-信息发布
+        target: 'http://192.168.1.23:11011/',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/zk_news': ''
+        }
+      },
       '/zq_schedule': {
         // target: 'http://192.168.1.241:11008/', // 张琦-课程表
         target: 'http://192.168.2.242:11010/',
@@ -337,6 +345,10 @@ module.exports = {
         }
       },
       '/zk_oa': {
+<<<<<<< HEAD
+        // target: 'http://192.168.2.242:11014/', // 张坤-报修
+=======
+>>>>>>> 4f868611137952bf57ee84ec7e3489cf71d257ba
         target: 'http://192.168.1.23:11014/', // 张坤-报修
         changeOrigin: true,
         pathRewrite: {

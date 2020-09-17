@@ -44,7 +44,7 @@
                 </a-popover>
               </div>
               <div class="qui-fx-jsb qui-fx-ac">
-                <div>
+                <div @click.stop="useTemplate(item)">
                   <div class="disable" v-if="item.count === 0">未启用</div>
                   <div class="useNum" v-else>{{ item.count }}台设备使用中</div>
                 </div>
@@ -55,10 +55,10 @@
                     </a>
                     <a-menu slot="overlay">
                       <a-menu-item>
-                        <a @click.stop="add(1, item.id)">编辑模板</a>
+                        <a @click.stop="add(1, item)">编辑模板</a>
                       </a-menu-item>
                       <a-menu-item>
-                        <a @click.stop="_delTemplate(item.id, item.isDefault, item.count)">删除模板</a>
+                        <a @click.stop="_delTemplate(item)">删除模板</a>
                       </a-menu-item>
                       <a-menu-item>
                         <a @click.stop="useTemplate(item)">应用到指定设备</a>
@@ -118,9 +118,13 @@ export default {
         }
       })
     },
-    add(type, id) {
+    add(type, item) {
       let path = ''
-      path = `/templateManage/template?type=${type}&id=${id}`
+      if (type && parseInt(item.isDefault) === 1) {
+        this.$message.warning('默认模板不可编辑')
+        return
+      }
+      path = `/templateManage/template?type=${type}${type ? '&id=' + item.id : ''}`
       this.$router.push({ path })
     },
     async useTemplate(item) {
@@ -156,17 +160,17 @@ export default {
         this._getTemplateList()
       })
     },
-    _delTemplate (id, isDefault, count) {
-      if (parseInt(isDefault) === 1) {
+    _delTemplate (item) {
+      if (parseInt(item.isDefault) === 1) {
         this.$message.warning('默认模板不可删除')
         return
       }
-      if (parseInt(count) !== 0) {
+      if (parseInt(item.count) !== 0) {
         this.$message.warning('模板使用，不可删除')
         return
       }
       this.$tools.delTip('确认要删除该模板吗?', () => {
-        this.delTemplate(id).then(() => {
+        this.delTemplate(item.id).then(() => {
           this.$message.success('删除成功')
           this.$tools.goNext(() => {
             this._getTemplateList()

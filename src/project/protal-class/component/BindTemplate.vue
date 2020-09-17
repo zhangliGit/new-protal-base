@@ -73,7 +73,7 @@
           <ul>
             <li v-for="(item, index) in totalList" :key="item.deviceSn" class="qui-fx-jsb qui-fx-ac">
               <span>{{ item.gradeName }}{{ item.className }}</span>
-              <a-tag @click="delUser(item.deviceSn, index)" color="#f50">删除</a-tag>
+              <a-tag @click="delUser(item.id, index)" color="#f50">删除</a-tag>
             </li>
           </ul>
         </div>
@@ -188,7 +188,6 @@ export default {
     }
   },
   created() {
-    console.log(this.deviceList)
     this.totalList = this.deviceList
     this.deviceList.forEach(item => {
       this.chooseList.push(item.id)
