@@ -291,7 +291,7 @@ export const issuanceSearchLabel = [
       },
       {
         key: '3',
-        val: '已处理'
+        val: '已结束'
       }
     ]
   },
