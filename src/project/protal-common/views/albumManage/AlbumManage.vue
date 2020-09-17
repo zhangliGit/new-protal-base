@@ -16,6 +16,7 @@
       ref="chooseClasscard"
       v-if="fullTag"
       v-model="fullTag"
+      :mediaCode="mediaCode"
       @submit="fullSubmit"
       title="选择全屏展示的设备"
       :deviceList="fullDeviceList"
@@ -150,7 +151,7 @@ export default {
       this.bindTag = true
     },
     async fullScreenTo(item) {
-      this.albumCode = item.albumCode
+      this.mediaCode = item.albumCode
       const res = await this.getFullDevice({ mediaCode: item.albumCode })
       this.fullDeviceList = res.data.list
       this.fullTag = true
@@ -207,8 +208,25 @@ export default {
         })
       })
     },
-    async fullSubmit(value) {
-      console.log(value)
+    async fullSubmit(value, formData) {
+      console.log(value, formData)
+      await this.setFullShow({
+        deviceIdList: value.map(el => {
+          return el.id
+        }),
+        isAll: 0,
+        mediaType: 1,
+        mediaCode: this.mediaCode,
+        startTime: formData.startTime,
+        endTime: formData.startTime
+      }).catch(() => {
+        this.$refs.chooseClasscard.error()
+      })
+      this.$message.success('发布成功')
+      this.$tools.goNext(() => {
+        this.$refs.chooseClasscard.reset()
+        this.showList()
+      })
     },
     async bindSubmit(value) {
       console.log(value)
@@ -242,6 +260,8 @@ export default {
             className: el.className,
             gradeCode: el.gradeCode,
             gradeName: el.gradeName,
+            placeName: el.placeName,
+            placeId: el.placeId,
             mediaCode: 1
           }
         }),
@@ -256,8 +276,6 @@ export default {
         this.$refs.bindTemplate.reset()
         this.showList()
       })
-    },
-    bindToAll() {
     }
   }
 }

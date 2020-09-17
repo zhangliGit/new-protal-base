@@ -37,7 +37,7 @@ const zkApi = {
   setCover: '/school/album/photo/setUpRotation#get', // 设置轮播图
   addRelationData: '/school/media/class/addRelationData#post', // 保存发布对象
   getRelationData: '/school/media/class/getRelationData#getUrl', // 查询发布对象
-  getDeviceData: '/school/media/device/getDeviceList#getUrl', // 查询发布设备
+  getDeviceData: '/school/media/device/getDeviceList#get', // 查询发布设备
   getFullDevice: '/school/media/device/getFullScreenDeviceList#get', // 查询全屏设备列表
   setFullShow: '/school/media/device/updateMediaDevice#post' // 设置全屏展示
 }
