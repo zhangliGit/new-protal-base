@@ -6,9 +6,6 @@
         <div>月计划：</div>
         <div><a-input placeholder="Basic usage" /></div>
       </div>
-      <div  v-for="(list,index) in dataLists"  :key="list.id+''">
-                <div  @click="open($event,list,index)" > {{list}}  </div>
-      </div>
       <div class="a-collapse-box u-padd-20">
         <a-collapse v-model="activeKey">
           <template #expandIcon="props">
@@ -23,10 +20,11 @@
             <div slot="header" @click="open($event,list,index)" class="header">
               Q{{ index+1 }}({{ list.questionType | questionType }}){{ list.title }}
             </div>
-            <div class="list-box u-mar-20 " v-if="list.questionType==='1'">
+            <div class="list-box  u-mar-20 " v-if="list.questionType==='1'">
               <div class="list-cont u-fx-ac-jc">
-                <!-- <pre-echarts v-if="Object.keys(answers).length>0" :dataList="answers[index]"></pre-echarts>
-                <a-empty v-else :image="simpleImage" /> -->
+                {{}}
+                <pre-echarts v-if="Object.keys(radioList.statisticsAnswersDtoList).length>0" :dataList="radioList.statisticsAnswersDtoList"></pre-echarts>
+                <a-empty v-else :image="simpleImage" />
               </div>
               <div class="list-cont u-mar-t20">
                 <table border="0" class="u-bd-1px" width="100%" cellspacing:="0">
@@ -35,31 +33,31 @@
                     <th class="u-padd-10 u-bd-r u-bd-b" >计数</th>
                     <th class="u-padd-10 u-bd-b ">占比</th>
                   </tr>
-                  <tr v-for="(item,i) in list.result.statisticsAnswersDtoList" :key="i">
+                  <tr v-for="(item,index) in radioList.statisticsAnswersDtoList" :key="index">
                     <td class="u-padd-10 u-bd-r u-bd-b " width="60%">{{ item.answer }}</td>
                     <td class="u-padd-10 u-bd-r u-bd-b " >{{ item.count }}人</td>
                     <td class="u-padd-10  u-bd-b ">{{ item.rate }}</td>
                   </tr>
                   <tr>
-                    <td class="u-padd-10 " :colspan="3">答题人数：{{ list.result.answerSum ? list.result.answerSum : 0 }}</td>
+                    <td class="u-padd-10 " :colspan="3">答题人数：{{ radioList.answerSum }}</td>
                   </tr>
                 </table>
               </div>
               <div class="list-cont u-mar-t20">
-                <table-list :page-list="pageList" :columns="columns" :table-list="user" >
+                <table-list :page-list="pageList" :columns="columns" :table-list="dangerDetail" >
                 </table-list>
                 <page-num v-model="pageList" :total="total"></page-num>
                 <!-- <a-table :columns="columns" :pagination="false" :data-source="dangerDetail" bordered>
                 </a-table> -->
               </div>
             </div>
-            <!-- <div class="list-box  u-mar-20 " v-if="list.questionType==='2'">
-              <div class="list-title u-type-primary-bg u-main-color u-bold u-padd-10">
-              </div>
+            <div class="list-box  u-mar-20 " v-if="list.questionType==='2'">
+              <!-- <div class="list-title u-type-primary-bg u-main-color u-bold u-padd-10">
+              </div> -->
               <div class="list-cont u-fx-ac-jc">
                 <bar-echarts
-                  v-if="answers.length>0"
-                  :multipleData="list.result.statisticsAnswersDtoList">
+                  v-if="multipleList.statisticsAnswersDtoList.length>0"
+                  :multipleData="multipleList.statisticsAnswersDtoList">
                 </bar-echarts>
                 <a-empty v-else :image="simpleImage" />
               </div>
@@ -70,35 +68,34 @@
                     <th class="u-padd-10 u-bd-r u-bd-b" >计数</th>
                     <th class="u-padd-10 u-bd-b ">占比</th>
                   </tr>
-                  <tr v-for="(item, i) in list.result.statisticsAnswersDtoList" :key="i">
+                  <tr v-for="(item,index) in multipleList.statisticsAnswersDtoList" :key="index">
                     <td class="u-padd-10 u-bd-r u-bd-b " width="60%">{{ item.answer }}</td>
                     <td class="u-padd-10 u-bd-r u-bd-b " >{{ item.count }}人</td>
                     <td class="u-padd-10  u-bd-b ">{{ item.rate }}</td>
                   </tr>
                   <tr>
-                    <td class="u-padd-10 " :colspan="3">答题人数：{{ answers[index].answerSum }}</td>
+                    <td class="u-padd-10 " :colspan="3">答题人数：{{ multipleList.answerSum }}</td>
                   </tr>
                 </table>
               </div>
               <div class="list-cont u-mar-t20">
-                <a-table :columns="columns" :pagination="false" :data-source="user" bordered>
+                {{ multipleList.statisticsAnswersByUserDtoList }}
+                <a-table :columns="columns" :pagination="false" :data-source="multipleList.statisticsAnswersByUserDtoList" bordered>
                 </a-table>
               </div>
-            </div> -->
-            <!-- <div class="list-box  u-mar-20 " v-if="list.questionType==='3'">
+            </div>
+            <div class="list-box  u-mar-20 " v-if="list.questionType==='3'">
               <div class="list-cont u-mar-t20">
-                <table-list :page-list="pageList" :columns="columns" :table-list="list.user" >
-                </table-list>
-                <page-num v-model="pageList" :total="list.user.total"></page-num>
+                <a-table :columns="columns" :pagination="false" :data-source="dangerDetail" bordered>
+                </a-table>
               </div>
             </div>
-            <div class="list-box  u-mar-20 " v-if="list.questionType==='4'">
+            <div class="list-box  u-mar-20 " v-if="list.questionType==='3'">
               <div class="list-cont u-mar-t20">
-                <table-list :page-list="pageList" :columns="columns" :table-list="list.user" >
-                </table-list>
-                <page-num v-model="pageList" :total="total"></page-num>
+                <a-table :columns="columns" :pagination="false" :data-source="dangerDetail" bordered>
+                </a-table>
               </div>
-            </div> -->
+            </div>
           </a-collapse-panel>
         </a-collapse>
       </div>
@@ -148,11 +145,115 @@ export default {
       form: this.$form.createForm(this),
       columns,
       dataLists: [],
+      multipleList: {
+        'content': [
+          '选项一',
+          '选项二',
+          '选择三'
+        ],
+        answerSum: '100',
+        'dateNum': '100',
+        'docUrl': '',
+        'questionType': '2',
+        'statisticsAnswersByUserDtoList': [
+          {
+            'answer': '11',
+            'completeUserName': '李四',
+            'schoolName': '学校一'
+          },
+          {
+            'answer': '12',
+            'completeUserName': '张三',
+            'schoolName': '学校一'
+          }
+        ],
+        'statisticsAnswersDtoList': [
+          {
+            'answer': '选项一',
+            'count': 1,
+            'rate': 0
+          },
+          {
+            'answer': '选项二',
+            'count': 19,
+            'rate': 0
+          },
+          {
+            'answer': '选择三',
+            'count': 80,
+            'rate': 0
+          }
+        ],
+        'taskType': '2',
+        'templateQuestionlId': '',
+        'title': '多选一',
+        'year': null
+      },
+      radioList: {
+        'content': [
+          '选项一',
+          '选项二',
+          '选择三'
+        ],
+        answerSum: '100',
+        'dateNum': '100',
+        'docUrl': '',
+        'questionType': '2',
+        'statisticsAnswersByUserDtoList': [
+          {
+            'answer': '11',
+            'completeUserName': '李四',
+            'schoolName': '学校一'
+          },
+          {
+            'answer': '12',
+            'completeUserName': '张三',
+            'schoolName': '学校一'
+          }
+        ],
+        'statisticsAnswersDtoList': [
+          {
+            'name': '是',
+            'value': 1,
+            'rate': 0
+          },
+          {
+            'name': '否',
+            'value': 19,
+            'rate': 0
+          }
+        ],
+        'taskType': '2',
+        'templateQuestionlId': '',
+        'title': '多选一',
+        'year': null
+      },
       detailedData: {},
       dangerLevel: {}, // 隐患情况
       dangerDetail: [], // 隐患明细table
-      dangerSchool: { },
-      multipleData: [],
+      dangerSchool: {
+        yes: '1',
+        no: '99',
+        schoolName: '学校A'
+      },
+      multipleData: [
+        {
+          biggerCount: '3',
+          schoolName: '看见摔倒的奶奶过去扶起'
+        },
+        {
+          biggerCount: '55',
+          schoolName: '地上有100元。拾起来占为己有'
+        },
+        {
+          biggerCount: '20',
+          schoolName: '学校D'
+        },
+        {
+          biggerCount: '10',
+          schoolName: '学校f'
+        }
+      ],
       general: {}, // 检查的总体情况
       mainIssues: [], // 存在的问题
       name: '',
@@ -167,10 +268,7 @@ export default {
         size: 20
       },
       total: 0,
-      questionId: '',
-      questionInfo: [],
-      answers:[],
-      user:[],
+      questionId: ''
     }
   },
   computed: {
@@ -186,28 +284,10 @@ export default {
       const res = await this.answerTaskDetail({ taskCode: this.taskCode })
       this.questionId = res.data[0].id
       this.activeKey = [res.data[0].id]
-      this.dataLists = res.data.map(el => {
-        return {
-          ...el,
-          check: false
-        }
-      })
-      const req = {
-        dateNum: this.dateNum,
-        page: this.page,
-        size: this.size,
-        year: this.year,
-        questionId: this.questionId,
-        taskTemplateCode: this.taskCode
-      }
-      const result = await this.answersTaskStatistics(req)
-      const user = await this.userTaskStatistics(req)
-      this.dataLists[0].result = result.data
-      this.dataLists[0].user = user.data
-      this.dataLists[0].check = true
-    //   this.seeStatistics(0)
+      this.dataLists = res.data
+      this.seeStatistics(res.data[0].id)
     },
-    async seeStatistics(index) {
+    async seeStatistics() {
       const req = {
         dateNum: this.dateNum,
         page: this.page,
@@ -216,26 +296,30 @@ export default {
         questionId: this.questionId,
         taskTemplateCode: this.taskCode
       }
-      const result = await this.answersTaskStatistics(req)
+      const answers = await this.answersTaskStatistics(req)
       const user = await this.userTaskStatistics(req)
-      this.dataLists[index].result = result.data
-      this.dataLists[index].user = user.data.statisticsAnswersByUserDtoList.records
+      this.dangerDetail = user.data.statisticsAnswersByUserDtoList.records
+      this.total = user.data.statisticsAnswersByUserDtoList.records.length
+      this.radioList = answers.data
     },
     setBi() {
       // Highcharts.chart('backSchool', backSchool)
       // Highcharts.chart('area', area)
       // Highcharts.chart('circle', circle)
     },
-    async open(e, record, index) {
-      record.check = !record.check
-      this.questionId = record.id
-      if (record.check) {
-        this.seeStatistics(index)
-      }
+    open(key,a,b) {
+      console.log('openkey', key)
+      console.log('opena', a)
+      console.log('openb', b)
+      // if (key.indexOf(this.questionId) === -1) {
+      //   this.questionId = key[key.length - 1]
+      //   this.seeStatistics()
+      // }
     },
     cancel() {
       this.$router.go(-1)
     }
+
   }
 }
 </script>

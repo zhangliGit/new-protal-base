@@ -20,7 +20,9 @@ const taskApi = {
   previewTask: '/safeTaskTemplate/preview#postWithQueryAndBody', // 任务预览
   answerTask: '/safeTask/add/answer#post', // 任务填报
   previewMyTask: '/safeTask/preview/#postWithQueryAndBody', // 任务预览
-  answerTaskDetail: '/safeTaskQuestion/query/by/taskcode#postQuery' // 安全任务上报内容
+  answerTaskDetail: '/safeTaskQuestion/query/by/taskcode#postQuery', // 安全任务上报内容
+  answersTaskStatistics: '/safeTaskTemplate/statistics/by/answers#post', // 查看统计根据答案
+  userTaskStatistics: '/safeTaskTemplate/statistics/by/user#post' // 查看统计根据用户
 
 }
 for (const val in taskApi) {

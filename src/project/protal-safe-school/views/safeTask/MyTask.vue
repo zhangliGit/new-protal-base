@@ -55,29 +55,10 @@
       </template>
     </table-list>
     <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
-    <!-- <a-modal
-      :visible="visible"
-      :footer="null"
-      centered
-      @cancel="visible = false"
-      :bodyStyle="bodyStyle"
-      width="360px"
-      :closable="false"
-      :destroyOnClose="true"
-    >
-      <div class="erm-box qui-fx-ver">
-        <div class="logo">
-          <img :src="logo" alt />
-        </div>
-        <div class="qr-code" id="qrCode" ref="qrCodeDiv"></div>
-        <div class="area">巡检点：{{ area }}</div>
-      </div>
-    </a-modal>-->
   </div>
 </template>
 
 <script>
-import hostEnv from '@config/host-env'
 import { mapState, mapActions } from 'vuex'
 import SearchForm from '@c/SearchForm'
 import TableList from '@c/TableList'
@@ -93,22 +74,13 @@ export default {
   data() {
     return {
       task,
-      bodyStyle: {
-        padding: 0
-      },
-      visible: false,
       total: 0,
       pageList: {
         page: 1,
         size: 20
       },
       searchList: {},
-      taskList: [],
-      form: this.$form.createForm(this),
-      areaList: [],
-      disabled: false,
-      chooseList: [],
-      area: ''
+      taskList: []
     }
   },
   computed: {

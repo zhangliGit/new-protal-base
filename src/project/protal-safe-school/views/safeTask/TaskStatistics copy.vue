@@ -6,9 +6,6 @@
         <div>月计划：</div>
         <div><a-input placeholder="Basic usage" /></div>
       </div>
-      <div  v-for="(list,index) in dataLists"  :key="list.id+''">
-                <div  @click="open($event,list,index)" > {{list}}  </div>
-      </div>
       <div class="a-collapse-box u-padd-20">
         <a-collapse v-model="activeKey">
           <template #expandIcon="props">
@@ -23,10 +20,10 @@
             <div slot="header" @click="open($event,list,index)" class="header">
               Q{{ index+1 }}({{ list.questionType | questionType }}){{ list.title }}
             </div>
-            <div class="list-box u-mar-20 " v-if="list.questionType==='1'">
+            <div class="list-box  u-mar-20 " v-if="list.questionType==='1'">
               <div class="list-cont u-fx-ac-jc">
-                <!-- <pre-echarts v-if="Object.keys(answers).length>0" :dataList="answers[index]"></pre-echarts>
-                <a-empty v-else :image="simpleImage" /> -->
+                <pre-echarts v-if="Object.keys(answers).length>0" :dataList="answers[index]"></pre-echarts>
+                <a-empty v-else :image="simpleImage" />
               </div>
               <div class="list-cont u-mar-t20">
                 <table border="0" class="u-bd-1px" width="100%" cellspacing:="0">
@@ -35,31 +32,31 @@
                     <th class="u-padd-10 u-bd-r u-bd-b" >计数</th>
                     <th class="u-padd-10 u-bd-b ">占比</th>
                   </tr>
-                  <tr v-for="(item,i) in list.result.statisticsAnswersDtoList" :key="i">
+                  <tr v-for="(item,i) in answers[index]" :key="i">
                     <td class="u-padd-10 u-bd-r u-bd-b " width="60%">{{ item.answer }}</td>
                     <td class="u-padd-10 u-bd-r u-bd-b " >{{ item.count }}人</td>
                     <td class="u-padd-10  u-bd-b ">{{ item.rate }}</td>
                   </tr>
                   <tr>
-                    <td class="u-padd-10 " :colspan="3">答题人数：{{ list.result.answerSum ? list.result.answerSum : 0 }}</td>
+                    <!-- <td class="u-padd-10 " :colspan="3">答题人数：{{ answers[index].answerSum }}</td> -->
                   </tr>
                 </table>
               </div>
               <div class="list-cont u-mar-t20">
-                <table-list :page-list="pageList" :columns="columns" :table-list="user" >
+                <table-list :page-list="pageList" :columns="columns" :table-list="user[index].data" >
                 </table-list>
                 <page-num v-model="pageList" :total="total"></page-num>
                 <!-- <a-table :columns="columns" :pagination="false" :data-source="dangerDetail" bordered>
                 </a-table> -->
               </div>
             </div>
-            <!-- <div class="list-box  u-mar-20 " v-if="list.questionType==='2'">
-              <div class="list-title u-type-primary-bg u-main-color u-bold u-padd-10">
-              </div>
+            <div class="list-box  u-mar-20 " v-if="list.questionType==='2'">
+              <!-- <div class="list-title u-type-primary-bg u-main-color u-bold u-padd-10">
+              </div> -->
               <div class="list-cont u-fx-ac-jc">
                 <bar-echarts
                   v-if="answers.length>0"
-                  :multipleData="list.result.statisticsAnswersDtoList">
+                  :multipleData="answers[index]">
                 </bar-echarts>
                 <a-empty v-else :image="simpleImage" />
               </div>
@@ -70,35 +67,36 @@
                     <th class="u-padd-10 u-bd-r u-bd-b" >计数</th>
                     <th class="u-padd-10 u-bd-b ">占比</th>
                   </tr>
-                  <tr v-for="(item, i) in list.result.statisticsAnswersDtoList" :key="i">
+                  <tr v-for="(item, i) in answers[index]" :key="i">
                     <td class="u-padd-10 u-bd-r u-bd-b " width="60%">{{ item.answer }}</td>
                     <td class="u-padd-10 u-bd-r u-bd-b " >{{ item.count }}人</td>
                     <td class="u-padd-10  u-bd-b ">{{ item.rate }}</td>
                   </tr>
                   <tr>
-                    <td class="u-padd-10 " :colspan="3">答题人数：{{ answers[index].answerSum }}</td>
+                    <!-- <td class="u-padd-10 " :colspan="3">答题人数：{{ answers[index].answerSum }}</td> -->
                   </tr>
                 </table>
               </div>
               <div class="list-cont u-mar-t20">
-                <a-table :columns="columns" :pagination="false" :data-source="user" bordered>
+                <a-table :columns="columns" :pagination="false" :data-source="user[index].data" bordered>
                 </a-table>
               </div>
-            </div> -->
-            <!-- <div class="list-box  u-mar-20 " v-if="list.questionType==='3'">
+            </div>
+            <div class="list-box  u-mar-20 " v-if="list.questionType==='3'">
               <div class="list-cont u-mar-t20">
-                <table-list :page-list="pageList" :columns="columns" :table-list="list.user" >
+                <table-list :page-list="pageList" :columns="columns" :table-list="user[index].data" >
                 </table-list>
-                <page-num v-model="pageList" :total="list.user.total"></page-num>
+                <page-num v-model="pageList" :total="total"></page-num>
               </div>
             </div>
             <div class="list-box  u-mar-20 " v-if="list.questionType==='4'">
               <div class="list-cont u-mar-t20">
-                <table-list :page-list="pageList" :columns="columns" :table-list="list.user" >
+                  <div>{{user}}</div>
+                <table-list :page-list="pageList" :columns="columns" :table-list="user[0].data" >
                 </table-list>
                 <page-num v-model="pageList" :total="total"></page-num>
               </div>
-            </div> -->
+            </div>
           </a-collapse-panel>
         </a-collapse>
       </div>
@@ -192,20 +190,8 @@ export default {
           check: false
         }
       })
-      const req = {
-        dateNum: this.dateNum,
-        page: this.page,
-        size: this.size,
-        year: this.year,
-        questionId: this.questionId,
-        taskTemplateCode: this.taskCode
-      }
-      const result = await this.answersTaskStatistics(req)
-      const user = await this.userTaskStatistics(req)
-      this.dataLists[0].result = result.data
-      this.dataLists[0].user = user.data
       this.dataLists[0].check = true
-    //   this.seeStatistics(0)
+      this.seeStatistics(0)
     },
     async seeStatistics(index) {
       const req = {
@@ -216,17 +202,31 @@ export default {
         questionId: this.questionId,
         taskTemplateCode: this.taskCode
       }
-      const result = await this.answersTaskStatistics(req)
+      const answers = await this.answersTaskStatistics(req)
       const user = await this.userTaskStatistics(req)
-      this.dataLists[index].result = result.data
-      this.dataLists[index].user = user.data.statisticsAnswersByUserDtoList.records
+      console.log('answers', answers)
+      console.log('user', user)
+      const answersData = answers.data.statisticsAnswersDtoList
+      this.answers = [...this.answers, answersData]
+      const userData = {
+          key:index,
+          data:user.data.statisticsAnswersByUserDtoList.records
+      }
+      this.user = [...this.user, userData]
+     console.log('user',this.user)
+    //   const newData = {
+    //     dangerDetail: user.data.statisticsAnswersByUserDtoList.records,
+    //     answers[index]: answers.data,
+    //     total: user.data.statisticsAnswersByUserDtoList.records.length
+    //   }
+    //   this.questionInfo = [...this.questionInfo, newData]
     },
     setBi() {
       // Highcharts.chart('backSchool', backSchool)
       // Highcharts.chart('area', area)
       // Highcharts.chart('circle', circle)
     },
-    async open(e, record, index) {
+    open(e, record, index) {
       record.check = !record.check
       this.questionId = record.id
       if (record.check) {
