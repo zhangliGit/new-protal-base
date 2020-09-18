@@ -180,7 +180,8 @@ export default {
         path: '/taskIssuance/viewStatistics',
         query: {
           taskCode: record ? record.taskCode : '',
-          publishDate: record ? record.publishDate : ''
+          publishDate: record ? record.publishDate : '',
+          taskName: record ? record.taskName : ''
         }
       })
     },
