@@ -53,7 +53,7 @@
 </template>
 
 <script>
-import hostEnv from '@config/host-env'
+// import hostEnv from '@config/host-env'
 import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
@@ -109,10 +109,12 @@ export default {
     selectAll() {},
     async delTask(record) {
       console.log(record)
-      const res = await this.removeTask(record.id)
+      await this.removeTask(record.id)
       this.showList()
     },
     async delTaskAll() {
+      this.chooseList.filter(v => v === '1')
+      if (this.chooseList.length <= 0) return
       const that = this
       this.$confirm({
         title: '提示',
@@ -154,7 +156,8 @@ export default {
           id: record ? record.id : '',
           taskName: record ? record.taskName : '',
           publisherCode: record.publisherCode ? record.publisherCode : '',
-          publisherName: record.publisherName ? record.publisherName : ''
+          publisherName: record.publisherName ? record.publisherName : '',
+          taskCode: record.taskCode ? record.taskCode : ''
           // type: type
         }
       })
@@ -176,8 +179,8 @@ export default {
       this.$router.push({
         path: '/taskIssuance/viewStatistics',
         query: {
-          taskCode: record ? record.taskCode : ''
-          // type: type
+          taskCode: record ? record.taskCode : '',
+          publishDate: record ? record.publishDate : ''
         }
       })
     },

@@ -67,11 +67,9 @@ export default {
   },
   data() {
     this.peopleList = []
+
     return {
-      taskId: this.$route.query.id,
       taskName: this.$route.query.taskName,
-      publisherCode: this.$route.query.publisherCode,
-      publisherName: this.$route.query.publisherName,
       form: this.$form.createForm(this),
       SchoolAll: [],
       jobList: [], // 职务集合
@@ -94,11 +92,15 @@ export default {
     ...mapState('home', ['userInfo', 'eduCode'])
   },
   async created() {
+    this.taskId = this.$route.query.id
+    this.publisherCode = this.$route.query.publisherCode
+    this.publisherName = this.$route.query.publisherName
+    this.taskCode = this.$route.query.taskCode
   },
   async mounted() {
   },
   methods: {
-    ...mapActions('home', ['taskPublish', 'getQueryjob', 'schoolorJobSearchPeople']),
+    ...mapActions('home', ['taskPublish', 'getQueryjob', 'schoolorJobSearchPeople', 'testTask']),
     // 选择学校，负责人
     scoloolChange(value) {
       this.schoolTag = true
@@ -150,6 +152,7 @@ export default {
             .then(res => {
               console.log(res)
               this.$message.success('操作成功')
+              this._testTask()
               this.$tools.goNext(() => {
                 this.$router.go(-1)
               })
@@ -159,6 +162,10 @@ export default {
             })
         }
       })
+    },
+    // 生成任务
+    _testTask() {
+      this.testTask(this.taskCode)
     },
     cancel() {
       this.$router.go(-1)

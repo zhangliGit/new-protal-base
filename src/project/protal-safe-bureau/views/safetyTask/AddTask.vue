@@ -566,7 +566,6 @@ export default {
     // 提交
     submitOk(e) {
       e.preventDefault()
-
       this.form.validateFields((error, values) => {
         let list = this.radioList.concat(this.checkList).concat(this.fillList).concat(this.fileList)
         console.log('list', list)
