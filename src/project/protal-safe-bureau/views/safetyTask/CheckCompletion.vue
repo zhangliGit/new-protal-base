@@ -9,15 +9,15 @@
     </div>
     <div class="qui-fx-ac u-mar-b10">
       <div>任务状态：</div>
-      <a-select @change="statusChange" style="width: 200px">
-        <a-select-option value="0">所有任务</a-select-option>
+      <a-select @change="statusChange" default-value="" style="width: 200px">
+        <a-select-option value="">所有任务</a-select-option>
         <a-select-option value="1">未完成</a-select-option>
         <a-select-option value="2">已完成</a-select-option>
         <a-select-option value="3">预期填报</a-select-option>
         <a-select-option value="4">已打回,未重报</a-select-option>
         <a-select-option value="5">已打回,已重报</a-select-option>
       </a-select>
-      <div>（已完成数/总数：{{ sum }}/{{ compNum }}）</div>
+      <div>（已完成数/总数：{{ compNum }}/{{ sum }}）</div>
     </div>
     <div class="card" >
       <div class="cont u-fx-wp u-mar-t10">
@@ -51,9 +51,9 @@ export default {
     this.taskType = this.$route.query.taskType
     return {
       taskName: this.$route.query.taskName,
-      status: '1',
-      sum: '3',
-      compNum: '9',
+      status: '',
+      sum: '',
+      compNum: '',
       dataList: []
     }
   },
@@ -64,7 +64,7 @@ export default {
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['eduTaskCompleted']),
+    ...mapActions('home', ['eduTaskCompleted', 'getTeachers', 'wechatNotice']),
     async showList() {
       const req = {
         'dateNum': 0,
@@ -86,21 +86,37 @@ export default {
       this.showList()
     },
     check(record) {
+      console.log(record)
       if (record.state === '1') {
         this.$tools.delTip('确定要通知该学校相关负责人去处理该任务？', () => {
-          this.delAlarmList(record.id).then((res) => {
-            this.$message.success('操作成功')
-            this.$tools.goNext(() => {
-              this.showList()
+          // 查微信号
+          const req1 = {
+            schoolCode: record.schoolCode,
+            userCodes: record.userCode.split(',')
+          }
+          this.getTeachers(req1).then((res) => {
+            console.log(res)
+            const req2 = {
+           	  openId: res.data.map(v => v.openId),
+              schoolCode: record.schoolCode,
+              taskCode: record.taskCode
+            }
+            this.wechatNotice(req2).then(result => {
+              console.log(result)
+              this.$message.success('操作成功')
+              this.$tools.goNext(() => {
+                this.showList()
+              })
             })
           })
         })
       } else {
         this.$refs.taskStatus.title = record.schoolName
-        this.$refs.taskStatus.showDetail(record.id)
+        this.$refs.taskStatus.showDetail(record)
         this.$refs.taskStatus.visible = true
       }
     }
+
   }
 }
 </script>

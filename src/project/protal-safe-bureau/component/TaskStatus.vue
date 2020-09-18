@@ -143,13 +143,15 @@ export default {
     ...mapActions('home', ['reportTaskDetail']),
     moment,
     // 获取详情
-    async showDetail(taskCode) {
+    async showDetail(record) {
+      console.log(record)
       const req = {
-        schoolCode: this.userInfo.schoolCode,
-        // taskCode: taskCode
-        taskCode: 'S9x0weqfc2oe9'
+        schoolCode: record.schoolCode,
+        taskCode: record.taskCode
       }
+      console.log(req)
       const res = await this.reportTaskDetail(req)
+      console.log(res)
       this.detailInfo = res.data
       let questions = []
       this.radioList = []
@@ -162,11 +164,11 @@ export default {
           key: index,
           pointList: el.content
             ? el.content.map((item, i) => {
-                return {
-                  key: i,
-                  content: item
-                }
-              })
+              return {
+                key: i,
+                content: item
+              }
+            })
             : undefined
         }
       })
