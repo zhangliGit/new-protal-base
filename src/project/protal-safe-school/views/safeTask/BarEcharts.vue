@@ -6,13 +6,17 @@
 const echarts = require('echarts/lib/echarts')
 require('echarts/lib/component/legend')
 require('echarts/lib/component/tooltip')
-require('echarts/lib/component/toolbox')
 require('echarts/lib/chart/bar')
 require('echarts/lib/chart/line')
 export default {
   name: 'BarEcharts',
   props: {
-    multipleData: {}
+    multipleData: {
+      type: Object,
+      default: function () {
+        return {}
+      }
+    }
   },
   data() {
     return {
@@ -80,7 +84,7 @@ export default {
                 }
               }
             },
-            data: data.map(v => v.schoolName)
+            data: data.map(v => v.answer)
           }
         ],
         grid: {
@@ -126,7 +130,7 @@ export default {
             name: data.map(v => v.schoolName),
             type: 'bar',
             stack: '总量',
-            data: data.map(v => v.biggerCount),
+            data: data.map(v => v.count),
             itemStyle: {
               normal: {
                 color: function(params) {
