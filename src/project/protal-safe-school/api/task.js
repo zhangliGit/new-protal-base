@@ -19,7 +19,8 @@ const taskApi = {
   postSchoolTask: '/safeTaskTemplate/school/publish#post', // 校端任务发布
   previewTask: '/safeTaskTemplate/preview#postWithQueryAndBody', // 任务预览
   answerTask: '/safeTask/add/answer#post', // 任务填报
-  previewMyTask: '/safeTask/preview/#postWithQueryAndBody' // 任务预览
+  previewMyTask: '/safeTask/preview/#postWithQueryAndBody', // 任务预览
+  answerTaskDetail: '/safeTaskQuestion/query/by/taskcode#postQuery' // 安全任务上报内容
 
 }
 for (const val in taskApi) {
