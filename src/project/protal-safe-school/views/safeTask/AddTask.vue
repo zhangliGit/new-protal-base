@@ -350,8 +350,6 @@ export default {
       allWeek: false,
       allMonth: false,
       isEdit: false,
-      devices: [],
-      title: '',
       url: '',
       params: {},
       docUrl: '',
@@ -374,7 +372,6 @@ export default {
     this.params.schoolCode = this.userInfo.schoolCode
     this.detailId = this.$route.query.id
     this.times = [{ key: 0 }]
-    this.title = this.url === 'safe' ? '护导队伍' : '巡查人员'
     if (this.detailId) {
       this.showDetail()
       this.isEdit = this.detailType !== 3
