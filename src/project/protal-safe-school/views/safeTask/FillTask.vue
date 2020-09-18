@@ -182,7 +182,7 @@ export default {
               key: i,
               content: item
             }
-          }) : undefined
+          }) : []
         }
       })
       questions.map((el) => {
