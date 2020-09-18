@@ -182,7 +182,7 @@ export default {
               key: i,
               content: item
             }
-          }) : undefined
+          }) : []
         }
       })
       questions.map((el) => {
@@ -194,7 +194,6 @@ export default {
           this.fillList.push(el)
         } else {
           this.fileList.push({ ...el, show: true })
-          console.log('aaa', this.fileList)
         }
       })
     },
@@ -212,7 +211,7 @@ export default {
           this.fileList[i].show = false
           this.fileList[i].docName = info.file.name
           this.fileList[i].docUrl = info.file.response.data[0]
-          this.fileList[i].answers = [info.file.response.data[0]]
+          this.fileList[i].answer = [info.file.response.data[0]]
           this.$message.success(`${info.file.name} 上传成功`)
         } else {
           this.$message.error(info.file.response.message)
@@ -242,6 +241,15 @@ export default {
           questionTemplateId: el.questionTemplateId,
           questionType: el.questionType
         }
+      })
+      answers.forEach(element => {
+        element.answers.forEach(el => {
+          console.log(el)
+          if (!el) {
+            this.$message.warning('请填写完整题目')
+            return false
+          }
+        })
       })
       req.answers = answers
       this.isLoad = true

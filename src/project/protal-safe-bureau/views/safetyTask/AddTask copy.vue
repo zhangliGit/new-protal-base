@@ -150,24 +150,24 @@
               <div class="subject u-mar-t10 u-padd-b10">
                 <div
                   class="project qui-fx u-mar-b10 u-padd"
-                  v-for="el in radioList"
-                  :key="el.key"
+                  v-for="list in radioList"
+                  :key="list.key"
                 >
                   <div class="qui-fx-ver">题目：</div>
                   <div class="qui-fx-f1 qui-fx-ver u-mar-l20">
                     <div class="qui-fx">
-                      <a-input style="width:90%" placeholder="请输入标题" v-model="el.title" />
+                      <a-input style="width:90%" placeholder="请输入标题" v-model="list.title" />
                       <div
                         class="u-line u-mar-l10 u-type-primary"
-                        @click="del(0, el, 'radioList')"
+                        @click="del(0, list, 'radioList')"
                       >删除</div>
                     </div>
-                    <div class="qui-fx u-mar-t10" v-for="item in el.pointList" :key="item.key">
+                    <div class="qui-fx u-mar-t10" v-for="item in list.pointList" :key="item.key">
                       <a-input style="width:90%" placeholder="请输入选项" v-model="item.content" />
                       <a-icon
                         class="u-line u-mar-l10 u-type-primary"
                         type="minus-circle"
-                        @click="del(1, el, item)"
+                        @click="del(1, list, item)"
                       />
                     </div>
                     <div class="qui-fx u-mar-t10">
@@ -175,7 +175,7 @@
                         class="input"
                         placeholder="新建选项"
                         read-only
-                        @click="modify(1, 'radioList',el)"
+                        @click="modify(1, 'radioList',list)"
                       />
                     </div>
                   </div>
@@ -187,24 +187,24 @@
               <div class="subject u-mar-t10 u-padd-b10">
                 <div
                   class="project qui-fx u-mar-b10 u-padd"
-                  v-for="el in checkList"
-                  :key="el.key"
+                  v-for="list in checkList"
+                  :key="list.key"
                 >
                   <div class="qui-fx-ver">题目：</div>
                   <div class="qui-fx-f1 qui-fx-ver u-mar-l20">
                     <div class="qui-fx">
-                      <a-input style="width:90%" placeholder="请输入标题" v-model="el.title" />
+                      <a-input style="width:90%" placeholder="请输入标题" v-model="list.title" />
                       <div
                         class="u-line u-mar-l10 u-type-primary"
-                        @click="del(0, el, 'checkList')"
+                        @click="del(0, list, 'checkList')"
                       >删除</div>
                     </div>
-                    <div class="qui-fx u-mar-t10" v-for="item in el.pointList" :key="item.key">
+                    <div class="qui-fx u-mar-t10" v-for="item in list.pointList" :key="item.key">
                       <a-input style="width:90%" placeholder="请输入选项" v-model="item.content" />
                       <a-icon
                         class="u-line u-mar-l10 u-type-primary"
                         type="minus-circle"
-                        @click="del(1, el, item)"
+                        @click="del(1, list, item)"
                       />
                     </div>
                     <div class="qui-fx u-mar-t10">
@@ -212,7 +212,7 @@
                         class="input"
                         placeholder="新建选项"
                         read-only
-                        @click="modify(1, 'checkList',el)"
+                        @click="modify(1, 'checkList',list)"
                       />
                     </div>
                   </div>
@@ -224,16 +224,16 @@
               <div class="subject u-mar-t10 u-padd-b10">
                 <div
                   class="project qui-fx u-mar-b10 u-padd"
-                  v-for="el in fillList"
-                  :key="el.key"
+                  v-for="list in fillList"
+                  :key="list.key"
                 >
                   <div class="qui-fx-ver">题目：</div>
                   <div class="qui-fx-f1 qui-fx-ver u-mar-l20">
                     <div class="qui-fx">
-                      <a-input style="width:90%" placeholder="请输入题目" v-model="el.title" />
+                      <a-input style="width:90%" placeholder="请输入题目" v-model="list.title" />
                       <div
                         class="u-line u-mar-l10 u-type-primary"
-                        @click="del(0, el, 'fillList')"
+                        @click="del(0, list, 'fillList')"
                       >删除</div>
                     </div>
                   </div>
@@ -245,16 +245,16 @@
               <div class="subject u-mar-t10 u-padd-b10">
                 <div
                   class="project qui-fx u-mar-b10 u-padd"
-                  v-for="el in fileList"
-                  :key="el.key"
+                  v-for="list in fileList"
+                  :key="list.key"
                 >
                   <div class="qui-fx-ver">题目：</div>
                   <div class="qui-fx-f1 qui-fx-ver u-mar-l20">
                     <div class="qui-fx">
-                      <a-input style="width:90%" placeholder="请输入附件标题" v-model="el.title" />
+                      <a-input style="width:90%" placeholder="请输入附件标题" v-model="list.title" />
                       <div
                         class="u-line u-mar-l10 u-type-primary"
-                        @click="del(0, el, 'fileList')"
+                        @click="del(0, list, 'fileList')"
                       >删除</div>
                     </div>
                   </div>
@@ -291,7 +291,7 @@ export default {
     NoData
   },
   data() {
-    this.type = this.$route.query.type + ''
+    this.type = this.$route.query.type
     return {
       list: [
         {
@@ -392,8 +392,6 @@ export default {
     async showDetail() {
       const res = await this.getTaskDetail(this.detailId)
       this.cardInfo = res.data
-      this.weekCurrent = res.data.dateNums
-      this.monthCurrent = res.data.dateNums
       const questions = res.data.questions.map((el, index) => {
         return {
           ...el,
@@ -423,8 +421,7 @@ export default {
           this.fileCount = this.fileList.length
         }
       })
-      this.docName = res.data.docName
-      this.docUrl = res.data.docUrl
+      this.docName = 'res.data.docName'
       this.show = !res.data.docUrl
       this.flag = !!res.data.docUrl
     },
@@ -513,7 +510,6 @@ export default {
       this.show = true
     },
     handleChange(info) {
-      console.log('aa', info)
       if (info.file.status !== 'uploading' && info.file.status !== 'removed') {
         if (info.file.response) {
           this.$message.error(info.file.response.message)
@@ -567,7 +563,7 @@ export default {
     submitOk(e) {
       e.preventDefault()
       this.form.validateFields((error, values) => {
-        let list = this.radioList.concat(this.checkList).concat(this.fillList).concat(this.fileList)
+        let list = this.radioList.concat(this.checkList).concat(this.fillList)
         console.log('list', list)
         list = list.map((el) => {
           return {
@@ -581,9 +577,6 @@ export default {
             questionType: el.questionType
           }
         })
-        values.userName = this.userInfo.userName
-        console.log(this.userInfo.userName)
-        values.userCode = this.userInfo.userCode
         values.schoolCode = this.userInfo.schoolCode
         values.year = this.value
         values.docUrl = this.docUrl
@@ -600,7 +593,6 @@ export default {
               : undefined
         console.log('values', values)
         this.isLoad = false
-        console.log(this.type)
         if (!error) {
           this.isLoad = true
           if (this.type === '1') {

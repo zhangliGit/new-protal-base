@@ -55,24 +55,6 @@
       </template>
     </table-list>
     <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
-    <!-- <a-modal
-      :visible="visible"
-      :footer="null"
-      centered
-      @cancel="visible = false"
-      :bodyStyle="bodyStyle"
-      width="360px"
-      :closable="false"
-      :destroyOnClose="true"
-    >
-      <div class="erm-box qui-fx-ver">
-        <div class="logo">
-          <img :src="logo" alt />
-        </div>
-        <div class="qr-code" id="qrCode" ref="qrCodeDiv"></div>
-        <div class="area">巡检点：{{ area }}</div>
-      </div>
-    </a-modal>-->
   </div>
 </template>
 
@@ -92,22 +74,13 @@ export default {
   data() {
     return {
       task,
-      bodyStyle: {
-        padding: 0
-      },
-      visible: false,
       total: 0,
       pageList: {
         page: 1,
         size: 20
       },
       searchList: {},
-      taskList: [],
-      form: this.$form.createForm(this),
-      areaList: [],
-      disabled: false,
-      chooseList: [],
-      area: ''
+      taskList: []
     }
   },
   computed: {
@@ -133,25 +106,16 @@ export default {
       this.showList()
     },
     add(type, record) {
-      if (type === 0 || type === 2 || type === 4) {
-        this.$router.push({
-          path: '/myTask/taskPreview',
-          query: {
-            id: record ? record.id : '',
-            state: type
-          }
-        })
-      } else {
-        this.$router.push({
-          path: '/myTask/fillTask',
-          query: {
-            id: record ? record.id : '',
-            taskCode: record ? record.taskCode : '',
-            taskTemplateCode: record ? record.taskTemplateCode : '',
-            state: type
-          }
-        })
-      }
+      const url = type === 0 || type === 2 || type === 4 ? '/myTask/taskPreview' : '/myTask/fillTask'
+      this.$router.push({
+        path: url,
+        query: {
+          id: record ? record.id : '',
+          taskCode: record ? record.taskCode : '',
+          taskTemplateCode: record ? record.taskTemplateCode : '',
+          state: type
+        }
+      })
     },
     async addApp(type, record) {
       this.$router.push({

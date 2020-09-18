@@ -53,6 +53,7 @@
       title="选择学校"
     >
     </choose-school>
+
   </div>
 </template>
 
@@ -66,8 +67,8 @@ export default {
   },
   data() {
     this.peopleList = []
+
     return {
-      taskId: this.$route.query.id,
       taskName: this.$route.query.taskName,
       form: this.$form.createForm(this),
       SchoolAll: [],
@@ -91,11 +92,15 @@ export default {
     ...mapState('home', ['userInfo', 'eduCode'])
   },
   async created() {
+    this.taskId = this.$route.query.id
+    this.publisherCode = this.$route.query.publisherCode
+    this.publisherName = this.$route.query.publisherName
+    this.taskCode = this.$route.query.taskCode
   },
   async mounted() {
   },
   methods: {
-    ...mapActions('home', ['taskPublish', 'getQueryjob', 'schoolorJobSearchPeople']),
+    ...mapActions('home', ['taskPublish', 'getQueryjob', 'schoolorJobSearchPeople', 'testTask']),
     // 选择学校，负责人
     scoloolChange(value) {
       this.schoolTag = true
@@ -118,6 +123,7 @@ export default {
     },
     // 选中职务
     handleChange(values) {
+      if (values.length <= 0) return
       this.searchPeople(values, this.SchoolAll)
     },
     // 根据选中的学校职务找人
@@ -136,8 +142,8 @@ export default {
         // console.log(peopleLists)
         if (!error) {
           const req = {
-            publisherCode: this.userInfo.userCode,
-            publisherName: this.userInfo.userName,
+            publisherCode: this.publisherCode,
+            publisherName: this.publisherName,
             taskId: this.taskId,
             users: this.peopleList
           }
@@ -146,6 +152,7 @@ export default {
             .then(res => {
               console.log(res)
               this.$message.success('操作成功')
+              this._testTask()
               this.$tools.goNext(() => {
                 this.$router.go(-1)
               })
@@ -155,6 +162,10 @@ export default {
             })
         }
       })
+    },
+    // 生成任务
+    _testTask() {
+      this.testTask(this.taskCode)
     },
     cancel() {
       this.$router.go(-1)

@@ -1,7 +1,7 @@
 <template>
   <div class="view-statistics page-layout  bg-fff qui-fx-ver">
     <div class="content pos-box">
-      <div class="title u-fx-ac-jc u-mar-t40 u-bold u-font-1 u-mar-b40">开学需要注意事项</div>
+      <div class="title u-fx-ac-jc u-mar-t40 u-bold u-font-1 u-mar-b40">{{ taskName }}</div>
       <div class="search-box u-fx-ac u-mar-l20">
         <div>月计划：</div>
         <div><a-input placeholder="Basic usage" /></div>
@@ -11,20 +11,21 @@
           <template #expandIcon="props">
             <a-icon type="caret-right" :rotate="props.isActive ? 90 : 0" />
           </template>
-          {{ dataLists }}
           <a-collapse-panel
             class="u-mar-b20"
-            :key="index"
+            :key="list.id+''"
             v-for="(list,index) in dataLists"
           >
-            <div slot="header">
+            <div slot="header" @click="openList(list.id,index)">
               Q{{ index+1 }}({{ list.questionType | questionType }}){{ list.title }}
             </div>
             <div class="list-box  u-mar-20 " v-if="list.questionType==='1'">
-              <div class="list-cont u-fx-ac-jc">
-                {{}}
-                <pre-echarts v-if="Object.keys(radioList.statisticsAnswersDtoList).length>0" :dataList="radioList.statisticsAnswersDtoList"></pre-echarts>
-                <a-empty v-else :image="simpleImage" />
+              <div class="list-cont u-fx-ac-jc" v-if="list.statisticsAnswersDtoList">
+                <pre-echarts
+                  :legendData="list.content"
+                  v-if="list.statisticsAnswersDtoList.length>0"
+                  :dataList="list.statisticsAnswersDtoList"></pre-echarts>
+                <a-empty v-else :image="simpleImage"/>
               </div>
               <div class="list-cont u-mar-t20">
                 <table border="0" class="u-bd-1px" width="100%" cellspacing:="0">
@@ -33,28 +34,36 @@
                     <th class="u-padd-10 u-bd-r u-bd-b" >计数</th>
                     <th class="u-padd-10 u-bd-b ">占比</th>
                   </tr>
-                  <tr v-for="(item,index) in radioList.statisticsAnswersDtoList" :key="index">
+                  <tr v-for="(item,index) in list.statisticsAnswersDtoList" :key="index">
                     <td class="u-padd-10 u-bd-r u-bd-b " width="60%">{{ item.answer }}</td>
                     <td class="u-padd-10 u-bd-r u-bd-b " >{{ item.count }}人</td>
                     <td class="u-padd-10  u-bd-b ">{{ item.rate }}</td>
                   </tr>
                   <tr>
-                    <td class="u-padd-10 " :colspan="3">答题人数：{{ radioList.answerSum }}</td>
+                    <td class="u-padd-10 " :colspan="3">答题人数：{{ list.answerSum }}</td>
                   </tr>
                 </table>
               </div>
-              <div class="list-cont u-mar-t20">
-                <a-table :columns="columns" :pagination="false" :data-source="dangerDetail" bordered>
+              <div class="list-cont u-mar-t20" v-if="list.statisticsAnswersByUserDtoList">
+                <a-table
+                  rowKey="answer"
+                  :columns="columns"
+                  :pagination="false"
+                  :data-source="list.statisticsAnswersByUserDtoList.records"
+                  bordered>
                 </a-table>
+                <a-pagination
+                  @change="value => handleChange(value, list.id,index)"
+                  simple
+                  :default-current="1"
+                  :total="20" />
               </div>
             </div>
             <div class="list-box  u-mar-20 " v-if="list.questionType==='2'">
-              <!-- <div class="list-title u-type-primary-bg u-main-color u-bold u-padd-10">
-              </div> -->
-              <div class="list-cont u-fx-ac-jc">
+              <div class="list-cont u-fx-ac-jc" v-if="list.statisticsAnswersDtoList">
                 <bar-echarts
-                  v-if="multipleList.statisticsAnswersDtoList.length>0"
-                  :multipleData="multipleList.statisticsAnswersDtoList">
+                  v-if="list.statisticsAnswersDtoList.length>0"
+                  :multipleData="list.statisticsAnswersDtoList">
                 </bar-echarts>
                 <a-empty v-else :image="simpleImage" />
               </div>
@@ -65,32 +74,55 @@
                     <th class="u-padd-10 u-bd-r u-bd-b" >计数</th>
                     <th class="u-padd-10 u-bd-b ">占比</th>
                   </tr>
-                  <tr v-for="(item,index) in multipleList.statisticsAnswersDtoList" :key="index">
+                  <tr v-for="(item,index) in list.statisticsAnswersDtoList" :key="index">
                     <td class="u-padd-10 u-bd-r u-bd-b " width="60%">{{ item.answer }}</td>
                     <td class="u-padd-10 u-bd-r u-bd-b " >{{ item.count }}人</td>
                     <td class="u-padd-10  u-bd-b ">{{ item.rate }}</td>
                   </tr>
                   <tr>
-                    <td class="u-padd-10 " :colspan="3">答题人数：{{ multipleList.answerSum }}</td>
+                    <td class="u-padd-10 " :colspan="3">答题人数：{{ list.answerSum }}</td>
                   </tr>
                 </table>
               </div>
-              <div class="list-cont u-mar-t20">
-                {{ multipleList.statisticsAnswersByUserDtoList }}
-                <a-table :columns="columns" :pagination="false" :data-source="multipleList.statisticsAnswersByUserDtoList" bordered>
+              <div class="list-cont u-mar-t20" v-if="list.statisticsAnswersByUserDtoList">
+                <a-table
+                  rowKey="answer"
+                  :columns="columns"
+                  :pagination="false"
+                  :data-source="list.statisticsAnswersByUserDtoList.records"
+                  bordered>
                 </a-table>
+                <a-pagination
+                  @change="value => handleChange(value, list.id,index)"
+                  simple
+                  :default-current="1"
+                  :total="20" />
               </div>
             </div>
             <div class="list-box  u-mar-20 " v-if="list.questionType==='3'">
-              <div class="list-cont u-mar-t20">
-                <a-table :columns="columns" :pagination="false" :data-source="dangerDetail" bordered>
+              <div class="list-cont u-mar-t20" v-if="list.statisticsAnswersByUserDtoList">
+                <a-table
+                  :columns="columns"
+                  :pagination="false"
+                  :data-source="list.statisticsAnswersByUserDtoList.records"
+                  bordered>
                 </a-table>
+                <a-pagination
+                  @change="value => handleChange(value, list.id,index)"
+                  simple
+                  :default-current="1"
+                  :total="20" />
               </div>
             </div>
-            <div class="list-box  u-mar-20 " v-if="list.questionType==='3'">
+            <div class="list-box  u-mar-20 " v-if="list.questionType==='4'">
               <div class="list-cont u-mar-t20">
-                <a-table :columns="columns" :pagination="false" :data-source="dangerDetail" bordered>
+                <a-table :columns="columns" :pagination="false" :data-source="list.statisticsAnswersByUserDtoList.records" bordered>
                 </a-table>
+                <a-pagination
+                  @change="value => handleChange(value, list.id,index)"
+                  simple
+                  :default-current="1"
+                  :total="20" />
               </div>
             </div>
           </a-collapse-panel>
@@ -132,192 +164,69 @@ export default {
     // PreBarEcharts
   },
   data() {
-    this.taskCode = this.$route.query.taskCode
     return {
-      activeKey: ['0', '1', '2', '3'],
+      taskName: this.$route.query.taskName,
+      activeKey: [],
       simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
-      form: this.$form.createForm(this),
       columns,
-      dataLists: [
-        {
-          content: [],
-          id: 0,
-          questionDocUrl: '',
-          questionType: '1',
-          title: ' 单选题目一，选择一个选项'
-        },
-        {
-          content: [],
-          id: 1,
-          questionDocUrl: '',
-          questionType: '2',
-          title: '多选题目，下列那些是正确的选项'
-        },
-        {
-          content: [],
-          id: 2,
-          questionDocUrl: '',
-          questionType: '3',
-          title: ' 填空题，填写正确的内容'
-        },
-        {
-          content: [],
-          id: 3,
-          questionDocUrl: '',
-          questionType: 4,
-          title: '附件题'
-        }
-      ],
-      multipleList: {
-        'content': [
-          '选项一',
-          '选项二',
-          '选择三'
-        ],
-        answerSum: '100',
-        'dateNum': '100',
-        'docUrl': '',
-        'questionType': '2',
-        'statisticsAnswersByUserDtoList': [
-          {
-            'answer': '11',
-            'completeUserName': '李四',
-            'schoolName': '学校一'
-          },
-          {
-            'answer': '12',
-            'completeUserName': '张三',
-            'schoolName': '学校一'
-          }
-        ],
-        'statisticsAnswersDtoList': [
-          {
-            'answer': '选项一',
-            'count': 1,
-            'rate': 0
-          },
-          {
-            'answer': '选项二',
-            'count': 19,
-            'rate': 0
-          },
-          {
-            'answer': '选择三',
-            'count': 80,
-            'rate': 0
-          }
-        ],
-        'taskType': '2',
-        'templateQuestionlId': '',
-        'title': '多选一',
-        'year': null
-      },
-      radioList: {
-        'content': [
-          '选项一',
-          '选项二',
-          '选择三'
-        ],
-        answerSum: '100',
-        'dateNum': '100',
-        'docUrl': '',
-        'questionType': '2',
-        'statisticsAnswersByUserDtoList': [
-          {
-            'answer': '11',
-            'completeUserName': '李四',
-            'schoolName': '学校一'
-          },
-          {
-            'answer': '12',
-            'completeUserName': '张三',
-            'schoolName': '学校一'
-          }
-        ],
-        'statisticsAnswersDtoList': [
-          {
-            'name': '是',
-            'value': 1,
-            'rate': 0
-          },
-          {
-            'name': '否',
-            'value': 19,
-            'rate': 0
-          }
-        ],
-        'taskType': '2',
-        'templateQuestionlId': '',
-        'title': '多选一',
-        'year': null
-      },
-      detailedData: {},
-      dangerLevel: {}, // 隐患情况
-      dangerDetail: [
-        {
-          schoolName: '采育小学'
-        },
-        {
-          schoolName: '采育小学'
-        }
-      ], // 隐患明细table
-      dangerSchool: {
-        yes: '1',
-        no: '99',
-        schoolName: '学校A'
-      },
-      multipleData: [
-        {
-          biggerCount: '3',
-          schoolName: '看见摔倒的奶奶过去扶起'
-        },
-        {
-          biggerCount: '55',
-          schoolName: '地上有100元。拾起来占为己有'
-        },
-        {
-          biggerCount: '20',
-          schoolName: '学校D'
-        },
-        {
-          biggerCount: '10',
-          schoolName: '学校f'
-        }
-      ],
-      general: {}, // 检查的总体情况
-      mainIssues: [], // 存在的问题
-      name: '',
-      reform: {}, // 整改情况
-      time: '' // 时间
+      dataLists: [],
+      name: ''
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
   async mounted() {
-    // await this.getDetails()
-    this._seeStatistics()
+    this.taskCode = this.$route.query.taskCode
+    this.publishDate = this.$route.query.publishDate
+    await this.getDetails()
   },
   methods: {
-    ...mapActions('home', ['seeStatistics', 'seeStatisticsLists']),
+    ...mapActions('home', ['seeStatistics', 'seeStatisticsLists', 'answersInfo', 'statisticsUserInfo']),
     async getDetails() {
-      const res = await this.seeStatisticsLists({ taskCode: 'S9x7ya0g0dlvk' })
+      const res = await this.seeStatisticsLists({ taskCode: this.taskCode })
       this.dataLists = res.data
+      this.activeKey.push(res.data[0].id)
+      this.getAnswers(res.data[0].id, 0)
+      this.getUser(res.data[0].id, 0, 1)
     },
-    async _seeStatistics() {
+    openList(id, index) {
+      if (this.dataLists[index].statisticsAnswersDtoList) return
+      this.getAnswers(id, index)
+      this.getUser(id, index, 1)
+    },
+    // 获取答案
+    async getAnswers(id, index) {
       const req = {
-        'dateNum': 0,
-        'questionId': 107,
-        'taskTemplateCode': 'S9x7ya0g0dlvk',
-        'year': 0
+        // 'dateNum': this.publishDate,
+        page: 1,
+        questionId: id,
+        size: 50,
+        taskTemplateCode: this.taskCode,
+        year: ''
       }
-      const res = await this.seeStatistics(req)
-      console.log(this.dataLists)
+      const res1 = await this.answersInfo(req)
+      const { statisticsAnswersDtoList, answerSum } = res1.data
+      this.$set(this.dataLists[index], 'statisticsAnswersDtoList', statisticsAnswersDtoList)
+      this.$set(this.dataLists[index], 'answerSum', answerSum)
     },
-    setBi() {
-      // Highcharts.chart('backSchool', backSchool)
-      // Highcharts.chart('area', area)
-      // Highcharts.chart('circle', circle)
+    // 获取用户
+    async getUser(id, index, page) {
+      const req = {
+        // 'dateNum': this.publishDate,
+        page: page,
+        questionId: id,
+        size: 3,
+        taskTemplateCode: this.taskCode,
+        year: ''
+      }
+      const res2 = await this.statisticsUserInfo(req)
+      const { statisticsAnswersByUserDtoList } = res2.data
+      this.$set(this.dataLists[index], 'statisticsAnswersByUserDtoList', statisticsAnswersByUserDtoList)
+    },
+    // 翻页
+    handleChange(value, id, index) {
+      this.getUser(id, index, value)
     },
     changeActivekey(key) {
       console.log(key)

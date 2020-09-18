@@ -29,7 +29,7 @@
                   <div class="qui-fx-ver u-mar-l20">
                     <div>{{ list.title }}</div>
                     <div class="u-mar-t10">
-                      <a-radio-group v-model="list.answer[0]">
+                      <a-radio-group>
                         <a-radio
                           v-for="(element,index) in list.content"
                           :value="element"
@@ -49,7 +49,7 @@
                   <div class="qui-fx-ver u-mar-l20">
                     <div>{{ list.title }}</div>
                     <div class="u-mar-t10">
-                      <a-checkbox-group v-model="list.answer">
+                      <a-checkbox-group>
                         <a-checkbox
                           v-for="(element,index) in list.content"
                           :value="element"
@@ -67,8 +67,10 @@
                 <div class="qui-fx u-mar-t10" v-for="(list, i) in fillList" :key="i">
                   <div class="qui-fx-ver">题目是：</div>
                   <div class="qui-fx-ver u-mar-l20">
-                    <div class="u-mar-b10">{{ list.title }}</div>
-                    <a-input v-model="list.answer[0]" />
+                    <div>{{ list.title }}</div>
+                    <div class="u-mar-t10">
+                      <a-input placeholder="请填写答案" />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -78,11 +80,10 @@
               <div class="subject u-mar-t10 u-padd-l20 u-padd-t10 u-padd-b10">
                 <div class="qui-fx u-mar-t10" v-for="(list, i) in fileList" :key="i">
                   <div class="qui-fx-ver">题目是：</div>
-                  <div class="qui-fx-f1 qui-fx-ver u-mar-l20">
+                  <div class="qui-fx u-mar-l20">
                     <div>{{ list.title }}</div>
-                    <div class="u-mar-t10">
-                      <img class="u-mar-r10" :src="img" alt /> 附件
-                      <span class="u-type-primary" @click="exportClick(list.answer[0])">下载</span>
+                    <div class="qui-fx-f1">
+                      <a-input placeholder="Basic usage" />
                     </div>
                   </div>
                 </div>
@@ -92,7 +93,7 @@
         </div>
         <div class="detail-deal">
           <div class="detail-title">
-            <div class="title u-mar-b20">处理流程</div>
+            <div class="title">处理流程</div>
           </div>
           <a-timeline class="time-line">
             <a-timeline-item v-for="(item,index) in processes" :key="index">
@@ -109,11 +110,9 @@
 </template>
 
 <script>
-import hostEnv from '@config/host-env'
 import { mapState, mapActions } from 'vuex'
 import NoData from '@c/NoData'
 import moment from 'moment'
-import img from '../assets/img/wenjian.png'
 export default {
   name: 'TaskStatus',
   components: {
@@ -121,7 +120,6 @@ export default {
   },
   data() {
     return {
-      img,
       radioList: [],
       checkList: [],
       fillList: [],
@@ -131,6 +129,7 @@ export default {
       docUrl: '',
       show: true,
       flag: false,
+      docName: '',
       detailInfo: {},
       visible: false,
       processes: {},
@@ -170,7 +169,7 @@ export default {
                 content: item
               }
             })
-            : []
+            : undefined
         }
       })
       questions.map((el) => {
@@ -184,17 +183,9 @@ export default {
           this.fileList.push(el)
         }
       })
-      console.log('11',this.radioList)
-      console.log('2',this.checkList)
-      console.log('31',this.fillList)
-      console.log('41',this.fileList)
-      this.processes = res.data.outSafeTaskProcessDtoList
-    },
-    exportClick (docUrl) {
-      if (docUrl) {
-        const url = `${hostEnv.zx_subject}/file/downLoad/doc?url=${docUrl}`
-        window.open(url)
-      }
+      this.docName = 'res.data.docName'
+      this.show = !res.data.docUrl
+      this.flag = !res.data.docUrl
     }
   }
 }

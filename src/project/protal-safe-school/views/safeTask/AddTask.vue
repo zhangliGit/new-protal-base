@@ -87,7 +87,15 @@
             v-if="cardInfo.taskType === '1'"
           >
             <a-range-picker
-              v-decorator="['data', {initialValue: [moment(new Date(cardInfo.startTime), 'YYYY-MM-DD'), moment( new Date(cardInfo.endTime), 'YYYY-MM-DD')], rules: [{ required: 'required', message: '请选择时间' }]}]"
+              v-decorator="[
+                'data',
+                {
+                  initialValue:
+                    [ moment(cardInfo.startTime ? new Date(cardInfo.startTime) : new Date(), 'YYYY-MM-DD'),
+                      moment(cardInfo.endTime ? new Date(cardInfo.endTime) :new Date(), 'YYYY-MM-DD')],
+                  rules: [{ required: 'required', message: '请选择时间' }]
+                }
+              ]"
             />
           </a-form-item>
           <a-form-item
@@ -342,8 +350,6 @@ export default {
       allWeek: false,
       allMonth: false,
       isEdit: false,
-      devices: [],
-      title: '',
       url: '',
       params: {},
       docUrl: '',
@@ -366,7 +372,6 @@ export default {
     this.params.schoolCode = this.userInfo.schoolCode
     this.detailId = this.$route.query.id
     this.times = [{ key: 0 }]
-    this.title = this.url === 'safe' ? '护导队伍' : '巡查人员'
     if (this.detailId) {
       this.showDetail()
       this.isEdit = this.detailType !== 3
@@ -397,7 +402,7 @@ export default {
                 content: item
               }
             })
-            : undefined
+            : []
         }
       })
       questions.map((el) => {
@@ -535,7 +540,7 @@ export default {
         if (key === '0') return false
         const newData = {
           key: this[`${key}Count`],
-          pointList: key === 'radio' || key === 'check' ? [] : undefined,
+          pointList: [],
           questionType: key === 'radio' ? '1' : key === 'check' ? '2' : key === 'fill' ? '3' : '4'
         }
         this[`${key}List`] = [...this[`${key}List`], newData]
@@ -558,18 +563,38 @@ export default {
     submitOk(e) {
       e.preventDefault()
       this.form.validateFields((error, values) => {
+        if (!this.cardInfo.des) {
+          this.$message.warning('请填写任务描述')
+          return false
+        }
         let list = this.radioList.concat(this.checkList).concat(this.fillList).concat(this.fileList)
-        console.log('list', list)
+        if (list.length === 0) {
+          this.$message.warning('请点击题目控件添加题目')
+          return false
+        }
         list = list.map((el) => {
           return {
             content:
               el.questionType === '1' || el.questionType === '2'
                 ? el.pointList.map((item) => {
-                  return item.content
+                  return item.content ? item.content : ''
                 })
                 : [],
             title: el.title,
             questionType: el.questionType
+          }
+        })
+        list.forEach((el) => {
+          if (!el.title || ((el.questionType === '1' || el.questionType === '2') && el.content.length === 0)) {
+            this.$message.warning('请填写完整题目')
+            return false
+          } else if (el.content && el.content.length !== 0) {
+            el.content.forEach(element => {
+              if (element === '') {
+                this.$message.warning('请填写完整题目')
+                return false
+              }
+            })
           }
         })
         values.userName = this.userInfo.userName
@@ -588,6 +613,10 @@ export default {
             : this.cardInfo.taskType === '3'
               ? this.monthCurrent
               : ''
+        if (this.cardInfo.taskType !== '1' && values.dateNums === '') {
+          this.$message.warning('请选择任务时间')
+          return false
+        }
         this.isLoad = false
         if (!error) {
           this.isLoad = true
