@@ -66,8 +66,8 @@
       <div class="content">
         <div class="album">
           <swiper :options="swiperOption">
-            <swiper-slide :key="item.id" v-for="item in photoList">
-              <img class="u-fx-ac-jc" :src="item.photoSrc" />
+            <swiper-slide class="u-fx-ac-jc" style="height:400px" :key="item.id" v-for="item in photoList">
+              <img :src="item.photoSrc" />
             </swiper-slide>
             <div class="swiper-pagination" slot="pagination"></div>
           </swiper>
@@ -298,12 +298,11 @@ export default {
   .album {
     width: 600px;
     height: 400px;
-    background: #000;
+    background: rgba(220, 220, 220, 0.2);
     margin: 20px auto;
     img {
       max-width: 600px;
       max-height: 400px;
-      margin: 0px auto;
     }
   }
 }

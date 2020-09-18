@@ -330,17 +330,26 @@ export default {
     }
   },
   created() {
-    this.classTotalList = this.bindObj.classList
     this.bindObj.classList.forEach(item => {
       this.classChooseList.push(item.classCode)
+      this.classTotalList.push({
+        ...item,
+        userId: item.id
+      })
     })
-    this.teaTotalList = this.bindObj.teaList
     this.bindObj.teaList.forEach(item => {
       this.teaChooseList.push(item.userCode)
+      this.teaTotalList.push({
+        ...item,
+        userId: item.id
+      })
     })
-    this.deviceTotalList = this.bindObj.deviceList
     this.bindObj.deviceList.forEach(item => {
       this.deviceChooseList.push(item.deviceSn)
+      this.deviceTotalList.push({
+        ...item,
+        userId: item.id
+      })
     })
   },
   async mounted() {
