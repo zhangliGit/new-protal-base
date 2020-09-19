@@ -12,9 +12,9 @@ export default {
   name: 'BarEcharts',
   props: {
     multipleData: {
-      type: Object,
+      type: Array,
       default: function () {
-        return {}
+        return []
       }
     }
   },
