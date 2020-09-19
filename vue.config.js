@@ -270,7 +270,7 @@ module.exports = {
       },
       '/zk_class': {
         // target: 'http://192.168.2.242:11009/', // 张坤-班牌管理
-        target: 'http://192.168.1.23:11009/',
+        target: 'http://192.168.1.193:11009/',
         changeOrigin: true,
         pathRewrite: {
           '^/zk_class': ''
@@ -345,6 +345,10 @@ module.exports = {
         }
       },
       '/zk_oa': {
+<<<<<<< HEAD
+        // target: 'http://192.168.2.242:11014/', // 张坤-报修
+=======
+>>>>>>> 68adf04257bb43d39d669bed4a73809bcba355c5
         target: 'http://192.168.1.23:11014/', // 张坤-报修
         changeOrigin: true,
         pathRewrite: {

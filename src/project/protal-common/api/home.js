@@ -35,10 +35,14 @@ const zkApi = {
   deletePhotos: '/school/album/photo/batchDelete#delWithQuery', // 批量删除照片
   getCover: '/school/album/photo/getCoverBySchoolCode#getUrl', // 查询轮播图
   setCover: '/school/album/photo/setUpRotation#get', // 设置轮播图
+
+  getVideoList: '/school/media/list#get', // 查询视频列表
+  editVideo: '/school/media/update#post', // 更新视频
+  deleteVideo: '/school/media/delete#delWithQuery', // 删除视频
   addRelationData: '/school/media/class/addRelationData#post', // 保存发布对象
   getRelationData: '/school/media/class/getRelationData#getUrl', // 查询发布对象
   getDeviceData: '/school/media/device/getDeviceList#get', // 查询发布设备
-  getFullDevice: '/school/media/device/getFullScreenDeviceList#get', // 查询全屏设备列表
+  getFullDevice: '/school/media/device/getFullScreenDeviceAndTime#get', // 查询全屏设备列表
   setFullShow: '/school/media/device/updateMediaDevice#post' // 设置全屏展示
 }
 for (const val in homeApi) {

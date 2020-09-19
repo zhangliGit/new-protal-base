@@ -157,6 +157,14 @@ export default {
           name: 'News'
         },
         {
+          key: '8',
+          title: '表扬栏',
+          img: classPraise,
+          x: 200,
+          y: 420,
+          name: 'PraiseList'
+        },
+        {
           key: '1',
           title: '今日作业',
           img: chassHomework,
@@ -195,14 +203,6 @@ export default {
           x: 200,
           y: 200,
           name: 'Message'
-        },
-        {
-          key: '8',
-          title: '表扬栏',
-          img: classPraise,
-          x: 200,
-          y: 200,
-          name: 'PraiseList'
         },
         {
           key: '9',
