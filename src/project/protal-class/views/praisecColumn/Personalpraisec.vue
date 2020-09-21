@@ -136,7 +136,8 @@ export default {
       searchList: {
         schoolCode: '',
         classCode: '',
-        category: 2
+        category: 2,
+        gradeCode:''
       },
       recordList: []
     }
@@ -150,6 +151,7 @@ export default {
     ...mapActions('home', ['addsetPraise', 'delsetPraise', 'praisesetList', 'updatesetPraise', 'getpraiseDetail']),
     select(item) {
       this.searchList.classCode = item.classCode
+      this.searchList.gradeCode = item.gradeCode
       this.showList()
     },
     async showList() {
@@ -166,6 +168,7 @@ export default {
     async modify() {
       this.title = '新增'
       this.$refs.addPraises.appForm = {}
+      this.$refs.addPraises.classList = []
       this.$refs.addPraises.addVisible = true
     },
     async deleteList(type, record) {
