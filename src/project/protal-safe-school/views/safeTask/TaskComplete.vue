@@ -5,7 +5,7 @@
       <div class="qui-fx-ac u-mar-t10 u-mar-b10" v-if="taskType !== '1'">
         <div>{{ taskType === '2' ? '周' : '月' }}计划：</div>
         <a-select default-value="1" style="width: 200px">
-          <a-select-option v-for="(list,index) in 10" :key="index">{{ list }}</a-select-option>
+          <a-select-option v-for="(list,index) in timeList" :key="index">{{ list }}</a-select-option>
         </a-select>
       </div>
       <div class="qui-fx-ac u-mar-b10">
@@ -14,9 +14,7 @@
           <a-select-option value="">所有任务</a-select-option>
           <a-select-option value="1">未完成</a-select-option>
           <a-select-option value="2">已完成</a-select-option>
-          <a-select-option value="3">预期填报</a-select-option>
-          <a-select-option value="4">已打回,未重报</a-select-option>
-          <a-select-option value="5">已打回,已重报</a-select-option>
+          <a-select-option value="3">逾期填报</a-select-option>
         </a-select>
         <div>（已完成数/总数：{{ compNum }}/{{ sum }}）</div>
       </div>
@@ -53,40 +51,47 @@ export default {
     TaskStatus
   },
   data() {
-    this.taskType = this.$route.query.taskType
-    this.taskCode = this.$route.query.taskCode
-    this.taskType = this.$route.query.taskType
     return {
       taskName: this.$route.query.taskName,
       status: '',
       sum: '',
       compNum: '',
-      dataList: []
+      dataList: [],
+      taskType: '',
+      timeList: []
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
+    this.taskType = this.$route.query.taskType
+    this.taskCode = this.$route.query.code
     this.showList()
+    if (this.taskType !== '1') {
+      this.taskTimeGet()
+    }
   },
   methods: {
-    ...mapActions('home', ['schTaskCompleted', 'getTeachers', 'wechatNotice']),
+    ...mapActions('home', ['schTaskCompleted', 'getTeachers', 'wechatNotice', 'getTaskTime']),
     async showList() {
       const req = {
-        'dateNum': 0,
-        'year': 0,
+        dateNum: 0,
+        year: 0,
         schoolCode: this.userInfo.schoolCode,
         status: this.status, // 学校完成的情况转态
         taskTemplateCode: this.taskCode,
         taskType: this.taskType
       }
       const res = await this.schTaskCompleted(req)
-      console.log(res)
       const { compNum, outCompInfoOfTaskByOrgDtoList, sum } = res.data
       this.compNum = compNum
       this.sum = sum
       this.dataList = outCompInfoOfTaskByOrgDtoList
+    },
+    async taskTimeGet() {
+      const res = await this.getTaskTime({ taskCode: this.taskCode })
+      this.timeList = res.data
     },
     statusChange(value) {
       this.status = value
