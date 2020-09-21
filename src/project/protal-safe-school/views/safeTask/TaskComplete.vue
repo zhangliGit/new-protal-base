@@ -4,8 +4,8 @@
       <div class="u-font-1 u-bold u-mar-b10">任务名称： {{ taskName }}</div>
       <div class="qui-fx-ac u-mar-t10 u-mar-b10" v-if="taskType !== '1'">
         <div>{{ taskType === '2' ? '周' : '月' }}计划：</div>
-        <a-select default-value="1" style="width: 200px">
-          <a-select-option v-for="(list,index) in timeList" :key="index">{{ list }}</a-select-option>
+        <a-select v-model="dateNum" @change="showList" style="width: 200px">
+          <a-select-option v-for="list in planList" :key="`${list.year}-${list.dateNum}`">{{ list.year }}-{{ list.dateNum }}{{ taskType === '2' ? '周' : '月' }}</a-select-option>
         </a-select>
       </div>
       <div class="qui-fx-ac u-mar-b10">
@@ -53,33 +53,33 @@ export default {
   data() {
     return {
       taskName: this.$route.query.taskName,
-      status: '',
-      state: '',
+      state: [], // 状态
+      dateNum: '', // 计划
       sum: '',
       compNum: '',
       dataList: [],
       taskType: '',
-      timeList: []
+      planList: []
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
-  mounted() {
+  async mounted() {
     this.taskType = this.$route.query.taskType
     this.taskCode = this.$route.query.code
-    this.showList()
     if (this.taskType !== '1') {
-      this.taskTimeGet()
+      await this.taskTimeGet()
     }
+    this.showList()
   },
   methods: {
     ...mapActions('home', ['schTaskCompleted', 'getTeachers', 'wechatNotice', 'planLists']),
     async showList() {
       const req = {
         state: this.states,
-        'year': 0,
-        dateNum: this.dateNum,
+        year: this.dateNum.split('-')[0],
+        dateNum: this.dateNum.split('-')[1],
         schoolCode: this.userInfo.schoolCode,
         taskTemplateCode: this.taskCode,
         taskType: this.taskType
@@ -92,7 +92,8 @@ export default {
     },
     async taskTimeGet() {
       const res = await this.planLists({ taskCode: this.taskCode })
-      this.timeList = res.data
+      this.planList = res.data
+      this.dateNum = `${res.data[0].year}-${res.data[0].dateNum}`
     },
     statusChange(value) {
       if (value === '1') {

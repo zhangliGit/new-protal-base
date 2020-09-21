@@ -49,37 +49,36 @@ export default {
   data() {
     return {
       taskName: this.$route.query.taskName,
-      state: '', // 状态
-      status: '', // 任务状态
+      state: [], // 状态
       dateNum: '', // 计划
       sum: '',
       compNum: '',
       planList: [],
-      dataList: []
+      dataList: [],
+      taskType: ''
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
-  mounted() {
+  async mounted() {
     this.id = this.$route.query.id
     this.taskType = this.$route.query.taskType
     this.taskCode = this.$route.query.taskCode
-    this.showList()
     if (this.taskType !== '1') {
-      this.taskTimeGet()
+      await this.taskTimeGet()
     }
+    this.showList()
   },
   methods: {
     ...mapActions('home', ['eduCompleteStatic', 'getTeachers', 'wechatNotice', 'planLists']),
     async showList() {
       const req = {
-        state: this.states,
+        state: this.state,
         year: this.dateNum.split('-')[0],
         dateNum: this.dateNum.split('-')[1],
         schoolCode: this.userInfo.schoolCode,
-        taskTemplateCode: this.taskCode,
-        taskType: this.taskType
+        taskTemplateCode: this.taskCode
       }
       const res = await this.eduCompleteStatic(req)
       console.log(res)
@@ -102,7 +101,7 @@ export default {
       }
       this.showList()
     },
-    async _planList() {
+    async taskTimeGet() {
       const req = {
         taskCode: this.taskCode
       }
