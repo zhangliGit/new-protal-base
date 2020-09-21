@@ -54,6 +54,7 @@ export default {
     return {
       taskName: this.$route.query.taskName,
       status: '',
+      state: '',
       sum: '',
       compNum: '',
       dataList: [],
@@ -64,22 +65,22 @@ export default {
   computed: {
     ...mapState('home', ['userInfo'])
   },
-  mounted() {
+  async mounted() {
     this.taskType = this.$route.query.taskType
     this.taskCode = this.$route.query.code
     this.showList()
     if (this.taskType !== '1') {
-      this.taskTimeGet()
+      await this.taskTimeGet()
     }
   },
   methods: {
     ...mapActions('home', ['schTaskCompleted', 'getTeachers', 'wechatNotice', 'planLists']),
     async showList() {
       const req = {
-        dateNum: 0,
-        year: 0,
+        state: this.state,
+        'year': 0,
+        dateNum: this.dateNum,
         schoolCode: this.userInfo.schoolCode,
-        status: this.status, // 学校完成的情况转态
         taskTemplateCode: this.taskCode,
         taskType: this.taskType
       }
@@ -94,7 +95,17 @@ export default {
       this.timeList = res.data
     },
     statusChange(value) {
-      this.status = value
+      if (value === '1') {
+        this.state = ['1', '2']
+      } else if (value === '2') {
+        this.state = ['3']
+      } else if (value === '3') {
+        this.state = ['4']
+      } else if (value === '4') {
+        this.state = ['5', '6']
+      } else if (value === '5') {
+        this.state = ['7', '8']
+      }
       this.showList()
     },
     check(record) {
