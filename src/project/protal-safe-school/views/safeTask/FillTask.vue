@@ -12,11 +12,11 @@
               <div class="qui-fx-jc u-mar-t10">
                 <div class="qui-fx-ver">
                   <div>发布人：{{ detailInfo.userName }}</div>
-                  <div>任务开始时间：{{ detailInfo.beginTime | gmtToDate }}</div>
+                  <div>任务开始时间：{{ detailInfo.beginTime | gmtToDate('date') }}</div>
                 </div>
                 <div class="qui-fx-ver u-mar-l20">
-                  <div>发布时间：{{ detailInfo.completeTime | gmtToDate }}</div>
-                  <div>任务结束时间：{{ detailInfo.endTime | gmtToDate }}</div>
+                  <div>发布时间：{{ detailInfo.publisherTime | gmtToDate }}</div>
+                  <div>任务结束时间：{{ detailInfo.endTime | gmtToDate('date') }}</div>
                 </div>
               </div>
               <div class="fill-describe u-mar-t10 u-padd-l10 u-padd-r10">{{ detailInfo.reason }}</div>

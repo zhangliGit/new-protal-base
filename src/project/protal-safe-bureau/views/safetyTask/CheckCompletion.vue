@@ -2,10 +2,10 @@
   <div class="check-completion page-layout bg-fff qui-fx-ver">
     <div class="u-font-1 u-bold u-mar-b10">任务名称： {{ taskName }}</div>
     <!-- v-if="taskType !== '1'" -->
-    <div class="qui-fx-ac u-mar-t10  u-mar-l10 u-mar-b10" >
+    <div class="qui-fx-ac u-mar-t10  u-mar-l10 u-mar-b10" v-if="taskType !== '1'">
       <div>{{ taskType === '2' ? '周' : '月' }}计划：</div>
-      <a-select v-model="dateNum" @change="showList()" style="width: 200px">
-        <a-select-option v-for="(list,index) in planList" :key="index">{{ list }}</a-select-option>
+      <a-select v-model="dateNum" @change="showList" style="width: 200px">
+        <a-select-option v-for="list in planList" :key="`${list.year}-${list.dateNum}`">{{ list.year }}-{{ list.dateNum }}{{ taskType === '2' ? '周' : '月' }}</a-select-option>
       </a-select>
     </div>
     <div class="qui-fx-ac u-mar-b10">
@@ -75,8 +75,8 @@ export default {
     async showList() {
       const req = {
         state: this.states,
-        'year': 0,
-        dateNum: this.dateNum,
+        year: this.dateNum.split('-')[0],
+        dateNum: this.dateNum.split('-')[1],
         schoolCode: this.userInfo.schoolCode,
         taskTemplateCode: this.taskCode,
         taskType: this.taskType
@@ -107,7 +107,8 @@ export default {
         taskCode: this.taskCode
       }
       const res = await this.planLists(req)
-      this.planList = res.data.list
+      this.planList = res.data
+      this.dateNum = `${res.data[0].year}-${res.data[0].dateNum}`
     },
     check(record) {
       console.log(record)

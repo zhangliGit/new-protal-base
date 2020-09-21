@@ -24,7 +24,8 @@ const taskApi = {
   answerTaskDetail: '/safeTaskQuestion/query/by/taskcode#postQuery', // 安全任务上报内容
   answersTaskStatistics: '/safeTaskTemplate/statistics/by/answers#post', // 查看统计根据答案
   userTaskStatistics: '/safeTaskTemplate/statistics/by/user#post', // 查看统计根据用户
-  schTaskCompleted: '/safeTaskTemplate/school/complete/static#post', // 校端查询已完成情况
+  // schTaskCompleted: '/safeTaskTemplate/query/completed/status/school#post', // 校端查询已完成情况
+  schTaskCompleted: '/safeTaskTemplate/school/complete/static#post', // 校端按照完成情况统计
   wechatNotice: '/safeTask/wechat/notice#post', // 微信消息通知  先查人了再调
   planLists: '/safeTask/safetasktime/query/by/code#get' // 查询任务周期
 }

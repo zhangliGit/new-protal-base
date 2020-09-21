@@ -65,19 +65,19 @@ export default {
   computed: {
     ...mapState('home', ['userInfo'])
   },
-  async mounted() {
+  mounted() {
     this.taskType = this.$route.query.taskType
     this.taskCode = this.$route.query.code
     this.showList()
     if (this.taskType !== '1') {
-      await this.taskTimeGet()
+      this.taskTimeGet()
     }
   },
   methods: {
     ...mapActions('home', ['schTaskCompleted', 'getTeachers', 'wechatNotice', 'planLists']),
     async showList() {
       const req = {
-        state: this.state,
+        state: this.states,
         'year': 0,
         dateNum: this.dateNum,
         schoolCode: this.userInfo.schoolCode,

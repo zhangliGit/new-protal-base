@@ -18,7 +18,7 @@
         <a-tooltip v-if="action.record.state==='0'" placement="topLeft" title="编辑">
           <a-button size="small" class="edit-action-btn" icon="form" @click="add(1,action.record)"></a-button>
         </a-tooltip>
-        <a-tooltip v-if="action.record.state==='0'&&action.record.endDate>new Date().getTime()" placement="topLeft" title="发布">
+        <a-tooltip v-if="action.record.state==='0' && action.record.endDate >= new Date(new Date().setHours(0, 0, 0, 0)).getTime()" placement="topLeft" title="发布">
           <a-button size="small" class="play-action-btn" icon="play-circle" @click="release(action.record)"></a-button>
         </a-tooltip>
         <a-popconfirm
