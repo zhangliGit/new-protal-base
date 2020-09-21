@@ -123,8 +123,9 @@ export default {
           })
         })
       } else {
-        this.$refs.taskStatus.title = record.schoolName
-        this.$refs.taskStatus.id = this.id
+        this.$refs.taskStatus.id = record.id
+        this.$refs.taskStatus.title = record.title
+        this.$refs.taskStatus.state = record.state
         this.$refs.taskStatus.showDetail(record)
         this.$refs.taskStatus.visible = true
       }

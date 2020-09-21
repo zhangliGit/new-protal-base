@@ -4,9 +4,17 @@
       <a-button key="back" @click="visible=fals">
         取消
       </a-button> -->
-    <a-button key="submit" @click="restate()" type="primary" >
-      打回重报
-    </a-button>
+    <div class="u-fx-jsb">
+      <a-button v-if="state==='2'||state==='3'||state==='5'" key="submit" @click="restate()" type="primary" >
+        打回重报
+      </a-button>
+      <a-button v-if="(state+'')==='4'" key="submit" type="info" >
+        已打回
+      </a-button>
+      <img v-if="state==='4'" class="img-width u-mar-r20" src="../assets/img/dahui.png" alt="">
+      <img v-if="state==='5'" class="img-width u-mar-r20" src="../assets/img/chongbao.png" alt="">
+    </div>
+
     <!-- </template> -->
     <div class="qui-fx-ver">
       <div class="top bg-fff u-padd-10 u-padd-l20">
@@ -150,6 +158,7 @@ export default {
   },
   data() {
     return {
+      state: '',
       id: '',
       formStatus: false,
       formData,
@@ -177,15 +186,13 @@ export default {
     moment,
     // 获取详情
     async showDetail(record) {
-      console.log(record)
+      // console.log(record)
       const req = {
         schoolCode: record.schoolCode,
         taskCode: record.taskCode
-        // taskCode: 'S9xezyljor3sw'
+        // id: record.id
       }
-      console.log(req)
       const res = await this.reportTaskDetail(req)
-      console.log(res)
       this.detailInfo = res.data
       let questions = []
       this.radioList = []
@@ -217,10 +224,6 @@ export default {
           this.fileList.push(el)
         }
       })
-      console.log('11', this.radioList)
-      console.log('2', this.checkList)
-      console.log('31', this.fillList)
-      console.log('41', this.fileList)
       this.processes = res.data.outSafeTaskProcessDtoList
     },
     // 下載
@@ -245,11 +248,11 @@ export default {
         .then(res => {
           this.$refs.form.error()
           this.formStatus = false
-          this.$message.success('操作成功')
-          this.$tools.goNext(() => {
-            this.showList()
-            this.$refs.form.reset()
-          })
+          this.$message.success('已打回')
+          // this.$tools.goNext(() => {
+          //   // this.showDetail()
+          //   this.$refs.form.reset()
+          // })
         })
         .catch(() => {
           this.$refs.form.error()
@@ -259,6 +262,10 @@ export default {
 }
 </script>
 <style lang="less" scoped>
+.img-width{
+  width: 100px;
+  height: 100px;
+}
 .content {
   // height: calc(100% - 10px);
   // overflow-y: scroll;
