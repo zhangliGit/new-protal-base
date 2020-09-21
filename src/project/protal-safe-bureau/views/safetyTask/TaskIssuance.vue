@@ -167,6 +167,7 @@ export default {
       this.$router.push({
         path: '/taskIssuance/checkCompletion',
         query: {
+          id: record ? record.id : '',
           state: record ? record.state : '',
           taskCode: record ? record.taskCode : '',
           taskType: record ? record.taskType : '',
@@ -181,7 +182,8 @@ export default {
         query: {
           taskCode: record ? record.taskCode : '',
           publishDate: record ? record.publishDate : '',
-          taskName: record ? record.taskName : ''
+          taskName: record ? record.taskName : '',
+          taskType: record ? record.taskType : ''
         }
       })
     },

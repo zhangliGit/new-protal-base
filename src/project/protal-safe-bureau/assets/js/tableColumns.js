@@ -385,9 +385,9 @@ export const issuanceColumns = [{
   dataIndex: 'taskType',
   width: '10%',
   customRender: (text) => {
-    if (text === '0') {
+    if (text === '1') {
       return '一次性计划'
-    } else if (text === '1') {
+    } else if (text === '2') {
       return '周计划'
     } else {
       return '月计划'

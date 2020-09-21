@@ -26,6 +26,7 @@ const taskApi = {
   userTaskStatistics: '/safeTaskTemplate/statistics/by/user#post', // 查看统计根据用户
   schTaskCompleted: '/safeTaskTemplate/query/completed/status/school#post', // 校端查询已完成情况
   wechatNotice: '/safeTask/wechat/notice#post', // 微信消息通知  先查人了再调
+  planLists: '/safeTask/safetasktime/query/by/code#get' // 查询任务周期
 }
 for (const val in taskApi) {
   taskApi[val] = `${hostEnv.lz_safe}${taskApi[val]}`
