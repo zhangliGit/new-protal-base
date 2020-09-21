@@ -128,10 +128,10 @@ export default {
       type: Boolean,
       default: false
     },
-    deviceList: {
-      type: Array,
+    bindObj: {
+      type: Object,
       default: () => {
-        return []
+        return {}
       }
     }
   },
@@ -159,10 +159,14 @@ export default {
     }
   },
   created() {
-    this.totalList = this.deviceList
-    this.deviceList.forEach((item) => {
+    this.totalList = this.bindObj.deviceList
+    this.bindObj.deviceList.forEach((item) => {
       this.chooseList.push(item.id)
     })
+    this.appForm = {
+      startTime: this.bindObj.startTime ? moment(new Date(this.bindObj.startTime), 'YYYY-MM-DD HH:MM') : moment(new Date(), 'YYYY-MM-DD HH:MM'),
+      endTime: this.bindObj.endTime ? moment(new Date(this.bindObj.endTime), 'YYYY-MM-DD HH:MM') : moment(new Date(new Date().getTime() + (24 * 60 * 60 * 1000)), 'YYYY-MM-DD HH:MM')
+    }
     this.showList()
   },
   async mounted() {},

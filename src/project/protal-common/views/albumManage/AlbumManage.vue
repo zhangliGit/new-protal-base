@@ -19,7 +19,7 @@
       :mediaCode="mediaCode"
       @submit="fullSubmit"
       title="选择全屏展示的设备"
-      :deviceList="fullDeviceList"
+      :bindObj="fullDeviceInfo"
     ></choose-classcard>
     <div class="u-padd-10 qui-fx-je">
       <a-button type="primary" @click="addAlbum(0)"> <a-icon type="plus" />添加相册
@@ -118,7 +118,7 @@ export default {
       formData,
       title: '新建相册',
       albumList: [],
-      fullDeviceList: [],
+      fullDeviceInfo: {},
       bindObj: {},
       scrollH: 0
     }
@@ -152,8 +152,8 @@ export default {
     },
     async fullScreenTo(item) {
       this.mediaCode = item.albumCode
-      const res = await this.getFullDevice({ mediaCode: item.albumCode })
-      this.fullDeviceList = res.data.list
+      const res = await this.getFullDevice({ mediaCode: item.albumCode, mediaType: 1 })
+      this.fullDeviceInfo = res.data
       this.fullTag = true
     },
     detail(item) {
@@ -218,9 +218,7 @@ export default {
         mediaType: 1,
         mediaCode: this.mediaCode,
         startTime: formData.startTime,
-        endTime: formData.startTime
-      }).catch(() => {
-        this.$refs.chooseClasscard.error()
+        endTime: formData.endTime
       })
       this.$message.success('发布成功')
       this.$tools.goNext(() => {
@@ -239,7 +237,8 @@ export default {
             schoolYearId: el.schoolYearId,
             gradeCode: el.gradeCode,
             gradeName: el.gradeName,
-            mediaCode: 1
+            mediaCode: this.albumCode,
+            id: el.userId || undefined
           }
         }),
         teacherList: value.teaList.map(el => {
@@ -247,7 +246,8 @@ export default {
             userCode: el.userCode,
             userName: el.userName,
             schoolCode: el.schoolCode,
-            mediaCode: 1
+            mediaCode: this.albumCode,
+            id: el.userId || undefined
           }
         }),
         deviceList: value.deviceList.map(el => {
@@ -262,14 +262,13 @@ export default {
             gradeName: el.gradeName,
             placeName: el.placeName,
             placeId: el.placeId,
-            mediaCode: 1
+            mediaCode: this.albumCode,
+            id: el.userId || undefined
           }
         }),
         mediaType: 1,
         mediaCode: this.albumCode,
         schoolCode: this.userInfo.schoolCode
-      }).catch(() => {
-        this.$refs.bindTemplate.error()
       })
       this.$message.success('发布成功')
       this.$tools.goNext(() => {

@@ -1,10 +1,11 @@
 <template>
   <div class="check-completion page-layout bg-fff qui-fx-ver">
     <div class="u-font-1 u-bold u-mar-b10">任务名称： {{ taskName }}</div>
-    <div class="qui-fx-ac u-mar-t10 u-mar-b10" v-if="taskType !== '1'">
+    <!-- v-if="taskType !== '1'" -->
+    <div class="qui-fx-ac u-mar-t10  u-mar-l10 u-mar-b10" >
       <div>{{ taskType === '2' ? '周' : '月' }}计划：</div>
-      <a-select default-value="1" style="width: 200px">
-        <a-select-option v-for="(list,index) in 10" :key="index">{{ list }}</a-select-option>
+      <a-select v-model="dateNum" @change="showList()" style="width: 200px">
+        <a-select-option v-for="(list,index) in planList" :key="index">{{ list }}</a-select-option>
       </a-select>
     </div>
     <div class="qui-fx-ac u-mar-b10">
@@ -46,14 +47,17 @@ export default {
     TaskStatus
   },
   data() {
+    this.id = this.$route.query.id
     this.taskType = this.$route.query.taskType
     this.taskCode = this.$route.query.taskCode
     this.taskType = this.$route.query.taskType
     return {
       taskName: this.$route.query.taskName,
-      status: '',
+      status: '', // 任务状态
+      dateNum: '', // 计划
       sum: '',
       compNum: '',
+      planList: [],
       dataList: []
     }
   },
@@ -62,13 +66,14 @@ export default {
   },
   mounted() {
     this.showList()
+    this._planList()
   },
   methods: {
-    ...mapActions('home', ['eduTaskCompleted', 'getTeachers', 'wechatNotice']),
+    ...mapActions('home', ['eduTaskCompleted', 'getTeachers', 'wechatNotice', 'planLists']),
     async showList() {
       const req = {
-        'dateNum': 0,
         'year': 0,
+        dateNum: this.dateNum,
         schoolCode: this.userInfo.schoolCode,
         status: this.status, // 学校完成的情况转态
         taskTemplateCode: this.taskCode,
@@ -84,6 +89,13 @@ export default {
     statusChange(value) {
       this.status = value
       this.showList()
+    },
+    async _planList() {
+      const req = {
+        taskCode: this.taskCode
+      }
+      const res = await this.planLists(req)
+      this.planList = res.data.list
     },
     check(record) {
       console.log(record)
@@ -112,6 +124,7 @@ export default {
         })
       } else {
         this.$refs.taskStatus.title = record.schoolName
+        this.$refs.taskStatus.id = this.id
         this.$refs.taskStatus.showDetail(record)
         this.$refs.taskStatus.visible = true
       }

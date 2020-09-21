@@ -11,22 +11,30 @@ require('echarts/lib/chart/line')
 export default {
   name: 'BarEcharts',
   props: {
-    multipleData: {}
+    multipleData: {
+      type: Array,
+      default: function () {
+        return []
+      }
+    },
+    legendData: {
+      type: Array,
+      default: function() {
+        return []
+      }
+    }
   },
   data() {
     return {
     }
   },
   mounted() {
+    console.log(this.legendData)
     this.initColumnarData(this.multipleData)
   },
   created() {
   },
   watch: {
-    // multipleData(val) {
-    //   this.initPieData(val[0])
-    //   this.initColumnarData()
-    // }
   },
   methods: {
     initColumnarData(data) {
@@ -38,11 +46,12 @@ export default {
           axisPointer: { // 指示器类型，shadow为阴影指示器
             type: 'shadow'
           }
+          // formatter: '{a} <br/>{b} : {c}人 ({d}%)' // 展示格式
         },
         color: ['#f26980', '#f9d239', '#fd7d2a', '#399ffb'],
-        // legend: {
-        //   data: ['重大风险', '一般风险', '较大风险', '低风险']
-        // },
+        legend: {
+          data: ['答题人数', '占比']
+        },
         calculable: true,
         xAxis: [
           {
@@ -83,77 +92,33 @@ export default {
           }
         ],
         grid: {
-          x2: 40
+          x2: 10
         },
         series: [
           {
-            name: '重大风险',
+            name: '答题人数',
             type: 'bar',
+            barWidth: 40, // 柱图宽度
             stack: '总量',
-            barWidth: 50, // 柱图宽度
-            data: data.map(v => v.heavyCount),
-            itemStyle: {
-              normal: {
-                color: function(params) {
-                  // 自定义颜色
-                  var colorList = [
-                    '#f26980', '#f26980', '#f26980', '#f26980', '#f26980'
-                  ]
-                  return colorList[params.dataIndex]
-                }
-              }
-            }
+            data: data.map(v => v.count)
           },
           {
-            name: '一般风险',
+            name: '占比',
+            barWidth: 40, // 柱图宽度
             type: 'bar',
             stack: '总量',
-            data: data.map(v => v.generalCount),
-            itemStyle: {
-              normal: {
-                color: function(params) {
-                  // 自定义颜色
-                  var colorList = [
-                    '#f9d239', '#f9d239', '#f9d239', '#f9d239', '#f9d239'
-                  ]
-                  return colorList[params.dataIndex]
-                }
-              }
-            }
-          },
-          {
-            name: data.map(v => v.schoolName),
-            type: 'bar',
-            stack: '总量',
-            data: data.map(v => v.count),
-            itemStyle: {
-              normal: {
-                color: function(params) {
-                  // 自定义颜色
-                  var colorList = [
-                    '#fd7d2a', '#fd7d2a', '#fd7d2a', '#fd7d2a', '#fd7d2a'
-                  ]
-                  return colorList[params.dataIndex]
-                }
-              }
-            }
-          },
-          {
-            name: '低风险',
-            type: 'bar',
-            stack: '总量',
-            data: data.map(v => v.lowCount),
-            itemStyle: {
-              normal: {
-                color: function(params) {
-                  // 自定义颜色
-                  var colorList = [
-                    '#399ffb', '#399ffb', '#399ffb', '#399ffb', '#399ffb'
-                  ]
-                  return colorList[params.dataIndex]
-                }
-              }
-            }
+            data: data.map(v => v.rate)
+            // itemStyle: {
+            //   normal: {
+            //     color: function(params) {
+            //       // 自定义颜色
+            //       var colorList = [
+            //         '#399ffb', '#399ffb', '#399ffb', '#399ffb', '#399ffb'
+            //       ]
+            //       return colorList[params.dataIndex]
+            //     }
+            //   }
+            // }
           }
         ]
       })

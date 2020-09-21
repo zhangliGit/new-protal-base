@@ -15,8 +15,12 @@ const taskApi = {
 
   // 完成情况
   eduTaskCompleted: '/safeTaskTemplate/query/completed/status#post', // 局端查询已完成情况
-  reportTaskDetail: '/safeTaskTemplate/report/result#get', // 上报结果查看
+  planLists: '/safeTask/safetasktime/query/by/code#get', // 查询任务周期
+
   wechatNotice: '/safeTask/wechat/notice#post', // 微信消息通知  先查人了再调
+  reportTaskDetail: '/safeTaskTemplate/report/result#get', // 上报结果查看
+  repulse: '/safeTask/repulse#post', // 打回
+  rewrite: '/safeTask/rewrite#post', // 重填
 
   // 统计
   seeStatisticsLists: '/safeTaskQuestion/query/by/taskcode#postJsonQuery', // 查看统计所有条数题目

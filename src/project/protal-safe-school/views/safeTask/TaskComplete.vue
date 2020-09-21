@@ -73,7 +73,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('home', ['schTaskCompleted', 'getTeachers', 'wechatNotice', 'getTaskTime']),
+    ...mapActions('home', ['schTaskCompleted', 'getTeachers', 'wechatNotice', 'planLists']),
     async showList() {
       const req = {
         dateNum: 0,
@@ -90,7 +90,7 @@ export default {
       this.dataList = outCompInfoOfTaskByOrgDtoList
     },
     async taskTimeGet() {
-      const res = await this.getTaskTime({ taskCode: this.taskCode })
+      const res = await this.planLists({ taskCode: this.taskCode })
       this.timeList = res.data
     },
     statusChange(value) {

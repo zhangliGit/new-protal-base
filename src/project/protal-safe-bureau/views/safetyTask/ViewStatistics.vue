@@ -1,10 +1,13 @@
 <template>
   <div class="view-statistics page-layout  bg-fff qui-fx-ver">
     <div class="content pos-box">
-      <div class="title u-fx-ac-jc u-mar-t40 u-bold u-font-1 u-mar-b40">开学需要注意事项</div>
-      <div class="search-box u-fx-ac u-mar-l20">
-        <div>月计划：</div>
-        <div><a-input placeholder="Basic usage" /></div>
+      <div class="title u-fx-ac-jc u-mar-t40 u-bold u-font-1 u-mar-b40">{{ taskName }}</div>
+      <!-- v-if="taskType !== '1'" -->
+      <div class="qui-fx-ac u-mar-t10  u-mar-l20 u-mar-b10" >
+        <div>{{ taskType === '2' ? '周' : '月' }}计划：</div>
+        <a-select v-model="dateNum" @change="getDetails()" style="width: 200px">
+          <a-select-option v-for="(list,index) in planList" :key="index">{{ list }}</a-select-option>
+        </a-select>
       </div>
       <div class="a-collapse-box u-padd-20">
         <a-collapse @change="changeActivekey" v-model="activeKey">
@@ -52,8 +55,6 @@
                   :data-source="list.statisticsAnswersByUserDtoList.records"
                   bordered>
                 </a-table>
-                <!-- :total="list.statisticsAnswersByUserDtoList.pages" -->
-                <!-- <a-pagination simple :default-current="2" :total="50" /> -->
                 <a-pagination
                   @change="value => handleChange(value, list.id,index)"
                   simple
@@ -62,17 +63,15 @@
               </div>
             </div>
             <div class="list-box  u-mar-20 " v-if="list.questionType==='2'">
-              <!-- <div class="list-title u-type-primary-bg u-main-color u-bold u-padd-10">
-              </div> -->
               <div class="list-cont u-fx-ac-jc" v-if="list.statisticsAnswersDtoList">
                 <bar-echarts
                   v-if="list.statisticsAnswersDtoList.length>0"
+                  :legendData="list.content"
                   :multipleData="list.statisticsAnswersDtoList">
                 </bar-echarts>
                 <a-empty v-else :image="simpleImage" />
               </div>
               <div class="list-cont u-mar-t20">
-                {{ list }}
                 <table border="0" class="u-bd-1px" width="100%" cellspacing:="0">
                   <tr class="u-type-primary-light-bg">
                     <th class="u-padd-10 u-bd-r u-bd-b" width="60%" >选项</th>
@@ -97,6 +96,11 @@
                   :data-source="list.statisticsAnswersByUserDtoList.records"
                   bordered>
                 </a-table>
+                <a-pagination
+                  @change="value => handleChange(value, list.id,index)"
+                  simple
+                  :default-current="1"
+                  :total="20" />
               </div>
             </div>
             <div class="list-box  u-mar-20 " v-if="list.questionType==='3'">
@@ -107,13 +111,22 @@
                   :data-source="list.statisticsAnswersByUserDtoList.records"
                   bordered>
                 </a-table>
-                <a-pagination @change="onChange" simple :default-current="1" :total="10" />
+                <a-pagination
+                  @change="value => handleChange(value, list.id,index)"
+                  simple
+                  :default-current="1"
+                  :total="20" />
               </div>
             </div>
-            <div class="list-box  u-mar-20 " v-if="list.questionType==='3'">
+            <div class="list-box  u-mar-20 " v-if="list.questionType==='4'">
               <div class="list-cont u-mar-t20">
-                <a-table :columns="columns" :pagination="false" :data-source="dangerDetail" bordered>
-                </a-table>
+                <!-- <a-table :columns="columns" :pagination="false" :data-source="list.statisticsAnswersByUserDtoList.records" bordered>
+                </a-table> -->
+                <a-pagination
+                  @change="value => handleChange(value, list.id,index)"
+                  simple
+                  :default-current="1"
+                  :total="20" />
               </div>
             </div>
           </a-collapse-panel>
@@ -155,155 +168,42 @@ export default {
     // PreBarEcharts
   },
   data() {
-    this.taskCode = this.$route.query.taskCode
-    this.publishDate = this.$route.query.publishDate
     return {
+      dateNum: '',
+      planList: [],
+      taskName: this.$route.query.taskName,
+      taskType: this.$route.query.taskType,
       activeKey: [],
-      pageList: {
-        page: 1,
-        size: 2
-      },
       simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
-      form: this.$form.createForm(this),
       columns,
       dataLists: [],
-      multipleList: {
-        'content': [
-          '选项一',
-          '选项二',
-          '选择三'
-        ],
-        answerSum: '100',
-        'dateNum': '100',
-        'docUrl': '',
-        'questionType': '2',
-        'statisticsAnswersByUserDtoList': [
-          {
-            'answer': '11',
-            'completeUserName': '李四',
-            'schoolName': '学校一'
-          },
-          {
-            'answer': '12',
-            'completeUserName': '张三',
-            'schoolName': '学校一'
-          }
-        ],
-        'statisticsAnswersDtoList': [
-          {
-            'answer': '选项一',
-            'count': 1,
-            'rate': 0
-          },
-          {
-            'answer': '选项二',
-            'count': 19,
-            'rate': 0
-          },
-          {
-            'answer': '选择三',
-            'count': 80,
-            'rate': 0
-          }
-        ],
-        'taskType': '2',
-        'templateQuestionlId': '',
-        'title': '多选一',
-        'year': null
-      },
-      radioList: {
-        'content': [
-          '选项一',
-          '选项二',
-          '选择三'
-        ],
-        answerSum: '100',
-        'dateNum': '100',
-        'docUrl': '',
-        'questionType': '2',
-        'statisticsAnswersByUserDtoList': [
-          {
-            'answer': '11',
-            'completeUserName': '李四',
-            'schoolName': '学校一'
-          },
-          {
-            'answer': '12',
-            'completeUserName': '张三',
-            'schoolName': '学校一'
-          }
-        ],
-        'statisticsAnswersDtoList': [
-          {
-            'name': '是',
-            'value': 1,
-            'rate': 0
-          },
-          {
-            'name': '否',
-            'value': 19,
-            'rate': 0
-          }
-        ],
-        'taskType': '2',
-        'templateQuestionlId': '',
-        'title': '多选一',
-        'year': null
-      },
-      detailedData: {},
-      dangerLevel: {}, // 隐患情况
-      dangerDetail: [
-        {
-          schoolName: '采育小学'
-        },
-        {
-          schoolName: '采育小学'
-        }
-      ], // 隐患明细table
-      dangerSchool: {
-        yes: '1',
-        no: '99',
-        schoolName: '学校A'
-      },
-      multipleData: [
-        {
-          biggerCount: '3',
-          schoolName: '看见摔倒的奶奶过去扶起'
-        },
-        {
-          biggerCount: '55',
-          schoolName: '地上有100元。拾起来占为己有'
-        },
-        {
-          biggerCount: '20',
-          schoolName: '学校D'
-        },
-        {
-          biggerCount: '10',
-          schoolName: '学校f'
-        }
-      ],
-      general: {}, // 检查的总体情况
-      mainIssues: [], // 存在的问题
-      name: '',
-      reform: {}, // 整改情况
-      time: '' // 时间
+      name: ''
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
-  async mounted() {
+  async  mounted() {
+    this.taskCode = this.$route.query.taskCode
+    this.publishDate = this.$route.query.publishDate
+    await this._planList()
     await this.getDetails()
   },
   methods: {
-    ...mapActions('home', ['seeStatistics', 'seeStatisticsLists', 'answersInfo', 'statisticsUserInfo']),
+    ...mapActions('home', ['seeStatistics', 'seeStatisticsLists', 'answersInfo', 'statisticsUserInfo', 'planLists']),
     async getDetails() {
       const res = await this.seeStatisticsLists({ taskCode: this.taskCode })
       this.dataLists = res.data
       this.activeKey.push(res.data[0].id)
       this.getAnswers(res.data[0].id, 0)
       this.getUser(res.data[0].id, 0, 1)
+    },
+    async _planList() {
+      const req = {
+        taskCode: this.taskCode
+      }
+      const res = await this.planLists(req)
+      this.planList = res.data.list
     },
     openList(id, index) {
       if (this.dataLists[index].statisticsAnswersDtoList) return
@@ -313,7 +213,7 @@ export default {
     // 获取答案
     async getAnswers(id, index) {
       const req = {
-        // 'dateNum': this.publishDate,
+        dateNum: this.dateNum,
         page: 1,
         questionId: id,
         size: 50,
@@ -322,13 +222,13 @@ export default {
       }
       const res1 = await this.answersInfo(req)
       const { statisticsAnswersDtoList, answerSum } = res1.data
-      this.$set(this.dataLists[index], 'statisticsAnswersDtoList', statisticsAnswersDtoList)
-      this.$set(this.dataLists[index], 'answerSum', answerSum)
+      this.$set(this.dataLists[index], 'statisticsAnswersDtoList', statisticsAnswersDtoList || [])
+      this.$set(this.dataLists[index], 'answerSum', answerSum || '')
     },
     // 获取用户
     async getUser(id, index, page) {
       const req = {
-        // 'dateNum': this.publishDate,
+        dateNum: this.dateNum,
         page: page,
         questionId: id,
         size: 3,
@@ -337,7 +237,7 @@ export default {
       }
       const res2 = await this.statisticsUserInfo(req)
       const { statisticsAnswersByUserDtoList } = res2.data
-      this.$set(this.dataLists[index], 'statisticsAnswersByUserDtoList', statisticsAnswersByUserDtoList)
+      this.$set(this.dataLists[index], 'statisticsAnswersByUserDtoList', statisticsAnswersByUserDtoList || [])
     },
     // 翻页
     handleChange(value, id, index) {
