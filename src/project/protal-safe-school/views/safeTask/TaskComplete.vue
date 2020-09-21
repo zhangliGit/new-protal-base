@@ -4,8 +4,8 @@
       <div class="u-font-1 u-bold u-mar-b10">任务名称： {{ taskName }}</div>
       <div class="qui-fx-ac u-mar-t10 u-mar-b10" v-if="taskType !== '1'">
         <div>{{ taskType === '2' ? '周' : '月' }}计划：</div>
-        <a-select default-value="1" style="width: 200px">
-          <a-select-option v-for="(list,index) in timeList" :key="index">{{ list }}</a-select-option>
+        <a-select v-model="dateNum" @change="showList" style="width: 200px">
+          <a-select-option v-for="list in planList" :key="`${list.year}-${list.dateNum}`">{{ list.year }}-{{ list.dateNum }}{{ taskType === '2' ? '周' : '月' }}</a-select-option>
         </a-select>
       </div>
       <div class="qui-fx-ac u-mar-b10">
@@ -58,7 +58,8 @@ export default {
       compNum: '',
       dataList: [],
       taskType: '',
-      timeList: []
+      dateNum: '',
+      planList: []
     }
   },
   computed: {
@@ -76,12 +77,10 @@ export default {
     ...mapActions('home', ['schTaskCompleted', 'getTeachers', 'wechatNotice', 'planLists']),
     async showList() {
       const req = {
-        dateNum: 0,
-        year: 0,
-        schoolCode: this.userInfo.schoolCode,
-        status: this.status, // 学校完成的情况转态
-        taskTemplateCode: this.taskCode,
-        taskType: this.taskType
+        dateNum: this.dateNum.split('-')[1],
+        // year: this.dateNum.split('-')[0],
+        state: this.status, // 学校完成的情况转态
+        taskTemplateCode: this.taskCode
       }
       const res = await this.schTaskCompleted(req)
       const { compNum, outCompInfoOfTaskByOrgDtoList, sum } = res.data
@@ -91,14 +90,14 @@ export default {
     },
     async taskTimeGet() {
       const res = await this.planLists({ taskCode: this.taskCode })
-      this.timeList = res.data
+      this.planList = res.data
+      this.dateNum = `${res.data[0].year}-${res.data[0].dateNum}`
     },
     statusChange(value) {
       this.status = value
       this.showList()
     },
     check(record) {
-      console.log(record)
       if (record.state === '1') {
         this.$tools.delTip('确定要通知该学校相关负责人去处理该任务？', () => {
           // 查微信号
@@ -109,7 +108,7 @@ export default {
           this.getTeachers(req1).then((res) => {
             console.log(res)
             const req2 = {
-          	  openId: res.data.map(v => v.openId),
+              openId: res.data.map(v => v.openId),
               schoolCode: record.schoolCode,
               taskCode: record.taskCode
             }

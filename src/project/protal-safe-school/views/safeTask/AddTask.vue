@@ -607,12 +607,22 @@ export default {
         values.des = this.cardInfo.des
         values.startTime = this.cardInfo.taskType === '1' ? moment(values.data[0]).format('YYYY-MM-DD') : ''
         values.endTime = this.cardInfo.taskType === '1' ? moment(values.data[1]).format('YYYY-MM-DD') : ''
-        values.dateNums =
+        const dateNums =
           this.cardInfo.taskType === '2'
             ? this.weekCurrent
             : this.cardInfo.taskType === '3'
               ? this.monthCurrent
               : ''
+        for (var j = 0; j < dateNums.length - 1; j++) {
+          for (var i = 0; i < dateNums.length - 1 - j; i++) {
+            if (dateNums[i] > dateNums[i + 1]) {
+              var temp = dateNums[i]
+              dateNums[i] = dateNums[i + 1]
+              dateNums[i + 1] = temp
+            }
+          }
+        }
+        values.dateNums = dateNums
         if (this.cardInfo.taskType !== '1' && values.dateNums === '') {
           this.$message.warning('请选择任务时间')
           return false

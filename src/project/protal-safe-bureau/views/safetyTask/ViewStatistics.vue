@@ -3,10 +3,10 @@
     <div class="content pos-box">
       <div class="title u-fx-ac-jc u-mar-t40 u-bold u-font-1 u-mar-b40">{{ taskName }}</div>
       <!-- v-if="taskType !== '1'" -->
-      <div class="qui-fx-ac u-mar-t10  u-mar-l20 u-mar-b10" >
+      <div class="qui-fx-ac u-mar-t10  u-mar-l20 u-mar-b10" v-if="taskType !== '1'">
         <div>{{ taskType === '2' ? '周' : '月' }}计划：</div>
-        <a-select v-model="dateNum" @change="getDetails()" style="width: 200px">
-          <a-select-option v-for="(list,index) in planList" :key="index">{{ list }}</a-select-option>
+        <a-select v-model="dateNum" @change="getDetails" style="width: 200px">
+          <a-select-option v-for="list in planList" :key="`${list.year}-${list.dateNum}`">{{ list.year }}-{{ list.dateNum }}{{ taskType === '2' ? '周' : '月' }}</a-select-option>
         </a-select>
       </div>
       <div class="a-collapse-box u-padd-20">
@@ -37,7 +37,7 @@
                     <th class="u-padd-10 u-bd-r u-bd-b" >计数</th>
                     <th class="u-padd-10 u-bd-b ">占比</th>
                   </tr>
-                  <tr v-for="(item,index) in list.statisticsAnswersDtoList" :key="index">
+                  <tr v-for="(item,i) in list.statisticsAnswersDtoList" :key="i">
                     <td class="u-padd-10 u-bd-r u-bd-b " width="60%">{{ item.answer }}</td>
                     <td class="u-padd-10 u-bd-r u-bd-b " >{{ item.count }}人</td>
                     <td class="u-padd-10  u-bd-b ">{{ item.rate }}</td>
@@ -78,7 +78,7 @@
                     <th class="u-padd-10 u-bd-r u-bd-b" >计数</th>
                     <th class="u-padd-10 u-bd-b ">占比</th>
                   </tr>
-                  <tr v-for="(item,index) in list.statisticsAnswersDtoList" :key="index">
+                  <tr v-for="(item,i) in list.statisticsAnswersDtoList" :key="i">
                     <td class="u-padd-10 u-bd-r u-bd-b " width="60%">{{ item.answer }}</td>
                     <td class="u-padd-10 u-bd-r u-bd-b " >{{ item.count }}人</td>
                     <td class="u-padd-10  u-bd-b ">{{ item.rate }}</td>
@@ -203,7 +203,8 @@ export default {
         taskCode: this.taskCode
       }
       const res = await this.planLists(req)
-      this.planList = res.data.list
+      this.planList = res.data
+      this.dateNum = `${res.data[0].year}-${res.data[0].dateNum}`
     },
     openList(id, index) {
       if (this.dataLists[index].statisticsAnswersDtoList) return
@@ -213,12 +214,12 @@ export default {
     // 获取答案
     async getAnswers(id, index) {
       const req = {
-        dateNum: this.dateNum,
+        dateNum: this.dateNum.split('-')[1],
         page: 1,
         questionId: id,
         size: 50,
         taskTemplateCode: this.taskCode,
-        year: ''
+        year: this.dateNum.split('-')[0]
       }
       const res1 = await this.answersInfo(req)
       const { statisticsAnswersDtoList, answerSum } = res1.data
@@ -228,12 +229,12 @@ export default {
     // 获取用户
     async getUser(id, index, page) {
       const req = {
-        dateNum: this.dateNum,
+        dateNum: this.dateNum.split('-')[1],
         page: page,
         questionId: id,
         size: 3,
         taskTemplateCode: this.taskCode,
-        year: ''
+        year: this.dateNum.split('-')[0]
       }
       const res2 = await this.statisticsUserInfo(req)
       const { statisticsAnswersByUserDtoList } = res2.data

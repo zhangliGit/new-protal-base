@@ -176,7 +176,6 @@ export default {
     this.url = `${hostEnv.zx_subject}/file/upload/doc`
     this.taskId = this.$route.query.id
     this.disabled = this.$route.query.state === '0'
-    console.log('aa',this.disabled)
     this.params.schoolCode = this.userInfo.schoolCode
     this.showDetail()
   },
