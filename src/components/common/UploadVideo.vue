@@ -118,7 +118,7 @@ export default {
     del (file) {
       this.$tools.delTip('确定删除吗?', () => {
         const index = this.fileList.findIndex(item => {
-          return item.uid === file.uid
+          return item.id === file.id
         })
         this.$emit('delUpload', this.fileList[index])
         this.fileList.splice(index, 1)
@@ -146,9 +146,14 @@ export default {
         this.uploadTag = true
         return
       }
+      if (info.file.status === 'error') {
+        this.uploadTag = false
+        return
+      }
       if (info.file.status === 'done') {
         if (info.file.response.code === 400) {
           this.$message.warning(info.file.response.message)
+          this.uploadTag = false
           return
         }
         this.fileList.unshift({
@@ -156,7 +161,7 @@ export default {
           uname: info.file.name,
           createTime: Array.isArray(info.file.response.data) ? info.file.response.data[0].createTime : info.file.response.data.createTime,
           id: Array.isArray(info.file.response.data) ? info.file.response.data[0].id : info.file.response.data.id,
-          url: Array.isArray(info.file.response.data) ? info.file.response.data[0].url : info.file.response.data.url
+          url: Array.isArray(info.file.response.data) ? info.file.response.data[0].url || info.file.response.data[0] : info.file.response.data.url
         })
         this.$emit('success', info.file.response.data)
         this.uploadTag = false

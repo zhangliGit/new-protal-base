@@ -30,7 +30,12 @@
         <a-timeline class="time-line">
           <a-timeline-item v-for="(item,index) in processes" :key="index">
             <div class="qui-fx">
-              <div class="time-left">{{ item.content }}</div>
+              <div class="time-left">
+                {{ item.content }}
+                <a-tooltip placement="topLeft" :title="item.remark" v-if="item.remark">
+                  <span class="u-type-error">备注</span>
+                </a-tooltip>
+              </div>
               <div class="qui-fx-f1">{{ item.createTime | gmtToDate }}</div>
             </div>
           </a-timeline-item>
@@ -142,7 +147,7 @@ export default {
         .info-box {
           border-top: 1px solid #9698d6;
           height: 55px;
-          line-height: 53px;
+          line-height: 52px;
           width: 50%;
           float: left;
           &:nth-child(2n) {
@@ -174,6 +179,7 @@ export default {
         }
         .img-box {
           border: 1px solid #9698d6;
+          border-left: none;
           height: 80px;
           line-height: 70px;
           border-bottom: none;

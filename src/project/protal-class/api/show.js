@@ -58,12 +58,28 @@ const showApi = {
   getSchoolShowFile: '/school/introduction/file/getFileBySchoolCode#getUrl', // 校园概况附件查询
   addSchoolShow: '/school/introduction/add#post', // 校园概况新增
   editSchoolShow: '/school/introduction/update#post', // 校园概况编辑
-  delFile: `/school/introduction/file/deleteByUrl#delWithQuery` // 文件删除
+  delShowFile: `/school/introduction/file/deleteById#delWithQuery` // 文件删除
 }
 
+const classApi = {
+  // 模板管理
+  getTemplateList: '/template/list#post', // 查询模板列表
+  getTemplateDetail: '/template/detail#getUrl', // 查询模板详情
+  addTemplate: '/template/add#post', // 创建模板
+  editTemplate: '/template/update#putJson', // 编辑模板
+  delTemplate: `/template/delete#delWithQuery`, // 删除模板
+  bindTemplate: `/template/deviceBatchBindTemplate#post`, // 设备绑定模板
+  bindTemplateDetail: `/template/getDeviceByTemplateId#postWithQuery`, // 模板绑定设备详情
+  bindAllTemplate: '/template/allDeviceBatchBindTemplate#postQuery' // 模板应用全部班牌
+}
 for (const val in showApi) {
-  showApi[val] = `${hostEnv.zq_class}${showApi[val]}`
+  showApi[val] = `${hostEnv.zk_class}${showApi[val]}`
+}
+for (const val in classApi) {
+  classApi[val] = `${hostEnv.zq_class}${classApi[val]}`
 }
 export default {
-  ...showApi
+  ...showApi,
+  ...classApi,
+  delFile: `${hostEnv.zq_oa}/study/theme/file/delete#delWithQuery` // 文件删除
 }

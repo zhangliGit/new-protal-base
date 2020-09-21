@@ -1,7 +1,7 @@
 <template>
   <div class="job-statis qui-fx">
     <div class="left">
-      <class-tree @select="select"></class-tree>
+      <grade-tree @select="select"></grade-tree>
     </div>
     <div class="right qui-fx-ver">
       <search-form isReset @search-form="searchForm" :search-label="searchLabel">
@@ -26,7 +26,7 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
-import ClassTree from '@c/ClassTree'
+import GradeTree from '@c/GradeTree'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
 import SearchForm from '@c/SearchForm'
@@ -100,7 +100,7 @@ const searchLabel = [
 export default {
   name: 'Homework',
   components: {
-    ClassTree,
+    GradeTree,
     TableList,
     PageNum,
     SearchForm
@@ -137,10 +137,8 @@ export default {
     // 选中年级
     select (item) {
       console.log(item)
-      if (item.classCode) {
-        this.classInfo = item
-        this.showList()
-      }
+      this.classInfo = item
+      this.showList()
     },
     async showList () {
       const req = {

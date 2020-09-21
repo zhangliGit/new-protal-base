@@ -6,6 +6,7 @@
     @ok="submitOk"
     :maskClosable="false"
     :destroyOnClose="true"
+    @cancel="closeModal"
     okText="提交"
     :confirmLoading="confirmLoading"
   >
@@ -259,6 +260,9 @@ export default {
     reset() {
       this.confirmLoading = false
       this.$emit('input', false)
+    },
+    closeModal() {
+      this.$emit('closeModal')
     },
     error() {
       this.confirmLoading = false

@@ -7,17 +7,17 @@
             v-decorator="['patrolStatus', {initialValue: detailInfo.patrolStatus }]"
             disabled
           >
-            <a-radio :value="list.id" v-for="(list, ind) in list" :key="ind">{{ list.val }}</a-radio>
+            <a-radio :value="list.id" v-for="(item, ind) in list" :key="ind">{{ list.val }}</a-radio>
           </a-radio-group>
         </a-form-item>
         <a-form-item
           v-bind="formItemLayout"
           :label="list.label"
-          v-for="(list, index) in formData"
+          v-for="(item, index) in formData"
           :key="index"
           required
         >
-          <a-input v-decorator="['value', { initialValue: list.value }]" readonly />
+          <a-input v-decorator="['value', { initialValue: item.value }]" readonly />
         </a-form-item>
         <a-form-item v-bind="formItemLayout" label="巡查点数量">
           <a-tag color="cyan" @click="look">{{ detailInfo.patrolPointNum }}</a-tag>
@@ -66,6 +66,7 @@
 
 <script>
 import maps from 'qqmap'
+import $tools from '@u/tools'
 import TableList from '@c/TableList'
 import { mapState, mapActions } from 'vuex'
 const columns = [
@@ -110,7 +111,7 @@ export default {
       },
       inspectList: [],
       mapVisible: false,
-      //腾讯地图
+      // 腾讯地图
       map: null,
       getAddress: null,
       getAddCode: null,
@@ -146,14 +147,14 @@ export default {
       this.visible = true
     },
     init(data, id) {
-      this.map = new qq.maps.Map(document.getElementById(id), {
-        center: new qq.maps.LatLng(),
+      this.map = new maps.maps.Map(document.getElementById(id), {
+        center: new maps.maps.LatLng(),
         zoom: 16
       })
       const arr = data.map((item) => {
-        return new qq.maps.LatLng(item.latitude, item.longitude)
+        return new maps.maps.LatLng(item.latitude, item.longitude)
       })
-      var polyline = new qq.maps.Polyline({
+      var polyline = new maps.maps.Polyline({
         path: arr,
         strokeColor: '#3385ff',
         strokeWeight: 4,

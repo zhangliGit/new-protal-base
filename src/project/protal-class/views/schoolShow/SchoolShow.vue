@@ -40,7 +40,7 @@
         fileName="file"
         :length="1"
         v-model="videoList"
-        :fileInfo="fileInfo"
+        :fileInfo="fileVideo"
         @delUpload="delUpload"
         @beforeUpload="beforeUpload"
         @success="success" >
@@ -72,6 +72,12 @@ export default {
         h: 120,
         w: 120
       },
+      fileVideo: {
+        url: '',
+        tip: '上传视频',
+        h: 120,
+        w: 120
+      },
       imgList: [],
       videoList: [],
       canUpload: true
@@ -81,18 +87,11 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   created () {
-    this.fileInfo.url = `${hostEnv.zq_class}/school/introduction/file/uploadFile?schoolCode=${this.userInfo.schoolCode}`
+    this.fileInfo.url = `${hostEnv.zk_class}/school/introduction/file/uploadFile?schoolCode=${this.userInfo.schoolCode}`
     this.getMotto()
   },
   methods: {
-    ...mapActions('home', ['getSchoolShow', 'addSchoolShow', 'editSchoolShow', 'delFile', 'getSchoolShowFile']),
-    changeType(e) {
-      if (this.chooseType === 'image') {
-        this.fileInfo.tip = '上传图片'
-      } else if (this.chooseType === 'video') {
-        this.fileInfo.tip = '上传视频'
-      }
-    },
+    ...mapActions('home', ['getSchoolShow', 'addSchoolShow', 'editSchoolShow', 'delShowFile', 'getSchoolShowFile']),
     beforeUpload() {
       this.canUpload = false
     },
@@ -138,7 +137,7 @@ export default {
           req.fileAddIdList.push(el.id)
         })
         this.videoList.forEach(el => {
-          this.delFile(el.id)
+          this.delShowFile(el.id)
         })
       } else if (this.chooseType === 'video') {
         this.videoList.forEach(el => {
@@ -146,7 +145,7 @@ export default {
           req.fileAddIdList.push(el.id)
         })
         this.imgList.forEach(el => {
-          this.delFile(el.id)
+          this.delShowFile(el.id)
         })
       }
       console.log(req)

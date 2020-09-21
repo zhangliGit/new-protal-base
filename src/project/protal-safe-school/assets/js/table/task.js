@@ -1,6 +1,7 @@
 import $tools from '@u/tools'
 const task = {
-  taskColumns: [{
+  taskColumns: [
+    {
       title: '序号',
       scopedSlots: {
         customRender: 'index'
@@ -16,42 +17,42 @@ const task = {
       title: '任务类型',
       dataIndex: 'taskType',
       width: '10%',
-      customRender: (text) => {
-        if (text === '0') {
+      customRender: text => {
+        if (text === '1') {
           return '一次性计划'
-        } else if (text === '1') {
+        } else if (text === '2') {
           return '周计划'
-        } else {
+        } else if (text === '3') {
           return '月计划'
         }
       }
     },
     {
       title: '开始时间',
-      dataIndex: 'beginTime',
+      dataIndex: 'beginDate',
       width: '15%',
-      customRender: (text) => {
+      customRender: text => {
         return $tools.getDate(text)
       }
     },
     {
       title: '结束时间',
-      dataIndex: 'endTime',
+      dataIndex: 'endDate',
       width: '15%',
-      customRender: (text) => {
+      customRender: text => {
         return $tools.getDate(text)
       }
     },
     {
       title: '提交人',
-      dataIndex: 'userName',
+      dataIndex: 'completeUserName',
       width: '10%'
     },
     {
       title: '提交时间',
-      dataIndex: 'completeTime',
+      dataIndex: 'completeDate',
       width: '15%',
-      customRender: (text) => {
+      customRender: text => {
         return $tools.getDate(text)
       }
     },
@@ -59,11 +60,17 @@ const task = {
       title: '状态',
       dataIndex: 'state',
       width: '10%',
-      customRender: (text) => {
-        if (text === '1') {
-          return '静态二维码'
+      customRender: text => {
+        if (text === '0') {
+          return '未发布'
+        } else if (text === '1') {
+          return '未开始'
+        } else if (text === '2') {
+          return '进行中'
+        } else if (text === '3') {
+          return '已结束'
         } else {
-          return '动态二维码'
+          return ''
         }
       }
     },
@@ -75,13 +82,16 @@ const task = {
       }
     }
   ],
-  taskSearchLabel: [{
+  taskSearchLabel: [
+    {
       value: 'userName',
       type: 'input',
       label: '任务名称',
       placeholder: '请输入'
-    }, {
-      list: [{
+    },
+    {
+      list: [
+        {
           key: '',
           val: '全部'
         },
@@ -111,7 +121,8 @@ const task = {
       label: '状态'
     },
     {
-      list: [{
+      list: [
+        {
           key: '',
           val: '全部'
         },
@@ -129,7 +140,8 @@ const task = {
       label: '任务来源'
     }
   ],
-  assignColumns: [{
+  assignColumns: [
+    {
       title: '序号',
       scopedSlots: {
         customRender: 'index'
@@ -138,65 +150,67 @@ const task = {
     },
     {
       title: '任务名称',
-      dataIndex: 'name',
+      dataIndex: 'taskName',
       width: '10%'
     },
     {
       title: '任务类型',
-      dataIndex: 'taskTyps',
+      dataIndex: 'taskType',
       width: '10%',
-      customRender: (text) => {
-        const arr = []
-        if (text.indexOf('1') > -1) {
-          arr.push('日常巡查')
+      customRender: text => {
+        if (text === '1') {
+          return '一次性计划'
+        } else if (text === '2') {
+          return '周计划'
+        } else if (text === '3') {
+          return '月计划'
         }
-        if (text.indexOf('2') > -1) {
-          arr.push('设备巡查')
-        }
-        if (text.indexOf('3') > -1) {
-          arr.push('安全护导')
-        }
-        return arr.length > 0 ? arr.join(',') : '暂无关联'
       }
     },
     {
       title: '开始时间',
-      dataIndex: 'createTime1',
+      dataIndex: 'beginDate',
       width: '15%',
-      customRender: (text) => {
+      customRender: text => {
         return $tools.getDate(text)
       }
     },
     {
       title: '结束时间',
-      dataIndex: 'createTime2',
+      dataIndex: 'endDate',
       width: '15%',
-      customRender: (text) => {
+      customRender: text => {
         return $tools.getDate(text)
       }
     },
     {
       title: '发布人',
-      dataIndex: 'logoUrl',
+      dataIndex: 'publisherName',
       width: '10%'
     },
     {
       title: '发布时间',
-      dataIndex: 'createTime',
+      dataIndex: 'publishDate',
       width: '15%',
-      customRender: (text) => {
+      customRender: text => {
         return $tools.getDate(text)
       }
     },
     {
       title: '状态',
-      dataIndex: 'qrcodeType',
+      dataIndex: 'state',
       width: '10%',
-      customRender: (text) => {
-        if (text === '1') {
-          return '静态二维码'
+      customRender: text => {
+        if (text === '0') {
+          return '未发布'
+        } else if (text === '1') {
+          return '未开始'
+        } else if (text === '2') {
+          return '进行中'
+        } else if (text === '3') {
+          return '已结束'
         } else {
-          return '动态二维码'
+          return ''
         }
       }
     },
@@ -208,13 +222,16 @@ const task = {
       }
     }
   ],
-  assignSearchLabel: [{
+  assignSearchLabel: [
+    {
       value: 'userName',
       type: 'input',
       label: '任务名称',
       placeholder: '请输入'
-    }, {
-      list: [{
+    },
+    {
+      list: [
+        {
           key: '',
           val: '全部'
         },
@@ -236,7 +253,8 @@ const task = {
       label: '任务类型'
     },
     {
-      list: [{
+      list: [
+        {
           key: '',
           val: '全部'
         },

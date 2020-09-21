@@ -216,7 +216,7 @@ export default {
       this.total = res.data.total
     },
     async getPostList() {
-      const res = await $ajax.postQuery({
+      const res = await $ajax.get({
         url: `${hostEnv.ljj_edu}/edu/job/manage/queryjob/by/educode`,
         params: {
           category: '03',

@@ -41,7 +41,8 @@ import {
   Divider,
   Card,
   Empty,
-  Carousel
+  Carousel,
+  Progress
 } from 'ant-design-vue'
 const ComList = [
   Carousel,
@@ -83,7 +84,8 @@ const ComList = [
   TreeSelect,
   Timeline,
   Collapse,
-  Switch
+  Switch,
+  Progress
 ]
 const install = (Vue) => {
   ComList.forEach(item => {

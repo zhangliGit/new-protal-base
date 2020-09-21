@@ -35,6 +35,9 @@ let lz_safe = ''
 let cl_oa=''
 let wxz_pay=''
 let cl_class=''
+let zk_class=''
+let zk_news=''
+let ljj_people=''
 if (ConfigEnv === 'test') {
   wxz_control = '/wxz_control'
   zk_school = '/zk_school'
@@ -70,6 +73,9 @@ if (ConfigEnv === 'test') {
   cl_oa='/cl_oa'
   wxz_pay='/wxz_pay'
   cl_class='/cl_class'
+  zk_class='/zk_class'
+  zk_news='/zk_news'
+  ljj_people='/ljj_people'
 } else if (ConfigEnv === 'prod') {
   wxz_control = '/wxz_control'
   zk_school = '/zk_school'
@@ -105,6 +111,9 @@ if (ConfigEnv === 'test') {
   cl_oa='/cl_oa'
   wxz_pay='/wxz_pay'
   cl_class='/cl_class'
+  zk_class='/zk_class'
+  zk_news='/zk_news'
+  ljj_people='/ljj_people'
 } else {
   wxz_control = '/wxz_control'
   zk_school = '/zk_school'
@@ -139,6 +148,9 @@ if (ConfigEnv === 'test') {
   cl_oa='/cl_oa'
   wxz_pay='/wxz_pay'
   cl_class='/cl_class'
+  zk_class='/zk_class'
+  zk_news='/zk_news'
+  ljj_people='/ljj_people'
 }
 
 export default {
@@ -175,5 +187,8 @@ export default {
   lz_safe,
   cl_oa,
   wxz_pay,
-  cl_class
+  cl_class,
+  zk_class,
+  zk_news,
+  ljj_people
 }

@@ -1,99 +1,136 @@
 <template>
-  <div class="accident-add page-layout  bg-fff qui-fx-ver">
+  <div class="view-statistics page-layout  bg-fff qui-fx-ver">
     <div class="content pos-box">
-      <div class="title u-fx-ac-jc u-mar-t40 u-bold u-font-1 u-mar-b40">开学需要注意事项</div>
-      <div class="search-box u-fx-ac u-mar-l20">
-        <div>月计划：</div>
-        <div><a-input placeholder="Basic usage" /></div>
+      <div class="title u-fx-ac-jc u-mar-t40 u-bold u-font-1 u-mar-b40">{{ taskName }}</div>
+      <!-- v-if="taskType !== '1'" -->
+      <div class="qui-fx-ac u-mar-t10  u-mar-l20 u-mar-b10" >
+        <div>{{ taskType === '2' ? '周' : '月' }}计划：</div>
+        <a-select v-model="dateNum" @change="getDetails()" style="width: 200px">
+          <a-select-option v-for="(list,index) in planList" :key="index">{{ list }}</a-select-option>
+        </a-select>
       </div>
-      <div class="list-box  u-mar-20 ">
-        <div class="list-title u-type-primary-bg u-main-color u-bold u-padd-10">
-          Q1、(单选题)近一周是否出现体温异常的情况？
-        </div>
-        <div class="list-cont u-fx-ac-jc">
-          <pre-echarts v-if="Object.keys(dangerSchool).length>0" :dataList="dangerSchool"></pre-echarts>
-          <a-empty v-else :image="simpleImage" />
-        </div>
-        <div class="list-cont u-mar-t20">
-          <table border="0" class="u-bd-1px" width="100%" cellspacing:="0">
-            <tr class="u-type-primary-light-bg">
-              <th class="u-padd-10 u-bd-r u-bd-b" width="60%" >选项</th>
-              <th class="u-padd-10 u-bd-r u-bd-b" >计数</th>
-              <th class="u-padd-10 u-bd-b ">占比</th>
-            </tr>
-            <tr>
-              <td class="u-padd-10 u-bd-r u-bd-b " width="60%">是</td>
-              <td class="u-padd-10 u-bd-r u-bd-b " >1人</td>
-              <td class="u-padd-10  u-bd-b ">1%</td>
-            </tr>
-            <tr>
-              <td class="u-padd-10 u-bd-r u-bd-b ">否</td>
-              <td class="u-padd-10 u-bd-r u-bd-b ">99人</td>
-              <td class="u-padd-10  u-bd-b ">900%</td>
-            </tr>
-            <tr>
-              <td class="u-padd-10 " :colspan="3">答题人数：100</td>
-            </tr>
-          </table>
-        </div>
-        <div class="list-cont u-mar-t20">
-          <a-table :columns="columns" :pagination="false" :data-source="dangerDetail" bordered>
-          </a-table>
-        </div>
-      </div>
-      <div class="list-box  u-mar-20 ">
-        <div class="list-title u-type-primary-bg u-main-color u-bold u-padd-10">
-          Q2、(单选题)近一周是否出现体温异常的情况？
-        </div>
-        <div class="list-cont u-fx-ac-jc">
-          <!-- v-if="multipleData.length>0" -->
-          <bar-echarts :multipleData="multipleData"></bar-echarts>
-          <!-- <a-empty v-else :image="simpleImage" /> -->
-        </div>
-        <div class="list-cont u-mar-t20">
-          <table border="0" class="u-bd-1px" width="100%" cellspacing:="0">
-            <tr class="u-type-primary-light-bg">
-              <th class="u-padd-10 u-bd-r u-bd-b" width="60%" >选项</th>
-              <th class="u-padd-10 u-bd-r u-bd-b" >计数</th>
-              <th class="u-padd-10 u-bd-b ">占比</th>
-            </tr>
-            <tr>
-              <td class="u-padd-10 u-bd-r u-bd-b " width="60%">是</td>
-              <td class="u-padd-10 u-bd-r u-bd-b " >1人</td>
-              <td class="u-padd-10  u-bd-b ">1%</td>
-            </tr>
-            <tr>
-              <td class="u-padd-10 u-bd-r u-bd-b ">否</td>
-              <td class="u-padd-10 u-bd-r u-bd-b ">99人</td>
-              <td class="u-padd-10  u-bd-b ">900%</td>
-            </tr>
-            <tr>
-              <td class="u-padd-10 " :colspan="3">答题人数：100</td>
-            </tr>
-          </table>
-        </div>
-        <div class="list-cont u-mar-t20">
-          <a-table :columns="columns" :pagination="false" :data-source="dangerDetail" bordered>
-          </a-table>
-        </div>
-      </div>
-      <div class="list-box  u-mar-20 ">
-        <div class="list-title u-type-primary-bg u-main-color u-bold u-padd-10">
-          Q3、(单选题)近一周是否出现体温异常的情况？
-        </div>
-        <div class="list-cont u-mar-t20">
-          <a-table :columns="columns" :pagination="false" :data-source="dangerDetail" bordered>
-          </a-table>
-        </div>
-      </div>
-      <div class="list-box  u-mar-20 ">
-        <div class="list-title u-type-primary-bg u-main-color u-bold u-padd-10">
-          Q4、附件
-        </div>
-        <div class="list-cont u-mar-t20">
-          <a-table :columns="columns" :pagination="false" :data-source="dangerDetail" bordered>
-          </a-table>
-        </div>
+      <div class="a-collapse-box u-padd-20">
+        <a-collapse @change="changeActivekey" v-model="activeKey">
+          <template #expandIcon="props">
+            <a-icon type="caret-right" :rotate="props.isActive ? 90 : 0" />
+          </template>
+          <a-collapse-panel
+            class="u-mar-b20"
+            :key="list.id+''"
+            v-for="(list,index) in dataLists"
+          >
+            <div slot="header" @click="openList(list.id,index)">
+              Q{{ index+1 }}({{ list.questionType | questionType }}){{ list.title }}
+            </div>
+            <div class="list-box  u-mar-20 " v-if="list.questionType==='1'">
+              <div class="list-cont u-fx-ac-jc" v-if="list.statisticsAnswersDtoList">
+                <pre-echarts
+                  :legendData="list.content"
+                  v-if="list.statisticsAnswersDtoList.length>0"
+                  :dataList="list.statisticsAnswersDtoList"></pre-echarts>
+                <a-empty v-else :image="simpleImage"/>
+              </div>
+              <div class="list-cont u-mar-t20">
+                <table border="0" class="u-bd-1px" width="100%" cellspacing:="0">
+                  <tr class="u-type-primary-light-bg">
+                    <th class="u-padd-10 u-bd-r u-bd-b" width="60%" >选项</th>
+                    <th class="u-padd-10 u-bd-r u-bd-b" >计数</th>
+                    <th class="u-padd-10 u-bd-b ">占比</th>
+                  </tr>
+                  <tr v-for="(item,index) in list.statisticsAnswersDtoList" :key="index">
+                    <td class="u-padd-10 u-bd-r u-bd-b " width="60%">{{ item.answer }}</td>
+                    <td class="u-padd-10 u-bd-r u-bd-b " >{{ item.count }}人</td>
+                    <td class="u-padd-10  u-bd-b ">{{ item.rate }}</td>
+                  </tr>
+                  <tr>
+                    <td class="u-padd-10 " :colspan="3">答题人数：{{ list.answerSum }}</td>
+                  </tr>
+                </table>
+              </div>
+              <div class="list-cont u-mar-t20" v-if="list.statisticsAnswersByUserDtoList">
+                <a-table
+                  rowKey="answer"
+                  :columns="columns"
+                  :pagination="false"
+                  :data-source="list.statisticsAnswersByUserDtoList.records"
+                  bordered>
+                </a-table>
+                <a-pagination
+                  @change="value => handleChange(value, list.id,index)"
+                  simple
+                  :default-current="1"
+                  :total="20" />
+              </div>
+            </div>
+            <div class="list-box  u-mar-20 " v-if="list.questionType==='2'">
+              <div class="list-cont u-fx-ac-jc" v-if="list.statisticsAnswersDtoList">
+                <bar-echarts
+                  v-if="list.statisticsAnswersDtoList.length>0"
+                  :legendData="list.content"
+                  :multipleData="list.statisticsAnswersDtoList">
+                </bar-echarts>
+                <a-empty v-else :image="simpleImage" />
+              </div>
+              <div class="list-cont u-mar-t20">
+                <table border="0" class="u-bd-1px" width="100%" cellspacing:="0">
+                  <tr class="u-type-primary-light-bg">
+                    <th class="u-padd-10 u-bd-r u-bd-b" width="60%" >选项</th>
+                    <th class="u-padd-10 u-bd-r u-bd-b" >计数</th>
+                    <th class="u-padd-10 u-bd-b ">占比</th>
+                  </tr>
+                  <tr v-for="(item,index) in list.statisticsAnswersDtoList" :key="index">
+                    <td class="u-padd-10 u-bd-r u-bd-b " width="60%">{{ item.answer }}</td>
+                    <td class="u-padd-10 u-bd-r u-bd-b " >{{ item.count }}人</td>
+                    <td class="u-padd-10  u-bd-b ">{{ item.rate }}</td>
+                  </tr>
+                  <tr>
+                    <td class="u-padd-10 " :colspan="3">答题人数：{{ list.answerSum }}</td>
+                  </tr>
+                </table>
+              </div>
+              <div class="list-cont u-mar-t20" v-if="list.statisticsAnswersByUserDtoList">
+                <a-table
+                  rowKey="answer"
+                  :columns="columns"
+                  :pagination="false"
+                  :data-source="list.statisticsAnswersByUserDtoList.records"
+                  bordered>
+                </a-table>
+                <a-pagination
+                  @change="value => handleChange(value, list.id,index)"
+                  simple
+                  :default-current="1"
+                  :total="20" />
+              </div>
+            </div>
+            <div class="list-box  u-mar-20 " v-if="list.questionType==='3'">
+              <div class="list-cont u-mar-t20" v-if="list.statisticsAnswersByUserDtoList">
+                <a-table
+                  :columns="columns"
+                  :pagination="false"
+                  :data-source="list.statisticsAnswersByUserDtoList.records"
+                  bordered>
+                </a-table>
+                <a-pagination
+                  @change="value => handleChange(value, list.id,index)"
+                  simple
+                  :default-current="1"
+                  :total="20" />
+              </div>
+            </div>
+            <div class="list-box  u-mar-20 " v-if="list.questionType==='4'">
+              <div class="list-cont u-mar-t20">
+                <!-- <a-table :columns="columns" :pagination="false" :data-source="list.statisticsAnswersByUserDtoList.records" bordered>
+                </a-table> -->
+                <a-pagination
+                  @change="value => handleChange(value, list.id,index)"
+                  simple
+                  :default-current="1"
+                  :total="20" />
+              </div>
+            </div>
+          </a-collapse-panel>
+        </a-collapse>
       </div>
     </div>
   </div>
@@ -115,16 +152,15 @@ const columns = [
   {
     title: '回答人',
     width: '60%',
-    className: 'column-money',
-    dataIndex: 'issue'
+    dataIndex: 'completeUserName'
   },
   {
     title: '选项',
-    dataIndex: 'issueAssess'
+    dataIndex: 'answer'
   }
 ]
 export default {
-  name: 'ViewsReport',
+  name: 'ViewStatistics',
   components: {
     NoData,
     PreEcharts,
@@ -133,117 +169,82 @@ export default {
   },
   data() {
     return {
+      dateNum: '',
+      planList: [],
+      taskName: this.$route.query.taskName,
+      taskType: this.$route.query.taskType,
+      activeKey: [],
       simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
-      form: this.$form.createForm(this),
       columns,
-      detailedData: {},
-      dangerLevel: {}, // 隐患情况
-      dangerDetail: [
-        {
-          schoolName: '采育小学'
-        },
-        {
-          schoolName: '采育小学'
-        }
-      ], // 隐患明细table
-      dangerSchool: {
-        yes: '1',
-        no: '99',
-        schoolName: '学校A'
-      },
-      multipleData: [
-        {
-          biggerCount: '3',
-          schoolName: '看见摔倒的奶奶过去扶起'
-        },
-        {
-          biggerCount: '55',
-          schoolName: '地上有100元。拾起来占为己有'
-        },
-        {
-          biggerCount: '20',
-          schoolName: '学校D'
-        },
-        {
-          biggerCount: '10',
-          schoolName: '学校f'
-        }
-      ],
-      general: {}, // 检查的总体情况
-      mainIssues: [], // 存在的问题
-      name: '',
-      reform: {}, // 整改情况
-      time: '' // 时间
+      dataLists: [],
+      name: ''
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
-  mounted() {
-    // this.code = this.$route.query.code
-    // this.getDetails()
+  async  mounted() {
+    this.taskCode = this.$route.query.taskCode
+    this.publishDate = this.$route.query.publishDate
+    await this._planList()
+    await this.getDetails()
   },
   methods: {
-    ...mapActions('home', ['seeReport']),
+    ...mapActions('home', ['seeStatistics', 'seeStatisticsLists', 'answersInfo', 'statisticsUserInfo', 'planLists']),
     async getDetails() {
-      const res = await this.seeReport(this.code)
-      const { findDanger, general, mainIssues, name, reform, time } = res.data
-      this.dangerLevel = findDanger.dangerLevel
-      this.dangerDetail = findDanger.dangerDetail
-      const dangerSchool = [
-        {
-          biggerCount: '3',
-          generalCount: '1',
-          heavyCount: '4',
-          lowCount: '9',
-          schoolName: '学校A'
-        },
-        {
-          biggerCount: '3',
-          generalCount: '1',
-          heavyCount: '8',
-          lowCount: '9',
-          schoolName: '学校B'
-        },
-        {
-          biggerCount: '3',
-          generalCount: '1',
-          heavyCount: '4',
-          lowCount: '9',
-          schoolName: '学校C'
-        },
-        {
-          biggerCount: '3',
-          generalCount: '4',
-          heavyCount: '4',
-          lowCount: '9',
-          schoolName: '学校D'
-        },
-        {
-          biggerCount: '1',
-          generalCount: '1',
-          heavyCount: '4',
-          lowCount: '9',
-          schoolName: '学校f'
-        }
-      ]
-      // this.dangerSchool = dangerSchool
-      if (findDanger.dangerSchool.length > 0 && findDanger.dangerSchool.length <= 5) {
-        this.dangerSchool = findDanger.dangerSchool
-      } else if (findDanger.dangerSchool.length > 5) {
-        findDanger.dangerSchool.length = 5
-        this.dangerSchool = findDanger.dangerSchool
-      }
-      this.general = general
-      this.mainIssues = mainIssues
-      this.name = name
-      this.reform = reform
-      this.time = time
+      const res = await this.seeStatisticsLists({ taskCode: this.taskCode })
+      this.dataLists = res.data
+      this.activeKey.push(res.data[0].id)
+      this.getAnswers(res.data[0].id, 0)
+      this.getUser(res.data[0].id, 0, 1)
     },
-    setBi() {
-      // Highcharts.chart('backSchool', backSchool)
-      // Highcharts.chart('area', area)
-      // Highcharts.chart('circle', circle)
+    async _planList() {
+      const req = {
+        taskCode: this.taskCode
+      }
+      const res = await this.planLists(req)
+      this.planList = res.data.list
+    },
+    openList(id, index) {
+      if (this.dataLists[index].statisticsAnswersDtoList) return
+      this.getAnswers(id, index)
+      this.getUser(id, index, 1)
+    },
+    // 获取答案
+    async getAnswers(id, index) {
+      const req = {
+        dateNum: this.dateNum,
+        page: 1,
+        questionId: id,
+        size: 50,
+        taskTemplateCode: this.taskCode,
+        year: ''
+      }
+      const res1 = await this.answersInfo(req)
+      const { statisticsAnswersDtoList, answerSum } = res1.data
+      this.$set(this.dataLists[index], 'statisticsAnswersDtoList', statisticsAnswersDtoList || [])
+      this.$set(this.dataLists[index], 'answerSum', answerSum || '')
+    },
+    // 获取用户
+    async getUser(id, index, page) {
+      const req = {
+        dateNum: this.dateNum,
+        page: page,
+        questionId: id,
+        size: 3,
+        taskTemplateCode: this.taskCode,
+        year: ''
+      }
+      const res2 = await this.statisticsUserInfo(req)
+      const { statisticsAnswersByUserDtoList } = res2.data
+      this.$set(this.dataLists[index], 'statisticsAnswersByUserDtoList', statisticsAnswersByUserDtoList || [])
+    },
+    // 翻页
+    handleChange(value, id, index) {
+      this.getUser(id, index, value)
+    },
+    changeActivekey(key) {
+      console.log(key)
     },
     cancel() {
       this.$router.go(-1)
@@ -254,25 +255,29 @@ export default {
 </script>
 <style lang="less" scoped>
 @deep: ~'>>>';
-.accident-add {
+.view-statistics {
   // padding: 20px;
   box-sizing: content-box;
   .content {
     height: calc(100% - 10px);
     overflow-y: scroll;
-     .list-box{
-      .list-cont{
-          //修改表头文字、背景颜色
-          @{deep} .ant-table-thead > tr >th{
-          background: #ecf5ff !important;
+
+    .a-collapse-box{
+      @{deep} .ant-collapse > .ant-collapse-item > .ant-collapse-header{
+        background: #ecf5ff !important;
+         background: #6882da !important;
+            color: #fff;
+      }
+      .list-box{
+          .list-cont{
+            //修改表头文字、背景颜色
+            @{deep} .ant-table-thead > tr >th{
+            background: #ecf5ff !important;
+          }
         }
       }
     }
   }
-  .u-line50{
-    line-height: 50px !important;
-  }
-
 }
 
 </style>

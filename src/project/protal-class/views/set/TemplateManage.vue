@@ -1,121 +1,181 @@
 <template>
   <div class="page-layout qui-fx-ver">
+    <bind-template
+      isCheck
+      ref="bindTemplate"
+      v-if="bindTag"
+      v-model="bindTag"
+      @submit="_bindTemplate"
+      @userToAll="userToAll"
+      title="应用到指定设备"
+      :templateName="templateName"
+      :templateRemark="templateRemark"
+      :deviceList="deviceList"
+    ></bind-template>
     <div class="qui-fx-f1">
-      <div class="box-scroll" :style="{height: scrollH -50+ 'px'}">
-        <div class="notice-card notice qui-fx-ac-jc">
-          <div class="float-add-btn" @click="add"></div>
-          <div>添加</div>
-        </div>
-        <div class="notice-card qui-fx" v-for="item in noticeList" :key="item.id" style="position: relative;">
-          <div class="qui-fx-f1 qui-fx-ver qui-fx-jsb" >
-            <div class="qui-te">
-              <span class="title">{{ item.title }}</span>
-              <a-popover>
-                <template slot="content">
-                  {{ item.content }}
-                </template>
-                <span class="content">{{ item.content }}</span>
-              </a-popover>
-            </div>
-            <div class="notice-img qui-fx-ac-jc" :style="{'backgroundImage': 'url('+item.photoUrl+')'}">
-            </div>
-            <div class="qui-fx-jsb qui-fx-ac">
-              <div>
-                <div class="disable" v-if="item.useNum === 0">未启用</div>
-                <div class="useNum" v-else>{{ item.useNum }}台设备使用中</div>
+      <div class="box-scroll u-auto" :style="{height: scrollH - 80+ 'px'}">
+        <div class="qui-fx qui-fx-wp">
+          <div class="notice-card notice qui-fx-ac-jc">
+            <div class="float-add-btn" @click="add(0)"></div>
+            <div>添加</div>
+          </div>
+          <div class="notice-card qui-fx" v-for="item in templateList" :key="item.id" style="position: relative;">
+            <div class="qui-fx-f1 qui-fx-ver qui-fx-jsb" >
+              <div class="qui-te">
+                <span class="title">{{ item.title }}</span>
+                <a-popover>
+                  <template slot="content">
+                    {{ item.content }}
+                  </template>
+                  <span class="content">{{ item.content }}</span>
+                </a-popover>
               </div>
-              <div class="notice-action">
-                <a-dropdown>
-                  <a class="ant-dropdown-link" @click="e => e.preventDefault()">
-                    更多 <a-icon type="down" />
-                  </a>
-                  <a-menu slot="overlay">
-                    <a-menu-item>
-                      <a @click.stop="editTemplate(item.id)">编辑模板</a>
-                    </a-menu-item>
-                    <a-menu-item>
-                      <a @click.stop="delTemplate(item.id)">删除模板</a>
-                    </a-menu-item>
-                    <a-menu-item>
-                      <a @click.stop="useTemplate(item.id)">应用到指定设备</a>
-                    </a-menu-item>
-                  </a-menu>
-                </a-dropdown>
+              <!-- <div class="notice-img qui-fx-ac-jc" :style="{'backgroundImage': 'url('+item.photoUrl+')'}"> -->
+              <div class="notice-img qui-fx-ac-jc">
+                <a-popover placement="left">
+                  <template slot="content">
+                    <img :src="item.photoUrl" style="max-width: 900px; max-height: 660px; display: block; " alt />
+                  </template>
+                  <img
+                    :src="item.photoUrl"
+                    :style="{ width: `280px`, height: `200px`, display: 'block', backgroundColor: '#eee' }"
+                    alt
+                  />
+                </a-popover>
+              </div>
+              <div class="qui-fx-jsb qui-fx-ac">
+                <div @click.stop="useTemplate(item)">
+                  <div class="disable" v-if="item.count === 0">未启用</div>
+                  <div class="useNum" v-else>{{ item.count }}台设备使用中</div>
+                </div>
+                <div class="notice-action">
+                  <a-dropdown>
+                    <a class="ant-dropdown-link" @click="e => e.preventDefault()">
+                      更多 <a-icon type="down" />
+                    </a>
+                    <a-menu slot="overlay">
+                      <a-menu-item>
+                        <a @click.stop="add(1, item)">编辑模板</a>
+                      </a-menu-item>
+                      <a-menu-item>
+                        <a @click.stop="_delTemplate(item)">删除模板</a>
+                      </a-menu-item>
+                      <a-menu-item>
+                        <a @click.stop="useTemplate(item)">应用到指定设备</a>
+                      </a-menu-item>
+                    </a-menu>
+                  </a-dropdown>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <page-num :total="total" v-model="pageList" @change-page="welcomeGet"></page-num>
   </div>
 </template>
 <script>
-import PageNum from '@c/PageNum'
+import BindTemplate from '../../component/BindTemplate'
 import { mapState, mapActions } from 'vuex'
-import photoUrl from '@a/img/bg_1.png'
 export default {
   name: 'TemplateManage',
   components: {
-    PageNum
+    BindTemplate
   },
   data() {
     return {
-      noticeList: [{
-        title: '默认模板',
-        content: '系统提供的默认模板，不可删除',
-        id: 'M144i03z0yvzin1',
-        photoUrl: photoUrl,
-        useNum: 1
-      },
-      {
-        title: '模板A',
-        content: '说明文字说明文字说明文字说明文字',
-        id: 'M144i03z0yvzin2',
-        photoUrl: photoUrl,
-        useNum: 0
-      }],
-      pageList: {
-        page: 1,
-        size: 20
-      },
-      total: 0,
-      scrollH: 0
+      templateList: [],
+      scrollH: 0,
+      bindTag: false,
+      deviceList: [],
+      templateRemark: '',
+      templateName: ''
     }
   },
   computed: {
     ...mapState('home', [
-      'authWebUserInfo'
+      'userInfo'
     ])
   },
   mounted() {
-    this.scrollH = document.documentElement.offsetHeight - 200
+    this.scrollH = document.documentElement.offsetHeight
+    this._getTemplateList()
   },
   methods: {
-    ...mapActions('home', ['getWelcome']),
-    async welcomeGet () {
-      this.pageList.schoolScheme = this.authWebUserInfo.exts.schoolScheme
-      const res = await this.getWelcome(this.pageList)
-      this.total = res.data.total
-      this.noticeList = res.data.list
+    ...mapActions('home', ['getTemplateList', 'delTemplate', 'bindTemplateDetail', 'bindTemplate', 'bindAllTemplate']),
+    async _getTemplateList () {
+      const res = await this.getTemplateList({
+        schoolCode: this.userInfo.schoolCode
+      })
+      this.templateList = res.data.map(el => {
+        return {
+          title: el.name,
+          content: el.description,
+          id: el.id,
+          photoUrl: el.photoUrl,
+          count: el.count,
+          isDefault: el.isDefault
+        }
+      })
     },
-    add(type) {
+    add(type, item) {
       let path = ''
-      path = `/templateManage/template`
+      if (type && parseInt(item.isDefault) === 1) {
+        this.$message.warning('默认模板不可编辑')
+        return
+      }
+      path = `/templateManage/template?type=${type}${type ? '&id=' + item.id : ''}`
       this.$router.push({ path })
     },
-    editTemplate(id) {
-      console.log(id)
+    async useTemplate(item) {
+      this.templateName = item.title
+      this.templateRemark = item.content
+      this.id = item.id
+      const res = await this.bindTemplateDetail({ query: item.id })
+      this.deviceList = res.data
+      this.bindTag = true
     },
-    delTemplate(id) {
-      console.log(id)
+    async _bindTemplate(value) {
+      console.log(value)
+      this.deviceList = value
+      const req = {
+        deviceList: value,
+        templateId: this.id
+      }
+      await this.bindTemplate(req)
+      this.$message.success('绑定成功')
+      this.$tools.goNext(() => {
+        this.$refs.bindTemplate.reset()
+        this._getTemplateList()
+      })
     },
-    useTemplate(id) {
-      console.log(id)
+    async userToAll() {
+      await this.bindAllTemplate({
+        schoolCode: this.userInfo.schoolCode,
+        templateId: this.id
+      })
+      this.$message.success('绑定成功')
+      this.$tools.goNext(() => {
+        this.$refs.bindTemplate.reset()
+        this._getTemplateList()
+      })
     },
-    delClick (record) {
-      this.$tools.delTip('确认要删除该欢迎模式吗?', () => {
-        this.$message.success('删除成功')
+    _delTemplate (item) {
+      if (parseInt(item.isDefault) === 1) {
+        this.$message.warning('默认模板不可删除')
+        return
+      }
+      if (parseInt(item.count) !== 0) {
+        this.$message.warning('模板使用，不可删除')
+        return
+      }
+      this.$tools.delTip('确认要删除该模板吗?', () => {
+        this.delTemplate(item.id).then(() => {
+          this.$message.success('删除成功')
+          this.$tools.goNext(() => {
+            this._getTemplateList()
+          })
+        })
       })
     }
   }
@@ -129,8 +189,9 @@ export default {
     float: left;
     width: 23.33%;
     overflow: hidden;
-    margin: 20px 0 20px 1%;
+    margin: 20px 0px 0px 20px;
     min-height: 200px;
+    min-width: 300px;
     .title{
       font-size: 16px;
       font-weight: bold;

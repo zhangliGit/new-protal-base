@@ -204,7 +204,7 @@ const findColumn = {
     {
       value: 'userName',
       type: 'input',
-      label: '姓名',
+      label: '上报人',
       placeholder: '请输入'
     }
   ]

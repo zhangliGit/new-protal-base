@@ -1,5 +1,5 @@
 <template>
-  <div class="daily-add page-layout qui-fx-ver">
+  <div class="task-add page-layout qui-fx-ver">
     <div class="content pos-box">
       <div class="u-padd-10 u-padd-l20 bg-fff">
         <div class="fill-top u-mar-b20">
@@ -87,10 +87,23 @@
             v-if="cardInfo.taskType === '1'"
           >
             <a-range-picker
-              v-decorator="['data', {initialValue: [moment(new Date(), 'YYYY-MM-DD'), moment( new Date(), 'YYYY-MM-DD')], rules: [{ required: 'required', message: '请选择时间' }]}]"
+              v-decorator="[
+                'data',
+                {
+                  initialValue:
+                    [ moment(cardInfo.startTime ? new Date(cardInfo.startTime) : new Date(), 'YYYY-MM-DD'),
+                      moment(cardInfo.endTime ? new Date(cardInfo.endTime) :new Date(), 'YYYY-MM-DD')],
+                  rules: [{ required: 'required', message: '请选择时间' }]
+                }
+              ]"
             />
           </a-form-item>
-          <a-form-item label="任务描述：" v-bind="formItemLayout" :style="{ textAlign: 'center' }">
+          <a-form-item
+            label="任务描述："
+            v-bind="formItemLayout"
+            :style="{ textAlign: 'center' }"
+            required
+          >
             <quill-editor
               v-model="cardInfo.des"
               ref="myQuillEditor"
@@ -100,11 +113,22 @@
             ></quill-editor>
           </a-form-item>
           <a-form-item label="任务附件：" v-bind="formItemLayout" :style="{ textAlign: 'left' }">
-            <a-upload name="file">
-              <a-button>
+            <a-upload
+              name="fileList"
+              :multiple="false"
+              :action="url"
+              :data="params"
+              :remove="handleRemove"
+              @change="handleChange"
+            >
+              <a-button v-if="show">
                 <a-icon type="upload" />上传附件
               </a-button>
             </a-upload>
+            <div v-if="flag">
+              {{ docName }}
+              <a-button class="del-action-btn mar-l10" icon="delete" size="small" @click="delFile"></a-button>
+            </div>
           </a-form-item>
         </a-form>
       </div>
@@ -126,7 +150,7 @@
           </div>
           <no-data
             msg="暂无题目~"
-            v-if="radioList.length === 0 && checkList.length === 0 && fillList.length === 0 && fileList.length === 0 "
+            v-if="radioList && checkList && fillList && fileList && radioList.length === 0 && checkList.length === 0 && fillList.length === 0 && fileList.length === 0 "
           ></no-data>
           <div class="qui-fx-f1" v-else>
             <div class="u-mar-t20 u-mar-l20 u-mar-r20" v-if="radioList.length !== 0">
@@ -134,24 +158,24 @@
               <div class="subject u-mar-t10 u-padd-b10">
                 <div
                   class="project qui-fx u-mar-b10 u-padd"
-                  v-for="list in radioList"
-                  :key="list.key"
+                  v-for="el in radioList"
+                  :key="el.key"
                 >
                   <div class="qui-fx-ver">题目：</div>
                   <div class="qui-fx-f1 qui-fx-ver u-mar-l20">
                     <div class="qui-fx">
-                      <a-input style="width:90%" placeholder="请输入标题" v-model="list.title" />
+                      <a-input style="width:90%" placeholder="请输入标题" v-model="el.title" />
                       <div
                         class="u-line u-mar-l10 u-type-primary"
-                        @click="del(0, list, 'radioList')"
+                        @click="del(0, el, 'radioList')"
                       >删除</div>
                     </div>
-                    <div class="qui-fx u-mar-t10" v-for="item in list.pointList" :key="item.key">
+                    <div class="qui-fx u-mar-t10" v-for="item in el.pointList" :key="item.key">
                       <a-input style="width:90%" placeholder="请输入选项" v-model="item.content" />
                       <a-icon
                         class="u-line u-mar-l10 u-type-primary"
                         type="minus-circle"
-                        @click="del(1, list, item)"
+                        @click="del(1, el, item)"
                       />
                     </div>
                     <div class="qui-fx u-mar-t10">
@@ -159,7 +183,7 @@
                         class="input"
                         placeholder="新建选项"
                         read-only
-                        @click="modify(1, 'radioList',list)"
+                        @click="modify(1, 'radioList',el)"
                       />
                     </div>
                   </div>
@@ -171,24 +195,24 @@
               <div class="subject u-mar-t10 u-padd-b10">
                 <div
                   class="project qui-fx u-mar-b10 u-padd"
-                  v-for="list in checkList"
-                  :key="list.key"
+                  v-for="el in checkList"
+                  :key="el.key"
                 >
                   <div class="qui-fx-ver">题目：</div>
                   <div class="qui-fx-f1 qui-fx-ver u-mar-l20">
                     <div class="qui-fx">
-                      <a-input style="width:90%" placeholder="请输入标题" v-model="list.title" />
+                      <a-input style="width:90%" placeholder="请输入标题" v-model="el.title" />
                       <div
                         class="u-line u-mar-l10 u-type-primary"
-                        @click="del(0, list, 'checkList')"
+                        @click="del(0, el, 'checkList')"
                       >删除</div>
                     </div>
-                    <div class="qui-fx u-mar-t10" v-for="item in list.pointList" :key="item.key">
+                    <div class="qui-fx u-mar-t10" v-for="item in el.pointList" :key="item.key">
                       <a-input style="width:90%" placeholder="请输入选项" v-model="item.content" />
                       <a-icon
                         class="u-line u-mar-l10 u-type-primary"
                         type="minus-circle"
-                        @click="del(1, list, item)"
+                        @click="del(1, el, item)"
                       />
                     </div>
                     <div class="qui-fx u-mar-t10">
@@ -196,7 +220,7 @@
                         class="input"
                         placeholder="新建选项"
                         read-only
-                        @click="modify(1, 'checkList',list)"
+                        @click="modify(1, 'checkList',el)"
                       />
                     </div>
                   </div>
@@ -208,16 +232,16 @@
               <div class="subject u-mar-t10 u-padd-b10">
                 <div
                   class="project qui-fx u-mar-b10 u-padd"
-                  v-for="list in fillList"
-                  :key="list.key"
+                  v-for="el in fillList"
+                  :key="el.key"
                 >
                   <div class="qui-fx-ver">题目：</div>
                   <div class="qui-fx-f1 qui-fx-ver u-mar-l20">
                     <div class="qui-fx">
-                      <a-input style="width:90%" placeholder="请输入题目" v-model="list.title" />
+                      <a-input style="width:90%" placeholder="请输入题目" v-model="el.title" />
                       <div
                         class="u-line u-mar-l10 u-type-primary"
-                        @click="del(0, list, 'fillList')"
+                        @click="del(0, el, 'fillList')"
                       >删除</div>
                     </div>
                   </div>
@@ -229,24 +253,17 @@
               <div class="subject u-mar-t10 u-padd-b10">
                 <div
                   class="project qui-fx u-mar-b10 u-padd"
-                  v-for="list in fileList"
-                  :key="list.key"
+                  v-for="el in fileList"
+                  :key="el.key"
                 >
                   <div class="qui-fx-ver">题目：</div>
                   <div class="qui-fx-f1 qui-fx-ver u-mar-l20">
                     <div class="qui-fx">
-                      <a-input style="width:90%" placeholder="请输入附件标题" v-model="list.title" />
+                      <a-input style="width:90%" placeholder="请输入附件标题" v-model="el.title" />
                       <div
                         class="u-line u-mar-l10 u-type-primary"
-                        @click="del(0, list, 'fileList')"
+                        @click="del(0, el, 'fileList')"
                       >删除</div>
-                    </div>
-                    <div class="qui-fx u-mar-t10">
-                      <a-upload name="file">
-                        <a-button>
-                          <a-icon type="upload" />上传附件
-                        </a-button>
-                      </a-upload>
                     </div>
                   </div>
                 </div>
@@ -264,6 +281,7 @@
 </template>
 
 <script>
+import hostEnv from '@config/host-env'
 import { quillEditor } from 'vue-quill-editor'
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
@@ -320,15 +338,10 @@ export default {
       isLoad: false,
       form: this.$form.createForm(this),
       times: [],
-      count: 1,
       detailId: '',
-      teacherList: [],
       cardInfo: {
-        timeType: '1',
         taskType: '1'
       },
-      users: [],
-      type: '',
       value: 2020,
       minValue: 2020,
       weeks: '',
@@ -336,10 +349,14 @@ export default {
       monthCurrent: [],
       allWeek: false,
       allMonth: false,
-      dateList: [],
       isEdit: false,
-      devices: [],
-      title: ''
+      url: '',
+      params: {},
+      docUrl: '',
+      show: true,
+      flag: false,
+      defaultFileList: [],
+      docName: ''
     }
   },
   computed: {
@@ -351,9 +368,10 @@ export default {
     }
   },
   mounted() {
+    this.url = `${hostEnv.zx_subject}/file/upload/doc`
+    this.params.schoolCode = this.userInfo.schoolCode
     this.detailId = this.$route.query.id
     this.times = [{ key: 0 }]
-    this.title = this.url === 'safe' ? '护导队伍' : '巡查人员'
     if (this.detailId) {
       this.showDetail()
       this.isEdit = this.detailType !== 3
@@ -365,8 +383,48 @@ export default {
     this.getnumofweeks(this.value)
   },
   methods: {
-    ...mapActions('home', ['getTaskDetail', 'addDailyTask', 'updateDailyTask', 'addSafeTask', 'updateSafeTask']),
+    ...mapActions('home', [ 'getTaskDetail', 'addSchoolTask', 'modifySchoolTask' ]),
     moment,
+    // 获取详情
+    async showDetail() {
+      const res = await this.getTaskDetail(this.detailId)
+      this.cardInfo = res.data
+      this.weekCurrent = res.data.dateNums
+      this.monthCurrent = res.data.dateNums
+      const questions = res.data.questions.map((el, index) => {
+        return {
+          ...el,
+          key: index,
+          pointList: el.content
+            ? el.content.map((item, i) => {
+              return {
+                key: i,
+                content: item
+              }
+            })
+            : []
+        }
+      })
+      questions.map((el) => {
+        if (el.questionType === '1') {
+          this.radioList.push(el)
+          this.radioCount = this.radioList.length
+        } else if (el.questionType === '2') {
+          this.checkList.push(el)
+          this.checkCount = this.checkList.length
+        } else if (el.questionType === '3') {
+          this.fillList.push(el)
+          this.fillCount = this.fillList.length
+        } else {
+          this.fileList.push(el)
+          this.fileCount = this.fileList.length
+        }
+      })
+      this.docName = res.data.docName
+      this.docUrl = res.data.docUrl
+      this.show = !res.data.docUrl
+      this.flag = !!res.data.docUrl
+    },
     // 富文本编辑器方法
     onEditorFocus(data) {},
     // 获得焦点事件
@@ -414,11 +472,6 @@ export default {
       }
       return dates
     },
-    timeChange(e) {
-      this.cardInfo.timeType = e.target.value
-      this.cardInfo.taskType = '1'
-      this.times = [{ key: 0 }]
-    },
     // 任务类型切换
     change(e) {
       this.cardInfo.taskType = e.target.value
@@ -446,19 +499,38 @@ export default {
       }
       this[string] = arr
     },
-    // 获取详情
-    async showDetail() {
-      const res = await this.getTaskDetail(this.detailId)
-      const data = res.data
-      this.count = data.times.length
-    },
     cancel() {
       this.$router.go(-1)
+    },
+    delFile() {
+      this.show = true
+      this.flag = false
+    },
+    handleRemove() {
+      this.show = true
+    },
+    handleChange(info) {
+      if (info.file.status !== 'uploading' && info.file.status !== 'removed') {
+        if (info.file.response) {
+          this.$message.error(info.file.response.message)
+        }
+      }
+      if (info.file.status === 'done') {
+        if (info.file.response.code === 200) {
+          this.show = false
+          this.$message.success(`${info.file.name} 上传成功`)
+          this.docUrl = info.file.response.data[0]
+          this.docName = info.file.name
+        } else {
+          this.$message.error(info.file.response.message)
+        }
+      } else if (info.file.status === 'error') {
+        this.$message.error(`${info.file.name} 上传失败`)
+      }
     },
     modify(type, key, record) {
       if (type) {
         let length = record.pointList.length === 0 ? 0 : record.pointList[record.pointList.length - 1].key + 1
-        console.log('record', record.pointList)
         const newData = {
           key: length
         }
@@ -468,7 +540,7 @@ export default {
         if (key === '0') return false
         const newData = {
           key: this[`${key}Count`],
-          pointList: key === 'radio' || key === 'check' ? [] : undefined,
+          pointList: [],
           questionType: key === 'radio' ? '1' : key === 'check' ? '2' : key === 'fill' ? '3' : '4'
         }
         this[`${key}List`] = [...this[`${key}List`], newData]
@@ -491,120 +563,171 @@ export default {
     submitOk(e) {
       e.preventDefault()
       this.form.validateFields((error, values) => {
-        console.log('values', values)
-        console.log('cardInfo', this.cardInfo)
-        console.log('radioList', this.radioList)
-        console.log('checkList', this.checkList)
-        console.log('fillList', this.fillList)
-        const radioList = this.radioList.map((el) => {
+        if (!this.cardInfo.des) {
+          this.$message.warning('请填写任务描述')
+          return false
+        }
+        let list = this.radioList.concat(this.checkList).concat(this.fillList).concat(this.fileList)
+        if (list.length === 0) {
+          this.$message.warning('请点击题目控件添加题目')
+          return false
+        }
+        list = list.map((el) => {
           return {
-            content: el.pointList.map((item) => {
-              content.push(item.content)
-            }),
+            content:
+              el.questionType === '1' || el.questionType === '2'
+                ? el.pointList.map((item) => {
+                  return item.content ? item.content : ''
+                })
+                : [],
             title: el.title,
             questionType: el.questionType
           }
         })
-        // this.isLoad = false
-        // if (!error) {
-        //   this.isLoad = true
-        //   this.addDailyTask(values)
-        //     .then((res) => {
-        //       this.$message.success('操作成功')
-        //       this.$tools.goNext(() => {
-        //         this.$router.go(-1)
-        //       })
-        //     })
-        //     .catch((res) => {
-        //       this.isLoad = false
-        //     })
-        // }
+        list.forEach((el) => {
+          if (!el.title || ((el.questionType === '1' || el.questionType === '2') && el.content.length === 0)) {
+            this.$message.warning('请填写完整题目')
+            return false
+          } else if (el.content && el.content.length !== 0) {
+            el.content.forEach(element => {
+              if (element === '') {
+                this.$message.warning('请填写完整题目')
+                return false
+              }
+            })
+          }
+        })
+        values.userName = this.userInfo.userName
+        values.userCode = this.userInfo.userCode
+        values.schoolCode = this.userInfo.schoolCode
+        values.year = this.value
+        values.docUrl = this.docUrl
+        values.docName = this.docName
+        values.questions = list
+        values.des = this.cardInfo.des
+        values.startTime = this.cardInfo.taskType === '1' ? moment(values.data[0]).format('YYYY-MM-DD') : ''
+        values.endTime = this.cardInfo.taskType === '1' ? moment(values.data[1]).format('YYYY-MM-DD') : ''
+        values.dateNums =
+          this.cardInfo.taskType === '2'
+            ? this.weekCurrent
+            : this.cardInfo.taskType === '3'
+              ? this.monthCurrent
+              : ''
+        if (this.cardInfo.taskType !== '1' && values.dateNums === '') {
+          this.$message.warning('请选择任务时间')
+          return false
+        }
+        this.isLoad = false
+        if (!error) {
+          this.isLoad = true
+          if (this.detailId) {
+            values.id = this.detailId
+            this.modifySchoolTask(values)
+              .then((res) => {
+                this.$message.success('操作成功')
+                this.$tools.goNext(() => {
+                  this.$router.go(-1)
+                })
+              })
+              .catch((res) => {
+                this.isLoad = false
+              })
+          } else {
+            this.addSchoolTask(values)
+              .then((res) => {
+                this.$message.success('操作成功')
+                this.$tools.goNext(() => {
+                  this.$router.go(-1)
+                })
+              })
+              .catch((res) => {
+                this.isLoad = false
+              })
+          }
+        }
       })
     }
   }
 }
 </script>
 <style lang="less" scoped>
-.daily-add {
+.task-add {
   background-color: #f5f5fb;
   .content {
     height: calc(100% - 10px);
     overflow-y: scroll;
-  }
-  .week-box {
-    max-width: 600px;
-    margin-top: 10px;
-    border-top: 5px solid #6882da;
-    box-shadow: 0px 0px 6px #ddd;
-    padding: 10px;
-    .week-item {
-      width: 75px;
-      display: inline-block;
-      border: 1px solid #e7e7e7;
-      text-align: center;
-      cursor: pointer;
-      margin: 5px 10px;
-    }
-  }
-  .week-task {
-    max-width: 1000px;
-    .weeks {
-      width: 70px;
+    .fill-top {
       height: 30px;
       line-height: 30px;
-      margin: 5px;
+      font-size: 16px;
+      color: #4d4cac;
+      border-bottom: 1px solid #ccc;
+      .fill-head {
+        text-align: center;
+        border-bottom: 3px solid #4d4cac;
+      }
+      .task {
+        width: 70px;
+      }
+      .report {
+        width: 100px;
+      }
+    }
+    .week-box {
+      max-width: 600px;
+      margin-top: 10px;
+      border-top: 5px solid #6882da;
+      box-shadow: 0px 0px 6px #ddd;
+      padding: 10px;
+      .week-item {
+        width: 75px;
+        display: inline-block;
+        border: 1px solid #e7e7e7;
+        text-align: center;
+        cursor: pointer;
+        margin: 5px 10px;
+      }
+    }
+    .week-task {
+      max-width: 1000px;
+      .weeks {
+        width: 70px;
+        height: 30px;
+        line-height: 30px;
+        margin: 5px;
+      }
+    }
+    .left {
+      width: 220px;
+      height: 300px;
+      background-color: #fcfcfc;
+      .left-content {
+        width: 100%;
+        height: 33px;
+        line-height: 33px;
+      }
+      .bgc {
+        color: #4d4cac;
+        background-color: #f5f5fb;
+      }
+    }
+    .ant-calendar-picker {
+      width: 100% !important;
+    }
+    .active {
+      background-color: #6882da;
+      color: #fff;
+    }
+    .project {
+      background-color: #fafafa;
+    }
+    .input {
+      width: 90%;
+      border: 1px dashed #cfcfcf;
+    }
+    .u-line {
+      line-height: 32px;
     }
   }
-  .ant-calendar-picker {
-    width: 100% !important;
-  }
-}
-.active {
-  background-color: #6882da;
-  color: #fff;
-}
-.fill-top {
-  height: 30px;
-  line-height: 30px;
-  font-size: 16px;
-  color: #4d4cac;
-  border-bottom: 1px solid #ccc;
-  .fill-head {
-    text-align: center;
-    border-bottom: 3px solid #4d4cac;
-  }
-}
-.task {
-  width: 70px;
-}
-.report {
-  width: 100px;
-}
-.left {
-  width: 220px;
-  height: 300px;
-  background-color: #fcfcfc;
-}
-.left-content {
-  width: 100%;
-  height: 33px;
-  line-height: 33px;
-}
-.bgc {
-  color: #4d4cac;
-  background-color: #f5f5fb;
-}
-.btn {
-  width: 20px;
-}
-.project {
-  background-color: #fafafa;
-}
-.input {
-  width: 90%;
-  border: 1px dashed #cfcfcf;
-}
-.u-line {
-  line-height: 32px;
 }
 </style>

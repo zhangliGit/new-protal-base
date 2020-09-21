@@ -46,12 +46,14 @@ const home = {
     eduName: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolName,
     eduCode: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolCode,
     schoolCode: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolCode,
+
     userInfo: getState('userInfo', {
       schoolCode: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolCode,
       schoolName: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolName,
       schoolId: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolId,
-      userName: JSON.parse(window.sessionStorage.getItem('loginInfo')).userName,
-      userCode: JSON.parse(window.sessionStorage.getItem('loginInfo')).userCode
+      userName: JSON.parse(window.sessionStorage.getItem('loginType')).userName,
+      userCode: JSON.parse(window.sessionStorage.getItem('loginType')).userCode,
+      postList: JSON.parse(window.sessionStorage.getItem('loginType')).postList
     }),
     welComeInfo: {}
   },
