@@ -190,6 +190,12 @@ export default {
     hasAdd: {
       type: Boolean,
       default: false
+    },
+    classList: {
+      type: Array,
+      default: () => {
+        return []
+      }
     }
   },
   computed: {
@@ -226,6 +232,17 @@ export default {
       this.getStudentList(true)
     } else if (this.chooseType === 'door') {
       this.getDoorTotal(1)
+    }
+    else if (this.chooseType === 'class') {
+       this.classList.forEach(item => {
+      this.chooseList.push(item.userCode)
+        this.totalList.push({
+          id: item.userCode,
+          userCode: item.userCode,
+          userName: item.userName
+        })
+      })
+      this.getStudentList(true)
     } else if (this.chooseType === 'ncov') {
       this.pageList.size = 500
       const res = await $ajax.get({
@@ -365,7 +382,11 @@ export default {
             userCode: item.userCode,
             userName: item.userName,
             hasDorm: item.hasDorm,
-            photoUrl:item.photoUrl
+            photoUrl:item.photoUrl,
+            classCode: item.classCode,
+            className: item.className,
+            gradeCode: item.gradeCode,
+            gradeName: item.gradeName
           })
         } else {
           this.totalList = [item]

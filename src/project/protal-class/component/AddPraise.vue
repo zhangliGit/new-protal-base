@@ -22,7 +22,7 @@
       </a-form-item>
       <a-form-item :label-col="{ span: 3 }" :wrapper-col="{ span: 21 }" label="选择表扬语" required>
         <a-select
-          mode="tags"
+           mode="multiple"
           v-decorator="[
             'label',
             { initialValue: appForm.label, rules: [{ required: true, message: '请选择选择表扬语' }] }
@@ -77,12 +77,7 @@ export default {
         label: ''
       },
       isView: false,
-      batchList: []
-    }
-  },
-  watch: {
-    value(val) {
-      console.log(`selected:`, val)
+      batchList: [],
     }
   },
   computed: {
@@ -93,6 +88,12 @@ export default {
   },
   methods: {
     ...mapActions('home', ['addsetPraise', 'updatesetPraise', 'praiseList']),
+   handleChange(value) {
+    //  if(value.length>3){
+    //   this.$message.warning('表扬语不能超过3个!')
+    //    return false
+    //  }
+    },
     addTag() {
       this.studentTag = true
     },
@@ -102,13 +103,13 @@ export default {
         ...this.pageList
       }
       const res = await this.praiseList(req)
-      this.batchList = res.data.list
+      this.batchList = res.data.list.filter((item) => item.category === 1)
     },
     classClose(removedTag) {
-      this.classList = this.classList.filter(tag => tag !== removedTag)
+      this.classList = this.classList.filter((tag) => tag !== removedTag)
     },
     chooseClass(classInfo) {
-      this.classList = classInfo.map(el => {
+      this.classList = classInfo.map((el) => {
         return {
           category: 1,
           classCode: el.classCode,
@@ -137,7 +138,7 @@ export default {
             praiseList: this.classList
           }
           this.addsetPraise(req)
-            .then(res => {
+            .then((res) => {
               this.addVisible = false
               this.isLoad = false
               this.$message.success('操作成功')
@@ -145,7 +146,7 @@ export default {
                 this.$emit('update')
               })
             })
-            .catch(res => {
+            .catch((res) => {
               this.isLoad = false
             })
         }

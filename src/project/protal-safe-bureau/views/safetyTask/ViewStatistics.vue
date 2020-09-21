@@ -142,7 +142,6 @@ import PreEcharts from './PreEcharts'
 import BarEcharts from './BarEcharts'
 import NoData from '@c/NoData'
 import { Empty } from 'ant-design-vue'
-// import PreBarEcharts from './PreBarEcharts'
 const columns = [
   {
     title: '学校',
@@ -165,7 +164,6 @@ export default {
     NoData,
     PreEcharts,
     BarEcharts
-    // PreBarEcharts
   },
   data() {
     return {

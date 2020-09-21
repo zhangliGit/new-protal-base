@@ -13,8 +13,8 @@
       <a-form-item label="学生姓名" :label-col="{ span: 3 }" :wrapper-col="{ span: 21 }" required>
         <div>
           <template v-for="tag in classList">
-            <a-tag :key="tag.praiseCode" :closable="true" :afterClose="() => classClose(tag)">
-              {{ tag.praiseName }}
+            <a-tag :key="tag.userCode" :closable="true" :afterClose="() => classClose(tag)">
+              {{ tag.userName }}
             </a-tag>
           </template>
           <a-tag @click="addTag()" style="background: #fff; borderStyle: dashed;"> <a-icon type="plus" />添加 </a-tag>
@@ -38,11 +38,12 @@
     <choose-student
       ref="chooseUser"
       is-check
-      chooseType="door"
+      chooseType="class"
       v-if="userTag"
       v-model="userTag"
       @submit="chooseUser"
       title="选择学生"
+      :classList="classList"
     ></choose-student>
   </a-modal>
 </template>
@@ -103,25 +104,14 @@ export default {
         ...this.pageList
       }
       const res = await this.praiseList(req)
-      this.batchList = res.data.list
+      this.batchList = res.data.list.filter((item) => item.category === 2)
     },
     classClose(removedTag) {
-      this.classList = this.classList.filter(tag => tag !== removedTag)
+      this.classList = this.classList.filter((tag) => tag !== removedTag)
     },
     chooseUser(values) {
       console.log(values)
-      this.classList = values.map(el => {
-        return {
-          category: 2,
-          praiseNamePhoto: el.photoUrl,
-          praiseName: el.userName,
-          praiseCode: el.userCode,
-          createUsercode: this.userInfo.userCode,
-          createUsername: this.userInfo.userName,
-          schoolCode: this.userInfo.schoolCode,
-          schoolYearId: el.schoolYearId
-        }
-      })
+      this.classList = values
       this.$refs.chooseUser.reset()
     },
     addSubmit(e) {
@@ -135,10 +125,25 @@ export default {
           this.isLoad = true
           const req = {
             labelList: values.label,
-            praiseList: this.classList
+            praiseList: this.classList.map((el) => {
+              return {
+                category: 2,
+                praiseNamePhoto: el.photoUrl,
+                praiseName: el.userName,
+                praiseCode: el.userCode,
+                createUsercode: this.userInfo.userCode,
+                createUsername: this.userInfo.userName,
+                schoolCode: this.userInfo.schoolCode,
+                schoolYearId: el.schoolYearId,
+                classCode: el.classCode,
+                className: el.className,
+                gradeCode: el.gradeCode,
+                gradeName: el.gradeName
+              }
+            })
           }
           this.addsetPraise(req)
-            .then(res => {
+            .then((res) => {
               this.addVisible = false
               this.isLoad = false
               this.$message.success('操作成功')
@@ -146,7 +151,7 @@ export default {
                 this.$emit('update')
               })
             })
-            .catch(res => {
+            .catch((res) => {
               this.isLoad = false
             })
         }
