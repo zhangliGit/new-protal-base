@@ -1,40 +1,44 @@
 <template>
   <div class="check-completion page-layout bg-fff qui-fx-ver">
-    <div class="u-font-1 u-bold u-mar-b10">任务名称 {{ taskName }}</div>
-    <div class="qui-fx-ac u-mar-t10 u-mar-b10" v-if="taskType !== '1'">
-      <div>{{ taskType === '2' ? '周' : '月' }}计划：</div>
-      <a-select default-value="1" style="width: 200px">
-        <a-select-option v-for="(list,index) in 10" :key="index">{{ list }}</a-select-option>
-      </a-select>
-    </div>
-    <div class="qui-fx-ac u-mar-b10">
-      <div>任务状态：</div>
-      <a-select default-value="1" style="width: 200px">
-        <a-select-option value="1">所有任务</a-select-option>
-        <a-select-option value="2">未完成</a-select-option>
-        <a-select-option value="3">已完成</a-select-option>
-        <a-select-option value="4">逾期填报</a-select-option>
-      </a-select>
-      <div>（已完成数/总数：3/9）</div>
-    </div>
-    <div class="card" v-for="(item,index) in dataList" :key="index">
-      <div class="title-tab">
-        <span class="title-tab-pane on u-type-primary">{{ item.name }}</span>
+    <div class="content pos-box">
+      <div class="u-font-1 u-bold u-mar-b10">任务名称： {{ taskName }}</div>
+      <div class="qui-fx-ac u-mar-t10 u-mar-b10" v-if="taskType !== '1'">
+        <div>{{ taskType === '2' ? '周' : '月' }}计划：</div>
+        <a-select v-model="dateNum" @change="showList" style="width: 200px">
+          <a-select-option v-for="list in planList" :key="`${list.year}-${list.dateNum}`">{{ list.year }}-{{ list.dateNum }}{{ taskType === '2' ? '周' : '月' }}</a-select-option>
+        </a-select>
       </div>
-      <div class="cont u-fx-wp u-mar-t10">
-        <div
-          class="list-box u-fx-ac-jc u-mar-10"
-          :class="v.state === '4' || v.state === '3'? 'green' : 'red'"
-          v-for="(v,index2) in item.schoolAndStateList"
-          :key="index2"
-          @click="check(v)"
-        >
-          <div class="title u-bold u-font-1">{{ v.name }}</div>
-          <div class="btn u-fx-ac-jc u-font-01">{{ v.state | taskStatus }}</div>
+      <div class="qui-fx-ac u-mar-b10">
+        <div>任务状态：</div>
+        <a-select @change="statusChange" default-value="" style="width: 200px">
+          <a-select-option value="">所有任务</a-select-option>
+          <a-select-option value="1">未完成</a-select-option>
+          <a-select-option value="2">已完成</a-select-option>
+          <a-select-option value="3">逾期填报</a-select-option>
+        </a-select>
+        <div>（已完成数/总数：{{ compNum }}/{{ sum }}）</div>
+      </div>
+      <div v-for="el in dataList" :key="el.orgCode">
+        <div class="fill-top u-mar-b20">
+          <div class="fill-head task">{{ el.orgName }}</div>
+        </div>
+        <div class="card">
+          <div class="cont u-fx-wp u-mar-t10">
+            <div
+              class="list-box u-fx-ac-jc u-mar-10"
+              :class="v.state === '2' || v.state === '3'|| v.state === '5'? 'green' : 'red'"
+              v-for="(v,index2) in el.outCompInfoOfTaskByPeDtoList"
+              :key="index2"
+              @click="check(v)"
+            >
+              <div class="title u-bold u-font-1">{{ v.userName }}</div>
+              <div class="btn u-fx-ac-jc u-font-01">{{ v.state | safetyTaskStatus }}</div>
+            </div>
+          </div>
         </div>
       </div>
+      <task-status ref="taskStatus"></task-status>
     </div>
-    <task-status ref="taskStatus"></task-status>
   </div>
 </template>
 
@@ -42,65 +46,97 @@
 import { mapState, mapActions } from 'vuex'
 import TaskStatus from '../../component/TaskStatus'
 export default {
-  name: 'CheckCompletion',
+  name: 'TaskComplete',
   components: {
     TaskStatus
   },
   data() {
-    this.taskType = this.$route.query.taskType
-    this.taskCode = this.$route.query.taskCode
     return {
-      dataList: [
-        {
-          name: '2',
-          schoolAndStateList: [
-            { name: '云校园', state: '3' },
-            { name: '云校园', state: '4' }
-          ]
-        },
-        {
-          name: '2',
-          schoolAndStateList: [
-            { name: '云校园', state: '3' },
-            { name: '云校园', state: '4' }
-          ]
-        }
-      ],
-      taskName: 'dasd'
+      taskName: this.$route.query.taskName,
+      state: [], // 状态
+      dateNum: '', // 计划
+      sum: '',
+      compNum: '',
+      dataList: [],
+      taskType: '',
+      planList: []
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
-  mounted() {
-    // this.showList()
+  async mounted() {
+    this.taskType = this.$route.query.taskType
+    this.taskCode = this.$route.query.code
+    if (this.taskType !== '1') {
+      await this.taskTimeGet()
+    }
+    this.showList()
   },
   methods: {
-    ...mapActions('home', ['TaskCompletedStatus']),
+    ...mapActions('home', ['schTaskCompleted', 'getTeachers', 'wechatNotice', 'planLists']),
     async showList() {
       const req = {
+        state: this.states,
+        year: this.dateNum.split('-')[0],
+        dateNum: this.dateNum.split('-')[1],
         schoolCode: this.userInfo.schoolCode,
-        status: this.state,
-        taskTemplateCode: this.taskCode
+        taskTemplateCode: this.taskCode,
+        taskType: this.taskType
       }
-      console.log(this.TaskCompletedStatus)
-      const res = await this.TaskCompletedStatus(req)
-      console.log(res)
-      // this.dataList = res.data
+      const res = await this.schTaskCompleted(req)
+      const { compNum, outCompInfoOfTaskByOrgDtoList, sum } = res.data
+      this.compNum = compNum
+      this.sum = sum
+      this.dataList = outCompInfoOfTaskByOrgDtoList
+    },
+    async taskTimeGet() {
+      const res = await this.planLists({ taskCode: this.taskCode })
+      this.planList = res.data
+      this.dateNum = `${res.data[0].year}-${res.data[0].dateNum}`
+    },
+    statusChange(value) {
+      if (value === '1') {
+        this.state = ['1', '2']
+      } else if (value === '2') {
+        this.state = ['3']
+      } else if (value === '3') {
+        this.state = ['4']
+      } else if (value === '4') {
+        this.state = ['5', '6']
+      } else if (value === '5') {
+        this.state = ['7', '8']
+      }
+      this.showList()
     },
     check(record) {
-      if (record.state === '0') {
+      console.log(record)
+      if (record.state === '1') {
         this.$tools.delTip('确定要通知该学校相关负责人去处理该任务？', () => {
-          this.delAlarmList(record.id).then((res) => {
-            this.$message.success('操作成功')
-            this.$tools.goNext(() => {
-              this.showList()
+          // 查微信号
+          const req1 = {
+            schoolCode: record.schoolCode,
+            userCodes: record.userCode.split(',')
+          }
+          this.getTeachers(req1).then((res) => {
+            console.log(res)
+            const req2 = {
+          	  openId: res.data.map(v => v.openId),
+              schoolCode: record.schoolCode,
+              taskCode: record.taskCode
+            }
+            this.wechatNotice(req2).then(result => {
+              console.log(result)
+              this.$message.success('操作成功')
+              this.$tools.goNext(() => {
+                this.showList()
+              })
             })
           })
         })
       } else {
         this.$refs.taskStatus.title = record.schoolName
-        this.$refs.taskStatus.showDetail(record.id)
+        this.$refs.taskStatus.showDetail(record)
         this.$refs.taskStatus.visible = true
       }
     }
@@ -134,31 +170,53 @@ export default {
         }
       }
     }
-    .list-box {
-      width: 250px;
-      height: 100px;
-      .btn {
-        margin-top: 5px;
-        color: #fff;
-        width: 90px;
-        height: 25px;
-        border-radius: 15px;
-      }
-    }
-    .green {
-      background: url('../../assets/img/wanchengbg.png') no-repeat;
-      background-size: 100% 100%;
-      .btn {
-        background-color: #00a35f;
-      }
-    }
-    .red {
-      background: url('../../assets/img/nowangcheng.png') no-repeat;
-      background-size: 100% 100%;
-      .btn {
-        background-color: #ff5454;
-      }
-    }
   }
 }
+.fill-top {
+    height: 30px;
+    line-height: 30px;
+    font-size: 16px;
+    color: #4d4cac;
+    border-bottom: 1px solid #ccc;
+    .fill-head {
+      text-align: center;
+      border-bottom: 3px solid #4d4cac;
+    }
+    .task {
+      width: 70px;
+    }
+    .report {
+      width: 100px;
+    }
+
+  }
+  .list-box {
+    width: 250px;
+    height: 100px;
+    .btn {
+      margin-top: 5px;
+      color: #fff;
+      width: 90px;
+      height: 25px;
+      border-radius: 15px;
+    }
+  }
+  .green {
+    background: url('../../assets/img/wanchengbg.png') no-repeat;
+    background-size: 100% 100%;
+    .btn {
+      background-color: #00a35f;
+    }
+  }
+  .red {
+    background: url('../../assets/img/nowangcheng.png') no-repeat;
+    background-size: 100% 100%;
+    .btn {
+      background-color: #ff5454;
+    }
+  }
+  .content {
+    height: calc(100% - 10px);
+    overflow-y: scroll;
+  }
 </style>

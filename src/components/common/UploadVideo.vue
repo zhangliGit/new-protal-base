@@ -161,7 +161,7 @@ export default {
           uname: info.file.name,
           createTime: Array.isArray(info.file.response.data) ? info.file.response.data[0].createTime : info.file.response.data.createTime,
           id: Array.isArray(info.file.response.data) ? info.file.response.data[0].id : info.file.response.data.id,
-          url: Array.isArray(info.file.response.data) ? info.file.response.data[0].url : info.file.response.data.url
+          url: Array.isArray(info.file.response.data) ? info.file.response.data[0].url || info.file.response.data[0] : info.file.response.data.url
         })
         this.$emit('success', info.file.response.data)
         this.uploadTag = false

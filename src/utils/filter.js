@@ -295,6 +295,21 @@ const filters = {
       return '督查完成'
     }
   },
+  // 安全任务状态
+  safetyTaskStatus(text) {
+    text = parseInt(text)
+    if (text === 1) {
+      return '未完成'
+    } else if (text === 2) {
+      return '已完成'
+    } else if (text === 3) {
+      return '预期填报'
+    } else if (text === 4) {
+      return '已打回未填报'
+    } else if (text === 5) {
+      return '已打回已填报'
+    }
+  },
   // 题目类型
   questionType(text) {
     text = parseInt(text)

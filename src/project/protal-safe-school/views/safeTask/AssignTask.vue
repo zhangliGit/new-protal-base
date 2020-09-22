@@ -30,7 +30,7 @@
         <a-tooltip
           placement="topLeft"
           title="发布"
-          v-if="action.record.state === '0' && new Date().getTime() <= action.record.endDate"
+          v-if="action.record.state === '0' && new Date(new Date().setHours(0, 0, 0, 0)).getTime() <= action.record.endDate"
         >
           <a-button
             size="small"
@@ -116,6 +116,7 @@ export default {
         path: url,
         query: {
           id: record ? record.record.id : '',
+          code: record ? record.record.taskCode : '',
           taskType: record ? record.record.taskType : '',
           name: record ? record.record.taskName : ''
         }

@@ -5,6 +5,7 @@ import dangerApi from './danger'
 import specialApi from './special'
 import accdientApi from './accident'
 import taskApi from './task'
+import baseApi from './base'
 
 const apiList = {
   ...homeApi,
@@ -13,7 +14,8 @@ const apiList = {
   ...dangerApi,
   ...specialApi,
   ...taskApi,
-  ...accdientApi
+  ...accdientApi,
+  ...baseApi
 
 }
 export default apiList

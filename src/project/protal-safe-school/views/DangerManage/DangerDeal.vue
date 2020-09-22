@@ -28,9 +28,9 @@
           <div class="title">{{ title }}</div>
         </div>
         <a-form :form="form">
-          <a-form-item label="验收状态：" v-bind="formItemLayout" v-if="title === '验收隐患'">
+          <a-form-item label="验收状态：" v-bind="formItemLayout" v-if="title === '验收隐患'" required>
             <a-radio-group
-              v-decorator="['qrType']"
+              v-decorator="['state', { initialValue: state }]"
             >
               <a-radio value="1">通过</a-radio>
               <a-radio value="0">不通过</a-radio>
@@ -98,7 +98,8 @@ export default {
       detailImg: [],
       processes: [],
       isLoad: false,
-      title: ''
+      title: '',
+      state: '1'
     }
   },
   computed: {
@@ -112,7 +113,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('home', ['addInspect', 'dangerDetail', 'updateInspect', 'dealDanger']),
+    ...mapActions('home', ['dangerDetail', 'dealDanger', 'checkDanger']),
     moment,
     cancel() {
       this.$router.go(-1)
@@ -123,7 +124,7 @@ export default {
       this.form.validateFields((error, values) => {
         this.isLoad = false
         if (!error) {
-          if (this.completePhotos.length === 0) {
+          if (this.completePhotos.length === 0 && this.title === '处理隐患') {
             this.$message.warning('请上传图片')
             return
           }
@@ -131,16 +132,29 @@ export default {
           values.optCode = this.userInfo.userCode
           values.completePhotos = this.completePhotos.map(el => el.url)
           this.isLoad = true
-          this.dealDanger(values)
-            .then(res => {
-              this.$message.success('操作成功')
-              this.$tools.goNext(() => {
-                this.$router.go(-1)
+          if (this.title === '处理隐患') {
+            this.dealDanger(values)
+              .then(res => {
+                this.$message.success('操作成功')
+                this.$tools.goNext(() => {
+                  this.$router.go(-1)
+                })
               })
-            })
-            .catch(res => {
-              this.isLoad = false
-            })
+              .catch(res => {
+                this.isLoad = false
+              })
+          } else {
+            this.checkDanger(values)
+              .then(res => {
+                this.$message.success('操作成功')
+                this.$tools.goNext(() => {
+                  this.$router.go(-1)
+                })
+              })
+              .catch(res => {
+                this.isLoad = false
+              })
+          }
         }
       })
     },
@@ -199,11 +213,11 @@ export default {
 <style lang="less" scoped>
 .danger-detail {
   background-color: #f0f2f5;
-  padding: 20px 0;
   .content {
     height: calc(100% - 10px);
     overflow-y: scroll;
     .detail-info {
+      padding-top: 20px;
       min-height: 500px;
       overflow-y: scroll;
       background-color: #fff;
@@ -212,7 +226,7 @@ export default {
         .info-box {
           border-top: 1px solid #9698d6;
           height: 55px;
-          line-height: 53px;
+          line-height: 52px;
           width: 50%;
           float: left;
           &:nth-child(2n) {
@@ -247,6 +261,7 @@ export default {
           height: 80px;
           line-height: 70px;
           border-bottom: none;
+          border-left: none;
           &:last-child {
             border-bottom: 1px solid #9698d6;
           }

@@ -12,11 +12,11 @@
               <div class="qui-fx-jc u-mar-t10">
                 <div class="qui-fx-ver">
                   <div>发布人：{{ detailInfo.userName }}</div>
-                  <div>任务开始时间：{{ detailInfo.beginTime | gmtToDate }}</div>
+                  <div>任务开始时间：{{ detailInfo.beginTime | gmtToDate('date') }}</div>
                 </div>
                 <div class="qui-fx-ver u-mar-l20">
-                  <div>发布时间：{{ detailInfo.completeTime | gmtToDate }}</div>
-                  <div>任务结束时间：{{ detailInfo.endTime | gmtToDate }}</div>
+                  <div>发布时间：{{ detailInfo.publisherTime | gmtToDate }}</div>
+                  <div>任务结束时间：{{ detailInfo.endTime | gmtToDate('date') }}</div>
                 </div>
               </div>
               <div class="fill-describe u-mar-t10 u-padd-l10 u-padd-r10">{{ detailInfo.reason }}</div>
@@ -182,7 +182,7 @@ export default {
               key: i,
               content: item
             }
-          }) : undefined
+          }) : []
         }
       })
       questions.map((el) => {
@@ -194,7 +194,6 @@ export default {
           this.fillList.push(el)
         } else {
           this.fileList.push({ ...el, show: true })
-          console.log('aaa', this.fileList)
         }
       })
     },
@@ -212,7 +211,7 @@ export default {
           this.fileList[i].show = false
           this.fileList[i].docName = info.file.name
           this.fileList[i].docUrl = info.file.response.data[0]
-          this.fileList[i].answers = [info.file.response.data[0]]
+          this.fileList[i].answer = [info.file.response.data[0]]
           this.$message.success(`${info.file.name} 上传成功`)
         } else {
           this.$message.error(info.file.response.message)
@@ -242,6 +241,15 @@ export default {
           questionTemplateId: el.questionTemplateId,
           questionType: el.questionType
         }
+      })
+      answers.forEach(element => {
+        element.answers.forEach(el => {
+          console.log(el)
+          if (!el) {
+            this.$message.warning('请填写完整题目')
+            return false
+          }
+        })
       })
       req.answers = answers
       this.isLoad = true

@@ -385,9 +385,9 @@ export const issuanceColumns = [{
   dataIndex: 'taskType',
   width: '10%',
   customRender: (text) => {
-    if (text === '0') {
+    if (text === '1') {
       return '一次性计划'
-    } else if (text === '1') {
+    } else if (text === '2') {
       return '周计划'
     } else {
       return '月计划'
@@ -399,7 +399,7 @@ export const issuanceColumns = [{
   dataIndex: 'beginDate',
   width: '15%',
   customRender: (text) => {
-    return Tools.getDate(text)
+    return Tools.getDate(text, 1)
   }
 },
 {
@@ -407,7 +407,7 @@ export const issuanceColumns = [{
   dataIndex: 'endDate',
   width: '15%',
   customRender: (text) => {
-    return Tools.getDate(text)
+    return Tools.getDate(text, 1)
   }
 },
 {
@@ -420,7 +420,7 @@ export const issuanceColumns = [{
   dataIndex: 'publishDate',
   width: '15%',
   customRender: (text) => {
-    return Tools.getDate(text)
+    return text ? Tools.getDate(text) : ''
   }
 },
 {

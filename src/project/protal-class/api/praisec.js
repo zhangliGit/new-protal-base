@@ -19,7 +19,7 @@ const praisecApi = {
   getpraiseDetail:'/praise/detail#getUrl'
 }
 for (const val in praisecApi) {
-  praisecApi[val] = `${hostEnv.cl_class}${praisecApi[val]}`
+  praisecApi[val] = `${hostEnv.cl_oa}${praisecApi[val]}`
 }
 
 export default praisecApi

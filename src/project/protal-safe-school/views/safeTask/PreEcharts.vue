@@ -13,33 +13,38 @@ require('echarts/lib/chart/line')
 export default {
   name: 'PreBarEcharts',
   props: {
-    dataList: {}
+    dataList: {
+      type: Array,
+      default: function() {
+        return []
+      }
+    },
+    legendData: {
+      type: Array,
+      default: function() {
+        return []
+      }
+    }
   },
   data() {
     return {
     }
   },
   mounted() {
-    this.initPieData(this.dataList)
-    console.log(this.dataList)
+    this.initPieData(this.fomartData(this.dataList), this.legendData)
   },
   created() {
-
   },
   watch: {
-    // dataList(val) {
-    //   this.initPieData(val[0])
-    //   // this.initColumnarData()
-    // }
   },
   methods: {
-    initPieData(data) {
+    fomartData(val) {
+      const fomartData = JSON.parse(JSON.stringify(val).replace(/answer/g, 'name').replace(/count/g, 'value'))
+      return fomartData
+    },
+    initPieData(data, legendData) {
       // 对饼状图dom，初始化echarts实例
       var myChart1 = echarts.init(document.getElementById('main1'), 'shine')
-      const preData1 = [
-        { value: data.yes, name: '选"是"' },
-        { value: data.no, name: '选"否"' }
-      ]
       myChart1.setOption({
         // 图表标题
         title: {
@@ -59,16 +64,16 @@ export default {
           orient: 'horizontal', // 垂直显示
           right: 'auto',
           // x: 'bottom', // 显示位置--左上
-          data: [`选"是"`, `选"否"`]
+          data: legendData
         },
         calculable: true,
         series: [
           {
-            name: '风险等级',
+            name: '选项',
             type: 'pie',
             radius: '65%',
             center: ['50%', '50%'],
-            data: preData1,
+            data: data,
             itemStyle: {
               emphasis: {
                 shadowBlur: 10,
