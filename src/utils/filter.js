@@ -327,6 +327,19 @@ const filters = {
     var re1 = new RegExp(/<img.src\s=\s*(.?)[^>]?>/g)
     var msg = html.replace(re1, '')
     return msg
+  },
+  // 风险等级
+  levelType(text) {
+    text = parseInt(text)
+    if (text === 1) {
+      return 'Ⅰ级'
+    } else if (text === 2) {
+      return 'Ⅱ级'
+    } else if (text === 3) {
+      return 'Ⅲ级'
+    } else if (text === 4) {
+      return 'Ⅳ级'
+    }
   }
 }
 
