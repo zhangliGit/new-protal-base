@@ -53,34 +53,36 @@ export default {
   data() {
     return {
       taskName: this.$route.query.taskName,
-      status: '',
+      state: [], // 状态
+      dateNum: '', // 计划
       sum: '',
       compNum: '',
       dataList: [],
       taskType: '',
-      dateNum: '',
       planList: []
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
-  mounted() {
+  async mounted() {
     this.taskType = this.$route.query.taskType
     this.taskCode = this.$route.query.code
-    this.showList()
     if (this.taskType !== '1') {
-      this.taskTimeGet()
+      await this.taskTimeGet()
     }
+    this.showList()
   },
   methods: {
     ...mapActions('home', ['schTaskCompleted', 'getTeachers', 'wechatNotice', 'planLists']),
     async showList() {
       const req = {
+        state: this.states,
+        year: this.dateNum.split('-')[0],
         dateNum: this.dateNum.split('-')[1],
-        // year: this.dateNum.split('-')[0],
-        state: this.status, // 学校完成的情况转态
-        taskTemplateCode: this.taskCode
+        schoolCode: this.userInfo.schoolCode,
+        taskTemplateCode: this.taskCode,
+        taskType: this.taskType
       }
       const res = await this.schTaskCompleted(req)
       const { compNum, outCompInfoOfTaskByOrgDtoList, sum } = res.data
@@ -94,10 +96,21 @@ export default {
       this.dateNum = `${res.data[0].year}-${res.data[0].dateNum}`
     },
     statusChange(value) {
-      this.status = value
+      if (value === '1') {
+        this.state = ['1', '2']
+      } else if (value === '2') {
+        this.state = ['3']
+      } else if (value === '3') {
+        this.state = ['4']
+      } else if (value === '4') {
+        this.state = ['5', '6']
+      } else if (value === '5') {
+        this.state = ['7', '8']
+      }
       this.showList()
     },
     check(record) {
+      console.log(record)
       if (record.state === '1') {
         this.$tools.delTip('确定要通知该学校相关负责人去处理该任务？', () => {
           // 查微信号
@@ -108,7 +121,7 @@ export default {
           this.getTeachers(req1).then((res) => {
             console.log(res)
             const req2 = {
-              openId: res.data.map(v => v.openId),
+          	  openId: res.data.map(v => v.openId),
               schoolCode: record.schoolCode,
               taskCode: record.taskCode
             }
