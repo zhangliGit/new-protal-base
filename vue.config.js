@@ -345,6 +345,7 @@ module.exports = {
         }
       },
       '/zk_oa': {
+        // target: 'http://192.168.2.242:11014/', // 张坤-报修
         target: 'http://192.168.1.23:11014/', // 张坤-报修
         changeOrigin: true,
         pathRewrite: {

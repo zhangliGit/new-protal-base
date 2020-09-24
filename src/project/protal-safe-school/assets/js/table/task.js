@@ -32,7 +32,7 @@ const task = {
       dataIndex: 'beginDate',
       width: '15%',
       customRender: text => {
-        return $tools.getDate(text)
+        return $tools.getDate(text, 1)
       }
     },
     {
@@ -40,7 +40,7 @@ const task = {
       dataIndex: 'endDate',
       width: '15%',
       customRender: text => {
-        return $tools.getDate(text)
+        return $tools.getDate(text, 1)
       }
     },
     {
@@ -53,7 +53,7 @@ const task = {
       dataIndex: 'completeDate',
       width: '15%',
       customRender: text => {
-        return $tools.getDate(text)
+        return text ? $tools.getDate(text) : ''
       }
     },
     {
@@ -170,17 +170,17 @@ const task = {
     {
       title: '开始时间',
       dataIndex: 'beginDate',
-      width: '15%',
+      width: '12%',
       customRender: text => {
-        return $tools.getDate(text)
+        return $tools.getDate(text, 1)
       }
     },
     {
       title: '结束时间',
       dataIndex: 'endDate',
-      width: '15%',
+      width: '12%',
       customRender: text => {
-        return $tools.getDate(text)
+        return $tools.getDate(text, 1)
       }
     },
     {
@@ -191,9 +191,9 @@ const task = {
     {
       title: '发布时间',
       dataIndex: 'publishDate',
-      width: '15%',
+      width: '17%',
       customRender: text => {
-        return $tools.getDate(text)
+        return text ? $tools.getDate(text) : ''
       }
     },
     {

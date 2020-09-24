@@ -26,6 +26,7 @@ const findColumn = {
     },
     {
       title: '隐患描述',
+      ellipsis: true,
       dataIndex: 'description',
       width: '8%'
     },

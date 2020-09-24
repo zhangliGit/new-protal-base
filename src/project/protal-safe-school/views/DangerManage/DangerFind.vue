@@ -30,7 +30,7 @@
         <a-tooltip placement="topLeft" title="整改通知书" v-if="action.record.notificationUrl">
           <a-button size="small" class="edit-action-btn" icon="form" @click.stop="go(action)"></a-button>
         </a-tooltip>
-        <a-tooltip placement="topLeft" title="撤销" v-if="action.record.state !== '5'">
+        <a-tooltip placement="topLeft" title="撤销" v-if="action.record.state !== '5' || action.record.state !== '4'">
           <a-button size="small" class="del-action-btn" icon="delete" @click.stop="modify('3', action)"></a-button>
         </a-tooltip>
       </template>

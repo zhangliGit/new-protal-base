@@ -2,10 +2,10 @@
   <div class="check-completion page-layout bg-fff qui-fx-ver">
     <div class="u-font-1 u-bold u-mar-b10">任务名称： {{ taskName }}</div>
     <!-- v-if="taskType !== '1'" -->
-    <div class="qui-fx-ac u-mar-t10  u-mar-l10 u-mar-b10" >
+    <div class="qui-fx-ac u-mar-t10  u-mar-l10 u-mar-b10" v-if="taskType !== '1'">
       <div>{{ taskType === '2' ? '周' : '月' }}计划：</div>
-      <a-select v-model="dateNum" @change="showList()" style="width: 200px">
-        <a-select-option v-for="(list,index) in planList" :key="index">{{ list }}</a-select-option>
+      <a-select v-model="dateNum" @change="showList" style="width: 200px">
+        <a-select-option v-for="list in planList" :key="`${list.year}-${list.dateNum}`">{{ list.year }}-{{ list.dateNum }}{{ taskType === '2' ? '周' : '月' }}</a-select-option>
       </a-select>
     </div>
     <div class="qui-fx-ac u-mar-b10">
@@ -14,7 +14,7 @@
         <a-select-option value="">所有任务</a-select-option>
         <a-select-option value="1">未完成</a-select-option>
         <a-select-option value="2">已完成</a-select-option>
-        <a-select-option value="3">预期填报</a-select-option>
+        <a-select-option value="3">逾期填报</a-select-option>
         <a-select-option value="4">已打回,未重报</a-select-option>
         <a-select-option value="5">已打回,已重报</a-select-option>
       </a-select>
@@ -47,39 +47,40 @@ export default {
     TaskStatus
   },
   data() {
-    this.id = this.$route.query.id
-    this.taskType = this.$route.query.taskType
-    this.taskCode = this.$route.query.taskCode
-    this.taskType = this.$route.query.taskType
     return {
       taskName: this.$route.query.taskName,
-      status: '', // 任务状态
+      state: [], // 状态
       dateNum: '', // 计划
       sum: '',
       compNum: '',
       planList: [],
-      dataList: []
+      dataList: [],
+      taskType: ''
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
-  mounted() {
+  async mounted() {
+    this.id = this.$route.query.id
+    this.taskType = this.$route.query.taskType
+    this.taskCode = this.$route.query.taskCode
+    if (this.taskType !== '1') {
+      await this.taskTimeGet()
+    }
     this.showList()
-    this._planList()
   },
   methods: {
-    ...mapActions('home', ['eduTaskCompleted', 'getTeachers', 'wechatNotice', 'planLists']),
+    ...mapActions('home', ['eduCompleteStatic', 'getTeachers', 'wechatNotice', 'planLists']),
     async showList() {
       const req = {
-        'year': 0,
-        dateNum: this.dateNum,
+        state: this.state,
+        year: this.dateNum.split('-')[0],
+        dateNum: this.dateNum.split('-')[1],
         schoolCode: this.userInfo.schoolCode,
-        status: this.status, // 学校完成的情况转态
-        taskTemplateCode: this.taskCode,
-        taskType: this.taskType
+        taskTemplateCode: this.taskCode
       }
-      const res = await this.eduTaskCompleted(req)
+      const res = await this.eduCompleteStatic(req)
       console.log(res)
       const { compNum, list, sum } = res.data
       this.compNum = compNum
@@ -87,15 +88,26 @@ export default {
       this.dataList = list
     },
     statusChange(value) {
-      this.status = value
+      if (value === '1') {
+        this.state = ['1', '2']
+      } else if (value === '2') {
+        this.state = ['3']
+      } else if (value === '3') {
+        this.state = ['4']
+      } else if (value === '4') {
+        this.state = ['5', '6']
+      } else if (value === '5') {
+        this.state = ['7', '8']
+      }
       this.showList()
     },
-    async _planList() {
+    async taskTimeGet() {
       const req = {
         taskCode: this.taskCode
       }
       const res = await this.planLists(req)
-      this.planList = res.data.list
+      this.planList = res.data
+      this.dateNum = `${res.data[0].year}-${res.data[0].dateNum}`
     },
     check(record) {
       console.log(record)
@@ -123,8 +135,9 @@ export default {
           })
         })
       } else {
-        this.$refs.taskStatus.title = record.schoolName
-        this.$refs.taskStatus.id = this.id
+        this.$refs.taskStatus.id = record.id
+        this.$refs.taskStatus.title = record.title
+        this.$refs.taskStatus.state = record.state
         this.$refs.taskStatus.showDetail(record)
         this.$refs.taskStatus.visible = true
       }

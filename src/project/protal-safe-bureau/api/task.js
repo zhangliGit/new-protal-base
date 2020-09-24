@@ -14,6 +14,8 @@ const taskApi = {
   myTaskDetail: '/safeTask/info#get', // 根据id查询我的任务
 
   // 完成情况
+
+  eduCompleteStatic: '/safeTaskTemplate/edu/complete/static#post', // 局端按照完成情况统计
   eduTaskCompleted: '/safeTaskTemplate/query/completed/status#post', // 局端查询已完成情况
   planLists: '/safeTask/safetasktime/query/by/code#get', // 查询任务周期
 

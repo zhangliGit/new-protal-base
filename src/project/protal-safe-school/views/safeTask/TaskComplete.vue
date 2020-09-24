@@ -4,8 +4,8 @@
       <div class="u-font-1 u-bold u-mar-b10">任务名称： {{ taskName }}</div>
       <div class="qui-fx-ac u-mar-t10 u-mar-b10" v-if="taskType !== '1'">
         <div>{{ taskType === '2' ? '周' : '月' }}计划：</div>
-        <a-select default-value="1" style="width: 200px">
-          <a-select-option v-for="(list,index) in timeList" :key="index">{{ list }}</a-select-option>
+        <a-select v-model="dateNum" @change="showList" style="width: 200px">
+          <a-select-option v-for="list in planList" :key="`${list.year}-${list.dateNum}`">{{ list.year }}-{{ list.dateNum }}{{ taskType === '2' ? '周' : '月' }}</a-select-option>
         </a-select>
       </div>
       <div class="qui-fx-ac u-mar-b10">
@@ -53,33 +53,34 @@ export default {
   data() {
     return {
       taskName: this.$route.query.taskName,
-      status: '',
+      state: [], // 状态
+      dateNum: '', // 计划
       sum: '',
       compNum: '',
       dataList: [],
       taskType: '',
-      timeList: []
+      planList: []
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
-  mounted() {
+  async mounted() {
     this.taskType = this.$route.query.taskType
     this.taskCode = this.$route.query.code
-    this.showList()
     if (this.taskType !== '1') {
-      this.taskTimeGet()
+      await this.taskTimeGet()
     }
+    this.showList()
   },
   methods: {
     ...mapActions('home', ['schTaskCompleted', 'getTeachers', 'wechatNotice', 'planLists']),
     async showList() {
       const req = {
-        dateNum: 0,
-        year: 0,
+        state: this.states,
+        year: this.dateNum.split('-')[0],
+        dateNum: this.dateNum.split('-')[1],
         schoolCode: this.userInfo.schoolCode,
-        status: this.status, // 学校完成的情况转态
         taskTemplateCode: this.taskCode,
         taskType: this.taskType
       }
@@ -91,10 +92,21 @@ export default {
     },
     async taskTimeGet() {
       const res = await this.planLists({ taskCode: this.taskCode })
-      this.timeList = res.data
+      this.planList = res.data
+      this.dateNum = `${res.data[0].year}-${res.data[0].dateNum}`
     },
     statusChange(value) {
-      this.status = value
+      if (value === '1') {
+        this.state = ['1', '2']
+      } else if (value === '2') {
+        this.state = ['3']
+      } else if (value === '3') {
+        this.state = ['4']
+      } else if (value === '4') {
+        this.state = ['5', '6']
+      } else if (value === '5') {
+        this.state = ['7', '8']
+      }
       this.showList()
     },
     check(record) {

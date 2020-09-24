@@ -399,7 +399,7 @@ export const issuanceColumns = [{
   dataIndex: 'beginDate',
   width: '15%',
   customRender: (text) => {
-    return Tools.getDate(text)
+    return Tools.getDate(text, 1)
   }
 },
 {
@@ -407,7 +407,7 @@ export const issuanceColumns = [{
   dataIndex: 'endDate',
   width: '15%',
   customRender: (text) => {
-    return Tools.getDate(text)
+    return Tools.getDate(text, 1)
   }
 },
 {
@@ -420,7 +420,7 @@ export const issuanceColumns = [{
   dataIndex: 'publishDate',
   width: '15%',
   customRender: (text) => {
-    return Tools.getDate(text)
+    return text ? Tools.getDate(text) : ''
   }
 },
 {
