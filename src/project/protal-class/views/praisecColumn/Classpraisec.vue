@@ -39,7 +39,7 @@
           </template>
         </table-list>
         <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
-        <add-praise ref="addPraise" :title="title" @update="showList"></add-praise>
+        <add-praise ref="addPraise" :title="title" @update="showList" ></add-praise>
       </div>
     </div>
   </div>
@@ -120,9 +120,11 @@ export default {
       searchList: {
         schoolCode: '',
         classCode: '',
-        category: 1
+        category: 1,
+        gradeCode:''
       },
-      recordList: []
+      recordList: [],
+
     }
   },
   computed: {
@@ -134,6 +136,7 @@ export default {
     ...mapActions('home', ['addsetPraise', 'delsetPraise', 'praisesetList', 'updatesetPraise', 'getpraiseDetail']),
     select(item) {
       this.searchList.classCode = item.classCode
+      this.searchList.gradeCode = item.gradeCode
       this.showList()
     },
     async showList() {
@@ -150,7 +153,9 @@ export default {
     async modify() {
       this.title = '新增'
       this.$refs.addPraise.appForm = {}
+      this.$refs.addPraise.classList = []
       this.$refs.addPraise.addVisible = true
+
     },
     async deleteList(type, record) {
       if (type) {

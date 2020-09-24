@@ -18,7 +18,7 @@
         <a-tooltip v-if="action.record.state==='0'" placement="topLeft" title="编辑">
           <a-button size="small" class="edit-action-btn" icon="form" @click="add(1,action.record)"></a-button>
         </a-tooltip>
-        <a-tooltip v-if="action.record.state==='0'&&action.record.endDate>new Date().getTime()" placement="topLeft" title="发布">
+        <a-tooltip v-if="action.record.state==='0' && action.record.endDate >= new Date(new Date().setHours(0, 0, 0, 0)).getTime()" placement="topLeft" title="发布">
           <a-button size="small" class="play-action-btn" icon="play-circle" @click="release(action.record)"></a-button>
         </a-tooltip>
         <a-popconfirm
@@ -167,6 +167,7 @@ export default {
       this.$router.push({
         path: '/taskIssuance/checkCompletion',
         query: {
+          id: record ? record.id : '',
           state: record ? record.state : '',
           taskCode: record ? record.taskCode : '',
           taskType: record ? record.taskType : '',
@@ -181,7 +182,8 @@ export default {
         query: {
           taskCode: record ? record.taskCode : '',
           publishDate: record ? record.publishDate : '',
-          taskName: record ? record.taskName : ''
+          taskName: record ? record.taskName : '',
+          taskType: record ? record.taskType : ''
         }
       })
     },

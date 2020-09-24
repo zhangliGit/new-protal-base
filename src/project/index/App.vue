@@ -97,9 +97,13 @@ export default {
           name: '一卡通消费',
           url: 'protal-consumption'
         },
-         {
+        {
           name: '全品缴费',
           url: 'protal-pay'
+        },
+        {
+          name: '双重预防',
+          url: 'protal-prevent'
         }
       ]
     }

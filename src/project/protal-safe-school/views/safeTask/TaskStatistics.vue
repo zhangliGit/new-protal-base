@@ -1,10 +1,12 @@
 <template>
   <div class="view-statistics page-layout  bg-fff qui-fx-ver">
     <div class="content pos-box">
-      <div class="title u-fx-ac-jc u-mar-t40 u-bold u-font-1 u-mar-b40">开学需要注意事项</div>
-      <div class="search-box u-fx-ac u-mar-l20">
-        <div>月计划：</div>
-        <div><a-input placeholder="Basic usage" /></div>
+      <div class="title u-fx-ac-jc u-mar-t40 u-bold u-font-1 u-mar-b40">{{ taskName }}</div>
+      <div class="qui-fx-ac u-mar-t10  u-mar-l20 u-mar-b10" v-if="taskType !== '1'">
+        <div>{{ taskType === '2' ? '周' : '月' }}计划：</div>
+        <a-select v-model="dateNum" @change="getDetails" style="width: 200px">
+          <a-select-option v-for="list in planList" :key="`${list.year}-${list.dateNum}`">{{ list.year }}-{{ list.dateNum }}{{ taskType === '2' ? '周' : '月' }}</a-select-option>
+        </a-select>
       </div>
       <div class="a-collapse-box u-padd-20">
         <a-collapse @change="changeActivekey" v-model="activeKey">
@@ -52,8 +54,6 @@
                   :data-source="list.statisticsAnswersByUserDtoList.records"
                   bordered>
                 </a-table>
-                <!-- :total="list.statisticsAnswersByUserDtoList.pages" -->
-                <!-- <a-pagination simple :default-current="2" :total="50" /> -->
                 <a-pagination
                   @change="value => handleChange(value, list.id,index)"
                   simple
@@ -62,11 +62,10 @@
               </div>
             </div>
             <div class="list-box  u-mar-20 " v-if="list.questionType==='2'">
-              <!-- <div class="list-title u-type-primary-bg u-main-color u-bold u-padd-10">
-              </div> -->
               <div class="list-cont u-fx-ac-jc" v-if="list.statisticsAnswersDtoList">
                 <bar-echarts
                   v-if="list.statisticsAnswersDtoList.length>0"
+                  :legendData="list.content"
                   :multipleData="list.statisticsAnswersDtoList">
                 </bar-echarts>
                 <a-empty v-else :image="simpleImage" />
@@ -96,6 +95,11 @@
                   :data-source="list.statisticsAnswersByUserDtoList.records"
                   bordered>
                 </a-table>
+                <a-pagination
+                  @change="value => handleChange(value, list.id,index)"
+                  simple
+                  :default-current="1"
+                  :total="20" />
               </div>
             </div>
             <div class="list-box  u-mar-20 " v-if="list.questionType==='3'">
@@ -106,7 +110,11 @@
                   :data-source="list.statisticsAnswersByUserDtoList.records"
                   bordered>
                 </a-table>
-                <a-pagination @change="onChange" simple :default-current="1" :total="10" />
+                <a-pagination
+                  @change="value => handleChange(value, list.id,index)"
+                  simple
+                  :default-current="1"
+                  :total="20" />
               </div>
             </div>
             <div class="list-box  u-mar-20 " v-if="list.questionType==='4'">
@@ -128,7 +136,6 @@ import PreEcharts from './PreEcharts'
 import BarEcharts from './BarEcharts'
 import NoData from '@c/NoData'
 import { Empty } from 'ant-design-vue'
-// import PreBarEcharts from './PreBarEcharts'
 const columns = [
   {
     title: '学校',
@@ -151,17 +158,14 @@ export default {
     NoData,
     PreEcharts,
     BarEcharts
-    // PreBarEcharts
   },
   data() {
-
-    this.publishDate = this.$route.query.publishDate
     return {
       activeKey: [],
-      pageList: {
-        page: 1,
-        size: 2
-      },
+      dateNum: '',
+      planList: [],
+      taskName: this.$route.query.name,
+      taskType: this.$route.query.taskType,
       simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
       form: this.$form.createForm(this),
       columns,
@@ -174,17 +178,28 @@ export default {
   },
   async mounted() {
     this.taskCode = this.$route.query.code
+    this.publishDate = this.$route.query.publishDate
+    await this._planList()
     await this.getDetails()
   },
   methods: {
-    ...mapActions('home', ['answerTaskDetail', 'answersTaskStatistics', 'userTaskStatistics']),
+    ...mapActions('home', ['answerTaskDetail', 'answersTaskStatistics', 'userTaskStatistics', 'planLists']),
     async getDetails() {
+      console.log('11', this.dateNum)
       const res = await this.answerTaskDetail({ taskCode: this.taskCode })
       this.dataLists = res.data
-      console.log('11',this.dataLists)
+      console.log('11', this.dataLists)
       this.activeKey.push(res.data[0].id)
       this.getAnswers(res.data[0].id, 0)
       this.getUser(res.data[0].id, 0, 1)
+    },
+    async _planList() {
+      const req = {
+        taskCode: this.taskCode
+      }
+      const res = await this.planLists(req)
+      this.planList = res.data
+      this.dateNum = `${res.data[0].year}-${res.data[0].dateNum}`
     },
     openList(id, index) {
       if (this.dataLists[index].statisticsAnswersDtoList) return
@@ -194,12 +209,12 @@ export default {
     // 获取答案
     async getAnswers(id, index) {
       const req = {
-        // 'dateNum': this.publishDate,
+        dateNum: this.dateNum.split('-')[1],
         page: 1,
         questionId: id,
         size: 50,
         taskTemplateCode: this.taskCode,
-        year: ''
+        year: this.dateNum.split('-')[0]
       }
       const res1 = await this.answersTaskStatistics(req)
       const { statisticsAnswersDtoList, answerSum } = res1.data
@@ -209,12 +224,12 @@ export default {
     // 获取用户
     async getUser(id, index, page) {
       const req = {
-        // 'dateNum': this.publishDate,
+        dateNum: this.dateNum.split('-')[1],
         page: page,
         questionId: id,
         size: 3,
         taskTemplateCode: this.taskCode,
-        year: ''
+        year: this.dateNum.split('-')[0]
       }
       const res2 = await this.userTaskStatistics(req)
       const { statisticsAnswersByUserDtoList } = res2.data
@@ -225,7 +240,7 @@ export default {
       this.getUser(id, index, value)
     },
     changeActivekey(key) {
-      console.log(key)
+      // console.log(key)
     },
     cancel() {
       this.$router.go(-1)

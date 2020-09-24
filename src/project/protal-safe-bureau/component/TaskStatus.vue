@@ -1,15 +1,31 @@
 <template>
   <a-modal width="800px" :title="title" v-model="visible" :footer="null" @cancel="visible=false">
+    <!-- <template slot="footer">
+      <a-button key="back" @click="visible=fals">
+        取消
+      </a-button> -->
+    <div class="u-fx-jsb">
+      <a-button v-if="state==='2'||state==='3'||state==='5'" key="submit" @click="restate()" type="primary" >
+        打回重报
+      </a-button>
+      <a-button v-if="(state+'')==='4'" key="submit" type="info" >
+        已打回
+      </a-button>
+      <img v-if="state==='4'" class="img-width u-mar-r20" src="../assets/img/dahui.png" alt="">
+      <img v-if="state==='5'" class="img-width u-mar-r20" src="../assets/img/chongbao.png" alt="">
+    </div>
+
+    <!-- </template> -->
     <div class="qui-fx-ver">
       <div class="top bg-fff u-padd-10 u-padd-l20">
         <div class="u-tx-c">{{ detailInfo.taskName }}</div>
         <div class="qui-fx-jc u-mar-t10">
           <div class="qui-fx-ver">
-            <div>发布人：{{ detailInfo.userName }}</div>
+            <div>发布人：{{ detailInfo.publisherName }}</div>
             <div class="u-mar-t10">任务开始时间：{{ detailInfo.beginTime | gmtToDate }}</div>
           </div>
           <div class="qui-fx-ver u-mar-l20">
-            <div>发布时间：{{ detailInfo.completeTime | gmtToDate }}</div>
+            <div>发布时间：{{ detailInfo.publishTime | gmtToDate }}</div>
             <div class="u-mar-t10">任务结束时间：{{ detailInfo.endTime | gmtToDate }}</div>
           </div>
         </div>
@@ -29,7 +45,7 @@
                   <div class="qui-fx-ver u-mar-l20">
                     <div>{{ list.title }}</div>
                     <div class="u-mar-t10">
-                      <a-radio-group>
+                      <a-radio-group v-model="list.answer[0]">
                         <a-radio
                           v-for="(element,index) in list.content"
                           :value="element"
@@ -49,7 +65,7 @@
                   <div class="qui-fx-ver u-mar-l20">
                     <div>{{ list.title }}</div>
                     <div class="u-mar-t10">
-                      <a-checkbox-group>
+                      <a-checkbox-group v-model="list.answer">
                         <a-checkbox
                           v-for="(element,index) in list.content"
                           :value="element"
@@ -67,10 +83,8 @@
                 <div class="qui-fx u-mar-t10" v-for="(list, i) in fillList" :key="i">
                   <div class="qui-fx-ver">题目是：</div>
                   <div class="qui-fx-ver u-mar-l20">
-                    <div>{{ list.title }}</div>
-                    <div class="u-mar-t10">
-                      <a-input placeholder="请填写答案" />
-                    </div>
+                    <div class="u-mar-b10">{{ list.title }}</div>
+                    <a-input v-model="list.answer[0]" />
                   </div>
                 </div>
               </div>
@@ -80,10 +94,11 @@
               <div class="subject u-mar-t10 u-padd-l20 u-padd-t10 u-padd-b10">
                 <div class="qui-fx u-mar-t10" v-for="(list, i) in fileList" :key="i">
                   <div class="qui-fx-ver">题目是：</div>
-                  <div class="qui-fx u-mar-l20">
+                  <div class="qui-fx-f1 qui-fx-ver u-mar-l20">
                     <div>{{ list.title }}</div>
-                    <div class="qui-fx-f1">
-                      <a-input placeholder="Basic usage" />
+                    <div class="u-mar-t10">
+                      <img class="u-mar-r10" :src="img" alt /> 附件
+                      <span class="u-type-primary" @click="exportClick(list.answer[0])">下载</span>
                     </div>
                   </div>
                 </div>
@@ -93,7 +108,7 @@
         </div>
         <div class="detail-deal">
           <div class="detail-title">
-            <div class="title">处理流程</div>
+            <div class="title u-mar-b20">处理流程</div>
           </div>
           <a-timeline class="time-line">
             <a-timeline-item v-for="(item,index) in processes" :key="index">
@@ -106,20 +121,48 @@
         </div>
       </div>
     </div>
+    <submit-form
+      ref="form"
+      @submit-form="submitForm"
+      title="打回"
+      v-model="formStatus"
+      :form-data="formData"
+    >
+      <div slot="upload">
+      </div>
+    </submit-form>
   </a-modal>
 </template>
 
 <script>
+import hostEnv from '@config/host-env'
 import { mapState, mapActions } from 'vuex'
 import NoData from '@c/NoData'
 import moment from 'moment'
+import SubmitForm from '@c/SubmitForm'
+import img from '../assets/img/wenjian.png'
+const formData = [
+  {
+    value: 'reason',
+    initValue: '',
+    type: 'input', // numberInput: 纯数字文本框
+    label: '打回原因',
+    placeholder: '请输入打回原因'
+  }
+]
 export default {
   name: 'TaskStatus',
   components: {
-    NoData
+    NoData,
+    SubmitForm
   },
   data() {
     return {
+      state: '',
+      id: '',
+      formStatus: false,
+      formData,
+      img,
       radioList: [],
       checkList: [],
       fillList: [],
@@ -129,7 +172,6 @@ export default {
       docUrl: '',
       show: true,
       flag: false,
-      docName: '',
       detailInfo: {},
       visible: false,
       processes: {},
@@ -140,18 +182,17 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   methods: {
-    ...mapActions('home', ['reportTaskDetail']),
+    ...mapActions('home', ['reportTaskDetail', 'repulse']),
     moment,
     // 获取详情
     async showDetail(record) {
-      console.log(record)
+      // console.log(record)
       const req = {
         schoolCode: record.schoolCode,
         taskCode: record.taskCode
+        // id: record.id
       }
-      console.log(req)
       const res = await this.reportTaskDetail(req)
-      console.log(res)
       this.detailInfo = res.data
       let questions = []
       this.radioList = []
@@ -169,7 +210,7 @@ export default {
                 content: item
               }
             })
-            : undefined
+            : []
         }
       })
       questions.map((el) => {
@@ -183,14 +224,48 @@ export default {
           this.fileList.push(el)
         }
       })
-      this.docName = 'res.data.docName'
-      this.show = !res.data.docUrl
-      this.flag = !res.data.docUrl
+      this.processes = res.data.outSafeTaskProcessDtoList
+    },
+    // 下載
+    exportClick (docUrl) {
+      if (docUrl) {
+        const url = `${hostEnv.zx_subject}/file/downLoad/doc?url=${docUrl}`
+        window.open(url)
+      }
+    },
+    // 打回
+    restate() {
+      this.formStatus = true
+    },
+    submitForm(values) {
+      const req = {
+       	id: this.id,
+        reason: values.reason,
+        userCode: this.userInfo.userCode,
+        userName: this.userInfo.userName
+      }
+      this.repulse(req)
+        .then(res => {
+          this.$refs.form.error()
+          this.formStatus = false
+          this.$message.success('已打回')
+          // this.$tools.goNext(() => {
+          //   // this.showDetail()
+          //   this.$refs.form.reset()
+          // })
+        })
+        .catch(() => {
+          this.$refs.form.error()
+        })
     }
   }
 }
 </script>
 <style lang="less" scoped>
+.img-width{
+  width: 100px;
+  height: 100px;
+}
 .content {
   // height: calc(100% - 10px);
   // overflow-y: scroll;

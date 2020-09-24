@@ -2,9 +2,12 @@
   <div class="view-statistics page-layout  bg-fff qui-fx-ver">
     <div class="content pos-box">
       <div class="title u-fx-ac-jc u-mar-t40 u-bold u-font-1 u-mar-b40">{{ taskName }}</div>
-      <div class="search-box u-fx-ac u-mar-l20">
-        <div>月计划：</div>
-        <div><a-input placeholder="Basic usage" /></div>
+      <!-- v-if="taskType !== '1'" -->
+      <div class="qui-fx-ac u-mar-t10  u-mar-l20 u-mar-b10" v-if="taskType !== '1'">
+        <div>{{ taskType === '2' ? '周' : '月' }}计划：</div>
+        <a-select v-model="dateNum" @change="getDetails" style="width: 200px">
+          <a-select-option v-for="list in planList" :key="`${list.year}-${list.dateNum}`">{{ list.year }}-{{ list.dateNum }}{{ taskType === '2' ? '周' : '月' }}</a-select-option>
+        </a-select>
       </div>
       <div class="a-collapse-box u-padd-20">
         <a-collapse @change="changeActivekey" v-model="activeKey">
@@ -34,7 +37,7 @@
                     <th class="u-padd-10 u-bd-r u-bd-b" >计数</th>
                     <th class="u-padd-10 u-bd-b ">占比</th>
                   </tr>
-                  <tr v-for="(item,index) in list.statisticsAnswersDtoList" :key="index">
+                  <tr v-for="(item,i) in list.statisticsAnswersDtoList" :key="i">
                     <td class="u-padd-10 u-bd-r u-bd-b " width="60%">{{ item.answer }}</td>
                     <td class="u-padd-10 u-bd-r u-bd-b " >{{ item.count }}人</td>
                     <td class="u-padd-10  u-bd-b ">{{ item.rate }}</td>
@@ -63,6 +66,7 @@
               <div class="list-cont u-fx-ac-jc" v-if="list.statisticsAnswersDtoList">
                 <bar-echarts
                   v-if="list.statisticsAnswersDtoList.length>0"
+                  :legendData="list.content"
                   :multipleData="list.statisticsAnswersDtoList">
                 </bar-echarts>
                 <a-empty v-else :image="simpleImage" />
@@ -74,7 +78,7 @@
                     <th class="u-padd-10 u-bd-r u-bd-b" >计数</th>
                     <th class="u-padd-10 u-bd-b ">占比</th>
                   </tr>
-                  <tr v-for="(item,index) in list.statisticsAnswersDtoList" :key="index">
+                  <tr v-for="(item,i) in list.statisticsAnswersDtoList" :key="i">
                     <td class="u-padd-10 u-bd-r u-bd-b " width="60%">{{ item.answer }}</td>
                     <td class="u-padd-10 u-bd-r u-bd-b " >{{ item.count }}人</td>
                     <td class="u-padd-10  u-bd-b ">{{ item.rate }}</td>
@@ -116,8 +120,8 @@
             </div>
             <div class="list-box  u-mar-20 " v-if="list.questionType==='4'">
               <div class="list-cont u-mar-t20">
-                <a-table :columns="columns" :pagination="false" :data-source="list.statisticsAnswersByUserDtoList.records" bordered>
-                </a-table>
+                <!-- <a-table :columns="columns" :pagination="false" :data-source="list.statisticsAnswersByUserDtoList.records" bordered>
+                </a-table> -->
                 <a-pagination
                   @change="value => handleChange(value, list.id,index)"
                   simple
@@ -138,7 +142,6 @@ import PreEcharts from './PreEcharts'
 import BarEcharts from './BarEcharts'
 import NoData from '@c/NoData'
 import { Empty } from 'ant-design-vue'
-// import PreBarEcharts from './PreBarEcharts'
 const columns = [
   {
     title: '学校',
@@ -161,11 +164,13 @@ export default {
     NoData,
     PreEcharts,
     BarEcharts
-    // PreBarEcharts
   },
   data() {
     return {
+      dateNum: '',
+      planList: [],
       taskName: this.$route.query.taskName,
+      taskType: this.$route.query.taskType,
       activeKey: [],
       simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
       columns,
@@ -176,19 +181,28 @@ export default {
   computed: {
     ...mapState('home', ['userInfo'])
   },
-  async mounted() {
+  async  mounted() {
     this.taskCode = this.$route.query.taskCode
     this.publishDate = this.$route.query.publishDate
+    await this._planList()
     await this.getDetails()
   },
   methods: {
-    ...mapActions('home', ['seeStatistics', 'seeStatisticsLists', 'answersInfo', 'statisticsUserInfo']),
+    ...mapActions('home', ['seeStatistics', 'seeStatisticsLists', 'answersInfo', 'statisticsUserInfo', 'planLists']),
     async getDetails() {
       const res = await this.seeStatisticsLists({ taskCode: this.taskCode })
       this.dataLists = res.data
       this.activeKey.push(res.data[0].id)
       this.getAnswers(res.data[0].id, 0)
       this.getUser(res.data[0].id, 0, 1)
+    },
+    async _planList() {
+      const req = {
+        taskCode: this.taskCode
+      }
+      const res = await this.planLists(req)
+      this.planList = res.data
+      this.dateNum = `${res.data[0].year}-${res.data[0].dateNum}`
     },
     openList(id, index) {
       if (this.dataLists[index].statisticsAnswersDtoList) return
@@ -198,31 +212,31 @@ export default {
     // 获取答案
     async getAnswers(id, index) {
       const req = {
-        // 'dateNum': this.publishDate,
+        dateNum: this.dateNum.split('-')[1],
         page: 1,
         questionId: id,
         size: 50,
         taskTemplateCode: this.taskCode,
-        year: ''
+        year: this.dateNum.split('-')[0]
       }
       const res1 = await this.answersInfo(req)
       const { statisticsAnswersDtoList, answerSum } = res1.data
-      this.$set(this.dataLists[index], 'statisticsAnswersDtoList', statisticsAnswersDtoList)
-      this.$set(this.dataLists[index], 'answerSum', answerSum)
+      this.$set(this.dataLists[index], 'statisticsAnswersDtoList', statisticsAnswersDtoList || [])
+      this.$set(this.dataLists[index], 'answerSum', answerSum || '')
     },
     // 获取用户
     async getUser(id, index, page) {
       const req = {
-        // 'dateNum': this.publishDate,
+        dateNum: this.dateNum.split('-')[1],
         page: page,
         questionId: id,
         size: 3,
         taskTemplateCode: this.taskCode,
-        year: ''
+        year: this.dateNum.split('-')[0]
       }
       const res2 = await this.statisticsUserInfo(req)
       const { statisticsAnswersByUserDtoList } = res2.data
-      this.$set(this.dataLists[index], 'statisticsAnswersByUserDtoList', statisticsAnswersByUserDtoList)
+      this.$set(this.dataLists[index], 'statisticsAnswersByUserDtoList', statisticsAnswersByUserDtoList || [])
     },
     // 翻页
     handleChange(value, id, index) {
