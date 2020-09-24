@@ -6,7 +6,8 @@
 import hostEnv from '@config/host-env'
 
 const Api = {
-  getpayInfoList: '/payProjectInfo/listSelect#postQuery', // 获取收费项目名称下拉列表
+  //收费管理
+  getchargeTaskList: '/chargeTaskInfo/page#post', // 获取收费项目名称下拉列表
   getItemList: '/itemInfo/info/#getUrl', // 通过id获取收费项信息
   getselectList: '/itemInfo/listSelect#postQuery', // 获取收费详情下拉列表
   getList: '/billInfo/list#post', // 查询账单列表
