@@ -70,7 +70,12 @@
           一、安全隐患明细表
         </div>
         <div class="list-cont u-fx-wp u-mar-t20">
-          <a-table :columns="columns" :pagination="false" :data-source="dangerDetail" bordered>
+          <a-table
+            :rowKey="(record, index) => index"
+            :columns="columns"
+            :pagination="false"
+            :data-source="dangerDetail"
+            bordered>
           </a-table>
         </div>
       </div>

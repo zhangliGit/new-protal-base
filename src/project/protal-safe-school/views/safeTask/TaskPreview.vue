@@ -8,12 +8,12 @@
         <div class="u-tx-c">{{ detailInfo.taskName }}</div>
         <div class="qui-fx-jc u-mar-t10">
           <div class="qui-fx-ver">
-            <div>发布人：{{ detailInfo.userName }}</div>
-            <div class="u-mar-t10">任务开始时间：{{ detailInfo.beginTime | gmtToDate }}</div>
+            <div>发布人：{{ detailInfo.publisherName }}</div>
+            <div class="u-mar-t10">任务开始时间：{{ detailInfo.startDate | gmtToDate }}</div>
           </div>
           <div class="qui-fx-ver u-mar-l20">
-            <div>发布时间：{{ detailInfo.completeTime | gmtToDate }}</div>
-            <div class="u-mar-t10">任务结束时间：{{ detailInfo.endTime | gmtToDate }}</div>
+            <div>发布时间：{{ detailInfo.publisherDate | gmtToDate }}</div>
+            <div class="u-mar-t10">任务结束时间：{{ detailInfo.endDate | gmtToDate }}</div>
           </div>
         </div>
         <div class="u-padd-l40 u-padd-r40" v-html="detailInfo.des"></div>
