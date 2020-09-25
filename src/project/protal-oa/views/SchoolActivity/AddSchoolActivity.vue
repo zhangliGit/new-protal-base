@@ -176,9 +176,6 @@ export default {
       'getSchoolYear'
     ]),
     switchChange(val) {
-      if (!val) {
-        this.controlList = []
-      }
     },
     // 表单回填
     async showData() {
