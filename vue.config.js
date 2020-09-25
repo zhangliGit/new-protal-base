@@ -300,7 +300,7 @@ module.exports = {
         }
       },
       '/cl_oa': {
-        target: 'http://192.168.1.193:11009/', // 陈琳-oa
+        target: 'http://192.168.2.242:11014/', // 陈琳-oa
         // target: 'http://192.168.1.23:11009/',
         changeOrigin: true,
         pathRewrite: {
@@ -345,6 +345,7 @@ module.exports = {
         }
       },
       '/zk_oa': {
+        // target: 'http://192.168.2.242:11014/', // 张坤-报修
         target: 'http://192.168.1.23:11014/', // 张坤-报修
         changeOrigin: true,
         pathRewrite: {
@@ -366,6 +367,13 @@ module.exports = {
         changeOrigin: true,
         pathRewrite: {
           '^/ljj_people': ''
+        }
+      },
+      '/wxz_pay': {
+        target: 'http://192.168.1.123:10097/', // 王选章-缴费系统
+        changeOrigin: true,
+        pathRewrite: {
+          '^/wxz_pay': ''
         }
       }
     }

@@ -10,7 +10,8 @@
           <div class="stu-num">已选: {{ checkList.length }} 人</div>
           <div class="tips">请点击学生添加值日生</div>
         </div>
-        <div
+        <div class="stu_dent">
+           <div
           @click="checkSingle(index)"
           :class="['choose-person', { 'choose-person-ok': person.check }]"
           v-for="(person, index) in studentsList"
@@ -25,7 +26,8 @@
           </a-badge>
 
           <div class="code">{{ person.userName }}</div>
-        </div>
+        </div></div>
+     
       </div>
       <div class="right qui-fx-ver qui-fx-f1">
         <div class="duty-list">
@@ -81,7 +83,7 @@ export default {
       total: 0,
       pageList: {
         page: 1,
-        size: 20
+        size: 9999
       },
       infoImg,
       studentsList: [],
@@ -291,10 +293,14 @@ export default {
 <style lang="less" scoped>
 .student-list {
   border-radius: 4px;
-  height: 800px;
   margin-top: 10px;
   border: 1px solid #f5f5f5;
   width: 25%;
+  .stu_dent{
+        overflow-y: scroll;
+  height: 800px;
+  }
+
 }
 .choose-all {
   height: 80px;

@@ -2,9 +2,11 @@ import { BasicLayout } from '../layouts'
 import notice from './notice'
 const RiskGroup = resolve => require(['../views/RiskGroup.vue'], resolve)
 const RiskModel = resolve => require(['../views/RiskModel.vue'], resolve)
-const RiskIdentify = resolve => require(['../views/RiskIdentify.vue'], resolve)
-const RiskAssess = resolve => require(['../views/RiskIdentify.vue'], resolve)
+const RiskIdentify = resolve => require(['../views/riskIdentify/RiskIdentify.vue'], resolve)
+const AddIdentify = resolve => require(['../views/riskIdentify/AddIdentify.vue'], resolve)
+const RiskAssess = resolve => require(['../views/riskAssess/RiskAssess.vue'], resolve)
 const RiskAccount = resolve => require(['../views/RiskAccount.vue'], resolve)
+const AddAssess = resolve => require(['../views/riskAssess/AddAssess.vue'], resolve)
 
 export const asyncRouterMap = [
   {
@@ -41,11 +43,29 @@ export const asyncRouterMap = [
         }
       },
       {
+        path: '/riskIdentify/addIdentify',
+        name: 'addIdentify',
+        component: AddIdentify,
+        meta: {
+          title: '添加',
+          isHide: true
+        }
+      },
+      {
         path: '/riskAssess',
         name: 'riskAssess',
         component: RiskAssess,
         meta: {
           title: '风险评估'
+        }
+      },
+      {
+        path: '/riskAssess/addAssess',
+        name: 'addAssess',
+        component: AddAssess,
+        meta: {
+          title: '风险等级评估',
+          isHide: true
         }
       },
       notice,
