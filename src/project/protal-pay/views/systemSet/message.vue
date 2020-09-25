@@ -1,13 +1,13 @@
 <template>
   <div class="home page-layout qui-fx">
-   首页
+   消息设置
   </div>
 </template>
 <script>
 import { mapState, mapActions } from 'vuex'
 import Tools from '@u/tools'
 export default {
-  name: 'Home',
+  name: 'Message',
   components: {
 
   },

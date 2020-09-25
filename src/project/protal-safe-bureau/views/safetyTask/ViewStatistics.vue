@@ -2,7 +2,6 @@
   <div class="view-statistics page-layout  bg-fff qui-fx-ver">
     <div class="content pos-box">
       <div class="title u-fx-ac-jc u-mar-t40 u-bold u-font-1 u-mar-b40">{{ taskName }}</div>
-      <!-- v-if="taskType !== '1'" -->
       <div class="qui-fx-ac u-mar-t10  u-mar-l20 u-mar-b10" v-if="taskType !== '1'">
         <div>{{ taskType === '2' ? '周' : '月' }}计划：</div>
         <a-select v-model="dateNum" @change="getDetails" style="width: 200px">
@@ -25,6 +24,7 @@
             <div class="list-box  u-mar-20 " v-if="list.questionType==='1'">
               <div class="list-cont u-fx-ac-jc" v-if="list.statisticsAnswersDtoList">
                 <pre-echarts
+                  :id="list.id+''"
                   :legendData="list.content"
                   v-if="list.statisticsAnswersDtoList.length>0"
                   :dataList="list.statisticsAnswersDtoList"></pre-echarts>
@@ -49,22 +49,24 @@
               </div>
               <div class="list-cont u-mar-t20" v-if="list.statisticsAnswersByUserDtoList">
                 <a-table
-                  rowKey="answer"
+                  :rowKey="(record, index) => index"
                   :columns="columns"
                   :pagination="false"
                   :data-source="list.statisticsAnswersByUserDtoList.records"
                   bordered>
                 </a-table>
                 <a-pagination
+                  class="u-fx-je u-mar-t10"
                   @change="value => handleChange(value, list.id,index)"
                   simple
                   :default-current="1"
-                  :total="20" />
+                  :total="list.statisticsAnswersByUserDtoList.total" />
               </div>
             </div>
             <div class="list-box  u-mar-20 " v-if="list.questionType==='2'">
               <div class="list-cont u-fx-ac-jc" v-if="list.statisticsAnswersDtoList">
                 <bar-echarts
+                  :id="list.id+''"
                   v-if="list.statisticsAnswersDtoList.length>0"
                   :legendData="list.content"
                   :multipleData="list.statisticsAnswersDtoList">
@@ -90,43 +92,55 @@
               </div>
               <div class="list-cont u-mar-t20" v-if="list.statisticsAnswersByUserDtoList">
                 <a-table
-                  rowKey="answer"
+                  :rowKey="(record, index) => index"
                   :columns="columns"
                   :pagination="false"
                   :data-source="list.statisticsAnswersByUserDtoList.records"
                   bordered>
                 </a-table>
                 <a-pagination
+                  class="u-fx-je u-mar-t10"
                   @change="value => handleChange(value, list.id,index)"
                   simple
                   :default-current="1"
-                  :total="20" />
+                  :total="list.statisticsAnswersByUserDtoList.total" />
               </div>
             </div>
             <div class="list-box  u-mar-20 " v-if="list.questionType==='3'">
               <div class="list-cont u-mar-t20" v-if="list.statisticsAnswersByUserDtoList">
                 <a-table
+                  :rowKey="(record, index) => index"
                   :columns="columns"
                   :pagination="false"
                   :data-source="list.statisticsAnswersByUserDtoList.records"
                   bordered>
                 </a-table>
                 <a-pagination
+                  class="u-fx-je u-mar-t10"
                   @change="value => handleChange(value, list.id,index)"
                   simple
                   :default-current="1"
-                  :total="20" />
+                  :total="list.statisticsAnswersByUserDtoList.total" />
               </div>
             </div>
             <div class="list-box  u-mar-20 " v-if="list.questionType==='4'">
-              <div class="list-cont u-mar-t20">
-                <!-- <a-table :columns="columns" :pagination="false" :data-source="list.statisticsAnswersByUserDtoList.records" bordered>
-                </a-table> -->
+              <div class="list-cont u-mar-t20" v-if="list.statisticsAnswersByUserDtoList">
+                <a-table
+                  :columns="columnsUrl"
+                  :rowKey="(record, index) => index"
+                  :pagination="false"
+                  :data-source="list.statisticsAnswersByUserDtoList.records"
+                  bordered>
+                  <template slot="answer" slot-scope="record">
+                    <span class="u-type-primary" @click="downloadImg(record.answer)">下载</span>
+                  </template>
+                </a-table>
                 <a-pagination
+                  class="u-fx-je u-mar-t10"
                   @change="value => handleChange(value, list.id,index)"
                   simple
                   :default-current="1"
-                  :total="20" />
+                  :total="list.statisticsAnswersByUserDtoList.total" />
               </div>
             </div>
           </a-collapse-panel>
@@ -158,6 +172,24 @@ const columns = [
     dataIndex: 'answer'
   }
 ]
+const columnsUrl = [
+  {
+    title: '学校',
+    dataIndex: 'schoolName',
+    scopedSlots: { customRender: 'name' }
+  },
+  {
+    title: '回答人',
+    width: '60%',
+    dataIndex: 'completeUserName'
+  },
+  {
+    title: '选项',
+    // dataIndex: 'answer',
+    scopedSlots: { customRender: 'answer' }
+  }
+]
+
 export default {
   name: 'ViewStatistics',
   components: {
@@ -174,6 +206,7 @@ export default {
       activeKey: [],
       simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
       columns,
+      columnsUrl,
       dataLists: [],
       name: ''
     }
@@ -184,7 +217,9 @@ export default {
   async  mounted() {
     this.taskCode = this.$route.query.taskCode
     this.publishDate = this.$route.query.publishDate
-    await this._planList()
+    if (this.taskType !== '1') {
+      await this._planList()
+    }
     await this.getDetails()
   },
   methods: {
@@ -241,6 +276,20 @@ export default {
     // 翻页
     handleChange(value, id, index) {
       this.getUser(id, index, value)
+    },
+    // 下载附件
+    downloadImg(url) {
+      window.location.href = url
+      if (/\.(gif|jpg|jpeg|png|GIF|JPG|PNG)$/.test(url)) {
+        console.log(1)
+      } else {
+
+      }
+      // const link = document.createElement('a')
+      // link.style.display = 'none'
+      // link.href = url
+      // document.body.appendChild(link)
+      // link.click()
     },
     changeActivekey(key) {
       console.log(key)

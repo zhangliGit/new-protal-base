@@ -122,10 +122,17 @@ export default {
       this._riskAssessList()
     },
     modify (record) {
+      console.log('record',record)
       this.$router.push({
         path: '/riskAssess/addAssess',
         query: {
-          id: record ? record.record.id : ''
+          id: record.record.id,
+          riskLevel: record.record.riskLevel,
+          accidentType: record.record.accidentType,
+          checkObject: record.record.checkObject,
+          riskContent: record.record.riskContent,
+          name: record.record.name,
+          methodCode: record.record.methodCode
         }
       })
     }

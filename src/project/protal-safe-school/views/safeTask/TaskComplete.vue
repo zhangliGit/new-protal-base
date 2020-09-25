@@ -16,18 +16,18 @@
           <a-select-option value="2">已完成</a-select-option>
           <a-select-option value="3">逾期填报</a-select-option>
         </a-select>
-        <div>（已完成数/总数：{{ compNum }}/{{ sum }}）</div>
+        <div>(已完成数/总数：{{ compNum }}/{{ sum }})</div>
       </div>
-      <div v-for="el in dataList" :key="el.orgCode">
-        <div class="fill-top u-mar-b20">
-          <div class="fill-head task">{{ el.orgName }}</div>
+      <div v-for="(el,index) in dataList" :key="index">
+        <div class="fill-top u-mar-b20 ">
+          <span class="fill-head">{{ el.orgName }}&nbsp;{{ number(el.list) }}</span>
         </div>
         <div class="card">
           <div class="cont u-fx-wp u-mar-t10">
             <div
               class="list-box u-fx-ac-jc u-mar-10"
               :class="v.state === '2' || v.state === '3'|| v.state === '5'? 'green' : 'red'"
-              v-for="(v,index2) in el.outCompInfoOfTaskByPeDtoList"
+              v-for="(v,index2) in el.list"
               :key="index2"
               @click="check(v)"
             >
@@ -64,6 +64,7 @@ export default {
   },
   computed: {
     ...mapState('home', ['userInfo'])
+
   },
   async mounted() {
     this.taskType = this.$route.query.taskType
@@ -77,14 +78,15 @@ export default {
     ...mapActions('home', ['schTaskCompleted', 'getTeachers', 'wechatNotice', 'planLists']),
     async showList() {
       const req = {
-        state: this.states,
+        state: this.state,
         year: this.dateNum.split('-')[0],
         dateNum: this.dateNum.split('-')[1],
         schoolCode: this.userInfo.schoolCode,
-        taskTemplateCode: this.taskCode,
-        taskType: this.taskType
+        taskTemplateCode: this.taskCode
+        // taskType: this.taskType
       }
       const res = await this.schTaskCompleted(req)
+      console.log(res)
       const { compNum, outCompInfoOfTaskByOrgDtoList, sum } = res.data
       this.compNum = compNum
       this.sum = sum
@@ -108,6 +110,13 @@ export default {
         this.state = ['7', '8']
       }
       this.showList()
+    },
+    number(list) {
+      console.log(list)
+      const a = list.length
+      const b = list.filter(v => v.state === '3' || v.state === '7').length
+      return `(${b}/${a})`
+      // return `a`
     },
     check(record) {
       console.log(record)
@@ -179,16 +188,15 @@ export default {
     color: #4d4cac;
     border-bottom: 1px solid #ccc;
     .fill-head {
-      text-align: center;
+      // text-align: center;
       border-bottom: 3px solid #4d4cac;
     }
     .task {
-      width: 70px;
+      width: 100px;
     }
     .report {
       width: 100px;
     }
-
   }
   .list-box {
     width: 250px;

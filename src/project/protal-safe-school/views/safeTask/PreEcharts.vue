@@ -1,6 +1,6 @@
 <template>
   <!-- 2. 柱状图Dom -->
-  <div id="main1" style="width: 60%;height:300px;"></div>
+  <div id="main1" ref="chart" style="width: 60%;height:300px;"></div>
 </template>
 <script>
 const echarts = require('echarts/lib/echarts')
@@ -24,6 +24,10 @@ export default {
       default: function() {
         return []
       }
+    },
+    id: {
+      type: String,
+      required: true
     }
   },
   data() {
@@ -44,7 +48,7 @@ export default {
     },
     initPieData(data, legendData) {
       // 对饼状图dom，初始化echarts实例
-      var myChart1 = echarts.init(document.getElementById('main1'), 'shine')
+      var myChart1 = echarts.init(this.$refs.chart, 'shine')
       myChart1.setOption({
         // 图表标题
         title: {

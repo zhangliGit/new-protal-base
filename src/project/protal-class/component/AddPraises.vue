@@ -22,14 +22,15 @@
       </a-form-item>
       <a-form-item :label-col="{ span: 3 }" :wrapper-col="{ span: 21 }" label="选择表扬语" required>
         <a-select
-          mode="tags"
+            v-model="value"
+          mode="multiple"
           v-decorator="[
             'label',
             { initialValue: appForm.label, rules: [{ required: true, message: '请选择选择表扬语' }] }
           ]"
           placeholder="请选择选择表扬语"
         >
-          <a-select-option v-for="list in batchList" :key="`${list.label}`">
+          <a-select-option v-for="list in batchList" :key="`${list.label}`" >
             {{ list.label }}
           </a-select-option>
         </a-select>
@@ -79,12 +80,16 @@ export default {
         label: ''
       },
       isView: false,
-      batchList: []
+      batchList: [],
+      value:'3'
     }
   },
   watch: {
     value(val) {
-      console.log(`selected:`, val)
+      if (val.length > 3) {
+        this.$message.warning('表扬语不能超过3个!')
+        return false
+      }
     }
   },
   computed: {
@@ -110,7 +115,6 @@ export default {
       this.classList = this.classList.filter((tag) => tag !== removedTag)
     },
     chooseUser(values) {
-      console.log(values)
       this.classList = values
       this.$refs.chooseUser.reset()
     },

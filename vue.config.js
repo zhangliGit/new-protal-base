@@ -300,7 +300,7 @@ module.exports = {
         }
       },
       '/cl_oa': {
-        target: 'http://192.168.1.193:11009/', // 陈琳-oa
+        target: 'http://192.168.2.242:11014/', // 陈琳-oa
         // target: 'http://192.168.1.23:11009/',
         changeOrigin: true,
         pathRewrite: {
@@ -354,18 +354,26 @@ module.exports = {
       },
       '/lz_safe': {
         // target: 'http://192.168.1.46:8091/', // 吕卓-安防
-        // target: 'http://192.168.1.76:8091/', // ljj-安防
-        target: 'http://192.168.2.242:8091/', // 吕卓-安防
+        target: 'http://192.168.1.76:8091/', // ljj-安防
+        // target: 'http://192.168.2.242:8091/', // 吕卓-安防
         changeOrigin: true,
         pathRewrite: {
           '^/lz_safe': ''
         }
       },
       '/ljj_people': {
-        target: 'http://192.168.1.76:11002/', // 刘继杰-局端安全任务根据选中的学校职务查人
+        // target: 'http://192.168.1.76:11002/', // 刘继杰-局端安全任务根据选中的学校职务查人
+        target: 'http://192.168.2.242:11002/',
         changeOrigin: true,
         pathRewrite: {
           '^/ljj_people': ''
+        }
+      },
+      '/wxz_pay': {
+        target: 'http://192.168.1.123:10097/', // 王选章-缴费系统
+        changeOrigin: true,
+        pathRewrite: {
+          '^/wxz_pay': ''
         }
       }
     }
