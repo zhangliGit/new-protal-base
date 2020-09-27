@@ -301,13 +301,11 @@ const filters = {
     if (text === 1) {
       return '未完成'
     } else if (text === 2) {
-      return '已完成'
+      return '未完成'
     } else if (text === 3) {
-      return '预期填报'
+      return '已完成'
     } else if (text === 4) {
-      return '已打回未填报'
-    } else if (text === 5) {
-      return '已打回已填报'
+      return '逾期填报'
     }
   },
   // 题目类型

@@ -1,6 +1,6 @@
 <template>
   <div class="page-layout qui-fx-ver">
-    <search-form is-reset @search-form="searchForm" :search-label="task.assignSearchLabel">
+    <search-form is-reset @search-form="searchForm" :search-label="task.assignSearchLabel1">
       <div slot="left">
         <!-- <a-button type="primary" icon="plus" @click="check">完成情况</a-button> -->
         <a-button type="primary" icon="plus" @click="add(0)">添加任务</a-button>
@@ -124,6 +124,7 @@ export default {
     },
     async showList() {
       this.searchList.schoolCode = this.userInfo.schoolCode
+      this.searchList.publisherCode = this.userInfo.userCode
       this.searchList = Object.assign(this.searchList, this.pageList)
       const res = await this.getSafeTask(this.searchList)
       this.userList = res.data.records

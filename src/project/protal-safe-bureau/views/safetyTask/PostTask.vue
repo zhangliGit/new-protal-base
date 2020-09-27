@@ -17,7 +17,7 @@
           placeholder="请选择接受学校"
           v-decorator="[
             'specificIndicators',
-            { initialValue: appForm.schoolName, rules: [ {required: true, message: '请选择专项指标' } ]}
+            { initialValue: specificIndicators, rules: [ {required: true, message: '请选择专项指标' } ]}
           ]"
         />
       </a-form-item>
@@ -83,9 +83,9 @@ export default {
       // xiaozuData,
       isLoad: false,
       appForm: {
-        supervisionTeam: '',
-        specificIndicators: ''
-      }
+        supervisionTeam: ''
+      },
+      specificIndicators: ''
     }
   },
   computed: {
@@ -106,7 +106,8 @@ export default {
       this.schoolTag = true
     },
     async submitSchool(values) {
-      this.appForm.schoolName = values.map(v => v.schoolName) + ''
+      const names = values.map(v => v.schoolName) + ''
+      this.form.setFieldsValue({ specificIndicators: names })
       this.SchoolAll = values
       this.$refs.ChooseSchool.reset()
       if (values.length === 0) return
@@ -148,6 +149,7 @@ export default {
             users: this.peopleList
           }
           this.isLoad = true
+          console.log(req)
           this.taskPublish(req)
             .then(res => {
               console.log(res)

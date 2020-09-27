@@ -84,7 +84,7 @@ const task = {
   ],
   taskSearchLabel: [
     {
-      value: 'userName',
+      value: 'taskName',
       type: 'input',
       label: '任务名称',
       placeholder: '请输入'
@@ -224,7 +224,7 @@ const task = {
   ],
   assignSearchLabel: [
     {
-      value: 'userName',
+      value: 'taskName',
       type: 'input',
       label: '任务名称',
       placeholder: '请输入'
@@ -276,6 +276,64 @@ const task = {
         }
       ],
       value: 'source',
+      type: 'select',
+      label: '任务状态'
+    }
+  ],
+  assignSearchLabel1: [
+    {
+      value: 'taskName',
+      type: 'input',
+      label: '任务名称',
+      placeholder: '请输入'
+    },
+    {
+      list: [
+        {
+          key: '',
+          val: '全部'
+        },
+        {
+          key: '1',
+          val: '一次性计划'
+        },
+        {
+          key: '2',
+          val: '周计划'
+        },
+        {
+          key: '3',
+          val: '月计划'
+        }
+      ],
+      value: 'taskType',
+      type: 'select',
+      label: '任务类型'
+    },
+    {
+      list: [
+        {
+          key: '',
+          val: '全部'
+        },
+        {
+          key: '1',
+          val: '未发布'
+        },
+        {
+          key: '2',
+          val: '未开始'
+        },
+        {
+          key: '3',
+          val: '进行中'
+        },
+        {
+          key: '4',
+          val: '已结束'
+        }
+      ],
+      value: 'state',
       type: 'select',
       label: '任务状态'
     }

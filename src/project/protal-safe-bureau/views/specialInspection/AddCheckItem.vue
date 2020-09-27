@@ -76,7 +76,6 @@ export default {
     async showDetail() {
       if (!this.detailId) return
       const res = await this.itemDetail(this.detailId)
-      // this.$set(this.appForm, name, res.data.name)
       this.form.setFieldsValue({ name: res.data.name })
       this.normalList = res.data.children.map((v, index) => {
         return {

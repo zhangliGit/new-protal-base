@@ -19,6 +19,7 @@
                   <div>任务结束时间：{{ detailInfo.endTime | gmtToDate('date') }}</div>
                 </div>
               </div>
+              <div class="u-padd-l40 u-padd-r40" v-html="detailInfo.des"></div>
               <div class="fill-describe u-mar-t10 u-padd-l10 u-padd-r10">{{ detailInfo.reason }}</div>
               <div class="u-mar-t20">
                 <div class="upload u-mar-l20 u-mar-r20 u-mar-b10">
@@ -58,6 +59,7 @@
             </div>
             <div class="u-mar" v-if="checkList.length !== 0">
               <div>多选题</div>
+
               <div class="subject u-mar-t10 u-padd-l20 u-padd-t10 u-padd-b10">
                 <div class="qui-fx u-mar-t10" v-for="(list, i) in checkList" :key="i">
                   <div class="qui-fx-ver">题目是：</div>
@@ -244,7 +246,6 @@ export default {
       })
       answers.forEach(element => {
         element.answers.forEach(el => {
-          console.log(el)
           if (!el) {
             this.$message.warning('请填写完整题目')
             return false
