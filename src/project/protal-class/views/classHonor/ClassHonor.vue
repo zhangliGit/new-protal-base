@@ -1,14 +1,15 @@
 <template>
   <div class="class-honor qui-fx">
-    <submit-form
-      ref="form"
-      @submit-form="submitForm"
-      :title="title"
-      v-model="formStatus"
-      :form-data="formData"
-    >
+    <submit-form ref="form" @submit-form="submitForm" :title="title" v-model="formStatus" :form-data="formData">
       <div slot="upload" class="qui-fx qui-fx-ac">
-        <upload-video v-if="flag" type="image" :length="1" v-model="fileList" :fileInfo="fileInfo" @delUpload="delUpload"></upload-video>
+        <upload-video
+          v-if="flag"
+          type="image"
+          :length="1"
+          v-model="fileList"
+          :fileInfo="fileInfo"
+          @delUpload="delUpload"
+        ></upload-video>
         <span class="u-mar-l10 u-font-01 u-tips-color">支持上传png/jpg格式,大小不能超过10M</span>
       </div>
     </submit-form>
@@ -17,12 +18,8 @@
     </div>
     <div class="right qui-fx-ver">
       <div class="qui-fx-je u-mar-b10">
-        <a-button class="mar-r10" type="primary" @click="addHonor(0)">
-          <a-icon type="plus" />新增
-        </a-button>
-        <a-button type="danger" @click="deleHonor(0)">
-          <a-icon type="delete" />批量删除
-        </a-button>
+        <a-button class="mar-r10" type="primary" @click="addHonor(0)"> <a-icon type="plus" />新增 </a-button>
+        <a-button type="danger" @click="deleHonor(0)"> <a-icon type="delete" />批量删除 </a-button>
       </div>
       <table-list
         is-check
@@ -30,8 +27,7 @@
         :page-list="pageList"
         v-model="chooseList"
         :columns="columns"
-        :table-list="dataList"
-      >
+        :table-list="dataList">
         <template v-slot:actions="action">
           <a-tooltip placement="topLeft" title="修改">
             <a-button
@@ -42,9 +38,7 @@
             ></a-button>
           </a-tooltip>
           <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="deleHonor(1, action.record)">
-            <template slot="title">
-              您确定删除吗?
-            </template>
+            <template slot="title"> 您确定删除吗? </template>
             <a-tooltip placement="topLeft" title="删除">
               <a-button size="small" class="del-action-btn" icon="delete"></a-button>
             </a-tooltip>
@@ -82,7 +76,7 @@ const columns = [
     title: '获奖时间',
     dataIndex: 'awardTime',
     width: '15%',
-    customRender: text => {
+    customRender: (text) => {
       return Tools.getDate(text, 1)
     }
   },
@@ -98,7 +92,7 @@ const columns = [
     title: '发布时间',
     dataIndex: 'createTime',
     width: '15%',
-    customRender: text => {
+    customRender: (text) => {
       return Tools.getDate(text, 1)
     }
   },
@@ -141,7 +135,7 @@ export default {
     SubmitForm,
     UploadVideo
   },
-  data () {
+  data() {
     return {
       columns,
       formData,
@@ -167,13 +161,20 @@ export default {
   computed: {
     ...mapState('home', ['userInfo', 'loginType'])
   },
-  created () {
+  created() {
     this.fileInfo.url = `${hostEnv.zk_oa}/study/theme/file/uploadFile?schoolCode=${this.userInfo.schoolCode}`
   },
   methods: {
-    ...mapActions('home', ['getClassHonorList', 'getClassHonorDetail', 'addClassHonor', 'editClassHonor', 'deleClassHonor', 'delFile']),
+    ...mapActions('home', [
+      'getClassHonorList',
+      'getClassHonorDetail',
+      'addClassHonor',
+      'editClassHonor',
+      'deleClassHonor',
+      'delFile'
+    ]),
     // 选中年级
-    select (item) {
+    select(item) {
       console.log(item)
       if (item.classCode) {
         this.classInfo = item
@@ -187,7 +188,7 @@ export default {
         this.flag = true
       })
     },
-    async showList () {
+    async showList() {
       const req = {
         ...this.pageList,
         schoolCode: this.userInfo.schoolCode,
@@ -283,16 +284,16 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.class-honor{
+.class-honor {
   flex: 1;
   overflow: hidden;
-  .left{
+  .left {
     background: #fff;
     margin-right: 10px;
     padding: 10px;
     width: 200px;
   }
-  .right{
+  .right {
     position: relative;
     flex: 1;
     background: #fff;
