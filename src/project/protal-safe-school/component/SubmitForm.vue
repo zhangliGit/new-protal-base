@@ -149,6 +149,7 @@
         <!--单个日期-->
         <a-form-item v-bind="formItemLayout" :label="item.label" v-if="item.type === 'singleTime'">
           <a-date-picker
+            :allowClear="false"
             v-decorator="[
               item.value,
               {
