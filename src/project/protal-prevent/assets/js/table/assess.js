@@ -185,7 +185,7 @@ const assess = {
       val: '能造成人员伤亡或造成50万元以上经济损失。'
     }
   ],
-  reamrkList: [
+  remarkList: [
     {
       title: '科学技术：',
       key: 'scientificMeasures',
@@ -206,6 +206,55 @@ const assess = {
       title: '培训教育：',
       key: 'trainingMeasures',
       val: ''
+    }
+  ],
+  checkColumns: [
+    {
+      title: '审核项目',
+      dataIndex: 'val',
+      width: '30%'
+    },
+    {
+      title: '是否符合',
+      width: '15%',
+      scopedSlots: {
+        customRender: 'other1'
+      }
+    },
+    {
+      title: '不符合原因',
+      width: '50%',
+      scopedSlots: {
+        customRender: 'other2'
+      }
+    }
+  ],
+  dataSource: [
+    {
+      key: '1',
+      val: '措施的可行性和有效性',
+      reason: '',
+      checkObject: true
+    }, {
+      key: '2',
+      val: '是否是风险减低到可容许水平',
+      reason: '',
+      checkObject: true
+    }, {
+      key: '3',
+      val: '是否产生新的危险有害因素',
+      reason: '',
+      checkObject: true
+    }, {
+      key: '4',
+      val: '是否已选定了最新的解决方案',
+      reason: '',
+      checkObject: true
+    }, {
+      key: '5',
+      val: '是否会被应用于实际工作中',
+      reason: '',
+      checkObject: true
     }
   ]
 }

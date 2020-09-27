@@ -7,6 +7,7 @@ const AddIdentify = resolve => require(['../views/riskIdentify/AddIdentify.vue']
 const RiskAssess = resolve => require(['../views/riskAssess/RiskAssess.vue'], resolve)
 const RiskAccount = resolve => require(['../views/RiskAccount.vue'], resolve)
 const AddAssess = resolve => require(['../views/riskAssess/AddAssess.vue'], resolve)
+const AddFind = resolve => require(['../views/riskAssess/AddFind.vue'], resolve)
 
 export const asyncRouterMap = [
   {
@@ -75,6 +76,15 @@ export const asyncRouterMap = [
         component: RiskAccount,
         meta: {
           title: '风险管控台账'
+        }
+      },
+      {
+        path: '/riskAssess/addFind',
+        name: 'addFind',
+        component: AddFind,
+        meta: {
+          title: '上报隐患',
+          isHide: true
         }
       }
     ]

@@ -61,14 +61,18 @@ const task = {
       dataIndex: 'state',
       width: '10%',
       customRender: text => {
-        if (text === '0') {
-          return '未发布'
-        } else if (text === '1') {
-          return '未开始'
+        if (text === '1') {
+          return '未填报'
         } else if (text === '2') {
-          return '进行中'
+          return '已填报待提交'
         } else if (text === '3') {
-          return '已结束'
+          return '已提交'
+        } else if (text === '4') {
+          return '已补交'
+        } else if (text === '5') {
+          return '已打回，请重报'
+        } else if (text === '6') {
+          return '已重报，请提交'
         } else {
           return ''
         }
