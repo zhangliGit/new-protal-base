@@ -128,7 +128,7 @@ export default {
           values.leaderName = values.leaderName.split('+')[0]
           values.reporterCode = this.userInfo.userCode
           values.reporterName = this.userInfo.userName
-          values.reporterPhotoUrl = this.userInfo.logoUrl
+          values.reporterPhotoUrl = this.userInfo.photoUrl
           values.schoolCode = this.userInfo.schoolCode
           values.schoolName = this.userInfo.schoolName
           values.photoUrl = this.fileList.map(el => el.url)
