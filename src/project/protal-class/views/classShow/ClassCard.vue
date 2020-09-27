@@ -28,6 +28,7 @@
       </div>
       <div class="qui-fx qui-fx-ac">
         <upload-video
+          v-if="flag"
           type="image"
           :length="1"
           v-model="fileList"
@@ -59,6 +60,7 @@ export default {
   },
   data () {
     return {
+      flag: true,
       inputText: '',
       areaText: '',
       fileInfo: {
@@ -80,6 +82,10 @@ export default {
     ...mapActions('home', ['getClassMotto', 'addClassMotto', 'delFile']),
     delUpload(value) {
       this.delFile(value.id || this.fileList[0].photoId)
+      this.flag = false
+      this.$nextTick(() => {
+        this.flag = true
+      })
     },
     // 选中年级
     select (item) {
