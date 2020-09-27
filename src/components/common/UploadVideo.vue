@@ -32,7 +32,7 @@
       <video v-if="type === 'video'" :src="pic.url" :style="{height: (fileInfo.h - 40) + 'px', width: (fileInfo.w - 40) + 'px'}" />
       <img v-else :style="{height: (fileInfo.h - 40)+ 'px', width: (fileInfo.w - 40) + 'px'}" :src="pic.url" alt=""/>
     </div>
-    <a-modal :visible="previewVisible" :footer="null" @cancel="previewVisible = false" width="800px">
+    <a-modal destroyOnClose :visible="previewVisible" :footer="null" @cancel="previewVisible = false" width="800px">
       <div class="qui-fx-ac-jc">
         <video v-if="type === 'video'" :src="previewImage" controls object-fit="contain" :style="{maxHeight: videoHeight + 'px', maxWidth: '100%'}"></video>
         <img v-else :style="{maxHeight: videoHeight + 'px', maxWidth: '100%'}" :src="previewImage" />

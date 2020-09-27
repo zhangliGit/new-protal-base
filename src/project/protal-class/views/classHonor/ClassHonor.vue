@@ -8,7 +8,7 @@
       :form-data="formData"
     >
       <div slot="upload" class="qui-fx qui-fx-ac">
-        <upload-video type="image" :length="1" v-model="fileList" :fileInfo="fileInfo" @delUpload="delUpload"></upload-video>
+        <upload-video v-if="flag" type="image" :length="1" v-model="fileList" :fileInfo="fileInfo" @delUpload="delUpload"></upload-video>
         <span class="u-mar-l10 u-font-01 u-tips-color">支持上传png/jpg格式,大小不能超过10M</span>
       </div>
     </submit-form>
@@ -146,6 +146,7 @@ export default {
       columns,
       formData,
       formStatus: false,
+      flag: true,
       title: '新增荣誉',
       dataList: [],
       total: 0,
@@ -181,6 +182,10 @@ export default {
     },
     delUpload(value) {
       this.delFile(value.id)
+      this.flag = false
+      this.$nextTick(() => {
+        this.flag = true
+      })
     },
     async showList () {
       const req = {
