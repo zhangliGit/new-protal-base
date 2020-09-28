@@ -4,11 +4,11 @@ const MajorRisk = resolve => require(['../views/riskNotice/MajorRisk.vue'], reso
 const RiskCompare = resolve => require(['../views/riskNotice/RiskCompare.vue'], resolve)
 
 const notice = {
-  path: '/danger',
-  name: 'danger',
+  path: '/notice',
+  name: 'notice',
   component: RouteView,
   meta: {
-    title: '隐患管理'
+    title: '风险公告'
   },
   children: [
     {

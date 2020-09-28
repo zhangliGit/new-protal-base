@@ -31,6 +31,8 @@
                   { initialValue: detailInfo.lValue, rules: [{ required: true, message: '请选择' }] }
                 ]"
                 placeholder="请选择"
+                :disabled="auditStatus !== '1'"
+                v-model="lValue"
               >
                 <a-select-option v-for="(item,index) in assess.lList" :key="index" :value="item.key" >
                   {{ item.val }}
@@ -44,6 +46,8 @@
                   { initialValue: detailInfo.eValue, rules: [{ required: true, message: '请选择' }] }
                 ]"
                 placeholder="请选择"
+                :disabled="auditStatus !== '1'"
+                v-model="eValue"
               >
                 <a-select-option v-for="(item,index) in assess.eList" :key="index" :value="item.key" >
                   {{ item.val }}
@@ -57,19 +61,26 @@
                   { initialValue: detailInfo.cValue, rules: [{ required: true, message: '请选择' }] }
                 ]"
                 placeholder="请选择"
+                :disabled="auditStatus !== '1'"
+                v-model="cValue"
               >
                 <a-select-option v-for="(item,index) in assess.cList" :key="index" :value="item.key" >
                   {{ item.val }}
                 </a-select-option>
               </a-select>
+              <div class="tip">
+                风险值：{{ riskInfo.grade }}    风险等级：{{ riskInfo.level }}      安全色：{{ riskInfo.color }}
+              </div>
             </a-form-item>
             <a-form-item label="L(可能性)" v-bind="formItemLayout" v-if="methodCode === '2'">
               <a-select
                 v-decorator="[
-                  'lValue',
+                  'lslValue',
                   { initialValue: detailInfo.lValue, rules: [{ required: true, message: '请选择' }] }
                 ]"
                 placeholder="请选择"
+                :disabled="auditStatus !== '1'"
+                v-model="lslValue"
               >
                 <a-select-option v-for="(item,index) in assess.lsList" :key="index" :value="item.key" >
                   {{ item.val }}
@@ -83,11 +94,16 @@
                   { initialValue: detailInfo.sValue, rules: [{ required: true, message: '请选择' }] }
                 ]"
                 placeholder="请选择"
+                :disabled="auditStatus !== '1'"
+                v-model="sValue"
               >
                 <a-select-option v-for="(item,index) in assess.sList" :key="index" :value="item.key" >
                   {{ item.val }}
                 </a-select-option>
               </a-select>
+              <div class="tip">
+                风险值：{{ riskInfo.grade }}    风险等级：{{ riskInfo.level }}      安全色：{{ riskInfo.color }}
+              </div>
             </a-form-item>
             <a-form-item label="管控层级" v-bind="formItemLayout" >
               <a-select
@@ -96,6 +112,7 @@
                   { initialValue: detailInfo.controlLevel, rules: [{ required: true, message: '请选择管控层级' }] }
                 ]"
                 placeholder="请选择管控层级"
+                :disabled="auditStatus !== '1'"
               >
                 <a-select-option v-for="(item,index) in assess.controlList" :key="index" :value="item.key" >
                   {{ item.val }}
@@ -109,6 +126,7 @@
                   { initialValue: detailInfo.responsibilityPost, rules: [{ required: true, message: '请选择责任岗位' }] }
                 ]"
                 placeholder="请选择责任岗位"
+                :disabled="auditStatus !== '1'"
               >
                 <a-select-option v-for="(item,index) in assess.postList" :key="index" :value="item.key" >
                   {{ item.val }}
@@ -123,6 +141,7 @@
                 ]"
                 placeholder="请选择责任部门"
                 @change="handleChange"
+                :disabled="auditStatus !== '1'"
               >
                 <a-select-option v-for="(item,index) in partList" :key="index" :value="item.code">
                   {{ item.name }}
@@ -137,6 +156,7 @@
                 ]"
                 placeholder="请选择责任人"
                 @change="change"
+                :disabled="auditStatus !== '1'"
               >
                 <a-select-option v-for="(item,index) in userList" :key="index" :value="`${item.userCode}=${item.userName}+${item.mobile}`">
                   {{ item.userName }}
@@ -157,16 +177,18 @@
       </div>
       <div class="u-mar-t20 bg-fff u-padd-t10  u-padd-b20 u-padd-l20 u-padd-r20">
         <div class="avoid-title">
-          <div class="time-title title">审核建议措施</div>
+          <div class="time-title top-title">审核建议措施</div>
         </div>
         <div class="u-mar-t20">
           <a-row>
-            <a-col :span="12" v-for="(list,index) in assess.reamrkList" :key="index">
+            <a-col :span="12" v-for="(list,index) in assess.remarkList" :key="index">
               <div class="qui-fx u-mar">
                 <div class="title">{{ list.title }}</div>
                 <a-textarea
+                  v-model="detailInfo[list.key]"
                   @change="areaChange($event, list)"
                   :auto-size="{ minRows: 3, maxRows: 5 }"
+                  :disabled="auditStatus !== '1'"
                 />
               </div>
             </a-col>
@@ -175,18 +197,18 @@
       </div>
       <div class="u-mar-t20 bg-fff u-padd-t10  u-padd-b20 u-padd-l20 u-padd-r20">
         <div class="avoid-title">
-          <div class="time-title title">警示标识</div>
+          <div class="time-title sign-title">警示标识</div>
         </div>
         <div class="qui-fx-wp">
           <img class="sign u-mar-r10 u-mar-t10" v-for="(list,index) in detailInfo.warnings" :key="index" :src="list.url" alt="">
-          <div class="sign qui-fx-ac-jc u-mar-t10" @click="add">
+          <div class="sign qui-fx-ac-jc u-mar-t10" @click="add" v-if="auditStatus === '1'">
             <a-icon style="font-size: 30px" type="plus"/>
           </div>
         </div>
       </div>
       <div class="u-mar-t20 bg-fff u-padd-t10  u-padd-b20 u-padd-l20 u-padd-r20">
         <div class="avoid-title">
-          <div class="time-title no-set">{{ methodCode === '1' ? '剩余分析评价法-LEC' : '剩余风险评价-LS' }}</div>
+          <div class="time-title remain-title">{{ methodCode === '1' ? '剩余分析评价法-LEC' : '剩余风险评价-LS' }}</div>
         </div>
         <div class="u-mar-t20">
           <a-form :form="lastForm">
@@ -197,6 +219,8 @@
                   { initialValue: detailInfo.remainingLValue, rules: [{ required: true, message: '请选择' }] }
                 ]"
                 placeholder="请选择"
+                :disabled="auditStatus !== '1'"
+                v-model="remainingLValue"
               >
                 <a-select-option v-for="(item,index) in assess.lList" :key="index" :value="item.key" >
                   {{ item.val }}
@@ -210,6 +234,8 @@
                   { initialValue: detailInfo.remainingEValue, rules: [{ required: true, message: '请选择' }] }
                 ]"
                 placeholder="请选择"
+                :disabled="auditStatus !== '1'"
+                v-model="remainingEValue"
               >
                 <a-select-option v-for="(item,index) in assess.eList" :key="index" :value="item.key" >
                   {{ item.val }}
@@ -223,19 +249,26 @@
                   { initialValue: detailInfo.remainingCValue, rules: [{ required: true, message: '请选择' }] }
                 ]"
                 placeholder="请选择"
+                :disabled="auditStatus !== '1'"
+                v-model="remainingCValue"
               >
                 <a-select-option v-for="(item,index) in assess.cList" :key="index" :value="item.key" >
                   {{ item.val }}
                 </a-select-option>
               </a-select>
+              <div class="tip">
+                风险值：{{ remainInfo.grade }}    风险等级：{{ remainInfo.level }}      安全色：{{ remainInfo.color }}
+              </div>
             </a-form-item>
             <a-form-item label="L(可能性)" v-bind="formItemLayout" v-if="methodCode === '2'">
               <a-select
                 v-decorator="[
-                  'remainingLValue',
+                  'remainingLslValue',
                   { initialValue: detailInfo.remainingLValue, rules: [{ required: true, message: '请选择' }] }
                 ]"
                 placeholder="请选择"
+                :disabled="auditStatus !== '1'"
+                v-model="remainingLslValue"
               >
                 <a-select-option v-for="(item,index) in assess.lsList" :key="index" :value="item.key" >
                   {{ item.val }}
@@ -249,16 +282,21 @@
                   { initialValue: detailInfo.remainingSValue, rules: [{ required: true, message: '请选择' }] }
                 ]"
                 placeholder="请选择"
+                :disabled="auditStatus !== '1'"
+                v-model="remainingSValue"
               >
                 <a-select-option v-for="(item,index) in assess.sList" :key="index" :value="item.key" >
                   {{ item.val }}
                 </a-select-option>
               </a-select>
+              <div class="tip">
+                风险值：{{ remainInfo.grade }}    风险等级：{{ remainInfo.level }}      安全色：{{ remainInfo.color }}
+              </div>
             </a-form-item>
           </a-form>
         </div>
       </div>
-      <div class="u-tx-c u-mar-t20">
+      <div class="u-tx-c u-mar-t20" v-if="auditStatus === '1'">
         <a-button @click="cancel">取消</a-button>
         <a-button class="mar-l10" type="primary" @click="submitOk" :disabled="isLoad">保存</a-button>
       </div>
@@ -307,7 +345,72 @@ export default {
       signTag: false,
       partList: [],
       responsibilityDept: '',
-      riskLevel: ''
+      riskLevel: '',
+      auditStatus: '',
+      riskInfo: {},
+      remainInfo: {},
+      lValue: '',
+      cValue: '',
+      eValue: '',
+      sValue: '',
+      lslValue: '',
+      remainingCValue: '',
+      remainingEValue: '',
+      remainingLValue: '',
+      remainingSValue: '',
+      remainingLslValue: ''
+    }
+  },
+  watch: {
+    lValue(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this._lecRisk(0)
+      }
+    },
+    cValue(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this._lecRisk(0)
+      }
+    },
+    eValue(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this._lecRisk(0)
+      }
+    },
+    sValue(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this._lsRisk(0)
+      }
+    },
+    lslValue(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this._lsRisk(0)
+      }
+    },
+    remainingCValue(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this._lecRisk(1)
+      }
+    },
+    remainingEValue(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this._lecRisk(1)
+      }
+    },
+    remainingLValue(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this._lecRisk(1)
+      }
+    },
+    remainingLslValue(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this._lsRisk(1)
+      }
+    },
+    remainingSValue(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this._lsRisk(1)
+      }
     }
   },
   computed: {
@@ -321,13 +424,14 @@ export default {
     this.methodCode = this.$route.query.methodCode
     this.detailId = this.$route.query.id
     this.riskLevel = this.$route.query.riskLevel
+    this.auditStatus = this.$route.query.auditStatus
     this._getOrgBySchool()
     if (this.riskLevel) {
       this.showDetail()
     }
   },
   methods: {
-    ...mapActions('home', ['riskAssessDetail', 'riskAssess', 'getOrgBySchool', 'getTeacherList']),
+    ...mapActions('home', ['riskAssessDetail', 'riskAssess', 'getOrgBySchool', 'getTeacherList', 'lecRisk', 'lsRisk']),
     // 获取学校信息
     async _getOrgBySchool () {
       const res = await this.getOrgBySchool(this.userInfo.schoolCode)
@@ -344,6 +448,50 @@ export default {
       const res = await this.getTeacherList(req)
       this.userList = res.data.list
     },
+    async _lecRisk (type) {
+      if (type) {
+        if (this.remainingCValue && this.remainingEValue && this.remainingLValue) {
+          const req = {
+            cValue: this.remainingCValue,
+            eValue: this.remainingEValue,
+            lValue: this.remainingLValue
+          }
+          const res = await this.lecRisk(req)
+          this.remainInfo = res.data
+        }
+      } else {
+        if (this.cValue && this.eValue && this.lValue) {
+          const req = {
+            cValue: this.cValue,
+            eValue: this.eValue,
+            lValue: this.lValue
+          }
+          const res = await this.lecRisk(req)
+          this.riskInfo = res.data
+        }
+      }
+    },
+    async _lsRisk (type) {
+      if (type) {
+        if (this.remainingLslValue && this.remainingSValue) {
+          const req = {
+            lValue: this.remainingLslValue,
+            sValue: this.remainingSValue
+          }
+          const res = await this.lsRisk(req)
+          this.remainInfo = res.data
+        }
+      } else {
+        if (this.lslValue && this.sValue) {
+          const req = {
+            lValue: this.lslValue,
+            sValue: this.sValue
+          }
+          const res = await this.lsRisk(req)
+          this.riskInfo = res.data
+        }
+      }
+    },
     handleChange(record) {
       this.responsibilityDept = record
       this.detailInfo.responsibilityUserName = ''
@@ -358,6 +506,13 @@ export default {
     async showDetail() {
       const res = await this.riskAssessDetail(this.detailId)
       this.detailInfo = res.data
+      if (this.detailInfo.signs.length > 0) {
+        this.detailInfo.warnings = this.detailInfo.signs.map(el => {
+          return {
+            url: el
+          }
+        })
+      }
     },
     add () {
       this.signTag = true
@@ -373,6 +528,9 @@ export default {
       console.log('vewq', e.target.value)
       this.detailInfo[record.key] = e.target.value
     },
+    assessChange() {
+
+    },
     submitOk(e) {
       e.preventDefault()
       this.form.validateFields((error, values) => {
@@ -380,37 +538,30 @@ export default {
           this.lastForm.validateFields((error, val) => {
             if (!error) {
               const warnings = []
-              this.detailInfo.warnings.map(el => {
-                warnings.push(el.url)
-              })
-              values.responsibilityUserName = this.detailInfo.responsibilityUserName
-              values.responsibilityUserCode = this.detailInfo.responsibilityUserCode
+              if (this.detailInfo.warnings && this.detailInfo.warnings.length > 0) {
+                this.detailInfo.warnings.map(el => {
+                  warnings.push(el.url)
+                })
+              }
+              // values.responsibilityUserName = this.detailInfo.responsibilityUserName
+              // values.responsibilityUserCode = this.detailInfo.responsibilityUserCode
               values.warnings = warnings
               values.id = this.detailId
               this.isLoad = true
-              if (this.riskLevel) {
-                this.modifySchoolTask(values)
-                  .then((res) => {
-                    this.$message.success('操作成功')
-                    this.$tools.goNext(() => {
-                      this.$router.go(-1)
-                    })
+              this.riskAssess({
+                ...this.detailInfo,
+                ...values,
+                ...val
+              })
+                .then((res) => {
+                  this.$message.success('操作成功')
+                  this.$tools.goNext(() => {
+                    this.$router.go(-1)
                   })
-                  .catch((res) => {
-                    this.isLoad = false
-                  })
-              } else {
-                this.riskAssess(values)
-                  .then((res) => {
-                    this.$message.success('操作成功')
-                    this.$tools.goNext(() => {
-                      this.$router.go(-1)
-                    })
-                  })
-                  .catch((res) => {
-                    this.isLoad = false
-                  })
-              }
+                })
+                .catch((res) => {
+                  this.isLoad = false
+                })
             }
           })
         }
@@ -434,12 +585,11 @@ export default {
     color: #4D4CAC;
     border-bottom: 1px solid #ccc;
     .time-title {
-      width: 80px;
       height: 100%;
       border-bottom: 3px solid #4D4CAC;
     }
     .no-set {
-      width: 150px;
+      width: 118px;
     }
   }
 }
@@ -488,5 +638,17 @@ export default {
     width: 80px;
     height: 80px;
     color: #ccc;
+  }
+  .top-title{
+    width: 100px;
+  }
+  .remain-title{
+    width: 150px;
+  }
+  .sign-title{
+    width: 66px;
+  }
+  .tip {
+    height: 15px;
   }
 </style>

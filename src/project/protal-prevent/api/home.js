@@ -23,7 +23,15 @@ const homeApi = {
   riskAssessList: '/riskAssessment/page#post', // 校端-风险评估分页条件查询
   riskAssessDetail: '/riskAssessment/assess/info#getUrl', // 根据id查评估详情
   riskAssess: '/riskAssessment/assess#post', // 风险等级评估
-  riskAssessAsign: '/riskAssessment/signs#get' // 获取警示标识图库
+  riskAssessAsign: '/riskAssessment/signs#get', // 获取警示标识图库
+  getGroupDetail: '/danger/group/info#get', // 隐患小组详情
+  reportDanger: '/dangerTask/add/risk#post', // 风险评估-校端上报隐患
+  auditRisk: '/riskAssessment/audit#post', // 风险评估审核
+  auditRiskDetail: '/riskAssessment/audit/info#getUrl', // 根据id查审核详情
+  lecRisk: '/riskAssessment/lec#post', // LEC计算风险等级
+  lsRisk: '/riskAssessment/ls#post', // LS计算风险等级
+  riskCard: '/riskNoticeCard/page#post' // 分页查看风险告知卡
+
 }
 for (const val in homeApi) {
   homeApi[val] = `${hostEnv.lz_safe}${homeApi[val]}`
