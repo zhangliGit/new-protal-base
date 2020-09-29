@@ -96,7 +96,8 @@ export const asyncRouterMap = [
             meta: {
               title: '个人表扬栏'
             }
-          },{
+          },
+          {
             path: '/compliments',
             name: 'compliments',
             component: Compliments,

@@ -7,31 +7,13 @@
       <class-tree @select="select"></class-tree>
     </div>
     <div class="right qui-fx-ver">
-      <!-- <div class="top qui-fx-ac">
-        <div class="info">
-          <h1>{{ classInfo.gradeName }}({{ classInfo.clazzName }})</h1>
-          <h2>班主任：{{ classInfo.teacherName }}</h2>
-        </div>
-        <div class="card qui-fx-ac">
-          <div class="input qui-fx-ac">
-            <h2>班级格言：</h2>
-            <a-input
-              allowClear
-              placeholder=""
-              :maxLength="30"
-              :defaultValue="defaultValue"
-              v-model="inputText"
-              @blur="edit"/>
-          </div>
-        </div>
-      </div> -->
       <div class="content page-layout">
         <a-tabs default-active-key="1" @change="tabChange" v-model="autoKey">
           <a-tab-pane key="1" tab="班级相册">
             <div class="album">
               <no-data msg="暂无轮播图" v-if="banners.length === 0"></no-data>
               <swiper v-else :options="swiperOption">
-                <swiper-slide :key="banner" v-for="banner in banners"><img :src="banner"/></swiper-slide>
+                <swiper-slide :key="banner" v-for="banner in banners" class="qui-fx-ac"><img :src="banner"/></swiper-slide>
                 <div class="swiper-pagination" slot="pagination"></div>
               </swiper>
             </div>
@@ -139,7 +121,7 @@ export default {
       mottoId: '',
       swiperOption: {
         autoplay: {
-          delay: 2000,
+          delay: 3000,
           disableOnInteraction: false
         },
         loop: true,
@@ -369,8 +351,9 @@ export default {
         height: 450px;
         margin: 40px auto 60px auto;
         img {
-          width: 800px;
+          max-width: 800px;
           height: 450px;
+          margin: 0 auto;
         }
       }
       .album-list {
@@ -435,7 +418,12 @@ export default {
 }
 .swiper-button-prev,
 .swiper-button-next {
-  top: auto;
-  bottom: 15%;
+  top: 70px;
+}
+.swiper-button-prev{
+  left: -40px;
+}
+.swiper-button-next{
+  right: -40px;
 }
 </style>
