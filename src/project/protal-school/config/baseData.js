@@ -12,6 +12,7 @@ const Subject = resolve => require(['../views/basedata/Subject.vue'], resolve)
 const SubjectTeacher = resolve => require(['../views/basedata/SubjectTeacher.vue'], resolve)
 const Students = resolve => require(['../views/basedata/Students.vue'], resolve)
 const StudentDetail = resolve => require(['../views/basedata/StudentDetail.vue'], resolve)
+const TeacherDetail = resolve => require(['../views/basedata/TeacherDetail.vue'], resolve)
 const ClassDetail = resolve => require(['../views/basedata/ClassDetail.vue'], resolve)
 const Post = resolve => require(['../views/basedata/Post.vue'], resolve)
 const basedata = [
@@ -119,6 +120,15 @@ const basedata = [
     component: StudentDetail,
     meta: {
       title: '学生详情',
+      isHide: true
+    }
+  },
+  {
+    path: '/basedata/teacherDetail',
+    name: 'teacherDetail',
+    component: TeacherDetail,
+    meta: {
+      title: '教师详情',
       isHide: true
     }
   },

@@ -244,6 +244,16 @@ const filters = {
       return '未知'
     }
   },
+  getJodStatus: val => {
+    const text = parseInt(val)
+    if (text === 0) {
+      return '离职'
+    } else if (text === 1) {
+      return '在职'
+    } else {
+      return '未知'
+    }
+  },
   getSourceDanger: val => {
     const text = parseInt(val)
     if (parseInt(text) === 1) {

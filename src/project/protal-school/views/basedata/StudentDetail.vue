@@ -29,6 +29,30 @@
       </div>
     </div>
     <a-tabs default-active-key="1" @change="tabChange" v-model="tabValue">
+      <a-tab-pane key="0" tab="个人简介">
+        <no-data msg="暂无数据~" v-if="noDataTag"></no-data>
+        <div v-else class="content qui-fx-ver qui-fx-f1 u-auto" :style="{ height: height + 'px' }">
+          <div class="table intro qui-fx-ver qui-fx-f1">
+            <div class="u-fx-ac u-mar-b10">
+              <img class="line" src="http://canpointtest.com/mobile-img/line.png"/>
+              <span class="u-mar-l20 u-font-01 u-bold">个人简介：</span>
+            </div>
+            <div class="u-mar-b20">
+              <span class="content">{{ introduction }}</span>
+            </div>
+            <div v-if="photoList.length > 0" class="u-fx-ac u-mar-b10">
+              <img class="line" src="http://canpointtest.com/mobile-img/line.png"/>
+              <span class="u-mar-l20 u-font-01 u-bold">个人风采：</span>
+            </div>
+            <div class="">
+              <div class="photo-list" v-for="(item, i) in photoList" :key="i">
+                <img class="intro-img" :src="item.url"/>
+                <div class="u-fx-ac-jc u-te">{{ item.photoDes }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </a-tab-pane>
       <a-tab-pane key="1" tab="学生家长">
         <div class="content qui-fx-ver qui-fx-f1">
           <div class="table qui-fx-ver qui-fx-f1">
@@ -51,21 +75,6 @@
       </a-tab-pane>
       <a-tab-pane key="2" tab="异动记录">
         <div class="content qui-fx-ver qui-fx-f1">
-          <!-- <div class="qui-fx-jsb mar-b10">
-            <div class="qui-fx">
-              <div v-if="!changeTag">当前状态：{{ status | getStudentStatus }}</div>
-              <div v-else>变更状态：
-                <a-radio-group button-style="solid" v-model="status">
-                  <a-radio-button :value="item.key" v-for="item in statusList" :key="item.key">
-                    {{ item.name }}
-                  </a-radio-button>
-                </a-radio-group>
-              </div>
-            </div>
-            <div slot="btn">
-              <a-button type="primary" @click="changeStatus">{{ changeTitle }}</a-button>
-            </div>
-          </div> -->
           <div class="table qui-fx-ver qui-fx-f1">
             <table-list
               :columns="changeColumns"
@@ -105,6 +114,7 @@ import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import { Switch } from 'ant-design-vue'
 import Tools from '@u/tools'
+import NoData from '@c/NoData'
 const columns = [
   {
     title: '序号',
@@ -127,7 +137,7 @@ const columns = [
     title: '亲属关系',
     dataIndex: 'relationship',
     width: '20%',
-    customRender: text => {
+    customRender: (text) => {
       return Tools.relationship(text)
     }
   },
@@ -135,7 +145,7 @@ const columns = [
     title: '注册时间',
     dataIndex: 'createTime',
     width: '20%',
-    customRender: text => {
+    customRender: (text) => {
       return Tools.getDate(text, 1)
     }
   },
@@ -160,7 +170,7 @@ const changeColumns = [
     title: '异动类型',
     dataIndex: 'type',
     width: '20%',
-    customRender: text => {
+    customRender: (text) => {
       switch (parseInt(text)) {
         case 1:
           return '入学'
@@ -203,10 +213,10 @@ const changeColumns = [
     title: '异动时间',
     dataIndex: 'createTime',
     width: '20%',
-    customRender: text => {
+    customRender: (text) => {
       return Tools.getDate(text)
     }
-  }/* ,
+  } /* ,
   {
     title: '操作人',
     dataIndex: 'optName',
@@ -225,7 +235,7 @@ const dormColumns = [
     title: '调宿类型',
     dataIndex: 'status',
     width: '20%',
-    customRender: text => {
+    customRender: (text) => {
       switch (parseInt(text)) {
         case 1:
           return '入住'
@@ -250,10 +260,10 @@ const dormColumns = [
     title: '调宿时间',
     dataIndex: 'updateTime',
     width: '20%',
-    customRender: text => {
+    customRender: (text) => {
       return Tools.getDate(text)
     }
-  }/* ,
+  } /* ,
   {
     title: '操作人',
     dataIndex: 'optName',
@@ -282,13 +292,14 @@ const statusList = [
 export default {
   name: 'StudentDetail',
   components: {
+    NoData,
     TableList,
     ASwitch: Switch
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
-  data () {
+  data() {
     return {
       changeTag: false,
       changeTitle: '变更',
@@ -305,11 +316,17 @@ export default {
       childCode: '',
       yearId: '',
       status: '1',
-      tabValue: '1',
-      statusList
+      tabValue: '0',
+      statusList,
+      photoList: [],
+      introduction: '',
+      noDataTag: false,
+      height: 0
     }
   },
-  mounted () {
+  mounted() {
+    console.log(window.innerHeight)
+    this.height = window.innerHeight - 460
     this.userCode = this.$route.query.userCode
     this.year = this.$route.query.year
     this.yearId = this.$route.query.yearId
@@ -318,33 +335,23 @@ export default {
   },
   methods: {
     ...mapActions('home', [
-      'queryStudentInfoById', 'queryParents', 'setParents', 'getChangeList', 'getDormChangeList'
+      'queryStudentInfoById',
+      'queryParents',
+      'setParents',
+      'getChangeList',
+      'getDormChangeList',
+      'getIntro'
     ]),
     tabChange() {
       console.log(this.tabValue)
       this.showList()
     },
-    /* changeStatus() {
-      if (this.changeTitle === '保存') {
-        if (this.status === '1' || this.status === '4') {
-          this.status = '1'
-          this.statusList = statusList.slice(0, 3)
-        } else if (this.status === '2') {
-          this.statusList = statusList.slice(1)
-        } else if (this.status === '3') {
-          this.statusList = statusList.slice(2)
-        }
-        console.log(this.status)
-      }
-      this.changeTitle = this.changeTitle === '变更' ? '保存' : '变更'
-      this.changeTag = !this.changeTag
-    }, */
     changeMain(value, e) {
       console.log(value, e)
-      this.parentsList.map(ele => {
+      this.parentsList.map((ele) => {
         ele.hasMainParent = false
       })
-      const index = this.parentsList.findIndex(list => list.id === e.id)
+      const index = this.parentsList.findIndex((list) => list.id === e.id)
       if (index !== -1) {
         this.parentsList[index].hasMainParent = value
       }
@@ -352,7 +359,7 @@ export default {
         childCode: e.studentCode,
         parentCode: e.parentCode
       }
-      this.setParents(req).then(res => {
+      this.setParents(req).then((res) => {
         this.$message.success('设置成功')
         this.$tools.goNext(() => {
           this.showList()
@@ -365,11 +372,34 @@ export default {
       this.childCode = res.data.userCode
       this.showList()
     },
-    async showList () {
-      if (this.tabValue === '1') {
+    async showList() {
+      if (this.tabValue === '0') {
+        const res = await this.getIntro({
+          schoolCode: this.userInfo.schoolCode,
+          userCode: this.childCode,
+          userType: '8'
+        })
+        if (!res.data || res.data.introduction === '') {
+          this.introduction = ''
+          this.photoList = []
+          this.noDataTag = true
+          return
+        }
+        this.introduction = res.data.introduction
+        if (res.data.outUserStyleDtoList.length === 0) {
+          return
+        }
+        this.photoList = res.data.outUserStyleDtoList.map((el) => {
+          return {
+            url: el.photoUrl,
+            id: el.id,
+            photoDes: el.photoDes
+          }
+        })
+      } else if (this.tabValue === '1') {
         const res = await this.queryParents({ childCode: this.childCode })
         this.parentsList = res.data
-        this.parentsList.map(ele => {
+        this.parentsList.map((ele) => {
           ele.hasMainParent = ele.hasMainParent === '1'
         })
       } else if (this.tabValue === '2') {
@@ -380,22 +410,22 @@ export default {
         this.dormList = res.data
       }
     },
-    parentChange (value) {
+    parentChange(value) {
       this.selectedParent = value
     },
-    save () {
+    save() {
       console.log(this.selectedParent)
     }
   }
 }
 </script>
 <style lang="less" scoped>
-.student-detail{
-  height:100%;
+.student-detail {
+  height: 100%;
   padding-top: 10px;
-  .tit{
+  .tit {
     margin-bottom: 20px;
-    p{
+    p {
       border-left: 3px solid #6882da;
       padding-left: 10px;
       font-weight: bold;
@@ -405,21 +435,21 @@ export default {
       font-size: 16px;
     }
   }
-   .top{
+  .top {
     background: #fff;
     padding: 10px 20px;
     margin-bottom: 10px;
-    .info{
+    .info {
       margin-bottom: 20px;
       flex-wrap: wrap;
-      span{
+      span {
         margin-right: 50px;
         padding: 10px 0;
       }
     }
-    .phone{
+    .phone {
       margin-bottom: 20px;
-      img{
+      img {
         width: 80px;
         height: 80px;
         margin-right: 20px;
@@ -427,11 +457,37 @@ export default {
       }
     }
   }
-  .content{
+  .content {
     background: #fff;
     padding: 0 20px;
-    .table{
+    .table {
       margin-bottom: 20px;
+    }
+  }
+  .intro{
+    .line {
+      width: 2px;
+      height: 14px;
+    }
+    .content{
+      text-indent: 2em;
+    }
+    .photo-list {
+      margin-bottom: 10px;
+      border-radius: 4px;
+      overflow: hidden;
+      width: 18%;
+      min-width: 180px;
+      height: 200px;
+      background-color:#fff;
+      float: left;
+      margin-right: 1.5%;
+      position: relative;
+      & > img {
+        width: 100%;
+        height: 180px;
+        display: block;
+      }
     }
   }
 }
