@@ -30,7 +30,11 @@ const homeApi = {
   auditRiskDetail: '/riskAssessment/audit/info#getUrl', // 根据id查审核详情
   lecRisk: '/riskAssessment/lec#post', // LEC计算风险等级
   lsRisk: '/riskAssessment/ls#post', // LS计算风险等级
-  riskCard: '/riskNoticeCard/page#post' // 分页查看风险告知卡
+  riskCard: '/riskNoticeCard/page#post', // 分页查看风险告知卡
+  riskAccount: '/riskAssessment/manage/page#post', // 风险管控台账分页查询
+  modifyRiskAccount: '/riskAssessment/manage/modify#post', // 风险管控台账修改频次
+  riskChart: '/riskAssessment/chart#getUrl', // 风险等级比较图
+  riskUpload: '/riskNoticeCard/upload#post' // 风险告知卡上传图片
 
 }
 for (const val in homeApi) {

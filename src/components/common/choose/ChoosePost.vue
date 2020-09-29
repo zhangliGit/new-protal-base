@@ -271,6 +271,7 @@ export default {
       this.getUserList()
     },
     postSelect(item, e) {
+      this.defaultKey = item
       this.postPage.pageNum = 1
       this.getPostUser()
     },

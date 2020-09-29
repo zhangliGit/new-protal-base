@@ -119,7 +119,8 @@ export default {
           values.users = this.userList.map(el => {
             return {
               ...el,
-              schoolCode: this.userInfo.schoolCode
+              schoolCode: this.userInfo.schoolCode,
+              schoolName: this.userInfo.schoolName
             }
           })
           values.taskId = this.taskId

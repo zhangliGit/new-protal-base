@@ -38,6 +38,7 @@ let cl_class=''
 let zk_class=''
 let zk_news=''
 let ljj_people=''
+let img_download=''
 if (ConfigEnv === 'test') {
   wxz_control = '/wxz_control'
   zk_school = '/zk_school'
@@ -76,6 +77,7 @@ if (ConfigEnv === 'test') {
   zk_class='/zk_class'
   zk_news='/zk_news'
   ljj_people='/ljj_people'
+  img_download='/img_download'
 } else if (ConfigEnv === 'prod') {
   wxz_control = '/wxz_control'
   zk_school = '/zk_school'
@@ -114,6 +116,7 @@ if (ConfigEnv === 'test') {
   zk_class='/zk_class'
   zk_news='/zk_news'
   ljj_people='/ljj_people'
+  img_download='/img_download'
 } else {
   wxz_control = '/wxz_control'
   zk_school = '/zk_school'
@@ -151,6 +154,7 @@ if (ConfigEnv === 'test') {
   zk_class='/zk_class'
   zk_news='/zk_news'
   ljj_people='/ljj_people'
+  img_download='/img_download'
 }
 
 export default {
@@ -190,5 +194,6 @@ export default {
   cl_class,
   zk_class,
   zk_news,
-  ljj_people
+  ljj_people,
+  img_download
 }

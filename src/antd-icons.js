@@ -246,3 +246,8 @@ export {
   default as CaretRightOutline
 }
   from '@ant-design/icons/lib/outline/CaretRightOutline'
+  // 右实心三角
+export {
+  default as SaveOutline
+}
+  from '@ant-design/icons/lib/outline/SaveOutline'

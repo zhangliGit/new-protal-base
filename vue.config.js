@@ -375,6 +375,13 @@ module.exports = {
         pathRewrite: {
           '^/wxz_pay': ''
         }
+      },
+      '/img_download': {
+        target: 'http://canpoint-file.oss-cn-beijing.aliyuncs.com/', // 图片代理
+        changeOrigin: true,
+        pathRewrite: {
+          '^/img_download': ''
+        }
       }
     }
   },
