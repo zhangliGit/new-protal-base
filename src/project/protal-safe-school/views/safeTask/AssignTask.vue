@@ -1,6 +1,6 @@
 <template>
   <div class="page-layout qui-fx-ver">
-    <search-form is-reset @search-form="searchForm" :search-label="task.assignSearchLabel1">
+    <search-form is-reset @search-form="searchForm" :search-label="task.assignSearchLabel">
       <div slot="left">
         <!-- <a-button type="primary" icon="plus" @click="check">完成情况</a-button> -->
         <a-button type="primary" icon="plus" @click="add(0)">添加任务</a-button>
