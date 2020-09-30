@@ -209,6 +209,7 @@ export default {
           await this.transferDanger(values)
         } else {
           values.dangerTaskId = this.detailId
+          values.optUserName = this.userInfo.userName
           await this.delDanger(values)
         }
         this.$message.success('操作成功')

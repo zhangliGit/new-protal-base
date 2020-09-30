@@ -38,6 +38,7 @@
                   <div class="qui-fx">
                     <div class="collapse-state u-mar-l10 u-mar-r10" v-if="!(detailInfo.state === '1' && type === '3')">
                       <a-switch size="small" :disabled="type !== '1'" v-model="item.selfResult"/>
+                      <span class="u-mar-l10">{{ item.selfResult ? '符合' : '不符合' }}</span>
                       <div class="add" v-if="(!item.selfResult || !item.examineResult) && type === '1'" @click="add(item)">上报隐患</div>
                     </div>
                     <div class="collapse-state u-mar-l10" v-if="detailInfo.state === '3' || detailInfo.state === '4' || type === '2'" >
@@ -376,7 +377,7 @@ export default {
       border-bottom: 1px solid #ccc;
     }
     .collapse-state {
-      width: 60px;
+      width: 80px;
       text-align: center;
     }
     .add{

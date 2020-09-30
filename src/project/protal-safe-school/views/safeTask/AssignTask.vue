@@ -141,7 +141,8 @@ export default {
       this.$router.push({
         path: path,
         query: {
-          id: record ? record.record.id : ''
+          id: record ? record.record.id : '',
+          state: record.record.state
         }
       })
     },

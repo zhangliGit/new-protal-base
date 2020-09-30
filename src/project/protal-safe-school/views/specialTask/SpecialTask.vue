@@ -174,6 +174,8 @@ export default {
       'transferDanger'
     ]),
     async showList() {
+      this.searchList.schoolCode = this.userInfo.schoolCode
+      this.searchList.userCode = this.userInfo.userCode
       this.searchList = Object.assign(this.searchList, this.pageList)
       const res = await this.getSpecialTask(this.searchList)
       this.findList = res.data.records
