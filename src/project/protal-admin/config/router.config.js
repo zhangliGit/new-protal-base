@@ -4,6 +4,7 @@ import consumer from './consumer'
 import appManage from './appManage'
 import apply from './apply'
 import subject from './subject'
+import library from './library'
 const InstituteManage = resolve => require(['../views/institute/InstituteManage.vue'], resolve)
 const InstituteDetail = resolve => require(['../views/institute/InstituteDetail.vue'], resolve)
 const PanelDetail = resolve => require(['../views/operation/PanelDetail.vue'], resolve)
@@ -103,7 +104,8 @@ export const asyncRouterMap = [
           title: '公告操作',
           isHide: true
         }
-      }
+      },
+      library
     ]
   },
   {

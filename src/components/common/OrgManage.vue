@@ -8,7 +8,12 @@
       @submit="chooseTeacher"
       title="添加部门主管">
     </choose-user>
-    <submit-form ref="form" @submit-form="submitForm" :title="title" v-model="formStatus" :form-data="formData">
+    <submit-form
+      ref="form"
+      @submit-form="submitForm"
+      :title="title"
+      v-model="formStatus"
+      :form-data="formData">
     </submit-form>
     <a-skeleton style="padding: 0 15px;" v-if="orgData.length === 0 && !noData" active :paragraph="{rows: 10}" />
     <no-data v-if="noData" msg="暂无组织机构~">

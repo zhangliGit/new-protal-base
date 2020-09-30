@@ -86,7 +86,6 @@ export default {
         // taskType: this.taskType
       }
       const res = await this.schTaskCompleted(req)
-      console.log(res)
       const { compNum, outCompInfoOfTaskByOrgDtoList, sum } = res.data
       this.compNum = compNum
       this.sum = sum
@@ -112,14 +111,12 @@ export default {
       this.showList()
     },
     number(list) {
-      console.log(list)
       const a = list.length
       const b = list.filter(v => v.state === '3' || v.state === '7').length
       return `(${b}/${a})`
       // return `a`
     },
     check(record) {
-      console.log(record)
       if (record.state === '1') {
         this.$tools.delTip('确定要通知该学校相关负责人去处理该任务？', () => {
           // 查微信号
@@ -128,14 +125,12 @@ export default {
             userCodes: record.userCode.split(',')
           }
           this.getTeachers(req1).then((res) => {
-            console.log(res)
             const req2 = {
           	  openId: res.data.map(v => v.openId),
               schoolCode: record.schoolCode,
               taskCode: record.taskCode
             }
             this.wechatNotice(req2).then(result => {
-              console.log(result)
               this.$message.success('操作成功')
               this.$tools.goNext(() => {
                 this.showList()

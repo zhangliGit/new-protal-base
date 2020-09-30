@@ -34,7 +34,7 @@
           </div>
           <div class="item  u-fx-ac">
             <div class="lf u-fx-ac-jc  u-type-primary-light-bg">下达整改通知书(份)</div>
-            <div class="rt u-fx-ac-jc u-bd-r">{{ general.personCount }}</div>
+            <div class="rt u-fx-ac-jc u-bd-r">{{ general.notificationCount }}</div>
           </div>
         <!-- <div class="item  u-fx-ac">
           <div class="lf u-fx-ac-jc  u-type-primary-light-bg">造</div>
@@ -58,6 +58,10 @@
           <div class="item u-bd-1px">
             <div class=" u-fx-ac-jc u-padd-10 u-bd-b u-type-primary-light-bg">较大风险(个)</div>
             <div class=" u-fx-ac-jc u-padd-10">{{ dangerLevel.biggerCount }}</div>
+          </div>
+          <div class="item u-bd-1px">
+            <div class=" u-fx-ac-jc u-padd-10 u-bd-b u-type-primary-light-bg">一般风险(个)</div>
+            <div class=" u-fx-ac-jc u-padd-10">{{ dangerLevel.generalCount }}</div>
           </div>
           <div class="item u-bd-1px">
             <div class=" u-fx-ac-jc u-padd-10 u-bd-b u-type-primary-light-bg">低风险(个)</div>
@@ -94,7 +98,7 @@
               class=""
               v-for="(item,index) in dangerSchool"
               :key="index">
-              <td class="u-bd-l u-bd-b " align="center" valign="middle" >{{ index }}</td>
+              <td class="u-bd-l u-bd-b " align="center" valign="middle" >{{ index+1 }}</td>
               <td class="u-bd-l u-bd-b " align="center" valign="middle" >{{ item.schoolName }}</td>
               <td class="u-bd-l u-bd-b u-bd-r" align="center" valign="middle">{{ item.totalCount }}</td>
             </tr>
@@ -126,15 +130,14 @@
             <tr class=" u-type-primary-light-bg">
               <!-- colspan="4" -->
               <td class="u-bd-l u-bd-b u-padd-10" align="center" valign="middle" width="15%" >排行</td>
-              <td class="u-bd-l u-bd-b u-padd-10" align="center" valign="middle" width="60%" >存在的最多的4项指标</td>
+              <td class="u-bd-l u-bd-b u-padd-10" align="center" valign="middle" width="60%" >存在的最多的{{ mainIssues.length }}项指标</td>
               <td class="u-bd-l u-bd-b u-padd-10" align="center" valign="middle" width="25%">数量</td>
             </tr>
             <tr
               class="u-padd-10"
               v-for="(item,index) in mainIssues"
               :key="index" >
-              <!-- colspan="4" -->
-              <td class="u-bd-l u-bd-b u-padd-10" align="center" valign="middle" width="15%" >{{ index }}</td>
+              <td class="u-bd-l u-bd-b u-padd-10" align="center" valign="middle" width="15%" >{{ index+1 }}</td>
               <td class="u-bd-l u-bd-b u-padd-10" align="center" valign="middle" width="60%" >
                 {{ item.target }}
               </td>
@@ -245,44 +248,6 @@ export default {
       const { findDanger, general, mainIssues, name, reform, time } = res.data
       this.dangerLevel = findDanger.dangerLevel
       this.dangerDetail = findDanger.dangerDetail
-      const dangerSchool = [
-        {
-          biggerCount: '3',
-          generalCount: '1',
-          heavyCount: '4',
-          lowCount: '9',
-          schoolName: '学校A'
-        },
-        {
-          biggerCount: '3',
-          generalCount: '1',
-          heavyCount: '8',
-          lowCount: '9',
-          schoolName: '学校B'
-        },
-        {
-          biggerCount: '3',
-          generalCount: '1',
-          heavyCount: '4',
-          lowCount: '9',
-          schoolName: '学校C'
-        },
-        {
-          biggerCount: '3',
-          generalCount: '4',
-          heavyCount: '4',
-          lowCount: '9',
-          schoolName: '学校D'
-        },
-        {
-          biggerCount: '1',
-          generalCount: '1',
-          heavyCount: '4',
-          lowCount: '9',
-          schoolName: '学校f'
-        }
-      ]
-      // this.dangerSchool = dangerSchool
       if (findDanger.dangerSchool.length > 0 && findDanger.dangerSchool.length <= 5) {
         this.dangerSchool = findDanger.dangerSchool
       } else if (findDanger.dangerSchool.length > 5) {

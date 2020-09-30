@@ -306,6 +306,14 @@ const filters = {
       return '已完成'
     } else if (text === 4) {
       return '逾期填报'
+    } else if (text === 5) {
+      return '已打回未重报'
+    } else if (text === 6) {
+      return '已重报未提交'
+    } else if (text === 7) {
+      return '已重报已提交'
+    } else if (text === 7) {
+      return '已重报已补交'
     }
   },
   // 题目类型

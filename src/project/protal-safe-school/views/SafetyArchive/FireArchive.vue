@@ -224,7 +224,6 @@ export default {
       }
     },
     searchForm(values) {
-      console.log('11', values)
       values.hasValid = values.hasValid === '1' ? true : values.hasValid === '0' ? false : undefined
       values.hasTorn = values.hasTorn === '' ? undefined : values.hasTorn
       this.searchList = Object.assign(this.searchList, values)

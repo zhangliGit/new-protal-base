@@ -26,7 +26,6 @@ export default {
   mounted() {},
   methods: {
     callback(key) {
-      // console.log(key)
     }
   }
 }

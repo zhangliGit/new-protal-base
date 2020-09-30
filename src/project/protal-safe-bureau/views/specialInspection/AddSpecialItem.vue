@@ -217,7 +217,6 @@ export default {
       })
     },
     onOk(value) {
-      // console.log('onOk: ', value)
     },
     cancel() {
       this.$router.go(-1)

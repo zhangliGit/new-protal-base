@@ -219,10 +219,8 @@ export default {
   methods: {
     ...mapActions('home', ['answerTaskDetail', 'answersTaskStatistics', 'userTaskStatistics', 'planLists']),
     async getDetails() {
-      console.log('11', this.dateNum)
       const res = await this.answerTaskDetail({ taskCode: this.taskCode })
       this.dataLists = res.data
-      console.log('11', this.dataLists)
       this.activeKey.push(res.data[0].id)
       this.getAnswers(res.data[0].id, 0)
       this.getUser(res.data[0].id, 0, 1)
@@ -274,7 +272,6 @@ export default {
       this.getUser(id, index, value)
     },
     changeActivekey(key) {
-      // console.log(key)
     },
     cancel() {
       this.$router.go(-1)
