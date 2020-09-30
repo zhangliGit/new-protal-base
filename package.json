@@ -23,6 +23,8 @@
     "ant-design-vue": "^1.6.3",
     "axios": "^0.18.0",
     "core-js": "^2.6.5",
+    "docxtemplater": "^3.19.5",
+    "docxtemplater-image-module-free": "^1.1.1",
     "echarts": "^4.2.1",
     "enquire.js": "^2.1.6",
     "file-saver": "^2.0.2",
@@ -31,11 +33,14 @@
     "js-cookie": "^2.2.0",
     "js-xlsx": "^0.8.22",
     "jspdf": "^2.0.0",
+    "jszip": "^3.5.0",
+    "jszip-utils": "^0.1.0",
     "kalendae": "^1.0.2",
     "lodash.get": "^4.4.2",
     "lodash.pick": "^4.4.0",
     "moment": "^2.24.0",
     "nprogress": "^0.2.0",
+    "pizzip": "^3.0.6",
     "qqmap": "^1.0.1",
     "qrcodejs2": "^0.0.2",
     "qs": "^6.7.0",
@@ -169,5 +174,6 @@
   "collective": {
     "type": "opencollective",
     "url": "https://opencollective.com/ant-design-pro-vue"
-  }
+  },
+  "__npminstall_done": false
 }

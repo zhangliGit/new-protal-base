@@ -13,6 +13,7 @@
         <div class="box-scroll" :style="{height: scrollH -50+ 'px'}">
           <div class="qui-fx qui-fx-ac">
             <upload-video
+              v-if="flag"
               showTimeTag
               type="image"
               :length="9"
@@ -41,6 +42,7 @@ export default {
   },
   data () {
     return {
+      flag: true,
       dataList: [],
       fileInfo: {
         url: '',
@@ -111,6 +113,10 @@ export default {
           createTime: el.createTime,
           recordId: el.id
         }
+      })
+      this.flag = false
+      this.$nextTick(() => {
+        this.flag = true
       })
     }
   }

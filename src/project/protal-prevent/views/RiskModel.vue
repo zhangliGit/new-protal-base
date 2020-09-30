@@ -22,7 +22,7 @@
                     ''">{{ other1.record.riskLevel | levelType }}</a-tag>
         </template>
       </table-list>
-      <page-num v-model="pageList" :total="total" @change-page="_riskModelList"></page-num>
+      <page-num :jumper="false" v-model="pageList" :total="total" @change-page="_riskModelList"></page-num>
     </div>
   </div>
 </template>

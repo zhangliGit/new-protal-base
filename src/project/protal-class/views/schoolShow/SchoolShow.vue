@@ -24,7 +24,7 @@
     </div>
     <div class="qui-fx qui-fx-ac">
       <upload-video
-        v-if="chooseType === 'image'"
+        v-if="chooseType === 'image' && flag"
         type="image"
         fileName="file"
         :length="9"
@@ -35,7 +35,7 @@
         @success="success" >
       </upload-video>
       <upload-video
-        v-if="chooseType === 'video'"
+        v-if="chooseType === 'video' && flag"
         type="video"
         fileName="file"
         :length="1"
@@ -64,6 +64,7 @@ export default {
   },
   data () {
     return {
+      flag: true,
       chooseType: 'image',
       areaText: '',
       fileInfo: {
@@ -88,6 +89,7 @@ export default {
   },
   created () {
     this.fileInfo.url = `${hostEnv.zk_class}/school/introduction/file/uploadFile?schoolCode=${this.userInfo.schoolCode}`
+    this.fileVideo.url = `${hostEnv.zk_class}/school/introduction/file/uploadFile?schoolCode=${this.userInfo.schoolCode}`
     this.getMotto()
   },
   methods: {
@@ -100,6 +102,10 @@ export default {
     },
     delUpload(value) {
       this.canUpload = true
+      this.flag = false
+      this.$nextTick(() => {
+        this.flag = true
+      })
     },
     async getMotto () {
       const res = await this.getSchoolShow(this.userInfo.schoolCode)
@@ -159,7 +165,9 @@ export default {
       res.then(() => {
         this.$message.success('编辑成功')
         this.$tools.goNext(() => {
+          this.flag = false
           this.getMotto()
+          this.flag = true
         })
       })
     }

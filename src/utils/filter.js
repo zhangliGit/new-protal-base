@@ -244,6 +244,16 @@ const filters = {
       return '未知'
     }
   },
+  getJodStatus: val => {
+    const text = parseInt(val)
+    if (text === 0) {
+      return '离职'
+    } else if (text === 1) {
+      return '在职'
+    } else {
+      return '未知'
+    }
+  },
   getSourceDanger: val => {
     const text = parseInt(val)
     if (parseInt(text) === 1) {
@@ -345,6 +355,23 @@ const filters = {
       return 'Ⅲ级'
     } else if (text === 4) {
       return 'Ⅳ级'
+    }
+  },
+  // 管控层级
+  controlType(text) {
+    text = parseInt(text)
+    if (text === 1) {
+      return '校级'
+    } else if (text === 2) {
+      return '副校级'
+    } else if (text === 3) {
+      return '处级（科级、科室级、处科级）'
+    } else if (text === 4) {
+      return '岗位责任人（责任人）'
+    } else if (text === 5) {
+      return '园级'
+    } else if (text === 6) {
+      return '副园级'
     }
   }
 }

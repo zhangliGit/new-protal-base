@@ -105,8 +105,8 @@ module.exports = {
         }
       },
       '/ljj_user_center': {
-        // target: 'http://192.168.1.125:11002/', // 柳继杰-局端基础数据
-        target: 'http://192.168.2.242:11002/', // 柳继杰-
+        target: 'http://192.168.1.76:11002/', // 柳继杰-局端基础数据
+        // target: 'http://192.168.2.242:11002/', // 柳继杰-
         changeOrigin: true,
         pathRewrite: {
           '^/ljj_user_center': ''
@@ -345,8 +345,8 @@ module.exports = {
         }
       },
       '/zk_oa': {
-        // target: 'http://192.168.2.242:11014/', // 张坤-报修
-        target: 'http://192.168.1.23:11014/', // 张坤-报修
+        target: 'http://192.168.2.242:11014/', // 张坤-报修
+        // target: 'http://192.168.1.23:11014/', // 张坤-报修
         changeOrigin: true,
         pathRewrite: {
           '^/zk_oa': ''
@@ -375,6 +375,13 @@ module.exports = {
         changeOrigin: true,
         pathRewrite: {
           '^/wxz_pay': ''
+        }
+      },
+      '/img_download': {
+        target: 'http://canpoint-file.oss-cn-beijing.aliyuncs.com/', // 图片代理
+        changeOrigin: true,
+        pathRewrite: {
+          '^/img_download': ''
         }
       }
     }

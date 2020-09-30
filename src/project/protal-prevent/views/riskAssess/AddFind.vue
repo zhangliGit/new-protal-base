@@ -73,11 +73,6 @@ export default {
       fileList: [],
       isLoad: false,
       appForm: {},
-      normalList: [],
-      count: 0,
-      checkList: [],
-      deviceCode: '',
-      detailId: '',
       userList: {}
     }
   },
@@ -85,31 +80,13 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
-    this.deviceCode = this.$route.query.type
-    this.detailId = this.$route.query.id
-    if (this.detailId) {
-      this.showDetail()
-    }
     this.getUserList()
   },
   methods: {
-    ...mapActions('home', ['getGroupDetail', 'reportDanger', 'getSchoolDetail', 'getSchoolFlights', 'updateSchoolArchive']),
+    ...mapActions('home', ['getGroupDetail', 'reportDanger']),
     async getUserList() {
       const res = await this.getGroupDetail({ schoolCode: this.userInfo.schoolCode })
       this.userList = res.data.leaders
-    },
-    async showDetail() {
-      const res = await this.getSchoolDetail(this.detailId)
-      const result = await this.getSchoolFlights({ query: this.deviceCode })
-      this.appForm = res.data
-      this.normalList = result.data.map((el, index) => {
-        return {
-          ...el,
-          key: index
-        }
-      })
-      this.fileList = [{ url: res.data.cardUrl }]
-      this.count = result.data.length
     },
     cancel() {
       this.$router.go(-1)
@@ -133,30 +110,16 @@ export default {
           values.schoolName = this.userInfo.schoolName
           values.photoUrl = this.fileList.map(el => el.url)
           this.isLoad = true
-          if (!this.detailId) {
-            this.reportDanger(values)
-              .then(res => {
-                this.$message.success('操作成功')
-                this.$tools.goNext(() => {
-                  this.$router.go(-1)
-                })
+          this.reportDanger(values)
+            .then(res => {
+              this.$message.success('操作成功')
+              this.$tools.goNext(() => {
+                this.$router.go(-1)
               })
-              .catch(res => {
-                this.isLoad = false
-              })
-          } else {
-            values.id = this.detailId
-            this.updateSchoolArchive(values)
-              .then(res => {
-                this.$message.success('操作成功')
-                this.$tools.goNext(() => {
-                  this.$router.go(-1)
-                })
-              })
-              .catch(res => {
-                this.isLoad = false
-              })
-          }
+            })
+            .catch(res => {
+              this.isLoad = false
+            })
         }
       })
     }

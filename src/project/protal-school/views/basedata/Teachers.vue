@@ -47,6 +47,14 @@
             >{{ other1.record.onJob === '1' ? '在职' : '离职' }}</a-tag>
           </template>
           <template v-slot:actions="action">
+            <a-tooltip placement="topLeft" title="详情">
+              <a-button
+                size="small"
+                class="detail-action-btn"
+                icon="ellipsis"
+                @click.stop="goDetail('/basedata/teacherDetail',action.record)"
+              ></a-button>
+            </a-tooltip>
             <a-tooltip placement="topLeft" title="编辑">
               <a-button
                 size="small"
@@ -540,6 +548,12 @@ export default {
       }
     },
     clickRow(id) {},
+    goDetail(path, record) {
+      this.$router.push({
+        path,
+        query: { userCode: record.userCode }
+      })
+    },
     goLead() {
       this.orgCodeList[0] = this.orgCodeList[0] === '' ? this.userInfo.schoolCode : this.orgCodeList[0]
       const path = `/basedata/bulkImport?code=${this.orgCodeList.join(',')}&name=${this.orgName}`
