@@ -134,23 +134,13 @@ export default {
   },
   methods: {
     ...mapActions('home', ['riskCard', 'saveRiskGroup', 'riskFileList', 'addRiskFile', 'delRiskFile', 'riskUpload']),
-    toSave() {
-      (window.html2canvas || html2canvas)(document.getElementById('print'), {
-        useCORS: true // 为了微信头像的跨域, 否则头像会空白
-      }).then((canvas) => {
-        this.fullImg = canvas.toDataURL('image/png')
-      })
-    },
     imageUrlToBase64() {
       // 一定要设置为let，不然图片不显示
       const image = new Image()
-
       // 解决跨域问题
       image.setAttribute('crossOrigin', 'anonymous')
-
       const imageUrl = `${hostEnv.img_download}/security/2020/09/04/base/6af5f9d4f32c4790a7220857fc7e20f9.png`
       image.src = imageUrl
-
       // image.onload为异步加载
       image.onload = () => {
         var canvas = document.createElement('canvas')
@@ -158,7 +148,6 @@ export default {
         canvas.height = image.height
         var context = canvas.getContext('2d')
         context.drawImage(image, 0, 0, image.width, image.height)
-
         var quality = 0.8
         // 这里的dataurl就是base64类型
         this.dataURL = canvas.toDataURL('image/jpeg', quality)// 使用toDataUrl将图片转换成jpeg的格式,不要把图片压缩成png，因为压缩成png后base64的字符串可能比不转换前的长！
