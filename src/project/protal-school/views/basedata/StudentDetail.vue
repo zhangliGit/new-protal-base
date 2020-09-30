@@ -476,15 +476,14 @@ export default {
       margin-bottom: 10px;
       border-radius: 4px;
       overflow: hidden;
-      width: 18%;
-      min-width: 180px;
+      width: 240px;
       height: 200px;
       background-color:#fff;
       float: left;
       margin-right: 1.5%;
       position: relative;
       & > img {
-        width: 100%;
+        width: 240px;
         height: 180px;
         display: block;
       }

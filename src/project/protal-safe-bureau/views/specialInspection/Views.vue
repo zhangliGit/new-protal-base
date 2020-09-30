@@ -47,7 +47,6 @@ export default {
     ...mapActions('home', ['getStreetStatus']),
     async showList() {
       const res = await this.getStreetStatus(this.code)
-      console.log(res)
       this.dataList = res.data
     },
     reviewDetails(id) {

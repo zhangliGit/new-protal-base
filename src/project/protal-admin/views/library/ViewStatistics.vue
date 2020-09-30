@@ -127,6 +127,7 @@
               <div class="list-cont u-mar-t20" v-if="list.statisticsAnswersByUserDtoList">
                 <a-table
                   :columns="columnsUrl"
+                  :rowKey="(record, index) => index"
                   :pagination="false"
                   :data-source="list.statisticsAnswersByUserDtoList.records"
                   bordered>

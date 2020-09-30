@@ -85,7 +85,6 @@ export default {
       this.searchList.schoolCode = this.userInfo.schoolCode
       this.searchList = Object.assign(this.searchList, this.pageList)
       const res = await this.getAccident(this.searchList)
-      console.log(res)
       this.findList = res.data.records
       this.total = res.data.total
     },

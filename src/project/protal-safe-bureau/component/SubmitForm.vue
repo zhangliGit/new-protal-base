@@ -256,7 +256,6 @@ export default {
       e.preventDefault()
       this.form.validateFields((err, values) => {
         if (!err) {
-          console.log(values)
           for (const key in values) {
             if (values[key]._isAMomentObject) {
               values[key] = moment(values[key]).format('YYYY-MM-DD')

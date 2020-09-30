@@ -108,8 +108,6 @@ export default {
         return
       }
       this.form.validateFields((error, values) => {
-        // console.log(values)
-        // console.log(this.normalList)
         if (this.normalList.length === 0) {
           this.$message.warning('请完善检查指标内容')
           return
@@ -153,7 +151,6 @@ export default {
   watch: {
     appForm: {
       handler(val) {
-        console.log(val) // 打印出来数据是改变了的
       },
       // 代表在wacth里声明了firstName这个方法之后立即先去执行handler方法
       immediate: true,

@@ -181,7 +181,6 @@ export default {
           })
         }
       })
-      console.log('111', this.detailInfo)
     },
     async getUserList() {
       const res = await this.getGroupDetail({ schoolCode: this.userInfo.schoolCode })
@@ -230,14 +229,12 @@ export default {
       }
     },
     add(record) {
-      console.log(record)
       this.formData[0].initValue = record.itemName
       this.itemId = record.id
       this.itemInfo = record
       this.formStatus = true
     },
     goDetail(record) {
-      console.log('record', record)
       if (this.type === '3') {
         this.$router.push({
           path: '/dangerFind/dangerDetail',
