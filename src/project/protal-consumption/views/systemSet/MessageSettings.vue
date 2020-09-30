@@ -36,9 +36,7 @@
         </div>
         <div>
           <a-form-item default-checked :wrapper-col="{ span: 15, offset: 5 }">
-            <a-button type="primary" @click="handleSubmit">
-              保存
-            </a-button>
+            <a-button type="primary" @click="handleSubmit">保存</a-button>
           </a-form-item>
         </div>
       </a-form>
@@ -48,7 +46,7 @@
 <script>
 import { Switch } from 'ant-design-vue'
 export default {
-  name: 'CommonSet',
+  name: 'MessageSettings',
   components: {
     ASwitch: Switch
   },
@@ -81,7 +79,9 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-  .common-set{
-    .form{margin-top:24px}
+.common-set {
+  .form {
+    margin-top: 24px;
   }
+}
 </style>

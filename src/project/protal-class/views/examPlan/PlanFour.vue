@@ -20,9 +20,7 @@
           :customRequest="customRequest"
           :beforeUpload="beforeUpload"
         >
-          <a-button style="margin-right:20px" type="primary">
-            <a-icon type="upload" />导入模板
-          </a-button>
+          <a-button style="margin-right:20px" type="primary"> <a-icon type="upload" />导入模板 </a-button>
         </a-upload>
         <a-button @click="downFile" type="dashed">示例模板下载</a-button>
       </div>

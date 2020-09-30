@@ -5,7 +5,7 @@
         v-for="(tab, index) in tabList"
         :key="index"
         :tab="tab.name"
-        :disabled="autoKey < index && !isDetail"
+        :disabled="autoKey > index && isDetail"
       ></a-tab-pane>
     </a-tabs>
     <div class="qui-fx-f1 qui-fx">
@@ -52,7 +52,6 @@ export default {
   mounted() {
     this.id = this.$route.query.id + ''
     this.isDetail = this.$route.query.isDetail === 'true' ? true : false
-    console.log(typeof this.isDetail)
     if (this.isDetail) {
       this.autoKey = 3
     }

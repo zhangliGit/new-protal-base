@@ -52,7 +52,7 @@ const columns = [
   {
     title: '学号',
     dataIndex: 'workNo',
-    width: '15%'
+    width: '20%'
   }
 ]
 export default {
@@ -102,7 +102,6 @@ export default {
         dataIndex: 'sumscore'
       })
       this.columns = this.columns.concat(subjectName)
-      console.log(this.columns)
     },
     async select(item) {
       this.selectItem = item
@@ -132,6 +131,7 @@ export default {
           ...item
         }
       })
+      this.total = res.data.total
     }
   }
 }

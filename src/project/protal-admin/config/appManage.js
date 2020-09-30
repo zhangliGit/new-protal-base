@@ -10,7 +10,7 @@ const apply = {
   name: 'pcMenu',
   component: RouteView,
   meta: {
-    title: '应用管理new'
+    title: '应用管理'
   },
   children: [
     {

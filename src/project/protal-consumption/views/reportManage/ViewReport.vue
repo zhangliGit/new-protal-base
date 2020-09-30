@@ -1,18 +1,14 @@
 <template>
   <div class="account-list page-layout qui-fx-ver">
-    <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
+    <search-form @search-form="searchForm" :search-label="searchLabel">
       <div slot="left">
         <a-button icon="export" class="export-btn" @click="exportClick">导出</a-button>
       </div>
     </search-form>
     <div class="qui-fx-f1 qui-fx">
-      <table-list
-        :page-list="pageList"
-        :columns="columnList.deducColumns"
-        :table-list="deductionList"
-      ></table-list>
+      <table-list :page-list="pageList" :columns="reportColumns" :table-list="monthList"></table-list>
     </div>
-    <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
+    <page-num v-model="pageList" :total="total"></page-num>
   </div>
 </template>
 
@@ -22,28 +18,16 @@ import { mapState, mapActions } from 'vuex'
 import SearchForm from '@c/SearchForm'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
-import columnList from '../../assets/table/consumeColumns'
+import reportColumns from '../../assets/table/reportColumns'
 const searchLabel = [
   {
-    value: 'card',
-    type: 'input',
-    label: '卡号',
-    placeholder: '请输入卡号'
-  },
-  {
-    value: 'userName',
-    type: 'input',
-    label: '姓名',
-    placeholder: '请输入姓名'
-  },
-  {
-    value: 'rangeTime', // 日期区间
+    value: 'rangeTime',
     type: 'rangeTime',
-    label: '时间'
+    label: '统计月份'
   }
 ]
 export default {
-  name: 'DeductionRecord',
+  name: 'ViewReport',
   components: {
     SearchForm,
     TableList,
@@ -52,28 +36,30 @@ export default {
   data() {
     return {
       total: 0,
+      reportColumns,
       searchLabel,
-      columnList,
       pageList: {
         page: 1,
         size: 20
       },
+      monthList: [],
       rangeTime: [],
-      searchObj: {},
-      deductionList: [],
       searchList: {}
     }
   },
   computed: {
-    ...mapState('home', ['userInfo'])
+    ...mapState('home', ['schoolCode'])
   },
   mounted() {
+    this.reportColumns[1].customRender = text => {
+      return this.$tools.getDate(text, 3)
+    }
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getDeducDetail']),
+    ...mapActions('home', ['getCountList']),
     exportClick() {
-      var url = `${hostEnv.hpb_card}/consume/record/exportDeducDetailList`
+      var url = `${hostEnv.hpb_card}/business/count/exportStatisticMouthList`
       var xhr = new XMLHttpRequest()
       xhr.open('POST', url, true) // 也可以使用POST方式，根据接口
       xhr.responseType = 'blob'
@@ -95,17 +81,17 @@ export default {
     async showList() {
       const req = {
         ...this.pageList,
-        ...this.searchObj,
         createTime: this.rangeTime[0] || undefined,
-        endTime: this.rangeTime[1] || undefined
+        endTime: this.rangeTime[1] || undefined,
+        countType: '2'
       }
       this.searchList = req
-      const res = await this.getDeducDetail(req)
-      this.deductionList = res.data.list
+      const res = await this.getCountList(req)
+      this.monthList = res.data.list
       this.total = res.data.total
     },
     searchForm(values) {
-      this.searchObj = values
+      console.log(values)
       this.rangeTime = values.rangeTime
       this.showList()
     }

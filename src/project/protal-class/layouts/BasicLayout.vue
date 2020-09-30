@@ -38,7 +38,7 @@ export default {
   },
   data() {
     return {
-      isDev: true,
+      isDev: false,
       routeAddress: [],
       slideTag: false,
       menus: asyncRouterMap

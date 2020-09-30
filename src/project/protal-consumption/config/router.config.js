@@ -1,19 +1,10 @@
 // eslint-disable-next-line
 import { BasicLayout, RouteView } from '../layouts'
-// import money from './moneyManage'
 import accountMge from './accountManage'
-// import cardManagement from './cardManagement'
-import billingRecord from './billingRecord'
-import systemSettings from './systemSettings'
-
-// import trade from './tradeManage'
-// import report from './reportManage'
-// import consume from './consumeManage'
+import cardManagement from './cardManagement'
+import tradeManage from './tradeManage'
+import systemSet from './systemSet'
 const Home = resolve => require(['../views/Home.vue'], resolve)
-// const AccountMge = resolve => require(['../views/AccountMge.vue'], resolve)
-// const OperateRecord = resolve => require(['../views/OperateRecord.vue'], resolve)
-// const TypeMge = resolve => require(['../views/TypeMge.vue'], resolve)
-// const SetUp = resolve => require(['../views/SetUp.vue'], resolve)
 
 export const asyncRouterMap = [
   {
@@ -34,8 +25,8 @@ export const asyncRouterMap = [
         }
       },
       accountMge,
-      // cardManagement,
-      billingRecord,
+      cardManagement,
+      tradeManage,
       {
         path: '/consumerMachine',
         name: 'consumerMachine',
@@ -52,35 +43,7 @@ export const asyncRouterMap = [
           title: '档口管理'
         }
       },
-      systemSettings
-      // {
-      //   path: '/accountMge',
-      //   name: 'accountMge',
-      //   component: AccountMge,
-      //   meta: {
-      //     title: '账户管理'
-      //   }
-      // },
-      // {
-      //   path: '/typeMge',
-      //   name: 'typeMge',
-      //   component: TypeMge,
-      //   meta: {
-      //     title: '卡类型管理'
-      //   }
-      // },
-      // {
-      //   path: '/setUp',
-      //   name: 'setUp',
-      //   component: SetUp,
-      //   meta: {
-      //     title: '系统设置'
-      //   }
-      // },
-      // money,
-      // trade,
-      // report,
-      // ...consume
+      systemSet
     ]
   },
   {
@@ -94,11 +57,6 @@ export const asyncRouterMap = [
  * 基础路由
  * @type { *[] }
  */
-// const constantRouterMap = [{
-//   path: '',
-//   name: 'login',
-//   component: () => import(/* webpackChunkName: "login" */ '@/views/user/Login')
-// }]
 
 let RouterMap = [...asyncRouterMap]
 if (process.env.NODE_ENV === 'development') {

@@ -235,7 +235,7 @@ export default {
         path: '/examPlan/Addexamplan',
         query: {
           id,
-          isDetail: true
+          isDetail: 'true'
         }
       })
     },
@@ -268,7 +268,7 @@ export default {
         path: '/examPlan/Addexamplan',
         query: {
           id,
-          isDetail: false
+          isDetail: 'false'
         }
       })
     },
