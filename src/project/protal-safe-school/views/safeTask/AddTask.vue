@@ -584,19 +584,22 @@ export default {
             questionType: el.questionType
           }
         })
+        const isTrue = []
         list.forEach((el) => {
           if (!el.title || ((el.questionType === '1' || el.questionType === '2') && el.content.length === 0)) {
-            this.$message.warning('请填写完整题目')
-            return false
+            isTrue.push(1)
           } else if (el.content && el.content.length !== 0) {
             el.content.forEach(element => {
               if (element === '') {
-                this.$message.warning('请填写完整题目')
-                return false
+                isTrue.push(1)
               }
             })
           }
         })
+        if (isTrue.length > 0) {
+          this.$message.warning('请填写完整题目')
+          return false
+        }
         values.userName = this.userInfo.userName
         values.userCode = this.userInfo.userCode
         values.schoolCode = this.userInfo.schoolCode
@@ -627,6 +630,8 @@ export default {
           this.$message.warning('请选择任务时间')
           return false
         }
+        console.log(values)
+        // return false
         this.isLoad = false
         if (!error) {
           this.isLoad = true

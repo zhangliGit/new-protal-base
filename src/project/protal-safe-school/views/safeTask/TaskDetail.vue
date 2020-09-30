@@ -8,15 +8,15 @@
         <div class="u-tx-c">{{ detailInfo.taskName }}</div>
         <div class="qui-fx-jc u-mar-t10">
           <div class="qui-fx-ver">
-            <div>发布人：{{ detailInfo.userName }}</div>
-            <div class="u-mar-t10">任务开始时间：{{ detailInfo.beginTime | gmtToDate }}</div>
+            <div>发布人：{{ detailInfo.publisherName }}</div>
+            <div class="u-mar-t10">任务开始时间：{{ detailInfo.startDate | gmtToDate('date') }}</div>
           </div>
           <div class="qui-fx-ver u-mar-l20">
-            <div>发布时间：{{ detailInfo.completeTime | gmtToDate }}</div>
-            <div class="u-mar-t10">任务结束时间：{{ detailInfo.endTime | gmtToDate }}</div>
+            <div>发布时间：{{ detailInfo.publisherDate | gmtToDate }}</div>
+            <div class="u-mar-t10">任务结束时间：{{ detailInfo.endDate | gmtToDate('date') }}</div>
           </div>
         </div>
-        <div class="u-padd-l40 u-padd-r40" v-html="detailInfo.des"></div>
+        <div class="rich-text u-padd-l40 u-padd-r40" v-html="detailInfo.des"></div>
         <div class="u-mar-t20">
           <div class="upload u-mar-l20 u-mar-r20 u-mar-b10">
             <div class="upload-title">附件上传</div>
@@ -246,5 +246,16 @@ export default {
 img {
   width: 30px;
   height: 30px;
+}
+</style>
+<style lang="less">
+.rich-text {
+  width: 100%;
+  max-height: 400px;
+  overflow: scroll;
+  img {
+    width: 100%;
+    height: 100%;
+  }
 }
 </style>
