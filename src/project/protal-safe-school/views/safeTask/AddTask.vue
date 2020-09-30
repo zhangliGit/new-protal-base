@@ -630,8 +630,6 @@ export default {
           this.$message.warning('请选择任务时间')
           return false
         }
-        console.log(values)
-        // return false
         this.isLoad = false
         if (!error) {
           this.isLoad = true
