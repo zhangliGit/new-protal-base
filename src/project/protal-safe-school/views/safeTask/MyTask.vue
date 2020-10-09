@@ -113,7 +113,8 @@ export default {
           id: record ? record.id : '',
           taskCode: record ? record.taskCode : '',
           taskTemplateCode: record ? record.taskTemplateCode : '',
-          state: type
+          state: type,
+          status: record.state
         }
       })
     },

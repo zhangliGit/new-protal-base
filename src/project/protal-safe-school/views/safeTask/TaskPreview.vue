@@ -83,9 +83,11 @@
               <div class="subject u-mar-t10 u-padd-l20 u-padd-t10 u-padd-b10">
                 <div class="qui-fx u-mar-t10" v-for="(list, i) in fillList" :key="i">
                   <div class="qui-fx-ver">题目是：</div>
-                  <div class="qui-fx-ver u-mar-l20">
-                    <div class="u-mar-b10">{{ list.title }}</div>
-                    <a-input :disabled="disabled" v-model="list.answers[0]" />
+                  <div class="qui-fx-f1 qui-fx-ver u-mar-l20">
+                    <div>{{ list.title }}</div>
+                    <div class="u-mar-t10">
+                      <a-input style="width:100%" :disabled="disabled" v-model="list.answers[0]" />
+                    </div>
                   </div>
                 </div>
               </div>

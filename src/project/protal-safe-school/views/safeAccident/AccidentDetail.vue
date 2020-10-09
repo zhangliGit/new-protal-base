@@ -145,7 +145,9 @@ export default {
         if (!err) {
           const req = {
             finishInfo: values.finishInfo,
-            id: this.detailId
+            id: this.detailId,
+            userCode: this.userInfo.userCode,
+            userName: this.userInfo.userName
           }
           this.confirmLoading = true
           this.finishAccident(req)

@@ -153,7 +153,8 @@ export default {
       fillList: [],
       fileList: [],
       url: '',
-      show: true
+      show: true,
+      state: ''
     }
   },
   computed: {
@@ -165,6 +166,7 @@ export default {
     this.taskId = this.$route.query.id
     this.taskCode = this.$route.query.taskCode
     this.taskTemplateCode = this.$route.query.taskTemplateCode
+    this.state = this.$route.query.status
     if (this.taskId) {
       this.showDetail()
     }
@@ -255,6 +257,7 @@ export default {
         this.$message.warning('请填写完整题目')
         return false
       }
+      req.state = this.state === '1' || this.state === '2' ? '2' : this.state === '5' || this.state === '6' ? '6' : this.state
       req.answers = answers
       this.isLoad = true
       this.answerTask(req)
