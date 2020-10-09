@@ -26,7 +26,6 @@ axios.defaults.headers.common['token'] = token
 axios.defaults.headers.common['userCode'] = userCode
 axios.defaults.headers.common['schoolCode'] = 'CANPOINTLIVE'
 axios.defaults.headers.common['operator'] = 'admin'
-axios.defaults.headers.common['Authorization'] = 'Bearer 98c1d57f-14f0-4172-be43-6b4966453d6a'
 // 拦截请求
 axios.interceptors.request.use(
   function(config) {

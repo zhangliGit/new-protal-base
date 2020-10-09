@@ -1,28 +1,13 @@
 <template>
   <div class="cardReader page-layout qui-fx-ver">
-    <a-row class="pad qui-fx-je">
-      <a-col :span="10" :gutter="20" class="height-50" >请将卡放置在发卡器上</a-col>
-    </a-row>
-    <a-row :gutter="[0,0]" >
-      <a-col :span="10" >
-        <a-input v-model="cardNumber" class="height-50" placeholder="请输入设备名称" />
-      </a-col>
-    </a-row>
-    <a-row class="qui-fx-je" :gutter="[0,0]">
-      充值记录
-      <a-divider />
-    </a-row>
-    <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
-
-    </search-form>
+    <div class="qui-fx-ac">
+      <div>请将卡放置在发卡器上：</div>
+      <a-input v-model="cardNumber" style="width: 300px" placeholder="请输入卡号按Enter键进行充值" />
+    </div>
+    <a-row class="qui-fx-je title">充值记录</a-row>
+    <search-form is-reset @search-form="searchForm" :search-label="searchLabel"></search-form>
     <div class="qui-fx-ver qui-fx-f1">
-      <table-list
-        :scroll-h="500"
-        :page-list="pageList"
-        :columns="columns"
-        :table-list="userList"
-      >
-      </table-list>
+      <table-list :scroll-h="500" :page-list="pageList" :columns="columns" :table-list="userList"></table-list>
     </div>
   </div>
 </template>
@@ -76,10 +61,12 @@ const searchLabel = [
   //   label: '状态'
   // },
   {
-    list: [{
-      key: '',
-      val: '全部'
-    }],
+    list: [
+      {
+        key: '',
+        val: '全部'
+      }
+    ],
     value: 'cardType',
     type: 'select',
     label: '类型'
@@ -135,9 +122,9 @@ export default {
 </script>
 
 <style lang="less" scoed>
-.cardReader{
+.cardReader {
   padding: 20px;
-  .pad{
+  .pad {
     font-size: 20px;
     line-height: 100px;
     font-weight: 500;

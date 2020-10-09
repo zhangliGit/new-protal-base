@@ -6,9 +6,9 @@
 import hostEnv from '@config/host-env'
 
 const accountApi = {
-  getAccountList: '/dev-api/cardmanager/accountinfo/list#get' // 账户列表
+  getAccountList: '/accountInfo/list#get' // 账户列表
 }
 for (const val in accountApi) {
-  accountApi[val] = `${hostEnv.hzz_ecard}${accountApi[val]}`
+  accountApi[val] = `${hostEnv.ecard_hzz}${accountApi[val]}`
 }
 export default accountApi

@@ -1,16 +1,14 @@
 <template>
   <div class="account-list page-layout qui-fx-ver">
+    <choose-user title="请选择用户" v-model="userTag"></choose-user>
     <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
       <div slot="left">
         <a-button type="primary" @click="batchAccount">批量开户</a-button>
-        <a-button type="primary" @click="batchAccount">开户</a-button>
+        <a-button type="primary" class="u-mar-l" @click="_batchAccountSingle">开户</a-button>
       </div>
     </search-form>
     <div class="qui-fx-f1 qui-fx">
       <table-list is-zoom :page-list="pageList" :columns="accountColumns" :table-list="accountList">
-        <template v-slot:other1="other1">
-          <a-tag color="orange" @click="showDetail(other1.record)">{{ other1.record.userName }}</a-tag>
-        </template>
         <template v-slot:actions="action">
           <a-tag color="#2db7f5" @click="toDetail(action.record)">详情</a-tag>
           <!-- v-if="action.record.status === 0" -->
@@ -57,6 +55,7 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
+import ChooseUser from '../../component/ChooseUser'
 import SearchForm from '@c/SearchForm'
 import BatchModel from '../../component/Modal'
 import SubmitForm from '../../component/SubmitForm'
@@ -109,17 +108,6 @@ const searchLabel = [
     value: 'status',
     type: 'select',
     label: '状态'
-  },
-  {
-    list: [
-      {
-        key: '',
-        val: '全部'
-      }
-    ],
-    value: 'cardType',
-    type: 'select',
-    label: '类型'
   }
 ]
 const dealSearchLabel = [
@@ -232,16 +220,19 @@ export default {
     PageNum,
     SubmitForm,
     BatchModel,
-    BatchImport
+    BatchImport,
+    ChooseUser
   },
   data() {
     return {
+      accountList: [],
+      total: 0,
+      userTag: false,
       title: '绑卡',
       importUrl: '',
       confirmLoading: false,
       visible: false,
       showTag: false,
-      total: 0,
       actionTitle: '',
       searchLabel,
       dealSearchLabel,
@@ -254,18 +245,6 @@ export default {
         size: 20
       },
       importParams: {},
-      accountList: [
-        {
-          index: '1',
-          userName: '1',
-          userIdentity: '1',
-          workNo: '1',
-          classBoards: '1',
-          status: '1',
-          action: '1',
-          photoUrl: '1'
-        }
-      ],
       userId: '',
       rangeTime: [],
       searchObj: {},
@@ -282,45 +261,28 @@ export default {
   },
   methods: {
     ...mapActions('home', ['getAccountList']),
+    /**
+     * @description 获取账户列表
+     */
     async _getAccountList() {
-      const res = await this.getAccountList({
-        pageNum: 1,
-        pageSize: 20
-      })
-      console.log(res)
+      const res = await this.getAccountList()
+      this.accountList = res.rows
+      this.total = res.total
+    },
+    /**
+     * @description 单个开户
+     */
+    _batchAccountSingle() {
+      this.userTag = true
     },
     showDetail(record) {
       this.userId = record.userId
       this.showDetailTag = true
     },
     submit() {},
-    async showList() {
-      const req = {
-        ...this.pageList,
-        ...this.searchObj
-      }
-      const res = await this.getUserInfoList(req)
-      // console.log(res)
-      this.accountList = res.data.list.map(el => {
-        return {
-          ...el,
-          id: el.userId
-        }
-      })
-      this.accountList.map(ele => {
-        const index = this.cardList.findIndex(list => {
-          return list.id === ele.cardType
-        })
-        if (index !== -1) {
-          ele.cardType = this.cardList[index].cardName
-        }
-      })
-      this.total = res.data.total
-    },
     searchForm(values) {
-      // console.log(values)
       this.searchObj = values
-      this.showList()
+      this._getAccountList()
     },
 
     handle(title, record) {

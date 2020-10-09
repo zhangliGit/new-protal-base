@@ -10,16 +10,13 @@ const accountColumns = [
   {
     title: '姓名',
     dataIndex: 'userName',
-    width: '9%',
-    scopedSlots: {
-      customRender: 'other1'
-    }
+    width: '9%'
   },
   {
     title: '身份',
     dataIndex: 'userIdentity',
     width: '9%',
-    customRender: (text) => {
+    customRender: text => {
       return Tools.userType(text)
     }
   },
@@ -37,7 +34,7 @@ const accountColumns = [
     title: '卡状态',
     dataIndex: 'status',
     width: '8%',
-    customRender: (text) => {
+    customRender: text => {
       return Tools.getCardStatus(text)
     }
   },

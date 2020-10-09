@@ -139,6 +139,8 @@ const Tools = {
       return '家长'
     } else if (text === 32) {
       return '访客'
+    } else {
+      return '未知'
     }
   },
   getCardStatus(text) {
