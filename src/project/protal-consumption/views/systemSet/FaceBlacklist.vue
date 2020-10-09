@@ -1,27 +1,30 @@
 <template>
   <div class="sector-set page-layout qui-fx-ver">
     <no-data msg="暂无数据" v-if="dataList.length === 0"></no-data>
-    <table-list
-      v-else
-      :page-list="pageList"
-      :columns="columns"
-      :table-list="dataList"
-    >
+    <table-list v-else :page-list="pageList" :columns="columns" :table-list="dataList">
       <template v-slot:actions="action">
         <a-tooltip placement="topLeft" title="修改设置">
-          <a-button size="small" class="edit-action-btn" icon="form" @click.stop="edit(action.record)"></a-button>
+          <a-button
+            size="small"
+            class="edit-action-btn"
+            icon="form"
+            @click.stop="edit(action.record)"
+          ></a-button>
         </a-tooltip>
         <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="reset(action.record)">
-          <template slot="title">
-            您确定重置密码吗?
-          </template>
+          <template slot="title">您确定重置密码吗?</template>
           <a-tooltip placement="topLeft" title="重置密码">
             <a-button size="small" class="del-action-btn" icon="unlock"></a-button>
           </a-tooltip>
         </a-popconfirm>
       </template>
     </table-list>
-    <page-num v-model="pageList" v-if="dataList.length !== 0" :total="total" @change-page="showList"></page-num>
+    <page-num
+      v-model="pageList"
+      v-if="dataList.length !== 0"
+      :total="total"
+      @change-page="showList"
+    ></page-num>
   </div>
 </template>
 <script>
@@ -30,7 +33,7 @@ import TableList from '@c/TableList'
 import NoData from '@c/NoData'
 import PageNum from '@c/PageNum'
 const columns = [
-/*   {
+  /*   {
     title: '序号',
     width: '10%',
     scopedSlots: {
@@ -71,7 +74,7 @@ const columns = [
   }
 ]
 export default {
-  name: 'SectorSet',
+  name: 'FaceBlacklist',
   components: {
     TableList,
     PageNum,
@@ -95,10 +98,8 @@ export default {
     // this.showList()
   },
   methods: {
-    ...mapActions('home', [
-      'getTeacherList'
-    ]),
-    async showList (keyword = '') {
+    ...mapActions('home', ['getTeacherList']),
+    async showList(keyword = '') {
       const req = {
         ...this.pageList,
         schoolCode: this.userInfo.schoolCode,
@@ -112,10 +113,8 @@ export default {
       this.teacherList = res.data.list
       this.total = res.data.total
     },
-    edit(record) {
-    },
-    reset(record) {
-    }
+    edit(record) {},
+    reset(record) {}
   }
 }
 </script>

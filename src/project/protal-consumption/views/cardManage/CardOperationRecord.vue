@@ -3,7 +3,6 @@
     <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
       <div slot="left">
         <a-button type="primary" @click="batchAccount">批量开户</a-button>
-        <a-button type="primary" @click="batchAccount">开户</a-button>
       </div>
     </search-form>
     <div class="qui-fx-f1 qui-fx">
@@ -224,7 +223,7 @@ const formData = [
   }
 ]
 export default {
-  name: 'AccountList',
+  name: 'CardOperationRecord',
   components: {
     CountDetail,
     SearchForm,
@@ -278,16 +277,23 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
-    this._getAccountList()
+    // this.getCardList()
   },
   methods: {
-    ...mapActions('home', ['getAccountList']),
-    async _getAccountList() {
-      const res = await this.getAccountList({
-        pageNum: 1,
-        pageSize: 20
+    ...mapActions('home', ['getCardType', 'getUserInfoList', 'recharge', 'charge', 'subsidy']),
+    async getCardList() {
+      const res = await this.getCardType()
+      this.cardList = res.data
+      const lastCount = this.searchLabel.length - 1
+      res.data.forEach(ele => {
+        this.searchLabel[lastCount].list.push({
+          key: ele.cardType,
+          val: ele.cardName
+        })
       })
-      console.log(res)
+      this.$nextTick(() => {
+        this.showList()
+      })
     },
     showDetail(record) {
       this.userId = record.userId

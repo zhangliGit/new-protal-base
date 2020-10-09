@@ -36,14 +36,18 @@
               <a-radio value="0">不通过</a-radio>
             </a-radio-group>
           </a-form-item>
+          <a-form-item label="验收备注：" v-bind="formItemLayout" v-if="title === '验收隐患'">
+            <a-textarea
+              v-decorator="[ 'remark']"
+            />
+          </a-form-item>
           <a-form-item label="整改图片：" v-bind="formItemLayout" required v-if="title === '处理隐患'">
             <upload-multi :length="9" v-model="completePhotos" :fileInfo="fileInfo"></upload-multi>
             备注：限上传9张照片
           </a-form-item>
-          <a-form-item label="整改备注：" v-bind="formItemLayout">
+          <a-form-item label="整改备注：" v-bind="formItemLayout" v-if="title === '处理隐患'">
             <a-textarea
               v-decorator="[ 'remark']"
-              placeholder="请填写隐患位置"
             />
           </a-form-item>
           <a-form-item label="处理流程：" v-bind="formItemLayout">

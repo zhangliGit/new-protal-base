@@ -27,9 +27,7 @@
                 @selectAll="selectAllClass"
                 :table-list="classTableList"
               >
-                <template
-                  v-slot:other2="record"
-                >{{ record.record.gradeName }}{{ record.record.className }}</template>
+                <template v-slot:other2="record">{{ record.record.gradeName }}{{ record.record.className }}</template>
               </table-list>
             </div>
           </a-tab-pane>
@@ -53,9 +51,7 @@
                   @selectAll="selectAllTea"
                   :table-list="teaTableList"
                 >
-                  <template
-                    v-slot:other2="record"
-                  >{{ record.record.gradeName }}{{ record.record.className }}</template>
+                  <template v-slot:other2="record">{{ record.record.gradeName }}{{ record.record.className }}</template>
                 </table-list>
               </div>
             </div>
@@ -96,9 +92,7 @@
               @selectAll="selectAllDevice"
               :table-list="deviceTableList"
             >
-              <template
-                v-slot:other2="record"
-              >{{ record.record.gradeName }}{{ record.record.className }}</template>
+              <template v-slot:other2="record">{{ record.record.gradeName }}{{ record.record.className }}</template>
             </table-list>
           </a-tab-pane>
         </a-tabs>
@@ -112,11 +106,7 @@
             </div>
             <div class="choose-list qui-fx-f1" style="overflow: auto">
               <ul>
-                <li
-                  v-for="(item, index) in classTotalList"
-                  :key="item.classCode"
-                  class="qui-fx-jsb qui-fx-ac"
-                >
+                <li v-for="(item, index) in classTotalList" :key="item.classCode" class="qui-fx-jsb qui-fx-ac">
                   <span>{{ item.gradeName }}{{ item.className }}</span>
                   <a-tag @click="delClass(item.classCode, index)" color="#f50">删除</a-tag>
                 </li>
@@ -130,11 +120,7 @@
             </div>
             <div class="choose-list qui-fx-f1" style="overflow: auto">
               <ul>
-                <li
-                  v-for="(item, index) in teaTotalList"
-                  :key="item.userCode"
-                  class="qui-fx-jsb qui-fx-ac"
-                >
+                <li v-for="(item, index) in teaTotalList" :key="item.userCode" class="qui-fx-jsb qui-fx-ac">
                   <span>{{ item.userName }}</span>
                   <a-tag @click="delTea(item.userCode, index)" color="#f50">删除</a-tag>
                 </li>
@@ -148,11 +134,7 @@
             </div>
             <div class="choose-list qui-fx-f1" style="overflow: auto">
               <ul>
-                <li
-                  v-for="(item, index) in deviceTotalList"
-                  :key="item.deviceSn"
-                  class="qui-fx-jsb qui-fx-ac"
-                >
+                <li v-for="(item, index) in deviceTotalList" :key="item.deviceSn" class="qui-fx-jsb qui-fx-ac">
                   <span>{{ item.gradeName }}{{ item.className }}</span>
                   <a-tag @click="delDevice(item.deviceSn, index)" color="#f50">删除</a-tag>
                 </li>
@@ -246,7 +228,7 @@ const columns3 = [
     title: '安装位置',
     dataIndex: 'site',
     width: '25%',
-    customRender: (text) => {
+    customRender: text => {
       return parseInt(text) === 1 ? '室内' : '室外'
     }
   },
@@ -376,7 +358,7 @@ export default {
             ...this.pageList
           }
         })
-        this.classTableList = res.data.list.map((item) => {
+        this.classTableList = res.data.list.map(item => {
           return {
             ...item,
             id: item.classCode
@@ -392,7 +374,7 @@ export default {
             ...this.pageList
           }
         })
-        this.teaTableList = res.data.list.map((item) => {
+        this.teaTableList = res.data.list.map(item => {
           return {
             ...item,
             id: item.userCode
@@ -414,7 +396,7 @@ export default {
         if (!res.data) {
           return
         }
-        this.deviceTableList = res.data.list.map((item) => {
+        this.deviceTableList = res.data.list.map(item => {
           return {
             ...item,
             id: item.deviceSn
@@ -453,8 +435,8 @@ export default {
       if (type) {
         this.deviceTotalList = this.deviceTotalList.concat(item)
       } else {
-        item.forEach((item) => {
-          const index = this.deviceTotalList.findIndex((list) => {
+        item.forEach(item => {
+          const index = this.deviceTotalList.findIndex(list => {
             return list.deviceSn === item.deviceSn
           })
           this.deviceTotalList.splice(index, 1)
@@ -465,8 +447,8 @@ export default {
       if (type) {
         this.classTotalList = this.classTotalList.concat(item)
       } else {
-        item.forEach((item) => {
-          const index = this.classTotalList.findIndex((list) => {
+        item.forEach(item => {
+          const index = this.classTotalList.findIndex(list => {
             return list.classCode === item.classCode
           })
           this.classTotalList.splice(index, 1)
@@ -477,8 +459,8 @@ export default {
       if (type) {
         this.teaTotalList = this.teaTotalList.concat(item)
       } else {
-        item.forEach((item) => {
-          const index = this.teaTotalList.findIndex((list) => {
+        item.forEach(item => {
+          const index = this.teaTotalList.findIndex(list => {
             return list.userCode === item.userCode
           })
           this.teaTotalList.splice(index, 1)
@@ -514,7 +496,6 @@ export default {
       if (type) {
         if (this.isCheck) {
           this.deviceTotalList.push(item)
-          console.log(this.deviceTotalList)
         } else {
           this.deviceTotalList = [item]
         }
@@ -541,7 +522,6 @@ export default {
       this.showList('class')
     },
     teaSelect(item) {
-      console.log(item)
       this.orgCode = item.code
       this.showList('teachers')
     },
@@ -557,7 +537,7 @@ export default {
         }
       })
       this.buildList = res.data
-      this.buildList.forEach((el) => {
+      this.buildList.forEach(el => {
         el.label = el.name
         el.value = el.id
         el.isLeaf = false
@@ -576,7 +556,7 @@ export default {
       targetOption.loading = false
       targetOption.children = res.data.list
       // 处理第三层没有子节点的情况
-      targetOption.children.forEach((el) => {
+      targetOption.children.forEach(el => {
         el.label = el.name + (el.type === '2' ? '楼' : '')
         el.value = el.id
         el.isLeaf = el.type === '3'
@@ -596,7 +576,7 @@ export default {
         }
       })
       this.classList = res.data.list
-      this.classList.forEach((el) => {
+      this.classList.forEach(el => {
         el.label = el.name
         el.value = el.code
         el.isLeaf = false
@@ -614,7 +594,7 @@ export default {
       })
       targetOption.loading = false
       targetOption.children = res.data.list
-      targetOption.children.forEach((el) => {
+      targetOption.children.forEach(el => {
         el.label = el.className
         el.value = el.classCode
         el.isLeaf = true
@@ -646,7 +626,7 @@ export default {
       line-height: 41px;
       border-bottom: 1px #f5f5f5 solid;
     }
-    .choose-list{
+    .choose-list {
       height: 520px;
     }
     li {

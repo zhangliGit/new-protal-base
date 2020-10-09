@@ -267,6 +267,8 @@ export default {
         values.pictures = this.fileList.map(el => el.url)
         values.schoolCode = this.userInfo.schoolCode
         values.schoolName = this.userInfo.schoolName
+        values.userCode = this.userInfo.userCode
+        values.userName = this.userInfo.userName
         if (!this.detailId) {
           await this.addAccident(values)
         } else {

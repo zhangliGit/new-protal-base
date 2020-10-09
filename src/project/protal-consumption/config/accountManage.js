@@ -1,4 +1,4 @@
-// 系统表单
+// 账户管理
 import { RouteView } from '../layouts'
 const AccountList = resolve => require(['../views/accountMge/AccountList.vue'], resolve)
 const CardReadingRecharge = resolve => require(['../views/accountMge/CardReadingRecharge.vue'], resolve)
@@ -7,8 +7,8 @@ const AccountDetails = resolve => require(['../views/accountMge/AccountDetails.v
 const SubsidyManagement = resolve => require(['../views/accountMge/SubsidyManagement.vue'], resolve)
 
 const accountMge = {
-  path: '/accountManage',
-  name: 'accountManage',
+  path: '/accountList',
+  name: 'accountList',
   component: RouteView,
   meta: {
     title: '账户管理'

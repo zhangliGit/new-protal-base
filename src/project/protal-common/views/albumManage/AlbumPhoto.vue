@@ -2,13 +2,7 @@
   <div class="page-layout qui-fx-ver">
     <a-tabs>
       <a-tab-pane :tab="title" key="1">
-        <submit-form
-          ref="form"
-          @submit-form="submitForm"
-          title="上传照片"
-          v-model="showTag"
-          :form-data="formData"
-        >
+        <submit-form ref="form" @submit-form="submitForm" title="上传照片" v-model="showTag" :form-data="formData">
           <div slot="upload" class="qui-fx qui-fx-ac">
             <upload-multi :length="99999" v-model="fileList" :fileInfo="fileInfo"></upload-multi>
             <!--  <span style="font-size:12px;margin-left:10px;">大小20到100kB，像素400x400到800x800，格式仅jpg</span> -->
@@ -16,15 +10,9 @@
         </submit-form>
         <div class="qui-fx-jsb u-mar-b10 u-mar-l10">
           <div>
-            <a-button class="mar-r10" type="primary" @click="addPhoto">
-              <a-icon type="plus" />上传照片
-            </a-button>
-            <a-button class="mar-r10" type="primary" @click="setAlbum">
-              <a-icon type="form" />轮播图设置
-            </a-button>
-            <a-button type="primary" @click="batchDelePhoto">
-              <a-icon type="delete" />批量删除
-            </a-button>
+            <a-button class="mar-r10" type="primary" @click="addPhoto"> <a-icon type="plus" />上传照片 </a-button>
+            <a-button class="mar-r10" type="primary" @click="setAlbum"> <a-icon type="form" />轮播图设置 </a-button>
+            <a-button type="primary" @click="batchDelePhoto"> <a-icon type="delete" />批量删除 </a-button>
           </div>
           <div v-if="checkTag">
             <a-button class="mar-r10" @click="cancle">取消</a-button>
@@ -32,7 +20,7 @@
           </div>
         </div>
         <no-data msg="暂无照片" v-if="photoList.length === 0"></no-data>
-        <div v-else class="photo u-auto" :style="{height: scrollH + 'px'}">
+        <div v-else class="photo u-auto" :style="{ height: scrollH + 'px' }">
           <a-checkbox-group @change="onChange" v-model="checkedList">
             <div class="photo-list" v-for="(list, index) in photoList" :key="list.id">
               <div class="title qui-fx-je">
@@ -56,13 +44,7 @@
         </div>
       </a-tab-pane>
     </a-tabs>
-    <a-modal
-      destroyOnClose
-      :visible="previewVisible"
-      :footer="null"
-      @cancel="previewVisible = false"
-      width="800px"
-    >
+    <a-modal destroyOnClose :visible="previewVisible" :footer="null" @cancel="previewVisible = false" width="800px">
       <div class="content">
         <div class="album">
           <swiper :options="swiperOption">
@@ -156,7 +138,7 @@ export default {
       if (this.photoList.length === 0) {
         return
       }
-      this.photoList.forEach((item) => {
+      this.photoList.forEach(item => {
         if (item.isCover === '1') {
           this.checkedList.push(item.id)
         }
@@ -181,7 +163,6 @@ export default {
           this.$message.warning('最多只能设置20张')
           return
         }
-        console.log(this.chooseList)
         const req = {
           schoolCode: this.userInfo.schoolCode,
           ids: this.chooseList.join(',')
@@ -198,7 +179,6 @@ export default {
           return
         }
         this.$tools.delTip('是否删除这些照片?', () => {
-          console.log(this.chooseList)
           this.deletePhotos(this.chooseList).then(() => {
             this.$message.success('删除成功')
             this.$tools.goNext(() => {
@@ -237,7 +217,7 @@ export default {
       }
       const req = {
         albumId: this.id,
-        photoSrcList: this.fileList.map((item) => {
+        photoSrcList: this.fileList.map(item => {
           return item.url
         })
       }

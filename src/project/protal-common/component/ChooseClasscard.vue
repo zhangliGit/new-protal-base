@@ -21,9 +21,7 @@
             @selectAll="selectAll"
             :table-list="tableList"
           >
-            <template
-              v-slot:other2="record"
-            >{{ record.record.gradeName }}{{ record.record.className }}</template>
+            <template v-slot:other2="record">{{ record.record.gradeName }}{{ record.record.className }}</template>
           </table-list>
         </div>
         <div class="user-box qui-fx-ver">
@@ -33,11 +31,7 @@
           </div>
           <div class="qui-fx-f1" style="overflow: auto">
             <ul>
-              <li
-                v-for="(item, index) in totalList"
-                :key="item.id"
-                class="qui-fx-jsb qui-fx-ac"
-              >
+              <li v-for="(item, index) in totalList" :key="item.id" class="qui-fx-jsb qui-fx-ac">
                 <span>{{ item.gradeName }}{{ item.className }}</span>
                 <a-tag @click="delUser(item.id, index)" color="#f50">删除</a-tag>
               </li>
@@ -51,7 +45,10 @@
             <a-range-picker
               v-decorator="[
                 'time',
-                {initialValue: [appForm.startTime, appForm.endTime ], rules: [{ required: true, message: '请选择时间' }]}
+                {
+                  initialValue: [appForm.startTime, appForm.endTime],
+                  rules: [{ required: true, message: '请选择时间' }]
+                }
               ]"
               :showTime="{ format: 'HH:mm' }"
               format="YYYY-MM-DD HH:mm"
@@ -88,7 +85,7 @@ const columns = [
     title: '安装位置',
     dataIndex: 'site',
     width: '25%',
-    customRender: (text) => {
+    customRender: text => {
       return parseInt(text) === 1 ? '室内' : '室外'
     }
   },
@@ -160,12 +157,16 @@ export default {
   },
   created() {
     this.totalList = this.bindObj.deviceList
-    this.bindObj.deviceList.forEach((item) => {
+    this.bindObj.deviceList.forEach(item => {
       this.chooseList.push(item.id)
     })
     this.appForm = {
-      startTime: this.bindObj.startTime ? moment(new Date(this.bindObj.startTime), 'YYYY-MM-DD HH:MM') : moment(new Date(), 'YYYY-MM-DD HH:MM'),
-      endTime: this.bindObj.endTime ? moment(new Date(this.bindObj.endTime), 'YYYY-MM-DD HH:MM') : moment(new Date(new Date().getTime() + (24 * 60 * 60 * 1000)), 'YYYY-MM-DD HH:MM')
+      startTime: this.bindObj.startTime
+        ? moment(new Date(this.bindObj.startTime), 'YYYY-MM-DD HH:MM')
+        : moment(new Date(), 'YYYY-MM-DD HH:MM'),
+      endTime: this.bindObj.endTime
+        ? moment(new Date(this.bindObj.endTime), 'YYYY-MM-DD HH:MM')
+        : moment(new Date(new Date().getTime() + 24 * 60 * 60 * 1000), 'YYYY-MM-DD HH:MM')
     }
     this.showList()
   },
@@ -207,8 +208,8 @@ export default {
       if (type) {
         this.totalList = this.totalList.concat(item)
       } else {
-        item.forEach((item) => {
-          const index = this.totalList.findIndex((list) => {
+        item.forEach(item => {
+          const index = this.totalList.findIndex(list => {
             return list.id === item.id
           })
           this.totalList.splice(index, 1)
@@ -220,20 +221,19 @@ export default {
       if (type) {
         if (this.isCheck) {
           this.totalList.push(item)
-          console.log(this.totalList)
         } else {
           this.totalList = [item]
         }
       } else {
-        const index = this.totalList.findIndex((list) => list.id === item.id)
+        const index = this.totalList.findIndex(list => list.id === item.id)
         this.totalList.splice(index, 1)
       }
     },
-    onChange (value, dateString) {
+    onChange(value, dateString) {
       this.appForm.startTime = dateString[0]
       this.appForm.endTime = dateString[1]
     },
-    onOk (value) {
+    onOk(value) {
       this.appForm.startTime = moment(value[0]).format('YYYY-MM-DD HH:mm')
       this.appForm.endTime = moment(value[1]).format('YYYY-MM-DD HH:mm')
     },
