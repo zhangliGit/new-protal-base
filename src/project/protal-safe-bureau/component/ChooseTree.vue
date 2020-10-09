@@ -120,7 +120,7 @@ export default {
       this.selectObj = arr.filter(v => v.leve == '2') // 只要选择的子
     },
     onSearch() {
-      console.log(this.treeData)
+      // console.log(this.treeData)
       var vm = this
       // 添加这行代码是为了只点击搜索才触发
       vm.searchValue = vm.searchStr

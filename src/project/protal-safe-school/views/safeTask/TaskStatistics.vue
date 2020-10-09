@@ -24,6 +24,7 @@
             <div class="list-box  u-mar-20 " v-if="list.questionType==='1'">
               <div class="list-cont u-fx-ac-jc" v-if="list.statisticsAnswersDtoList">
                 <pre-echarts
+                  :id="list.id+''"
                   :legendData="list.content"
                   v-if="list.statisticsAnswersDtoList.length>0"
                   :dataList="list.statisticsAnswersDtoList"></pre-echarts>
@@ -48,22 +49,24 @@
               </div>
               <div class="list-cont u-mar-t20" v-if="list.statisticsAnswersByUserDtoList">
                 <a-table
-                  rowKey="answer"
+                  :rowKey="(record, index) => index"
                   :columns="columns"
                   :pagination="false"
                   :data-source="list.statisticsAnswersByUserDtoList.records"
                   bordered>
                 </a-table>
                 <a-pagination
+                  class="u-fx-je u-mar-t10"
                   @change="value => handleChange(value, list.id,index)"
                   simple
                   :default-current="1"
-                  :total="20" />
+                  :total="list.statisticsAnswersByUserDtoList.total" />
               </div>
             </div>
             <div class="list-box  u-mar-20 " v-if="list.questionType==='2'">
               <div class="list-cont u-fx-ac-jc" v-if="list.statisticsAnswersDtoList">
                 <bar-echarts
+                  :id="list.id+''"
                   v-if="list.statisticsAnswersDtoList.length>0"
                   :legendData="list.content"
                   :multipleData="list.statisticsAnswersDtoList">
@@ -89,37 +92,48 @@
               </div>
               <div class="list-cont u-mar-t20" v-if="list.statisticsAnswersByUserDtoList">
                 <a-table
-                  rowKey="answer"
+                  :rowKey="(record, index) => index"
                   :columns="columns"
                   :pagination="false"
                   :data-source="list.statisticsAnswersByUserDtoList.records"
                   bordered>
                 </a-table>
                 <a-pagination
+                  class="u-fx-je u-mar-t10"
                   @change="value => handleChange(value, list.id,index)"
                   simple
                   :default-current="1"
-                  :total="20" />
+                  :total="list.statisticsAnswersByUserDtoList.total" />
               </div>
             </div>
             <div class="list-box  u-mar-20 " v-if="list.questionType==='3'">
               <div class="list-cont u-mar-t20" v-if="list.statisticsAnswersByUserDtoList">
                 <a-table
-                  :columns="columns"
+                  :rowKey="(record, index) => index"
                   :pagination="false"
                   :data-source="list.statisticsAnswersByUserDtoList.records"
                   bordered>
                 </a-table>
                 <a-pagination
+                  class="u-fx-je u-mar-t10"
                   @change="value => handleChange(value, list.id,index)"
                   simple
                   :default-current="1"
-                  :total="20" />
+                  :total="list.statisticsAnswersByUserDtoList.total" />
               </div>
             </div>
             <div class="list-box  u-mar-20 " v-if="list.questionType==='4'">
-              <div class="list-cont u-mar-t20">
-                <a-table :columns="columns" :pagination="false" :data-source="dangerDetail" bordered>
+              <div class="list-cont u-mar-t20" v-if="list.statisticsAnswersByUserDtoList">
+                <a-table
+                  :rowKey="(record, index) => index"
+                  :columns="columnsUrl"
+                  :pagination="false"
+                  :data-source="list.statisticsAnswersByUserDtoList.records"
+                  bordered>
+                  <template slot="answer" slot-scope="record">
+                    {{ record.answer }}
+                    <span class="u-type-primary" @click="downloadImg(record.answer)">下载</span>
+                  </template>
                 </a-table>
               </div>
             </div>
@@ -152,6 +166,23 @@ const columns = [
     dataIndex: 'answer'
   }
 ]
+const columnsUrl = [
+  {
+    title: '学校',
+    dataIndex: 'schoolName',
+    scopedSlots: { customRender: 'name' }
+  },
+  {
+    title: '回答人',
+    width: '60%',
+    dataIndex: 'completeUserName'
+  },
+  {
+    title: '选项',
+    // dataIndex: 'answer',
+    scopedSlots: { customRender: 'answer' }
+  }
+]
 export default {
   name: 'TaskStatistics',
   components: {
@@ -164,6 +195,7 @@ export default {
       activeKey: [],
       dateNum: '',
       planList: [],
+      columnsUrl,
       taskName: this.$route.query.name,
       taskType: this.$route.query.taskType,
       simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
@@ -179,16 +211,16 @@ export default {
   async mounted() {
     this.taskCode = this.$route.query.code
     this.publishDate = this.$route.query.publishDate
-    await this._planList()
+    if (this.taskType !== '1') {
+      await this._planList()
+    }
     await this.getDetails()
   },
   methods: {
     ...mapActions('home', ['answerTaskDetail', 'answersTaskStatistics', 'userTaskStatistics', 'planLists']),
     async getDetails() {
-      console.log('11', this.dateNum)
       const res = await this.answerTaskDetail({ taskCode: this.taskCode })
       this.dataLists = res.data
-      console.log('11', this.dataLists)
       this.activeKey.push(res.data[0].id)
       this.getAnswers(res.data[0].id, 0)
       this.getUser(res.data[0].id, 0, 1)
@@ -240,7 +272,6 @@ export default {
       this.getUser(id, index, value)
     },
     changeActivekey(key) {
-      // console.log(key)
     },
     cancel() {
       this.$router.go(-1)

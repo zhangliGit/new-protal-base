@@ -41,7 +41,7 @@
         </a-popconfirm>
       </template>
       <template v-slot:other3="other3">
-        <span>{{ other3.record.startTime | gmtToDate() }} - {{ other3.record.endTime | gmtToDate() }}</span>
+        <span>{{ other3.record.startTime | getDate(5) }} - {{ other3.record.endTime | getDate(5) }}</span>
       </template>
       <template v-slot:other4="other4">
         <a-popover>
@@ -52,7 +52,7 @@
         </a-popover>
       </template>
       <template v-slot:other2="other2">
-        <span v-if="other2.record.openSign === '1'">{{ other2.record.reserveDate | gmtToDate }}</span>
+        <span v-if="other2.record.openSign === '1'">{{ other2.record.stopDatetime | getDate(5) }}</span>
         <span v-else>--</span>
       </template>
       <template v-slot:other1="other1">
@@ -111,8 +111,8 @@ const columns = [
     title: '报名截止时间',
     dataIndex: 'stopDatetime',
     width: '10%',
-    customRender: text => {
-      return text ? Tools.getDate(text, 6) : '--'
+    scopedSlots: {
+      customRender: 'other2'
     }
   },
   {

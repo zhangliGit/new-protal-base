@@ -2,93 +2,56 @@
   <div class="task-add page-layout qui-fx-ver">
     <div class="content pos-box">
       <div class="u-padd-10 u-padd-l20 bg-fff">
-        <div class="fill-top u-mar-b20">
-          <div class="fill-head task">任务内容</div>
-        </div>
+
         <a-form :form="form">
-          <a-form-item label="任务名称：" v-bind="formItemLayout">
+          <a-form-item label="资源名称：" v-bind="formItemLayout">
             <a-input
               v-decorator="[
                 'taskName',
                 {
                   initialValue: cardInfo.taskName,
-                  rules: [{ required: true, message: '请填写任务名称' }]
+                  rules: [{ required: true, message: '请填写资源名称' }]
                 }
               ]"
-              placeholder="请填写任务名称"
+              placeholder="请填写资源名称"
             />
           </a-form-item>
-          <a-form-item label="任务类型" v-bind="formItemLayout">
-            <a-radio-group
+          <a-form-item label="资源类型" v-bind="formItemLayout">
+            <a-cascader
+              :options="firstData"
+              :load-data="loadData"
+              placeholder="请选择资源类型"
+              change-on-select
+              @change="onChange"
+            />
+          </a-form-item>
+          <a-form-item label="文件类型" v-bind="formItemLayout">
+            <a-select
               v-decorator="[
-                'taskType',
-                {
-                  initialValue: cardInfo.taskType,
-                  rules: [{ required: true, message: '请选择任务类型' }]
-                }
+                'leaderName',
+                { initialValue: appForm.leaderName, rules: [{ required: true, message: '请选择文件类型' }] },
               ]"
-              button-style="solid"
-              @change="change"
-              :disabled="isEdit"
+              placeholder="请选择文件类型"
             >
-              <a-radio-button value="1">一次性计划</a-radio-button>
-              <a-radio-button value="2">周任务</a-radio-button>
-              <a-radio-button value="3">月任务</a-radio-button>
-            </a-radio-group>
-            <div class="week-box week-task qui-fx-ver" v-if="cardInfo.taskType === '2'">
-              <div>
-                <span class="mar-r10">
-                  <a-input-number id="inputNumber" v-model="value" :min="minValue" />
-                </span>
-                <div
-                  :class="['week-item', 'weeks' ,{'active': allWeek}]"
-                  @click="chooseAll('allWeek','weekCurrent')"
-                >今年全选</div>
-              </div>
-              <div>
-                <a-tooltip
-                  placement="rightTop"
-                  :class="['week-item','weeks',{'active': weekCurrent.indexOf(Number(index)) > -1 }]"
-                  v-for="(item,index) in weeks"
-                  :key="index"
-                  @click="weekChange('weekCurrent', Number(index), 'allWeek')"
-                >
-                  <template slot="title">
-                    <span>{{ item[0] }}~{{ item[item.length-1] }}</span>
-                  </template>
-                  <div>第{{ index }}周</div>
-                </a-tooltip>
-              </div>
-            </div>
-            <div class="week-box week-task qui-fx-ver" v-if="cardInfo.taskType === '3'">
-              <div>
-                <span class="mar-r10">
-                  <a-input-number id="inputNumber" v-model="value" :min="minValue" />
-                </span>
-                <div
-                  :class="['week-item', 'weeks' ,{'active': allMonth}]"
-                  @click="chooseAll('allMonth','monthCurrent')"
-                >今年全选</div>
-              </div>
-              <div>
-                <div
-                  :class="['week-item', 'weeks', {'active': monthCurrent.indexOf(item) > -1}]"
-                  v-for="(item,index) in 12"
-                  :key="index"
-                  @click="weekChange('monthCurrent', item, 'allMonth')"
-                >{{ item > 9 ? item : `0${item}` }}月</div>
-              </div>
-            </div>
+              <a-select-option value="1">看一看</a-select-option>
+              <a-select-option value="2">玩一玩</a-select-option>
+              <a-select-option value="3">读一读</a-select-option>
+              <a-select-option value="4">听一听</a-select-option>
+            </a-select>
           </a-form-item>
-          <a-form-item
-            label="时间："
-            v-bind="formItemLayout"
-            :style="{ textAlign: 'center' }"
-            v-if="cardInfo.taskType === '1'"
-          >
-            <a-range-picker
-              v-decorator="['data', {initialValue: [moment(new Date(), 'YYYY-MM-DD'), moment( new Date(), 'YYYY-MM-DD')], rules: [{ required: 'required', message: '请选择时间' }]}]"
-            />
+          <a-form-item label="封面图" v-bind="formItemLayout">
+            <a-row :gutter="[50,100]" >
+              <a-col :span="24" >
+                <upload-multi
+                  :length="9"
+                  v-model="photoUrl"
+                  :fileInfo="fileInfo"
+                ></upload-multi>
+              </a-col>
+              <a-col :span="8" >
+                备注：限上传9张照片
+              </a-col>
+            </a-row>
           </a-form-item>
           <a-form-item
             label="任务描述："
@@ -150,24 +113,24 @@
               <div class="subject u-mar-t10 u-padd-b10">
                 <div
                   class="project qui-fx u-mar-b10 u-padd"
-                  v-for="list in radioList"
-                  :key="list.key"
+                  v-for="el in radioList"
+                  :key="el.key"
                 >
                   <div class="qui-fx-ver">题目：</div>
                   <div class="qui-fx-f1 qui-fx-ver u-mar-l20">
                     <div class="qui-fx">
-                      <a-input style="width:90%" placeholder="请输入标题" v-model="list.title" />
+                      <a-input style="width:90%" placeholder="请输入标题" v-model="el.title" />
                       <div
                         class="u-line u-mar-l10 u-type-primary"
-                        @click="del(0, list, 'radioList')"
+                        @click="del(0, el, 'radioList')"
                       >删除</div>
                     </div>
-                    <div class="qui-fx u-mar-t10" v-for="item in list.pointList" :key="item.key">
+                    <div class="qui-fx u-mar-t10" v-for="item in el.pointList" :key="item.key">
                       <a-input style="width:90%" placeholder="请输入选项" v-model="item.content" />
                       <a-icon
                         class="u-line u-mar-l10 u-type-primary"
                         type="minus-circle"
-                        @click="del(1, list, item)"
+                        @click="del(1, el, item)"
                       />
                     </div>
                     <div class="qui-fx u-mar-t10">
@@ -175,7 +138,7 @@
                         class="input"
                         placeholder="新建选项"
                         read-only
-                        @click="modify(1, 'radioList',list)"
+                        @click="modify(1, 'radioList',el)"
                       />
                     </div>
                   </div>
@@ -187,24 +150,24 @@
               <div class="subject u-mar-t10 u-padd-b10">
                 <div
                   class="project qui-fx u-mar-b10 u-padd"
-                  v-for="list in checkList"
-                  :key="list.key"
+                  v-for="el in checkList"
+                  :key="el.key"
                 >
                   <div class="qui-fx-ver">题目：</div>
                   <div class="qui-fx-f1 qui-fx-ver u-mar-l20">
                     <div class="qui-fx">
-                      <a-input style="width:90%" placeholder="请输入标题" v-model="list.title" />
+                      <a-input style="width:90%" placeholder="请输入标题" v-model="el.title" />
                       <div
                         class="u-line u-mar-l10 u-type-primary"
-                        @click="del(0, list, 'checkList')"
+                        @click="del(0, el, 'checkList')"
                       >删除</div>
                     </div>
-                    <div class="qui-fx u-mar-t10" v-for="item in list.pointList" :key="item.key">
+                    <div class="qui-fx u-mar-t10" v-for="item in el.pointList" :key="item.key">
                       <a-input style="width:90%" placeholder="请输入选项" v-model="item.content" />
                       <a-icon
                         class="u-line u-mar-l10 u-type-primary"
                         type="minus-circle"
-                        @click="del(1, list, item)"
+                        @click="del(1, el, item)"
                       />
                     </div>
                     <div class="qui-fx u-mar-t10">
@@ -212,7 +175,7 @@
                         class="input"
                         placeholder="新建选项"
                         read-only
-                        @click="modify(1, 'checkList',list)"
+                        @click="modify(1, 'checkList',el)"
                       />
                     </div>
                   </div>
@@ -224,16 +187,16 @@
               <div class="subject u-mar-t10 u-padd-b10">
                 <div
                   class="project qui-fx u-mar-b10 u-padd"
-                  v-for="list in fillList"
-                  :key="list.key"
+                  v-for="el in fillList"
+                  :key="el.key"
                 >
                   <div class="qui-fx-ver">题目：</div>
                   <div class="qui-fx-f1 qui-fx-ver u-mar-l20">
                     <div class="qui-fx">
-                      <a-input style="width:90%" placeholder="请输入题目" v-model="list.title" />
+                      <a-input style="width:90%" placeholder="请输入题目" v-model="el.title" />
                       <div
                         class="u-line u-mar-l10 u-type-primary"
-                        @click="del(0, list, 'fillList')"
+                        @click="del(0, el, 'fillList')"
                       >删除</div>
                     </div>
                   </div>
@@ -245,16 +208,16 @@
               <div class="subject u-mar-t10 u-padd-b10">
                 <div
                   class="project qui-fx u-mar-b10 u-padd"
-                  v-for="list in fileList"
-                  :key="list.key"
+                  v-for="el in fileList"
+                  :key="el.key"
                 >
                   <div class="qui-fx-ver">题目：</div>
                   <div class="qui-fx-f1 qui-fx-ver u-mar-l20">
                     <div class="qui-fx">
-                      <a-input style="width:90%" placeholder="请输入附件标题" v-model="list.title" />
+                      <a-input style="width:90%" placeholder="请输入附件标题" v-model="el.title" />
                       <div
                         class="u-line u-mar-l10 u-type-primary"
-                        @click="del(0, list, 'fileList')"
+                        @click="del(0, el, 'fileList')"
                       >删除</div>
                     </div>
                   </div>
@@ -291,8 +254,12 @@ export default {
     NoData
   },
   data() {
-    this.type = this.$route.query.type
+    this.type = this.$route.query.type + ''
     return {
+      userList: {}, // 资源类型
+      appForm: {},
+      firstData: [],
+      photoUrl: [],
       list: [
         {
           key: '0',
@@ -363,10 +330,8 @@ export default {
     }
   },
   mounted() {
-    this.url = `${hostEnv.zx_subject}/file/upload/doc`
-    this.params.schoolCode = this.userInfo.schoolCode
     this.detailId = this.$route.query.id
-    this.times = [{ key: 0 }]
+    this._firstCategory()
     this.title = this.url === 'safe' ? '护导队伍' : '巡查人员'
     if (this.detailId) {
       this.showDetail()
@@ -374,24 +339,49 @@ export default {
     } else {
       this.isEdit = false
     }
-    this.value = new Date().getFullYear()
-    this.minValue = new Date().getFullYear()
-    this.getnumofweeks(this.value)
   },
   methods: {
     ...mapActions('home', [
-      'getTaskDetail',
-      'addTask',
+      'firstCategory',
+      'secondCategory',
       'updateDailyTask',
       'addSafeTask',
       'updateSafeTask',
       'modifySchoolTask'
     ]),
     moment,
+    async _firstCategory() {
+      const res = await this.firstCategory()
+      this.firstData = res.data.map(res => {
+        return {
+          label: res.name,
+          value: res.id,
+          isLeaf: false
+        }
+      })
+    },
+    onChange(value) {
+      console.log(value)
+    },
+    async loadData(selectedOptions) {
+      const targetOption = selectedOptions[selectedOptions.length - 1]
+      targetOption.loading = true
+      const res = await this.secondCategory(selectedOptions[0].value)
+      targetOption.loading = false
+      targetOption.children = res.data.map(res => {
+        return {
+          label: res.name,
+          value: res.id
+        }
+      })
+      this.firstData = [...this.firstData]
+    },
     // 获取详情
     async showDetail() {
       const res = await this.getTaskDetail(this.detailId)
       this.cardInfo = res.data
+      this.weekCurrent = res.data.dateNums
+      this.monthCurrent = res.data.dateNums
       const questions = res.data.questions.map((el, index) => {
         return {
           ...el,
@@ -421,7 +411,8 @@ export default {
           this.fileCount = this.fileList.length
         }
       })
-      this.docName = 'res.data.docName'
+      this.docName = res.data.docName
+      this.docUrl = res.data.docUrl
       this.show = !res.data.docUrl
       this.flag = !!res.data.docUrl
     },
@@ -563,8 +554,7 @@ export default {
     submitOk(e) {
       e.preventDefault()
       this.form.validateFields((error, values) => {
-        let list = this.radioList.concat(this.checkList).concat(this.fillList)
-        console.log('list', list)
+        let list = this.radioList.concat(this.checkList).concat(this.fillList).concat(this.fileList)
         list = list.map((el) => {
           return {
             content:
@@ -577,6 +567,8 @@ export default {
             questionType: el.questionType
           }
         })
+        values.userName = this.userInfo.userName
+        values.userCode = this.userInfo.userCode
         values.schoolCode = this.userInfo.schoolCode
         values.year = this.value
         values.docUrl = this.docUrl
@@ -585,13 +577,22 @@ export default {
         values.des = this.cardInfo.des
         values.startTime = this.cardInfo.taskType === '1' ? moment(values.data[0]).format('YYYY-MM-DD') : undefined
         values.endTime = this.cardInfo.taskType === '1' ? moment(values.data[1]).format('YYYY-MM-DD') : undefined
-        values.dateNums =
+        const dateNums =
           this.cardInfo.taskType === '2'
             ? this.weekCurrent
             : this.cardInfo.taskType === '3'
               ? this.monthCurrent
-              : undefined
-        console.log('values', values)
+              : ''
+        for (var j = 0; j < dateNums.length - 1; j++) {
+          for (var i = 0; i < dateNums.length - 1 - j; i++) {
+            if (dateNums[i] > dateNums[i + 1]) {
+              var temp = dateNums[i]
+              dateNums[i] = dateNums[i + 1]
+              dateNums[i + 1] = temp
+            }
+          }
+        }
+        values.dateNums = dateNums
         this.isLoad = false
         if (!error) {
           this.isLoad = true

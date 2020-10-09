@@ -151,6 +151,8 @@ export default {
         this.delsGroupClass(this.chooseList).then(res => {
           this.$message.success('操作成功')
           this.$tools.goNext(() => {
+            this.pageList.size = 20
+            this.pageList.page = 1
             this.showList()
             this.chooseList = []
           })

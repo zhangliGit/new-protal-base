@@ -1,24 +1,18 @@
 <template>
-  <a-modal width="800px" :title="title" v-model="visible" :footer="null" @cancel="visible=false">
-    <!-- <template slot="footer">
-      <a-button key="back" @click="visible=fals">
-        取消
-      </a-button> -->
-    <div class="u-fx-jsb">
-      <a-button v-if="state==='2'||state==='3'||state==='5'" key="submit" @click="restate()" type="primary" >
-        打回重报
-      </a-button>
-      <a-button v-if="(state+'')==='4'" key="submit" type="info" >
-        已打回
-      </a-button>
-      <img v-if="state==='4'" class="img-width u-mar-r20" src="../assets/img/dahui.png" alt="">
-      <img v-if="state==='5'" class="img-width u-mar-r20" src="../assets/img/chongbao.png" alt="">
-    </div>
+  <a-modal
+    width="800px"
+    :title="title"
+    v-model="visible"
+    :footer="null"
+    @cancel="visible=false"
+  >
 
     <!-- </template> -->
     <div class="qui-fx-ver">
       <div class="top bg-fff u-padd-10 u-padd-l20">
-        <div class="u-tx-c">{{ detailInfo.taskName }}</div>
+        <img v-if="state==='4'" class="img-width u-mar-r20 img-box" src="../assets/img/dahui.png" alt="">
+        <img v-if="state==='5'" class="img-width u-mar-r20 img-box" src="../assets/img/chongbao.png" alt="">
+        <div class="u-tx-c u-bold u-font-1">{{ detailInfo.taskName }}</div>
         <div class="qui-fx-jc u-mar-t10">
           <div class="qui-fx-ver">
             <div>发布人：{{ detailInfo.publisherName }}</div>
@@ -120,6 +114,14 @@
           </a-timeline>
         </div>
       </div>
+      <div class="u-fx-ac-jc">
+        <a-button v-if="state==='2'||state==='3'||state==='5'" key="submit" @click="restate()" type="primary" >
+          打回重报
+        </a-button>
+        <a-button v-if="(state+'')==='4'" key="submit" type="info" >
+          已打回
+        </a-button>
+      </div>
     </div>
     <submit-form
       ref="form"
@@ -160,6 +162,8 @@ export default {
     return {
       state: '',
       id: '',
+      schoolCode: '',
+      taskCode: '',
       formStatus: false,
       formData,
       img,
@@ -167,11 +171,7 @@ export default {
       checkList: [],
       fillList: [],
       fileList: [],
-      taskCode: '',
-      params: {},
       docUrl: '',
-      show: true,
-      flag: false,
       detailInfo: {},
       visible: false,
       processes: {},
@@ -186,11 +186,9 @@ export default {
     moment,
     // 获取详情
     async showDetail(record) {
-      // console.log(record)
       const req = {
-        schoolCode: record.schoolCode,
-        taskCode: record.taskCode
-        // id: record.id
+        schoolCode: this.schoolCode,
+        taskCode: this.taskCode
       }
       const res = await this.reportTaskDetail(req)
       this.detailInfo = res.data
@@ -224,6 +222,7 @@ export default {
           this.fileList.push(el)
         }
       })
+
       this.processes = res.data.outSafeTaskProcessDtoList
     },
     // 下載
@@ -249,10 +248,13 @@ export default {
           this.$refs.form.error()
           this.formStatus = false
           this.$message.success('已打回')
-          // this.$tools.goNext(() => {
-          //   // this.showDetail()
-          //   this.$refs.form.reset()
-          // })
+          this.$tools.goNext(() => {
+            this.showDetail()
+            this.$refs.form.reset()
+            this.$tools.goNext(() => {
+              this.visible = false
+            })
+          })
         })
         .catch(() => {
           this.$refs.form.error()
@@ -292,6 +294,13 @@ export default {
 }
 .top {
   border-bottom: 1px solid #ccc;
+  position: relative;
+  .img-box{
+    position: absolute;
+    right: 0;
+    top: 0;
+    transform: translate();
+  }
 }
 .subject {
   background-color: #fafafa;

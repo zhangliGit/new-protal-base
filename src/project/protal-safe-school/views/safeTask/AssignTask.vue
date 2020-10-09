@@ -124,6 +124,7 @@ export default {
     },
     async showList() {
       this.searchList.schoolCode = this.userInfo.schoolCode
+      this.searchList.publisherCode = this.userInfo.userCode
       this.searchList = Object.assign(this.searchList, this.pageList)
       const res = await this.getSafeTask(this.searchList)
       this.userList = res.data.records

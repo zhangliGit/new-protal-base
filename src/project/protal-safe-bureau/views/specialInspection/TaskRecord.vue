@@ -15,7 +15,7 @@
           <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="goDetail(action.record)"></a-button>
         </a-tooltip>
         <a-tooltip placement="topLeft" title="查看报告">
-          <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="goReport(action.record.code)"></a-button>
+          <a-button size="small" class="export-all-btn" icon="export" @click="goReport(action.record.code)"></a-button>
         </a-tooltip>
       </template>
     </table-list>
@@ -75,7 +75,6 @@ export default {
         schoolCode: this.userInfo.schoolCode
       }
       const res = await this.specialPage(req)
-      console.log(res)
       this.findList = res.data.records
       this.total = res.data.total
     },

@@ -13,7 +13,7 @@
       :total="total"
       :current="value.page"
       :size="size"
-      showSizeChanger
+      :showSizeChanger="changer"
       :showQuickJumper="jumper"
       @change="changePage"
       @showSizeChange="changeSize"
@@ -30,6 +30,10 @@ export default {
       default: ''
     },
     jumper: {
+      type: Boolean,
+      default: true
+    },
+    changer: {
       type: Boolean,
       default: true
     },

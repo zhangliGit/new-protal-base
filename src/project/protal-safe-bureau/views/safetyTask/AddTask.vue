@@ -405,7 +405,7 @@ export default {
                 content: item
               }
             })
-            : undefined
+            : []
         }
       })
       questions.map((el) => {
@@ -513,7 +513,6 @@ export default {
       this.show = true
     },
     handleChange(info) {
-      console.log('aa', info)
       if (info.file.status !== 'uploading' && info.file.status !== 'removed') {
         if (info.file.response) {
           this.$message.error(info.file.response.message)
@@ -544,7 +543,7 @@ export default {
         if (key === '0') return false
         const newData = {
           key: this[`${key}Count`],
-          pointList: key === 'radio' || key === 'check' ? [] : undefined,
+          pointList: [],
           questionType: key === 'radio' ? '1' : key === 'check' ? '2' : key === 'fill' ? '3' : '4'
         }
         this[`${key}List`] = [...this[`${key}List`], newData]
@@ -567,22 +566,44 @@ export default {
     submitOk(e) {
       e.preventDefault()
       this.form.validateFields((error, values) => {
+        if (!this.cardInfo.des) {
+          this.$message.warning('请填写任务描述')
+          return false
+        }
         let list = this.radioList.concat(this.checkList).concat(this.fillList).concat(this.fileList)
-        console.log('list', list)
+        if (list.length === 0) {
+          this.$message.warning('请点击题目控件添加题目')
+          return false
+        }
         list = list.map((el) => {
           return {
             content:
               el.questionType === '1' || el.questionType === '2'
                 ? el.pointList.map((item) => {
-                  return item.content
+                  return item.content ? item.content : ''
                 })
-                : undefined,
+                : [],
             title: el.title,
             questionType: el.questionType
           }
         })
+        const isTrue = []
+        list.forEach((el) => {
+          if (!el.title || ((el.questionType === '1' || el.questionType === '2') && el.content.length === 0)) {
+            isTrue.push(1)
+          } else if (el.content && el.content.length !== 0) {
+            el.content.forEach(element => {
+              if (element === '') {
+                isTrue.push(1)
+              }
+            })
+          }
+        })
+        if (isTrue.length > 0) {
+          this.$message.warning('请填写完整题目')
+          return false
+        }
         values.userName = this.userInfo.userName
-        console.log(this.userInfo.userName)
         values.userCode = this.userInfo.userCode
         values.schoolCode = this.userInfo.schoolCode
         values.year = this.value
@@ -608,9 +629,11 @@ export default {
           }
         }
         values.dateNums = dateNums
-        console.log('values', values)
+        if (this.cardInfo.taskType !== '1' && values.dateNums === '') {
+          this.$message.warning('请选择任务时间')
+          return false
+        }
         this.isLoad = false
-        console.log(this.type)
         if (!error) {
           this.isLoad = true
           if (this.type === '1') {

@@ -8,6 +8,7 @@ import yearApi from './year'
 import bureauApi from './bureau'
 import appApi from './app'
 import noticeApi from './notice'
+import libraryApi from './library'
 
 const apiList = {
   ...homeApi,
@@ -19,6 +20,7 @@ const apiList = {
   ...calendarApi,
   ...yearApi,
   ...bureauApi,
-  ...appApi
+  ...appApi,
+  ...libraryApi
 }
 export default apiList

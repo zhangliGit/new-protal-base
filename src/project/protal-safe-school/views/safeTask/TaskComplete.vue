@@ -16,18 +16,18 @@
           <a-select-option value="2">已完成</a-select-option>
           <a-select-option value="3">逾期填报</a-select-option>
         </a-select>
-        <div>（已完成数/总数：{{ compNum }}/{{ sum }}）</div>
+        <div>(已完成数/总数：{{ compNum }}/{{ sum }})</div>
       </div>
-      <div v-for="el in dataList" :key="el.orgCode">
-        <div class="fill-top u-mar-b20">
-          <div class="fill-head task">{{ el.orgName }}</div>
+      <div v-for="(el,index) in dataList" :key="index">
+        <div class="fill-top u-mar-b20 ">
+          <span class="fill-head">{{ el.orgName }}&nbsp;{{ number(el.list) }}</span>
         </div>
         <div class="card">
           <div class="cont u-fx-wp u-mar-t10">
             <div
               class="list-box u-fx-ac-jc u-mar-10"
               :class="v.state === '2' || v.state === '3'|| v.state === '5'? 'green' : 'red'"
-              v-for="(v,index2) in el.outCompInfoOfTaskByPeDtoList"
+              v-for="(v,index2) in el.list"
               :key="index2"
               @click="check(v)"
             >
@@ -64,6 +64,7 @@ export default {
   },
   computed: {
     ...mapState('home', ['userInfo'])
+
   },
   async mounted() {
     this.taskType = this.$route.query.taskType
@@ -77,12 +78,12 @@ export default {
     ...mapActions('home', ['schTaskCompleted', 'getTeachers', 'wechatNotice', 'planLists']),
     async showList() {
       const req = {
-        state: this.states,
+        state: this.state,
         year: this.dateNum.split('-')[0],
         dateNum: this.dateNum.split('-')[1],
         schoolCode: this.userInfo.schoolCode,
-        taskTemplateCode: this.taskCode,
-        taskType: this.taskType
+        taskTemplateCode: this.taskCode
+        // taskType: this.taskType
       }
       const res = await this.schTaskCompleted(req)
       const { compNum, outCompInfoOfTaskByOrgDtoList, sum } = res.data
@@ -109,8 +110,13 @@ export default {
       }
       this.showList()
     },
+    number(list) {
+      const a = list.length
+      const b = list.filter(v => v.state === '3' || v.state === '7').length
+      return `(${b}/${a})`
+      // return `a`
+    },
     check(record) {
-      console.log(record)
       if (record.state === '1') {
         this.$tools.delTip('确定要通知该学校相关负责人去处理该任务？', () => {
           // 查微信号
@@ -119,14 +125,12 @@ export default {
             userCodes: record.userCode.split(',')
           }
           this.getTeachers(req1).then((res) => {
-            console.log(res)
             const req2 = {
           	  openId: res.data.map(v => v.openId),
               schoolCode: record.schoolCode,
               taskCode: record.taskCode
             }
             this.wechatNotice(req2).then(result => {
-              console.log(result)
               this.$message.success('操作成功')
               this.$tools.goNext(() => {
                 this.showList()
@@ -179,16 +183,15 @@ export default {
     color: #4d4cac;
     border-bottom: 1px solid #ccc;
     .fill-head {
-      text-align: center;
+      // text-align: center;
       border-bottom: 3px solid #4d4cac;
     }
     .task {
-      width: 70px;
+      width: 100px;
     }
     .report {
       width: 100px;
     }
-
   }
   .list-box {
     width: 250px;

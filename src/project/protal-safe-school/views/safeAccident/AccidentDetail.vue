@@ -17,6 +17,9 @@
         <a-form-item v-bind="formItemLayout" label="事故图片">
           <img :src="url" alt="" v-for="(url, index) in detailInfo.pictures" :key="index" />
         </a-form-item>
+        <a-form-item v-bind="formItemLayout" label="处理信息" required v-if="detailInfo.disposeInfo">
+          <a-textarea v-decorator="['disposeInfo', { initialValue: detailInfo.disposeInfo }]" readOnly />
+        </a-form-item>
         <a-form-item v-bind="formItemLayout" label="批示以及续报信息">
           <a-input
             v-decorator="['content', { initialValue: '暂未有批示和续报信息' }]"

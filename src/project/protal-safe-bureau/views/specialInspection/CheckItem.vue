@@ -15,7 +15,7 @@
           <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="goDetail(1, action.record.id)"></a-button>
         </a-tooltip>
         <a-tooltip placement="topLeft" title="编辑" v-if="action.record.canEdit">
-          <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="goDetail(2,action.record.id)"></a-button>
+          <a-button size="small" class="user-action-btn" icon="form" @click="goDetail(2,action.record.id)"></a-button>
         </a-tooltip>
         <a-popconfirm
           placement="left"
@@ -92,13 +92,11 @@ export default {
       this.searchList.schoolCode = this.userInfo.schoolCode
       this.searchList = Object.assign(this.searchList, this.pageList)
       const res = await this.getItemPageList(this.searchList)
-      console.log(res)
       this.findList = res.data.records
       this.total = res.data.total
     },
     async delMenu(id) {
       const res = await this.delItem(id)
-      console.log(res)
       this.$message.success('删除成功')
       this.showList()
     },

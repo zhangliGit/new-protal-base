@@ -296,7 +296,6 @@ export default {
     },
     // 任务绑定
     addApp(type, id) {
-      console.log('id', id)
       this.params.holidayId = type ? id : undefined
       this.params.weekNum = !type ? id : undefined
       this.$refs.chooseTask.status = true
@@ -347,7 +346,6 @@ export default {
     weekAll(item, type) {
       if (type) {
         const req = this.weekDays.map(el => {
-          console.log('el', el)
           return {
             weekNum: el.id,
             schoolCode: this.userInfo.schoolCode,

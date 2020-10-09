@@ -172,7 +172,6 @@ export default {
     },
     newsDetail(record) {
       this.newsForm = record
-      console.log(this.newsForm)
       this.previewVisible = true
     },
     getDateTime(date) {

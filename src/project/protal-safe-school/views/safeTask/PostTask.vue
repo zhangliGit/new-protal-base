@@ -25,12 +25,14 @@
         <a-button class="mar-l10" type="primary" @click="submitOk" :disabled="isLoad">保存</a-button>
       </a-form-item>
     </a-form>
+    {{ chooseTeachersDeatil }}
     <choose-user
       ref="chooseUser"
       is-check
       v-if="userTag"
       v-model="userTag"
       @submit="chooseUser"
+      :teacherList="chooseTeachersDeatil"
       title="添加人员">
     </choose-user>
   </div>
@@ -105,7 +107,7 @@ export default {
     // 授权查看人选择
     chooseUser(userList) {
       this.userList = userList
-      console.log('111', this.userList)
+      this.chooseTeachersDeatil = userList
       this.$refs.chooseUser.reset()
     },
     // 提交
@@ -119,7 +121,8 @@ export default {
           values.users = this.userList.map(el => {
             return {
               ...el,
-              schoolCode: this.userInfo.schoolCode
+              schoolCode: this.userInfo.schoolCode,
+              schoolName: this.userInfo.schoolName
             }
           })
           values.taskId = this.taskId
