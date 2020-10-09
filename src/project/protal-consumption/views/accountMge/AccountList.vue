@@ -3,6 +3,7 @@
     <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
       <div slot="left">
         <a-button type="primary" @click="batchAccount">批量开户</a-button>
+        <a-button type="primary" @click="batchAccount">开户</a-button>
       </div>
     </search-form>
     <div class="qui-fx-f1 qui-fx">
@@ -13,7 +14,7 @@
         <template v-slot:actions="action">
           <a-tag color="#2db7f5" @click="toDetail(action.record)">详情</a-tag>
           <!-- v-if="action.record.status === 0" -->
-          <a-tag color="#2db7f5" @click="operationRecord(action.record)" >操作记录</a-tag>
+          <a-tag color="#2db7f5" @click="operationRecord(action.record)">操作记录</a-tag>
           <!-- <a-tag color="#2db7f5" @click="handle('补助', action.record)" v-if="action.record.status === 0">补助</a-tag> -->
         </template>
       </table-list>
@@ -28,19 +29,19 @@
       :searchLabel="dealSearchLabel"
       chooseType="6"
       :userId="userId"
-      title="交易记录">
-    </count-detail>
+      title="交易记录"
+    ></count-detail>
     <batch-model ref="modal" :title="'批量开户'" @ok="submit">
       <a-row :gutter="[20,20]">
         <a-col :span="10" :gutter="2">1.下载模板，批量填写人员信息</a-col>
-        <a-col :span="10" >
-          <a-button type="primary" @click="downloadTemplate()">下载模板 </a-button>
+        <a-col :span="10">
+          <a-button type="primary" @click="downloadTemplate()">下载模板</a-button>
         </a-col>
       </a-row>
       <a-row :gutter="[20,20]">
         <a-col :span="10" :gutter="2">2.上传填写好的开户信息Excel文件</a-col>
-        <a-col :span="10" >
-          <a-button type="primary" @click="uploadFiles()">上传文件 </a-button>&nbsp; &nbsp; 未选择任何文件
+        <a-col :span="10">
+          <a-button type="primary" @click="uploadFiles()">上传文件</a-button>&nbsp; &nbsp; 未选择任何文件
         </a-col>
       </a-row>
     </batch-model>
@@ -49,8 +50,8 @@
       :title="title"
       :url="importUrl"
       :params="importParams"
-      @upload-success="handleUploadSuccess">
-    </batch-import>
+      @upload-success="handleUploadSuccess"
+    ></batch-import>
   </div>
 </template>
 
@@ -110,10 +111,12 @@ const searchLabel = [
     label: '状态'
   },
   {
-    list: [{
-      key: '',
-      val: '全部'
-    }],
+    list: [
+      {
+        key: '',
+        val: '全部'
+      }
+    ],
     value: 'cardType',
     type: 'select',
     label: '类型'
@@ -275,23 +278,16 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
-    // this.getCardList()
+    this._getAccountList()
   },
   methods: {
-    ...mapActions('home', ['getCardType', 'getUserInfoList', 'recharge', 'charge', 'subsidy']),
-    async getCardList() {
-      const res = await this.getCardType()
-      this.cardList = res.data
-      const lastCount = this.searchLabel.length - 1
-      res.data.forEach(ele => {
-        this.searchLabel[lastCount].list.push({
-          key: ele.cardType,
-          val: ele.cardName
-        })
+    ...mapActions('home', ['getAccountList']),
+    async _getAccountList() {
+      const res = await this.getAccountList({
+        pageNum: 1,
+        pageSize: 20
       })
-      this.$nextTick(() => {
-        this.showList()
-      })
+      console.log(res)
     },
     showDetail(record) {
       this.userId = record.userId
@@ -351,7 +347,7 @@ export default {
       }
       this.showTag = true
     },
-    async submitForm (values) {
+    async submitForm(values) {
       // console.log('values', values)
       // return false
       const req = {
@@ -417,7 +413,7 @@ export default {
       this.importUrl = '/ljj_dorm/dorm/in/record/import/excel'
     },
     // 导入成功
-    handleUploadSuccess () {
+    handleUploadSuccess() {
       this.$refs.batchImport.addVisible = false
       this.showRoom(this.floorCode)
     }

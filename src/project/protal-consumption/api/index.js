@@ -1,5 +1,7 @@
 import homeApi from './home'
+import accountManage from './accountManage'
 const apiList = {
-  ...homeApi
+  ...homeApi,
+  ...accountManage
 }
 export default apiList
