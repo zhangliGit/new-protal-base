@@ -86,7 +86,7 @@
                     <td class="u-padd-10  u-bd-b ">{{ item.rate }}</td>
                   </tr>
                   <tr>
-                    <td class="u-padd-10 " :colspan="3">答题人数：{{ list.answerSum }}</td>
+                    <td class="u-padd-10 " :colspan="3">答题人数：{{ list.answerSum }}人</td>
                   </tr>
                 </table>
               </div>
@@ -163,11 +163,12 @@ const columns = [
   },
   {
     title: '回答人',
-    width: '60%',
+    // width: '40%',
     dataIndex: 'completeUserName'
   },
   {
     title: '选项',
+    width: '40%',
     dataIndex: 'answer'
   }
 ]
@@ -179,11 +180,11 @@ const columnsUrl = [
   },
   {
     title: '回答人',
-    width: '60%',
     dataIndex: 'completeUserName'
   },
   {
     title: '选项',
+    width: '40%',
     // dataIndex: 'answer',
     scopedSlots: { customRender: 'answer' }
   }

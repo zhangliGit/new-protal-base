@@ -355,8 +355,8 @@ module.exports = {
       '/lz_safe': {
         // target: 'http://192.168.1.46:8091/', // 吕卓-安防
         // target: 'http://192.168.1.76:8091/', // ljj-安防
-        // target: 'http://192.168.2.242:8091/', // 吕卓-安防
-        target: 'http://39.97.164.4:8091/', // 吕卓-安防
+        target: 'http://192.168.2.242:8091/', // 吕卓-安防
+        // target: 'http://39.97.164.4:8091/', // 吕卓-安防
         changeOrigin: true,
         pathRewrite: {
           '^/lz_safe': ''

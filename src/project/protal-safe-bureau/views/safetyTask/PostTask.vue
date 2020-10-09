@@ -28,7 +28,7 @@
             'checkJobList',
             { initialValue: appForm.leaderName, rules: [{ required: true, message: '请选择负责人' }] },
           ]"
-          @blur="handleChange"
+          @change="handleChange"
           placeholder="请选择您要限定的职务，可多选"
         >
           <a-select-option v-for="list in jobList" :key="`${list.jobName}`">

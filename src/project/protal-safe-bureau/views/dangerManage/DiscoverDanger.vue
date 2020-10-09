@@ -174,7 +174,7 @@ export default {
     },
     // 导出
     async exportHazards(type) {
-      var url = `${hostEnv.lz_safe}/dangerTask/export`
+      var url = `${hostEnv.lz_safe}/dangerTask/export/edu`
       if (this.searchObj.streetCode) {
         const streetSchoolCodes = await this._getSchools()
         this.streetSchoolCodes = streetSchoolCodes
@@ -187,6 +187,7 @@ export default {
         schoolCodes: this.searchObj.streetCode ? this.streetSchoolCodes : this.eduSchoolCodes,
         hasSupervise: false
       }
+      console.log(req)
       var xhr = new XMLHttpRequest()
       xhr.open('POST', url, true) // 也可以使用POST方式，根据接口
       xhr.responseType = 'blob'

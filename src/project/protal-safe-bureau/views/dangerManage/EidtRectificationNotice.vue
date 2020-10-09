@@ -259,7 +259,6 @@ export default {
       var xhr = new XMLHttpRequest()
       xhr.timeout = 30000 // 设置超时
       var url = `${hostEnv.zx_subject}/file/upload/doc?schoolCode=${this.schoolCode}`
-      // var url = `${hostEnv.zk_school}/file/freeUpload?schoolCode=${this.schoolCode}`
       xhr.open('post', url, true)
       const token = sessionStorage.getItem('token')
       xhr.setRequestHeader('token', token)
