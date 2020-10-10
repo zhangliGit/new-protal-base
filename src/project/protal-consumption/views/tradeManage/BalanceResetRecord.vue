@@ -5,27 +5,12 @@
         <a-button icon="export" class="export-btn" @click="exportClick">导出</a-button>
       </div>
     </search-form>
-    <submit-form
-      ref="form"
-      @submit-form="submitForm"
-      title="退款"
-      v-model="showTag"
-      :form-data="formData"
-    ></submit-form>
     <div class="qui-fx-f1 qui-fx">
       <table-list
         :page-list="pageList"
-        :columns="columnList.consumeColumns"
+        :columns="columnList.clearColumns"
         :table-list="consumeList"
       >
-        <template v-slot:actions="action">
-          <a-tag
-            color="#87d068"
-            @click="refund(action.record)"
-            v-if="action.record.refundedType === 1"
-          >退款</a-tag>
-          <a-tag color="#6882DA" v-if="action.record.refundedType === 2">已退款</a-tag>
-        </template>
       </table-list>
     </div>
     <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
@@ -33,19 +18,16 @@
 </template>
 
 <script>
-import hostEnv from '@config/host-env'
 import { mapState, mapActions } from 'vuex'
 import SearchForm from '@c/SearchForm'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
-import SubmitForm from '../../component/SubmitForm'
 import columnList from '../../assets/table/consumeColumns'
 const searchLabel = [
   {
-    value: 'card',
-    type: 'input',
-    label: '卡号',
-    placeholder: '请输入卡号'
+    value: 'rangeTime',
+    type: 'rangeTime',
+    label: '时间'
   },
   {
     value: 'userName',
@@ -58,121 +40,27 @@ const searchLabel = [
       {
         key: '',
         val: '全部'
+      },
+      {
+        key: '1',
+        val: '余额清零已提交'
+      },
+      {
+        key: '2',
+        val: '余额清零处理中'
+      },
+      {
+        key: '3',
+        val: '余额清零成功'
+      },
+      {
+        key: '4',
+        val: '余额清零失败'
       }
     ],
-    value: 'deviceName',
+    value: 'clearStatus',
     type: 'select',
-    label: '设备'
-  },
-  {
-    value: 'rangeTime', // 日期区间
-    type: 'rangeTime',
-    label: '消费日期'
-  }
-]
-const formData = [
-  {
-    value: 'oddNumbers',
-    initValue: '',
-    type: 'input',
-    label: '交易号',
-    disabled: true,
-    required: false
-  },
-  {
-    value: 'userName',
-    initValue: '',
-    type: 'input',
-    label: '姓名',
-    disabled: true,
-    required: false
-  },
-  {
-    value: 'orgName',
-    initValue: '',
-    type: 'input',
-    label: '班级/部门',
-    disabled: true,
-    required: false
-  },
-  {
-    value: 'userType',
-    initValue: '',
-    type: 'input',
-    label: '身份',
-    disabled: true,
-    required: false
-  },
-  {
-    value: 'workNo',
-    initValue: '',
-    type: 'input',
-    label: '学号/工号',
-    disabled: true,
-    required: false
-  },
-  {
-    value: 'card',
-    initValue: '',
-    type: 'input',
-    label: '卡号',
-    disabled: true,
-    required: false
-  },
-  {
-    value: 'orderAmount',
-    initValue: '',
-    type: 'input',
-    label: '订单金额',
-    disabled: true,
-    required: false
-  },
-  {
-    value: 'discountAmount',
-    initValue: '',
-    type: 'input',
-    label: '优惠金额',
-    disabled: true,
-    required: false
-  },
-  {
-    value: 'actualAmount',
-    initValue: '',
-    type: 'input',
-    label: '实付金额',
-    disabled: true,
-    required: false
-  },
-  {
-    value: 'deviceName',
-    initValue: '',
-    type: 'input',
-    label: '实付金额',
-    disabled: true,
-    required: false
-  },
-  {
-    value: 'createTime',
-    initValue: '',
-    type: 'input',
-    label: '消费时间',
-    disabled: true,
-    required: false
-  },
-  {
-    value: 'remark',
-    initValue: '',
-    type: 'input',
-    label: '备注',
-    placeholder: '请输入退款原因'
-  },
-  {
-    type: 'text',
-    label: ' ',
-    text: '* 退款金额将原路返回',
-    style: {
-      color: 'red'
-    }
+    label: '状态'
   }
 ]
 export default {
@@ -180,15 +68,12 @@ export default {
   components: {
     SearchForm,
     TableList,
-    PageNum,
-    SubmitForm
+    PageNum
   },
   data() {
     return {
       total: 0,
       searchLabel,
-      formData,
-      showTag: false,
       columnList,
       pageList: {
         page: 1,
@@ -197,8 +82,6 @@ export default {
       rangeTime: [],
       searchObj: {},
       consumeList: [],
-      userId: '',
-      userCode: '',
       searchList: {}
     }
   },
@@ -209,68 +92,31 @@ export default {
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getConsumeDetail', 'userRefund']),
+    ...mapActions('home', ['getClearList', 'exportClearList']),
     exportClick() {
-      var url = `${hostEnv.hpb_card}/consume/record/exportConsumeDetailList`
-      var xhr = new XMLHttpRequest()
-      xhr.open('POST', url, true) // 也可以使用POST方式，根据接口
-      xhr.responseType = 'blob'
-      xhr.onload = function() {
-        if (this.status === 200) {
-          var content = this.response
-          var aTag = document.createElement('a')
-          var blob = new Blob([content])
-          var headerName = xhr.getResponseHeader('Content-disposition')
-          var fileName = decodeURIComponent(headerName).substring(20)
-          aTag.download = fileName
-          aTag.href = URL.createObjectURL(blob)
-          aTag.click()
-          URL.revokeObjectURL(blob)
-        }
-      }
-      xhr.send(JSON.stringify(this.searchList))
+      this.exportClearList({
+        name: '余额清零记录',
+        ...this.searchList
+      })
     },
     async showList() {
       const req = {
-        ...this.pageList,
-        ...this.searchObj,
-        createTime: this.rangeTime[0] || undefined,
-        endTime: this.rangeTime[1] || undefined
+        pageNum: this.pageList.page,
+        pageSize: this.pageList.size,
+        userName: this.searchObj.userName,
+        clearStatus: this.searchObj.clearStatus,
+        beginTime: this.rangeTime[0] || '',
+        endTime: this.rangeTime[1] || ''
       }
       this.searchList = req
-      const res = await this.getConsumeDetail(req)
-      this.consumeList = res.data.list
-      this.total = res.data.total
+      const res = await this.getClearList(req)
+      this.consumeList = res.rows
+      this.total = res.total
     },
     searchForm(values) {
       this.searchObj = values
       this.rangeTime = values.rangeTime
       this.showList()
-    },
-    refund(record) {
-      this.showTag = true
-      record.createTime = this.$tools.getDate(record.createTime)
-      record.userType = this.$tools.userType(record.userType)
-      this.userId = record.userId
-      this.userCode = record.userCode
-      this.formData = this.$tools.fillForm(formData, record)
-    },
-    async submitForm(values) {
-      console.log(values)
-      const req = {
-        userCode: this.userCode,
-        userId: this.userId,
-        card: values.card,
-        consumeBalance: values.actualAmount,
-        oddNumbers: values.oddNumbers,
-        remark: values.remark
-      }
-      await this.userRefund(req)
-      this.$message.success('退款成功')
-      this.$tools.goNext(() => {
-        this.showList()
-        this.$refs.form.reset()
-      })
     }
   }
 }

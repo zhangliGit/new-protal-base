@@ -12,18 +12,29 @@
         <a-form-item label="设备名称" v-bind="formItemLayout">
           <a-input v-decorator="['deviceName', { initialValue: deviceInfo.deviceName }]" disabled />
         </a-form-item>
-        <a-form-item label="关联场地" v-bind="formItemLayout">
-          <a-input v-decorator="['fieldName', { initialValue: deviceInfo.fieldName }]" disabled />
-        </a-form-item>
         <a-form-item label="管理密码" v-bind="formItemLayout">
           <a-input
+            type="number"
             v-decorator="[
               'passWord',
               {
-                initialValue: deviceInfo.passWord ,rules: [{ required: true, message: '请输入管理密码' }]}
+                initialValue: deviceInfo.passWord ,rules: [{ required: true, message: '请输入管理密码,限6位长度数字', max: 6, min: 6 }]}
             ]"
-            placeholder="请输入管理密码"
+            placeholder="请输入管理密码,限6位长度数字"
           />
+        </a-form-item>
+        <a-form-item label="所属档口" v-bind="formItemLayout">
+          <a-select
+            @change="changeType"
+            v-decorator="[
+              'fieldName',
+              { initialValue: deviceInfo.fieldName, rules: [{ required: true, message: '请选择所属档口' }] }
+            ]"
+            placeholder="请选择所属档口"
+          >
+            <a-select-option value="1">1号档口</a-select-option>
+            <a-select-option value="2">2号档口</a-select-option>
+          </a-select>
         </a-form-item>
         <a-form-item label="消费模式" v-bind="formItemLayout" required>
           <a-select
@@ -38,7 +49,7 @@
             <a-select-option value="2">定额模式</a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item
+        <!-- <a-form-item
           label="通行时间"
           v-bind="formItemLayout"
           :required="true"
@@ -84,7 +95,7 @@
         </a-form-item>
         <a-form-item label="定额时段" v-bind="formItemLayout" v-if="deviceInfo.patternType === '2' || deviceInfo.patternType === 2">
           非定额时段将自动切换回自由模式
-        </a-form-item>
+        </a-form-item> -->
         <a-form-item :wrapper-col="{ span: 15, offset: 3 }">
           <a-button style="margin-right:50px;" @click="cancle">取消</a-button>
           <a-button type="primary" @click="handleSubmit">保存</a-button>

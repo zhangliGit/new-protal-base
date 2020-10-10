@@ -14,7 +14,6 @@
 </template>
 
 <script>
-import hostEnv from '@config/host-env'
 import { mapState, mapActions } from 'vuex'
 import SearchForm from '@c/SearchForm'
 import TableList from '@c/TableList'
@@ -22,10 +21,9 @@ import PageNum from '@c/PageNum'
 import columnList from '../../assets/table/consumeColumns'
 const searchLabel = [
   {
-    value: 'card',
-    type: 'input',
-    label: '卡号',
-    placeholder: '请输入卡号'
+    value: 'rangeTime',
+    type: 'rangeTime',
+    label: '时间'
   },
   {
     value: 'userName',
@@ -34,15 +32,37 @@ const searchLabel = [
     placeholder: '请输入姓名'
   },
   {
-    value: 'oddNumbers',
+    value: 'origBillNo',
     type: 'input',
-    label: '原消费单交易号',
-    placeholder: '请输入单号'
+    label: '原账单号',
+    placeholder: '请输入原账单'
   },
   {
-    value: 'rangeTime', // 日期区间
-    type: 'rangeTime',
-    label: '时间'
+    list: [
+      {
+        key: '',
+        val: '全部'
+      },
+      {
+        key: '1',
+        val: '退款已提交'
+      },
+      {
+        key: '2',
+        val: '退款处理中'
+      },
+      {
+        key: '3',
+        val: '退款成功'
+      },
+      {
+        key: '4',
+        val: '退款失败'
+      }
+    ],
+    value: 'returnStatus',
+    type: 'select',
+    label: '状态'
   }
 ]
 export default {
@@ -74,38 +94,27 @@ export default {
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getRefundDetail']),
+    ...mapActions('home', ['getRefundList', 'exportRefundList']),
     exportClick() {
-      var url = `${hostEnv.hpb_card}/consume/record/exportRefundDetailList`
-      var xhr = new XMLHttpRequest()
-      xhr.open('POST', url, true) // 也可以使用POST方式，根据接口
-      xhr.responseType = 'blob'
-      xhr.onload = function () {
-        if (this.status === 200) {
-          var content = this.response
-          var aTag = document.createElement('a')
-          var blob = new Blob([content])
-          var headerName = xhr.getResponseHeader('Content-disposition')
-          var fileName = decodeURIComponent(headerName).substring(20)
-          aTag.download = fileName
-          aTag.href = URL.createObjectURL(blob)
-          aTag.click()
-          URL.revokeObjectURL(blob)
-        }
-      }
-      xhr.send(JSON.stringify(this.searchList))
+      this.exportRefundList({
+        name: '退款记录',
+        ...this.searchList
+      })
     },
     async showList() {
       const req = {
-        ...this.pageList,
-        ...this.searchObj,
-        createTime: this.rangeTime[0] || undefined,
-        endTime: this.rangeTime[1] || undefined
+        pageNum: this.pageList.page,
+        pageSize: this.pageList.size,
+        userName: this.searchObj.userName,
+        origBillNo: this.searchObj.origBillNo,
+        returnStatus: this.searchObj.returnStatus,
+        beginTime: this.rangeTime[0] || '',
+        endTime: this.rangeTime[1] || ''
       }
       this.searchList = req
-      const res = await this.getRefundDetail(req)
-      this.refundList = res.data.list
-      this.total = res.data.total
+      const res = await this.getRefundList(req)
+      this.refundList = res.rows
+      this.total = res.total
     },
     searchForm(values) {
       this.searchObj = values
