@@ -164,7 +164,7 @@ const columns = [
   },
   {
     title: '回答人',
-    width: '60%',
+    width: '40%',
     dataIndex: 'completeUserName'
   },
   {

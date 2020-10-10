@@ -29,11 +29,11 @@
           </template>
           <a-tooltip placement="topLeft" title="撤销">
             <a-button
-              v-if="action.record.superviseState === '0' || action.record.superviseUserCode == userInfo.userCode"
+              v-if="action.record.superviseState === '0' && action.record.superviseUserCode == userInfo.userCode"
               size="small"
               class="del-action-btn"
               icon="delete"
-              >结束督办</a-button
+            >结束督办</a-button
             >
           </a-tooltip>
         </a-popconfirm>
@@ -152,7 +152,7 @@ export default {
     },
     // 导出
     exportHazards() {
-      var url = `${hostEnv.lz_safe}/dangerTask/export`
+      var url = `${hostEnv.lz_safe}/dangerTask/export/edu`
       const req = {
         ...this.searchObj,
         ...this.pageList,
@@ -202,9 +202,9 @@ export default {
         superviseState: '1',
         taskId: record.id,
         userCode: record.superviseUserCode,
-        userName: record.superviseUserCode
+        userName: record.superviseUserName
       }
-      const res = await this.superviseDanger(req)
+      await this.superviseDanger(req)
       this.$tools.goNext(() => {
         this.$message.success(`操作成功`)
       })
