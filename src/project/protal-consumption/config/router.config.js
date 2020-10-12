@@ -5,6 +5,9 @@ import cardManagement from './cardManagement'
 import tradeManage from './tradeManage'
 import systemSet from './systemSet'
 const Home = resolve => require(['../views/Home.vue'], resolve)
+const consumerMachine = resolve => require(['../views/consumeManage/MachineManage.vue'], resolve)
+const SetMachine = resolve => require(['../views/consumeManage/SetMachine.vue'], resolve)
+const StallManage = resolve => require(['../views/stallManage/StallManage.vue'], resolve)
 
 export const asyncRouterMap = [
   {
@@ -30,15 +33,24 @@ export const asyncRouterMap = [
       {
         path: '/consumerMachine',
         name: 'consumerMachine',
-        component: Home,
+        component: consumerMachine,
         meta: {
           title: '消费机管理'
         }
       },
       {
+        path: '/consume/setMachine',
+        name: 'setMachine',
+        component: SetMachine,
+        meta: {
+          title: '设置',
+          isHide: true
+        }
+      },
+      {
         path: '/stallManage',
         name: 'stallManage',
-        component: Home,
+        component: StallManage,
         meta: {
           title: '档口管理'
         }

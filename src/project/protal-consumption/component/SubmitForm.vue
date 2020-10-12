@@ -88,6 +88,7 @@
             :read-only="item.readonly"
             :disabled="item.disabled"
             buttonStyle="solid"
+            @change="radioChange"
             v-decorator="[
               item.value,
               {
@@ -147,6 +148,23 @@
             }}</a-select-option>
           </a-select>
         </a-form-item>
+        <!--场地选择-->
+        <a-form-item v-bind="formItemLayout" :label="item.label" v-if="item.type === 'siteChoose'">
+          <a-cascader
+            :options="buildList"
+            @change="onChange"
+            @click.stop="onFocus"
+            :loadData="loadData"
+            :placeholder="item.placeholder"
+            v-decorator="[
+              item.value,
+              {
+                initialValue: item.initValue,
+                rules: [{ required: !item.hasOwnProperty('required') || item.required, message: item.placeholder }]
+              }
+            ]"
+          />
+        </a-form-item>
         <!--上传图片-->
         <a-form-item
           v-bind="formItemLayout"
@@ -191,6 +209,7 @@
 
 <script>
 import moment from 'moment'
+import { mapState, mapActions } from 'vuex'
 export default {
   name: 'SubmitForm',
   components: {},
@@ -215,6 +234,7 @@ export default {
     }
   },
   computed: {
+    ...mapState('home', ['schoolCode']),
     status: {
       get() {
         return this.value
@@ -241,16 +261,65 @@ export default {
       formItemLayout: {
         labelCol: { span: 4 },
         wrapperCol: { span: 20 }
-      }
+      },
+      buildList: [],
+      chooseSite: ''
     }
   },
   methods: {
+    ...mapActions('home', ['getSiteList', 'getSiteById', 'getChildSite']),
     reset() {
       this.confirmLoading = false
       this.$emit('input', false)
     },
     error() {
       this.confirmLoading = false
+    },
+    onChange(value, selectedOptions) {
+      this.chooseSite = ''
+      if (selectedOptions) {
+        this.chooseSite += selectedOptions.map(ele => {
+          return ele.label
+        })
+      }
+      this.$emit('classRoom', this.chooseSite.split(',').join('-'))
+    },
+    radioChange(e) {
+      this.$emit('radioChange', e.target.value)
+    },
+    async onFocus(value) {
+      this.buildList = []
+      const req = {
+        name: '',
+        schoolCode: this.schoolCode,
+        type: this.type
+      }
+      const res = await this.getSiteList(req)
+      this.buildList = res.data
+      this.buildList.forEach(el => {
+        el.label = el.name
+        el.value = el.id
+        el.isLeaf = false
+      })
+    },
+    loadData(selectedOptions) {
+      const targetOption = selectedOptions[selectedOptions.length - 1]
+      targetOption.loading = true
+      const req = {
+        parentId: targetOption.id,
+        schoolCode: this.schoolCode
+      }
+      this.getChildSite(req).then(res => {
+        targetOption.loading = false
+        targetOption.children = res.data.list
+        // 处理第三层没有子节点的情况
+        targetOption.children.forEach(el => {
+          el.label = el.name + (el.type === '2' ? '楼' : '')
+          el.value = el.id
+          el.isLeaf = el.type === '3'
+        })
+        this.buildList = [...this.buildList]
+      })
     },
     submitOk(e) {
       e.preventDefault()

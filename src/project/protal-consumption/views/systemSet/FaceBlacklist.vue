@@ -1,19 +1,21 @@
 <template>
   <div class="sector-set page-layout qui-fx-ver">
-    <no-data msg="暂无数据" v-if="dataList.length === 0"></no-data>
-    <table-list v-else :page-list="pageList" :columns="columns" :table-list="dataList">
+    <choose-people
+      isCheck
+      ref="bindTemplate"
+      v-if="bindTag"
+      v-model="bindTag"
+      @submit="bindSubmit"
+      title="添加黑名单"
+    ></choose-people>
+    <div class="top-btn-group qui-fx">
+      <a-button type="primary" @click="bindTag = true"> <a-icon type="plus" />添加</a-button>
+    </div>
+    <table-list is-zoom :page-list="pageList" :columns="columns" :table-list="dataList">
       <template v-slot:actions="action">
-        <a-tooltip placement="topLeft" title="修改设置">
-          <a-button
-            size="small"
-            class="edit-action-btn"
-            icon="form"
-            @click.stop="edit(action.record)"
-          ></a-button>
-        </a-tooltip>
-        <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="reset(action.record)">
-          <template slot="title">您确定重置密码吗?</template>
-          <a-tooltip placement="topLeft" title="重置密码">
+        <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="del(action.record)">
+          <template slot="title">确定从黑名单中删除该人脸吗？</template>
+          <a-tooltip placement="topLeft" title="删除">
             <a-button size="small" class="del-action-btn" icon="unlock"></a-button>
           </a-tooltip>
         </a-popconfirm>
@@ -21,7 +23,6 @@
     </table-list>
     <page-num
       v-model="pageList"
-      v-if="dataList.length !== 0"
       :total="total"
       @change-page="showList"
     ></page-num>
@@ -31,43 +32,55 @@
 import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import NoData from '@c/NoData'
+import ChoosePeople from '@c/choose/ChoosePeople'
 import PageNum from '@c/PageNum'
 const columns = [
-  /*   {
+  {
     title: '序号',
     width: '10%',
     scopedSlots: {
       customRender: 'index'
     }
-  }, */
+  },
   {
-    title: '扇区编号',
+    title: '姓名',
     dataIndex: 'userName',
-    width: '15%'
+    width: '10%'
   },
   {
-    title: '扇区默认密码',
-    dataIndex: 'mobile',
-    width: '15%'
+    title: '身份',
+    dataIndex: 'userType',
+    width: '10%',
+    customRender: text => {
+      return text === '1' ? '学生' : text === '2' ? '教职工' : '其它'
+    }
   },
   {
-    title: '扇区使用密码',
+    title: '学号/工号',
     dataIndex: 'workNo',
-    width: '15%'
+    width: '10%'
   },
   {
-    title: '使用类别',
-    dataIndex: 'sex',
+    title: '班级/部门',
+    dataIndex: 'classBoards',
     width: '15'
   },
   {
-    title: '备注',
-    dataIndex: 'email',
+    title: '加入时间',
+    dataIndex: 'joinTime',
     width: '15%'
   },
   {
+    title: '人脸照片',
+    dataIndex: 'photoUrl',
+    width: '15%',
+    scopedSlots: {
+      customRender: 'snapPic'
+    }
+  },
+  {
     title: '操作',
-    width: '25%',
+    width: '15%',
     scopedSlots: {
       customRender: 'action'
     }
@@ -76,12 +89,14 @@ const columns = [
 export default {
   name: 'FaceBlacklist',
   components: {
+    ChoosePeople,
     TableList,
     PageNum,
     NoData
   },
   data() {
     return {
+      bindTag: false,
       columns,
       total: 0,
       pageList: {
@@ -95,26 +110,51 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
-    // this.showList()
+    this.showList()
   },
   methods: {
-    ...mapActions('home', ['getTeacherList']),
+    ...mapActions('home', ['getBlackList', 'addNewBlack', 'deleBlack']),
     async showList(keyword = '') {
       const req = {
-        ...this.pageList,
-        schoolCode: this.userInfo.schoolCode,
-        orgCode: this.orgCode,
-        keyword
+        pageNum: this.pageList.page,
+        pageSize: this.pageList.size
       }
-      const res = await this.getTeacherList(req)
-      if (!res.data) {
-        return
-      }
-      this.teacherList = res.data.list
-      this.total = res.data.total
+      const res = await this.getBlackList(req)
+      this.dataList = res.rows
+      this.total = res.total
     },
-    edit(record) {},
-    reset(record) {}
+    async bindSubmit(value) {
+      await this.addNewBlack({
+        stuList: value.stuList.map(el => {
+          return {
+            userName: el.userName,
+            userCode: el.userCode,
+            userType: 1
+          }
+        }),
+        teacherList: value.teaList.map(el => {
+          return {
+            userCode: el.userCode,
+            userName: el.userName,
+            userType: 2
+          }
+        }),
+        schoolCode: this.userInfo.schoolCode
+      })
+      this.$message.success('添加成功')
+      this.$tools.goNext(() => {
+        this.$refs.bindTemplate.reset()
+        this.showList()
+      })
+    },
+    del(record) {
+      this.deleBlack(record.id).then((res) => {
+        this.$message.success('删除成功')
+        this.$tools.goNext(() => {
+          this.showList()
+        })
+      })
+    }
   }
 }
 </script>
