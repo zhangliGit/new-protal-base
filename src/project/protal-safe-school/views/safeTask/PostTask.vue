@@ -25,7 +25,6 @@
         <a-button class="mar-l10" type="primary" @click="submitOk" :disabled="isLoad">保存</a-button>
       </a-form-item>
     </a-form>
-    {{ chooseTeachersDeatil }}
     <choose-user
       ref="chooseUser"
       is-check
@@ -142,6 +141,11 @@ export default {
     },
     cancel() {
       this.$router.go(-1)
+    }
+  },
+  watch: {
+    chooseTeachersDeatil(val) {
+      console.log(val)
     }
   }
 }

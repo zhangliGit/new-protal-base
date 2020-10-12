@@ -101,7 +101,7 @@
                     <div>{{ list.title }}</div>
                     <div class="u-mar-t10" v-if="disabled">
                       <img class="u-mar-r10" :src="img" alt /> 附件
-                      <span class="u-type-primary" @click="exportClick(list.answers[0])">下载</span>
+                      <text class="u-type-primary" @click="exportClick(list.answers[0])">下载</text>
                     </div>
                     <div class="u-mar-t10" v-else>
                       <a-upload

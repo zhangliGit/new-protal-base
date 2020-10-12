@@ -45,7 +45,7 @@
                   <tr>
                     <td class="u-padd-10 " :colspan="3">答题人数：{{ list.answerSum }}</td>
                   </tr>
-                </table>
+                </table>  
               </div>
               <div class="list-cont u-mar-t20" v-if="list.statisticsAnswersByUserDtoList">
                 <a-table
