@@ -32,7 +32,7 @@
           <a-button size="small" class="user-action-btn" >{{ action.record.superviseUserName }}正在督办</a-button>
         </a-tooltip>
         <a-tooltip placement="topLeft" v-else @click="supervise(action.record.id)" title="督办">
-          <a-button size="small" class="user-action-btn" >督办</a-button>
+          <a-button size="small" class="user-action-btn" >督办完成</a-button>
         </a-tooltip>
       </template>
     </table-list>
@@ -174,7 +174,7 @@ export default {
     },
     // 导出
     async exportHazards(type) {
-      var url = `${hostEnv.lz_safe}/dangerTask/export`
+      var url = `${hostEnv.lz_safe}/dangerTask/export/edu`
       if (this.searchObj.streetCode) {
         const streetSchoolCodes = await this._getSchools()
         this.streetSchoolCodes = streetSchoolCodes
@@ -187,6 +187,7 @@ export default {
         schoolCodes: this.searchObj.streetCode ? this.streetSchoolCodes : this.eduSchoolCodes,
         hasSupervise: false
       }
+      console.log(req)
       var xhr = new XMLHttpRequest()
       xhr.open('POST', url, true) // 也可以使用POST方式，根据接口
       xhr.responseType = 'blob'

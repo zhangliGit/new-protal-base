@@ -65,7 +65,9 @@
         <div :style="{ textAlign: 'center', marginTop: '-5px' }">
           <a-button style="margin-right:10px; background-color: #ccc; color:#fff" @click="cancle">取消</a-button>
           <a-button class="edit-action-btn" style="margin-right:10px" @click="previewClick">预览</a-button>
-          <a-button class="add-btn" @click="handleSubmit" :loading="state.loginBtn" :disabled="state.loginBtn">发布公告</a-button>
+          <a-button class="add-btn" @click="handleSubmit" :loading="state.loginBtn" :disabled="state.loginBtn"
+            >发布公告</a-button
+          >
         </div>
       </a-form-item>
     </a-form>
@@ -313,7 +315,7 @@ export default {
     async getDetail() {
       const id = this.$route.query.id
       const adType = this.$route.query.type
-      if (adType === '1') {
+      if (adType === 1) {
         const res = await this.getNoticeDetail(id)
         this.detailInfo = res.data
         this.teacherList = res.data.noticeUserList

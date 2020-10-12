@@ -342,6 +342,13 @@ module.exports = {
         pathRewrite: {
           '^/lz_safe': ''
         }
+      },
+      '/hzz_ecard': {
+        target: 'http://192.168.2.242:11031/', // 胡周志-一卡通消费
+        changeOrigin: true,
+        pathRewrite: {
+          '^/hzz_ecard': ''
+        }
       }
     }
   },

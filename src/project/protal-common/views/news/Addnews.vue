@@ -43,12 +43,8 @@
         <div :style="{ textAlign: 'center', marginTop: '-5px' }">
           <a-button style="margin-right:10px; background-color: #ccc; color:#fff" @click="cancle">取消</a-button>
           <a-button class="edit-action-btn" style="margin-right:10px" @click="previewClick">预览</a-button>
-          <a-button
-            class="add-btn"
-            @click="handleSubmit"
-            :loading="state.loginBtn"
-            :disabled="state.loginBtn"
-          >发布新闻</a-button
+          <a-button class="add-btn" @click="handleSubmit" :loading="state.loginBtn" :disabled="state.loginBtn"
+            >发布新闻</a-button
           >
         </div>
       </a-form-item>
@@ -210,7 +206,7 @@ export default {
     async getDetail() {
       const id = this.$route.query.id
       const type = this.$route.query.type
-      if (type === '1') {
+      if (type === 1) {
         const res = await this.getNewsDetail(id)
         this.detailInfo = res.data
         this.appForm.title = this.detailInfo.title

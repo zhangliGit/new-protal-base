@@ -14,7 +14,6 @@
 </template>
 
 <script>
-import hostEnv from '@config/host-env'
 import { mapState, mapActions } from 'vuex'
 import SearchForm from '@c/SearchForm'
 import TableList from '@c/TableList'
@@ -22,10 +21,9 @@ import PageNum from '@c/PageNum'
 import columnList from '../../assets/table/consumeColumns'
 const searchLabel = [
   {
-    value: 'card',
-    type: 'input',
-    label: '卡号',
-    placeholder: '请输入卡号'
+    value: 'rangeTime',
+    type: 'rangeTime',
+    label: '充值时间'
   },
   {
     value: 'userName',
@@ -34,9 +32,31 @@ const searchLabel = [
     placeholder: '请输入姓名'
   },
   {
-    value: 'rangeTime', // 日期区间
-    type: 'rangeTime',
-    label: '充值日期'
+    list: [
+      {
+        key: '',
+        val: '全部'
+      },
+      {
+        key: '1',
+        val: '充值已提交'
+      },
+      {
+        key: '2',
+        val: '充值处理中'
+      },
+      {
+        key: '3',
+        val: '充值成功'
+      },
+      {
+        key: '4',
+        val: '充值失败'
+      }
+    ],
+    value: 'status',
+    type: 'select',
+    label: '状态'
   }
 ]
 export default {
@@ -68,38 +88,26 @@ export default {
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getRechargeDetail']),
+    ...mapActions('home', ['getRechargeList', 'exportRechargeList']),
     exportClick() {
-      var url = `${hostEnv.hpb_card}/consume/record/exportRechargeDetailList`
-      var xhr = new XMLHttpRequest()
-      xhr.open('POST', url, true) // 也可以使用POST方式，根据接口
-      xhr.responseType = 'blob'
-      xhr.onload = function () {
-        if (this.status === 200) {
-          var content = this.response
-          var aTag = document.createElement('a')
-          var blob = new Blob([content])
-          var headerName = xhr.getResponseHeader('Content-disposition')
-          var fileName = decodeURIComponent(headerName).substring(20)
-          aTag.download = fileName
-          aTag.href = URL.createObjectURL(blob)
-          aTag.click()
-          URL.revokeObjectURL(blob)
-        }
-      }
-      xhr.send(JSON.stringify(this.searchList))
+      this.exportRechargeList({
+        name: '充值记录',
+        ...this.searchList
+      })
     },
     async showList() {
       const req = {
-        ...this.pageList,
-        ...this.searchObj,
-        createTime: this.rangeTime[0] || undefined,
-        endTime: this.rangeTime[1] || undefined
+        pageNum: this.pageList.page,
+        pageSize: this.pageList.size,
+        userName: this.searchObj.userName,
+        status: this.searchObj.status,
+        beginTime: this.rangeTime[0] || '',
+        endTime: this.rangeTime[1] || ''
       }
       this.searchList = req
-      const res = await this.getRechargeDetail(req)
-      this.rechargeList = res.data.list
-      this.total = res.data.total
+      const res = await this.getRechargeList(req)
+      this.rechargeList = res.rows
+      this.total = res.total
     },
     searchForm(values) {
       this.searchObj = values

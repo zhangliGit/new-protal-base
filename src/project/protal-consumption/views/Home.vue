@@ -8,10 +8,16 @@
       :columns="columns"
       :rangeTime="rangeTime"
       :chooseType="chooseType"
-      :title="detailTitle">
+      :title="detailTitle"
+    >
     </count-detail>
     <div>
-      <div class="attend-card qui-fx-ver" v-for="(teacher, index) in teacherData" :key="index" @click="showDetail(teacher.key)">
+      <div
+        class="attend-card qui-fx-ver"
+        v-for="(teacher, index) in teacherData"
+        :key="index"
+        @click="showDetail(teacher.key)"
+      >
         <ul class="box">
           <li class="tip">{{ teacher.title }}</li>
           <li class="total">{{ teacher.total }}</li>
@@ -141,8 +147,8 @@ export default {
     float: left;
     margin-left: 2%;
     height: 180px;
-    .box{
-      margin:auto 0 ;
+    .box {
+      margin: auto 0;
     }
     .tip {
       font-size: 18px;
@@ -153,7 +159,7 @@ export default {
       font-weight: bold;
       color: #fff;
     }
-    .count{
+    .count {
       width: 85px;
       height: 25px;
       line-height: 25px;
@@ -162,27 +168,27 @@ export default {
       text-align: center;
     }
     &:nth-child(1) {
-      color: #5C71F6;
+      color: #5c71f6;
       background: url('../../../assets/img/cz.png') no-repeat center;
       background-size: 100% 100%;
     }
     &:nth-child(2) {
-      color: #398FE2;
+      color: #398fe2;
       background: url('../../../assets/img/bz.png') no-repeat center;
       background-size: 100% 100%;
     }
     &:nth-child(3) {
-      color: #DC9B5B;
+      color: #dc9b5b;
       background: url('../../../assets/img/kk.png') no-repeat center;
       background-size: 100% 100%;
     }
     &:nth-child(4) {
-      color: #44CC61;
+      color: #44cc61;
       background: url('../../../assets/img/xf.png') no-repeat center;
       background-size: 100% 100%;
     }
     &:nth-child(5) {
-      color: #D45E5E;
+      color: #d45e5e;
       background: url('../../../assets/img/tk.png') no-repeat center;
       background-size: 100% 100%;
     }

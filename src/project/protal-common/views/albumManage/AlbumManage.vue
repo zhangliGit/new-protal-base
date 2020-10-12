@@ -22,37 +22,27 @@
       :bindObj="fullDeviceInfo"
     ></choose-classcard>
     <div class="u-padd-10 qui-fx-je">
-      <a-button type="primary" @click="addAlbum(0)"> <a-icon type="plus" />添加相册
-      </a-button>
+      <a-button type="primary" @click="addAlbum(0)"> <a-icon type="plus" />添加相册 </a-button>
     </div>
     <no-data msg="暂无数据" v-if="albumList.length === 0"></no-data>
     <div v-else class="qui-fx-ver">
-      <div class="u-auto" :style="{height: scrollH + 'px'}">
-        <div
-          class="notice-card qui-fx"
-          v-for="(item, i) in albumList"
-          :key="i"
-          style="position: relative;"
-        >
+      <div class="u-auto" :style="{ height: scrollH + 'px' }">
+        <div class="notice-card qui-fx" v-for="(item, i) in albumList" :key="i" style="position: relative;">
           <div class="pic qui-fx-f1 qui-fx-ver qui-fx-jsb">
             <div
               @click="detail(item)"
               class="notice-img qui-fx-ac-jc"
-              :style="{'backgroundImage': 'url('+(item.coverUrl || 'http://canpointtest.com/mobile-img/default.png')+')'}"
-            >
-            </div>
+              :style="{
+                backgroundImage: 'url(' + (item.coverUrl || 'http://canpointtest.com/mobile-img/default.png') + ')'
+              }"
+            ></div>
             <div class="qui-fx-jsb qui-fx-ac">
               <div>
                 {{ item.albumName }}
               </div>
               <div class="notice-action qui-fx">
                 <a-tooltip placement="topLeft" title="编辑">
-                  <a-button
-                    size="small"
-                    class="edit-action-btn"
-                    icon="form"
-                    @click.stop="addAlbum(1, item)"
-                  ></a-button>
+                  <a-button size="small" class="edit-action-btn" icon="form" @click.stop="addAlbum(1, item)"></a-button>
                 </a-tooltip>
                 <a-tooltip placement="topLeft" title="删除">
                   <a-button
@@ -133,7 +123,18 @@ export default {
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getAlbumList', 'addNewAlbum', 'deleteAlbum', 'detailAlbum', 'editAlbum', 'addRelationData', 'getRelationData', 'setFullShow', 'getDeviceData', 'getFullDevice']),
+    ...mapActions('home', [
+      'getAlbumList',
+      'addNewAlbum',
+      'deleteAlbum',
+      'detailAlbum',
+      'editAlbum',
+      'addRelationData',
+      'getRelationData',
+      'setFullShow',
+      'getDeviceData',
+      'getFullDevice'
+    ]),
     async showList() {
       const res = await this.getAlbumList({
         schoolCode: this.userInfo.schoolCode
@@ -172,7 +173,6 @@ export default {
       }
     },
     submitForm(values) {
-      console.log(values)
       if (this.type === 0) {
         this.addNewAlbum({
           ...values,
@@ -200,7 +200,7 @@ export default {
     },
     delClick(record) {
       this.$tools.delTip('确认要删除该相册吗?', () => {
-        this.deleteAlbum(record.id).then((res) => {
+        this.deleteAlbum(record.id).then(res => {
           this.$message.success('删除成功')
           this.$tools.goNext(() => {
             this.showList()
@@ -209,7 +209,6 @@ export default {
       })
     },
     async fullSubmit(value, formData) {
-      console.log(value, formData)
       await this.setFullShow({
         deviceIdList: value.map(el => {
           return el.id
@@ -227,7 +226,6 @@ export default {
       })
     },
     async bindSubmit(value) {
-      console.log(value)
       await this.addRelationData({
         classList: value.classList.map(el => {
           return {
@@ -299,7 +297,7 @@ export default {
   background-size: 100% 100%;
   position: relative;
 }
-.u-mar-l5{
+.u-mar-l5 {
   margin-left: 5px;
 }
 </style>

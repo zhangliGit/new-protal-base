@@ -4,29 +4,18 @@
     <div class="qui-fx-f1 qui-fx">
       <table-list :page-list="pageList" :columns="machineColumns" :table-list="machineList">
         <template v-slot:actions="action">
-          <a-tag color="green" v-if="action.record.authorization"> 已授权 </a-tag>
-          <a-popconfirm v-else placement="left" okText="确定" cancelText="取消" @confirm.stop="tie(action.record)">
-            <template slot="title">
-              您确定授权吗?
-            </template>
-            <a-tooltip placement="topLeft" title="授权">
-              <a-icon class="mouse mar-l10" type="unlock" />
-            </a-tooltip>
-          </a-popconfirm>
+          <div>
+            <a-switch
+              @click.native.stop
+              @change="tie($event, action.record)"
+              v-model="action.record.machineStatus"
+            />
+          </div>
         </template>
         <template v-slot:other1="other1">
           <a-tooltip placement="topLeft" title="设置">
             <a-button size="small" class="edit-action-btn" icon="form" @click.stop="set(other1.record)"></a-button>
           </a-tooltip>
-          <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm.stop="untie(other1.record)">
-            <template slot="title">
-              确定解绑设备吗？
-              解绑后设备中的数据将被清空，无法进行刷脸消费
-            </template>
-            <a-tooltip placement="topLeft" title="解绑">
-              <a-button size="small" class="del-action-btn" icon="delete"></a-button>
-            </a-tooltip>
-          </a-popconfirm>
         </template>
       </table-list>
     </div>
@@ -40,6 +29,7 @@ import SearchForm from '@c/SearchForm'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
 import machineColumns from '../../assets/table/machineColumns'
+import { Switch } from 'ant-design-vue'
 const searchLabel = [
   {
     value: 'deviceName',
@@ -54,15 +44,15 @@ const searchLabel = [
         val: '全部'
       },
       {
-        key: '0',
+        key: '1',
         val: '在线'
       },
       {
-        key: '1',
+        key: '2',
         val: '离线'
       }
     ],
-    value: 'deviceStatus',
+    value: 'machineStatus',
     type: 'select',
     label: '状态'
   }
@@ -72,7 +62,8 @@ export default {
   components: {
     SearchForm,
     TableList,
-    PageNum
+    PageNum,
+    ASwitch: Switch
   },
   data() {
     return {
@@ -94,15 +85,17 @@ export default {
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getDeviceList', 'addAuthor', 'unBindConsume']),
+    ...mapActions('home', ['getMachineList', 'addAuthor', 'unBindConsume']),
     async showList() {
       const req = {
-        ...this.pageList,
-        ...this.searchObj
+        pageNum: this.pageList.page,
+        pageSize: this.pageList.size,
+        machineStatus: this.searchObj.machineStatus,
+        deviceName: this.searchObj.deviceName
       }
-      const res = await this.getDeviceList(req)
-      this.machineList = res.data.list
-      this.total = res.data.total
+      const res = await this.getMachineList(req)
+      this.machineList = res.rows
+      this.total = res.total
     },
     searchForm(values) {
       this.searchObj = values
@@ -129,20 +122,6 @@ export default {
           id: record.id,
           deviceSn: record.deviceSn
         }
-      })
-    },
-    // 解绑
-    untie (record) {
-      const req = {
-        id: record.id,
-        deviceSn: record.deviceSn,
-        isDelete: '1'
-      }
-      this.unBindConsume(req).then(res => {
-        this.$message.success('解绑成功')
-        this.$tools.goNext(() => {
-          this.showList()
-        })
       })
     }
   }

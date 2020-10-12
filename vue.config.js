@@ -69,7 +69,12 @@ module.exports = {
       }
       // 压缩代码 电子班牌特殊处理
       const buildModule = process.argv[process.argv.length - 1]
-      if (buildModule !== 'protal-class' && buildModule !== 'protal-oa' && buildModule !== 'protal-safe-bureau') {
+      if (
+        buildModule !== 'protal-class' &&
+        buildModule !== 'protal-oa' &&
+        buildModule !== 'protal-safe-bureau' &&
+        buildModule !== 'protal-common'
+      ) {
         config.optimization = {
           minimizer: [
             new UglifyJsPlugin({
@@ -246,7 +251,7 @@ module.exports = {
       },
       '/zq_schedule': {
         // target: 'http://192.168.1.241:11008/', // 张琦-课程表
-        target: 'http://192.168.2.242:11010/',
+        target: 'http://192.168.1.193:11010/',
         changeOrigin: true,
         pathRewrite: {
           '^/zq_schedule': ''
@@ -277,8 +282,8 @@ module.exports = {
         }
       },
       '/zk_examplan': {
-        target: 'http://192.168.1.23:11013/', // 张坤-考试计划
-        // target: 'http://192.168.2.242:11013/',
+        // target: 'http://192.168.1.23:11013/', // 张坤-考试计划
+        target: 'http://192.168.2.242:11013/',
         changeOrigin: true,
         pathRewrite: {
           '^/zk_examplan': ''
@@ -300,7 +305,7 @@ module.exports = {
         }
       },
       '/cl_oa': {
-        target: 'http://192.168.2.242:11014/', // 陈琳-oa
+        target: 'http://192.168.2.242:11009/',
         // target: 'http://192.168.1.23:11009/',
         changeOrigin: true,
         pathRewrite: {
@@ -345,18 +350,17 @@ module.exports = {
         }
       },
       '/zk_oa': {
-        target: 'http://192.168.2.242:11014/', // 张坤-报修
         // target: 'http://192.168.1.23:11014/', // 张坤-报修
+        target: 'http://192.168.2.242:11014/', // 张坤-报修
         changeOrigin: true,
         pathRewrite: {
           '^/zk_oa': ''
         }
       },
       '/lz_safe': {
-        // target: 'http://192.168.1.46:8091/', // 吕卓-安防
         // target: 'http://192.168.1.76:8091/', // ljj-安防
-        // target: 'http://192.168.2.242:8091/', // 吕卓-安防
-        target: 'http://39.97.164.4:8091/', // 吕卓-安防
+        target: 'http://192.168.2.242:8091/', // 吕卓-安防
+        // target: 'http://39.97.164.4:8091/', // 吕卓-安防
         changeOrigin: true,
         pathRewrite: {
           '^/lz_safe': ''
@@ -382,6 +386,13 @@ module.exports = {
         changeOrigin: true,
         pathRewrite: {
           '^/img_download': ''
+        }
+      },
+      '/hzz_ecard': {
+        target: 'http://192.168.2.242:11031/', // 胡周志-一卡通消费
+        changeOrigin: true,
+        pathRewrite: {
+          '^/hzz_ecard': ''
         }
       }
     }

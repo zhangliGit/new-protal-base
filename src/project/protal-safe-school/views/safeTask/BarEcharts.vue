@@ -1,6 +1,6 @@
 <template>
   <!-- 2. 柱状图Dom -->
-  <div :id="id" style="width: 50%;height:400px;"></div>
+  <div :id="id" ref="chart" style="width: 50%;height:400px;"></div>
 </template>
 <script>
 const echarts = require('echarts/lib/echarts')
