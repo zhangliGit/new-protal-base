@@ -59,7 +59,7 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
-import ChooseSchool from '@c/choose/ChooseSchool'
+import ChooseSchool from '../../component/ChooseSchool'
 export default {
   name: 'PostTask',
   components: {
@@ -106,6 +106,7 @@ export default {
       this.schoolTag = true
     },
     async submitSchool(values) {
+      this.chooseTeachersDeatil = values
       const names = values.map(v => v.schoolName) + ''
       this.form.setFieldsValue({ specificIndicators: names })
       this.SchoolAll = values

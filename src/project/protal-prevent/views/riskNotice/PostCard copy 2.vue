@@ -61,8 +61,8 @@
             <div class="info-title">警示标识：</div>
             <div class="info-content info-img qui-fx-f1">
               <!-- {{ detailInfo.signs }}  -->
-              <!-- <img v-for="(list,index) in detailInfo.signs" :key="index" :src="list" alt /> -->
-              <img :src="detailInfo.signs" alt />
+              <img v-for="(list,index) in detailInfo.signs" :key="index" :src="list" alt />
+              <!-- <img :src="detailInfo.signs" alt /> -->
             </div>
           </div>
         </div>
@@ -164,10 +164,9 @@ export default {
       }
       const res = await this.riskCard(req)
       this.detailInfo = res.data.records[0]
-      this.detailInfo.signs = res.data.records[0].signs[0]
-      // this.detailInfo.signs = this.dataURL
+      // this.detailInfo.signs = res.data.records[0].signs[0]
       // this.detailInfo.signs = `${hostEnv.img_download}/security/2020/09/04/base/6af5f9d4f32c4790a7220857fc7e20f9.png`
-      console.log('signs', this.detailInfo.signs)
+      // console.log('signs', this.detailInfo.signs)
       this.total = res.data.total
     },
     async _riskFileList(info) {
@@ -237,12 +236,40 @@ export default {
         })
       }
     },
+    changeImgToDataurl() {
+      var charImg = document.getElementsByTagName('img')
+      for (var i = 0; i < charImg.length; i++) {
+        var imgURL = charImg[i].currentSrc
+        this.getBase(imgURL, charImg[i])
+      }
+    },
+    getBase(url, charImg) {
+      var Img = new Image()
+      Img.crossOrigin = 'Anonymous'// 跨域必须使用，且后台也得设置允许跨域
+      let dataURL = ''
+      Img.src = url
+      Img.onload = function() { // 要先确保图片完整获取到，这是个异步事件
+        var canvas = document.createElement('canvas') // 创建canvas元素
+        var width = Img.width // 确保canvas的尺寸和图片一样
+        var height = Img.height
+        canvas.width = width
+        canvas.height = height
+        canvas.getContext('2d').drawImage(Img, 0, 0, width, height) // 将图片绘制到canvas中
+        dataURL = canvas.toDataURL('image/jpg') // 转换图片为dataURL
+        condataurl ? condataurl(dataURL, charImg) : null // 调用回调函数
+      }
+    },
+    condataurl(dataURL, charImg) {
+      charImg.src = dataURL
+      // console.log(charImg);
+    },
     exportWord() {
       if (this.detailInfo && JSON.stringify(this.detailInfo) !== {}) {
         if (this.detailInfo.photoUrl) {
           const url = `${hostEnv.zx_subject}/file/downLoad/doc?url=${this.detailInfo.photoUrl}`
           window.open(url)
         } else {
+          this.changeImgToDataurl()
         // 读取并获得模板文件的二进制内容
           JSZipUtils.getBinaryContent('input.docx', (error, content) => {
             console.log('1212q', this.detailInfo.signs)
@@ -251,44 +278,42 @@ export default {
             if (error) {
               throw error
             }
-            // const opts = {}
-            // opts.centered = true
+            const opts = {}
+            opts.centered = true
             // const url = this.dataURL
             // const url = ' http://canpoint-file.oss-cn-beijing.aliyuncs.com/security/2020/09/04/base/6af5f9d4f32c4790a7220857fc7e20f9.png'
-            // opts.getImage = (a,url,signs) => {
+            // opts.getImage = (url) => {
             //   return this.dataURL
             // // return `${hostEnv.img_download}/security/2020/09/04/base/6af5f9d4f32c4790a7220857fc7e20f9.png`
             // }
             // opts.getSize = () => {
             //   return [600, 400]// 这里可更改输出的图片宽和高
             // }
-            const opts = {
-              centered: false,
-              getImage(dataURL, signs) {
-                 console.log('11dataURL', dataURL);
-                 console.log('signs', signs);
-                return new Promise((resolve, reject) => {
-                  JSZipUtils.getBinaryContent(dataURL, (error, content) => {
-                    if (error) {
-                      return reject(error)
-                    }
-                    return resolve(content)
-                  })
-                })
-              },
-              getSize(img, dataURL, signs) {
-                return [470, 210]
-                // return new Promise((resolve, reject) => {
+            // const opts = {
+            //   centered: false,
+            //   getImage(tagValue, tagName) {
+            //     return new Promise((resolve, reject) => {
+            //       JSZipUtils.getBinaryContent(tagValue, (error, content) => {
+            //         if (error) {
+            //           return reject(error)
+            //         }
+            //         return resolve(content)
+            //       })
+            //     })
+            //   },
+            //   getSize(img, tagValue, tagName) {
+            //     return [470, 210]
+            //     // return new Promise((resolve, reject) => {
 
-              // });
-              }
-            }
-            const imageModule = new ImageModule(opts)
+            //   // });
+            //   }
+            // }
+            // const imageModule = new ImageModule(opts)
             // 创建一个PizZip实例，内容为模板的内容
             const zip = new PizZip(content)
             // 创建并加载docxtemplater实例对象
-            const doc = new docxtemplater().loadZip(zip).attachModule(imageModule)
-            // const doc = new docxtemplater().loadZip(zip)
+            // const doc = new docxtemplater().loadZip(zip).attachModule(imageModule)
+            const doc = new docxtemplater().loadZip(zip)
             doc.setData({
               ...this.detailInfo
             })

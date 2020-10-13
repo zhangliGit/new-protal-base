@@ -1,6 +1,7 @@
 // 卡务管理
 import { RouteView } from '../layouts'
 const CardAccount = resolve => require(['../views/cardManage/CardAccount.vue'], resolve)
+const CardDetails = resolve => require(['../views/cardManage/CardDetails.vue'], resolve)
 const CardOperationRecord = resolve => require(['../views/cardManage/CardOperationRecord.vue'], resolve)
 const cardManagement = {
   path: '/cardAccount',
@@ -15,10 +16,18 @@ const cardManagement = {
       name: 'cardAccount',
       component: CardAccount,
       meta: {
-        title: '账户列表'
+        title: '卡列表'
       }
     },
-
+    {
+      path: '/cardAccount/cardDetails',
+      name: 'cardDetails',
+      component: CardDetails,
+      meta: {
+        title: '卡务详情',
+        isHide: true
+      }
+    },
     {
       path: '/cardOperationRecord',
       name: 'cardOperationRecord',

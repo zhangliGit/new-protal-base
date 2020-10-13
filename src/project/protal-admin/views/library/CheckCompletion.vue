@@ -89,13 +89,13 @@ export default {
       if (value === '1') {
         this.state = ['1', '2']
       } else if (value === '2') {
-        this.state = ['3']
+        this.state = ['3', '7']
       } else if (value === '3') {
-        this.state = ['4']
+        this.state = ['4', '8']
       } else if (value === '4') {
-        this.state = ['5', '6']
+        this.state = ['5']
       } else if (value === '5') {
-        this.state = ['7', '8']
+        this.state = ['6']
       } else {
         this.state = []
       }

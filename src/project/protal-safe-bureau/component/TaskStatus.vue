@@ -6,12 +6,11 @@
     :footer="null"
     @cancel="visible=false"
   >
-
     <!-- </template> -->
     <div class="qui-fx-ver">
       <div class="top bg-fff u-padd-10 u-padd-l20">
-        <img v-if="state==='4'" class="img-width u-mar-r20 img-box" src="../assets/img/dahui.png" alt="">
-        <img v-if="state==='5'" class="img-width u-mar-r20 img-box" src="../assets/img/chongbao.png" alt="">
+        <img v-if="state==='5'" class="img-width u-mar-r20 img-box" src="../assets/img/dahui.png" alt="">
+        <img v-if="state==='8'||state==='7'" class="img-width u-mar-r20 img-box" src="../assets/img/chongbao.png" alt="">
         <div class="u-tx-c u-bold u-font-1">{{ detailInfo.taskName }}</div>
         <div class="qui-fx-jc u-mar-t10">
           <div class="qui-fx-ver">
@@ -110,15 +109,19 @@
                 <div class="time-left">{{ item.content }}</div>
                 <div class="qui-fx-f1">{{ item.createTime | gmtToDate }}</div>
               </div>
+              <div class="qui-fx">
+                <div>打回原因：</div>
+                <div> {{ item.remark }}</div>
+              </div>
             </a-timeline-item>
           </a-timeline>
         </div>
       </div>
       <div class="u-fx-ac-jc">
-        <a-button v-if="state==='2'||state==='3'||state==='5'" key="submit" @click="restate()" type="primary" >
+        <a-button v-if="state==='4'||state==='3'||state==='8'||state==='7'" key="submit" @click="restate()" type="primary" >
           打回重报
         </a-button>
-        <a-button v-if="(state+'')==='4'" key="submit" type="info" >
+        <a-button v-if="(state+'')==='5'" key="submit" type="info" >
           已打回
         </a-button>
       </div>

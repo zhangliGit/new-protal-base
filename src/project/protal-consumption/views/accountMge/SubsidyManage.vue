@@ -1,44 +1,50 @@
 <template>
   <div class="account-list page-layout qui-fx-ver">
     <div class="top-btn-group">
-      <a-button icon="plus" class="add-btn" @click="add">新增补助</a-button>
+      <a-button icon="plus" class="add-btn" @click="addSubsidy('add')">新增补助</a-button>
     </div>
     <div class="qui-fx-f1 qui-fx">
       <table-list :page-list="pageList" :columns="subsidyColumns" :table-list="subsidyList">
         <template v-slot:other1="other1">
-          <a-tag color="green" @click="detail(other1.record)">{{ other1.record.grantNumber }}</a-tag>
+          <a-tag color="green" @click="detail(other1.record)">{{ other1.record.grantNumber || 0 }}</a-tag>
         </template>
+
         <template v-slot:actions="action">
-          <a-popconfirm
-            v-if="action.record.status === 2"
-            placement="left"
-            okText="确定"
-            cancelText="取消"
-            @confirm="send(action.record)"
-          >
-            <template slot="title">您确定立即发放吗?</template>
-            <a-tooltip placement="topLeft" title="立即发放">
-              <a-button size="small" class="play-action-btn" icon="play-circle"></a-button>
-            </a-tooltip>
-          </a-popconfirm>
+          <a-tooltip placement="topLeft" title="编辑">
+            <a-button
+              size="small"
+              class="edit-action-btn"
+              icon="form"
+              @click="addSubsidy('edit', action.record)"
+            ></a-button>
+          </a-tooltip>
           <a-popconfirm
             placement="left"
             okText="确定"
             cancelText="取消"
-            @confirm="del(action.record)"
-            v-if="action.record.status !== 3"
+            @confirm="_deleteSubsidy(action.record.id)"
           >
             <template slot="title">您确定删除吗?</template>
             <a-tooltip placement="topLeft" title="删除">
               <a-button size="small" class="del-action-btn" icon="delete"></a-button>
             </a-tooltip>
           </a-popconfirm>
+          <a-popconfirm
+            v-if="action.record.grantStatus === '0'"
+            placement="left"
+            okText="确定"
+            cancelText="取消"
+            @confirm="_immedGrantSubsidy(action.record.id)"
+          >
+            <template slot="title">您确定立即发放吗?</template>
+            <a-tooltip placement="topLeft" title="立即发放">
+              <a-tag color="green">立即发放</a-tag>
+            </a-tooltip>
+          </a-popconfirm>
         </template>
       </table-list>
     </div>
     <page-num v-model="pageList" :total="total"></page-num>
-    <add-subsidy ref="addSubsidy" @updata="showList"></add-subsidy>
-    <subsidy-person ref="subsidyPerson"></subsidy-person>
   </div>
 </template>
 
@@ -74,38 +80,59 @@ export default {
     ...mapState('home', ['schoolCode'])
   },
   mounted() {
-    // this.showList()
+    this._getSubsidyList()
   },
   methods: {
-    ...mapActions('home', ['getSubsidy', 'subsidyInfoList', 'initSend', 'delSubsidy']),
-    async showList() {
-      const res = await this.getSubsidy(this.pageList)
-      this.subsidyList = res.data.list
-      this.total = res.data.total
-    },
-    async send(record) {
-      record.status = '1'
-      await this.initSend(record)
-      this.$message.success('操作成功')
-      this.$tools.goNext(() => {
-        this.showList()
+    ...mapActions('home', ['getSubsidyList', 'deleteSubsidy', 'immedGrantSubsidy']),
+    /**
+     * @description 新增和编辑补助
+     * @params {tag: number} 1：编辑 0：新增
+     */
+    addSubsidy(tag, detail) {
+      this.$router.push({
+        path: '/subsidyManage/addSubsidy',
+        query: {
+          type: tag,
+          detail
+        }
       })
     },
-    copy(record) {
-      record.status = record.status.toString()
-      this.$refs.addSubsidy.cardInfo = record
-      this.$refs.addSubsidy.visible = true
-    },
-    async del(record) {
-      const req = {
-        status: 3,
-        id: record.id
-      }
-      await this.delSubsidy(req)
-      this.$message.success('操作成功')
-      this.$tools.goNext(() => {
-        this.showList()
+    /**
+     * @description 获取补助列表
+     */
+    async _getSubsidyList() {
+      const res = await this.getSubsidyList({
+        pageNum: this.pageList.page,
+        pageSize: this.pageList.size
       })
+      this.subsidyList = res.rows
+      this.total = res.total
+    },
+    /**
+     * @description 删除补助
+     */
+    async _deleteSubsidy(id) {
+      try {
+        await this.deleteSubsidy(id)
+        this.$message.success('删除成功')
+        this.$tools.goNext(() => {
+          this._getSubsidyList()
+        })
+      } catch (err) {}
+    },
+    /**
+     * @description 立即发放补助
+     */
+    async _immedGrantSubsidy(id) {
+      try {
+        await this.immedGrantSubsidy({
+          query: id
+        })
+        this.$message.success('发放成功')
+        this.$tools.goNext(() => {
+          this._getSubsidyList()
+        })
+      } catch (err) {}
     },
     detail(record) {
       this.$refs.subsidyPerson.dialogTag = true
@@ -121,4 +148,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.account-list {
+  padding: 20px 20px 0;
+}
 </style>

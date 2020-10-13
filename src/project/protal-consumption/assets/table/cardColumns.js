@@ -1,21 +1,22 @@
+import Tools from '@u/tools'
 import baseData from '../js/base'
-const accountColumns = [
+const cardColumns = [
   {
     title: '序号',
     scopedSlots: {
       customRender: 'index'
     },
-    width: '10%'
+    width: '6%'
   },
   {
     title: '姓名',
     dataIndex: 'userName',
-    width: '15%'
+    width: '9%'
   },
   {
     title: '身份',
     dataIndex: 'userType',
-    width: '15%',
+    width: '9%',
     customRender: text => {
       return baseData.userType(text)
     }
@@ -23,30 +24,43 @@ const accountColumns = [
   {
     title: '学号/工号',
     dataIndex: 'workNo',
-    width: '10%'
+    width: '9%'
   },
   {
     title: '班级/部门',
     dataIndex: 'classBoards',
-    width: '10%'
+    width: '9%'
   },
   {
     title: '账户状态',
     dataIndex: 'status',
-    width: '10%',
+    width: '8%',
     customRender: text => {
-      return baseData.getAccountType(text)
+      return baseData.actionType(text)
     }
+  },
+  {
+    title: '卡状态',
+    dataIndex: 'cardStatus',
+    width: '8%',
+    customRender: text => {
+      return baseData.getCardStatus(text)
+    }
+  },
+  {
+    title: '卡号',
+    dataIndex: 'cardNo',
+    width: '9%'
   },
   {
     title: '账户余额',
     dataIndex: 'balance',
-    width: '10%'
+    width: '9%'
   },
   {
-    title: '人脸照片',
+    title: '头像',
     dataIndex: 'photoUrl',
-    width: '10%',
+    width: '9%',
     scopedSlots: {
       customRender: 'photoPic'
     }
@@ -54,10 +68,10 @@ const accountColumns = [
   {
     title: '操作',
     key: 'action',
-    width: '10%',
+    width: '15%',
     scopedSlots: {
       customRender: 'action'
     }
   }
 ]
-export default accountColumns
+export default cardColumns

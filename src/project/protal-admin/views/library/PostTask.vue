@@ -80,7 +80,7 @@ export default {
       },
       // 选择学校
       schoolTag: false,
-      chooseTeachersDeatil: [],
+      chooseTeachersDeatil: [], // 选中的学校
       // xiaozuData,
       isLoad: false,
       appForm: {

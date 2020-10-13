@@ -101,7 +101,7 @@
                     <div>{{ list.title }}</div>
                     <div class="u-mar-t10" v-if="disabled">
                       <img class="u-mar-r10" :src="img" alt /> 附件
-                      <span class="u-type-primary" @click="exportClick(list.answers[0])">下载</span>
+                      <text class="u-type-primary" @click="exportClick(list.answers[0])">下载</text>
                     </div>
                     <div class="u-mar-t10" v-else>
                       <a-upload
@@ -166,13 +166,15 @@ export default {
       show: true,
       params: {},
       isLoad: false,
-      flag: false
+      flag: false,
+      status: ''
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
+    this.status = this.$route.query.status
     this.taskTemplateCode = this.$route.query.taskTemplateCode
     this.taskCode = this.$route.query.taskCode
     this.url = `${hostEnv.zx_subject}/file/upload/doc`
@@ -221,8 +223,11 @@ export default {
     delFile(i) {
       this.fileList[i].show = true
       this.fileList[i].docName = ''
+      this.fileList[i].answers = []
+      console.log('this.fileList', this.fileList)
     },
     handleRemove(info, i) {
+      console.log(1243)
       this.fileList[i].show = true
     },
     handleChange(info, i) {
@@ -273,7 +278,25 @@ export default {
           questionType: el.questionType
         }
       })
+      const isTrue = []
+      answers.forEach(element => {
+        if (element.answers.length === 0) {
+          isTrue.push(1)
+        }
+        element.answers.forEach(el => {
+          if (!el) {
+            isTrue.push(1)
+          }
+        })
+      })
+      if (isTrue.length > 0) {
+        this.$message.warning('请填写完整题目')
+        return false
+      }
       req.answers = answers
+      if (this.status === '5') {
+        req.state = '6'
+      }
       this.isLoad = true
       this.answerTask(req)
         .then(res => {

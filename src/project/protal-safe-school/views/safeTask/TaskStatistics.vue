@@ -111,6 +111,7 @@
                 <a-table
                   :rowKey="(record, index) => index"
                   :pagination="false"
+                  :columns="columns"
                   :data-source="list.statisticsAnswersByUserDtoList.records"
                   bordered>
                 </a-table>
@@ -131,8 +132,7 @@
                   :data-source="list.statisticsAnswersByUserDtoList.records"
                   bordered>
                   <template slot="answer" slot-scope="record">
-                    {{ record.answer }}
-                    <span class="u-type-primary" @click="downloadImg(record.answer)">下载</span>
+                    <span v-if="record.answer" class="u-type-primary" @click="downloadImg(record.answer)">下载</span>
                   </template>
                 </a-table>
               </div>
@@ -266,6 +266,18 @@ export default {
       const res2 = await this.userTaskStatistics(req)
       const { statisticsAnswersByUserDtoList } = res2.data
       this.$set(this.dataLists[index], 'statisticsAnswersByUserDtoList', statisticsAnswersByUserDtoList)
+    },
+    // 下载附件
+    downloadImg(url) {
+      window.location.href = url
+      if (/\.(gif|jpg|jpeg|png|GIF|JPG|PNG)$/.test(url)) {
+      } else {
+      }
+      // const link = document.createElement('a')
+      // link.style.display = 'none'
+      // link.href = url
+      // document.body.appendChild(link)
+      // link.click()
     },
     // 翻页
     handleChange(value, id, index) {
