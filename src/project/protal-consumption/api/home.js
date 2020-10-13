@@ -6,7 +6,11 @@
 import hostEnv from '@config/host-env'
 
 const homeApi = {
-  getMachineList: '/consumerMachine/list#get', // 消费级设备列表查询
+  getDictList: '/dict/data/list#get', // 数据字典
+
+  getMachineList: '/consumerMachine/list#get', // 消费机设备列表查询
+  editMachine: '/consumerMachine#putJson', // 修改消费机
+  getDetailMachine: '/consumerMachine#getUrl', // 消费机详情
 
   getStallList: '/windowManage/list#get', // 档口列表查询
   addNewStall: '/windowManage#post', // 新增档口
@@ -14,11 +18,13 @@ const homeApi = {
   deleStall: '/windowManage#delWithQuery', // 删除档口
 
   getBlackList: '/FaceBlacklist/list#get', // 黑名单列表查询
-  addNewBlack: '/FaceBlacklist#post', // 添加黑名单
+  addNewBlack: '/FaceBlacklist/batchAdd#post', // 添加黑名单
   deleBlack: '/FaceBlacklist#delWithQuery', // 删除黑名单
 
+  addRule: '/consumeRule#post', // 新增消费规则
   getRuleList: '/consumeRule/list#get', // 消费规则列表查询
-  editRule: '/consumeRule#putJson' // 修改消费规则
+  editRule: '/consumeRule#putJson', // 修改消费规则
+  delRule: '/consumeRule#delWithQuery' // 删除消费规则
 }
 const baseDataApi = {
   // 场地管理

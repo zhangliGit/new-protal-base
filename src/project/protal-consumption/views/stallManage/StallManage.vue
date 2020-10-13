@@ -16,9 +16,12 @@
     </submit-form>
     <div class="qui-fx-f1 qui-fx">
       <table-list :page-list="pageList" :columns="stallColumns" :table-list="stallList">
+        <template v-slot:other2="other2">
+          <span>{{ other2.record.buildName }}{{ other2.record.floorName }}{{ other2.record.roomName }}</span>
+        </template>
         <template v-slot:other1="other1">
           <a-tooltip placement="topLeft" title="编辑">
-            <a-button size="small" class="edit-action-btn" icon="form" @click.stop="set(other1.record)"></a-button>
+            <a-button size="small" class="edit-action-btn" icon="form" @click.stop="addStall(1, other1.record)"></a-button>
           </a-tooltip>
           <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm.stop="untie(other1.record)">
             <template slot="title"> 确定删除该档口吗？ </template>
@@ -57,12 +60,11 @@ const formData = [
     placeholder: '请输入档口名称'
   },
   {
-    value: 'placeName',
+    value: 'build',
     initValue: [],
     type: 'siteChoose',
     label: '绑定场地',
-    placeholder: '请选择场地',
-    changeOnSelect: false
+    placeholder: '请选择场地'
   },
   {
     value: 'remark',
@@ -97,7 +99,7 @@ export default {
     }
   },
   computed: {
-    ...mapState('home', ['schoolCode'])
+    ...mapState('home', ['userInfo', 'schoolCode'])
   },
   mounted() {
     this.showList()
@@ -118,13 +120,19 @@ export default {
       this.searchObj = values
       this.showList()
     },
-    addStall(type) {
+    addStall(type, record) {
       this.showTag = true
       this.type = type
       if (type) {
-        this.formTitle = '添加档口'
+        this.record = record
+        this.formTitle = '编辑档口'
+        this.formData = this.$tools.fillForm(formData, record)
+        this.formData[1].initValue = [record.buildCode, record.floorCode, record.roomCode]
+        this.placeName = record.buildName + '-' + record.floorName + '-' + record.roomName
+        console.log(this.formData)
       } else {
         this.formTitle = '添加档口'
+        this.formData = formData
       }
     },
     // 删除
@@ -150,23 +158,30 @@ export default {
         schoolCode: this.schoolCode,
         remark: values.remark,
         windowName: values.windowName,
-        buildCode: values.placeName[0],
-        buildName: this.placeName.split(',')[0],
-        floorCode: values.placeName[0],
-        floorName: this.placeName.split(',')[0],
-        roomCode: values.placeName[0],
-        roomName: this.placeName.split(',')[0]
+        buildCode: values.build[0],
+        buildName: this.placeName.split('-')[0],
+        floorCode: values.build[1],
+        floorName: this.placeName.split('-')[1],
+        roomCode: values.build[2],
+        roomName: this.placeName.split('-')[2],
+        createBy: this.userInfo.userName
       }
       if (this.type) {
+        req.id = this.record.id
         await this.editStall(req)
+        this.$message.success('编辑成功')
+        this.$tools.goNext(() => {
+          this.showList()
+          this.$refs.form.reset()
+        })
       } else {
         await this.addNewStall(req)
+        this.$message.success('新增成功')
+        this.$tools.goNext(() => {
+          this.showList()
+          this.$refs.form.reset()
+        })
       }
-      this.$message.success('新增成功')
-      this.$tools.goNext(() => {
-        this.showList()
-        this.$refs.form.reset()
-      })
     }
   }
 }

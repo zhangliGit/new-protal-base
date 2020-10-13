@@ -32,28 +32,7 @@ const searchLabel = [
     placeholder: '请输入姓名'
   },
   {
-    list: [
-      {
-        key: '',
-        val: '全部'
-      },
-      {
-        key: '1',
-        val: '补助已提交'
-      },
-      {
-        key: '2',
-        val: '补助处理中'
-      },
-      {
-        key: '3',
-        val: '补助成功'
-      },
-      {
-        key: '4',
-        val: '补助失败'
-      }
-    ],
+    list: [],
     value: 'status',
     type: 'select',
     label: '状态'
@@ -85,15 +64,34 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
+    this._getDictList()
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getGrantList', 'exportGrantList']),
+    ...mapActions('home', ['getGrantList', 'exportGrantList', 'getDictList']),
     exportClick() {
       this.exportGrantList({
         name: '补助发放记录',
         ...this.searchList
       })
+    },
+    async _getDictList() {
+      this.searchLabel[2].list = []
+      const res = await this.getDictList({
+        pageNum: 1,
+        pageSize: 100,
+        dictType: 'subsidy_status'
+      })
+      res.rows.forEach((ele) => {
+        this.searchLabel[2].list.push({
+          key: ele.dictValue,
+          val: ele.dictLabel
+        })
+      })
+      const index = this.columnList.subsidyColumns.findIndex(list => list.dataIndex === 'status')
+      this.columnList.subsidyColumns[index].customRender = (text) => {
+        return res.rows.filter(ele => ele.dictValue === text).length > 0 ? res.rows.filter(ele => ele.dictValue === text)[0].dictLabel : ''
+      }
     },
     async showList() {
       const req = {

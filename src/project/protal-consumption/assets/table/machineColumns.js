@@ -21,7 +21,7 @@ const machineColumns = [
   },
   {
     title: 'SN',
-    dataIndex: 'deviceSn',
+    dataIndex: 'sn',
     width: '10%'
   },
   {
@@ -29,7 +29,7 @@ const machineColumns = [
     dataIndex: 'consumerModel',
     width: '10%',
     customRender: (text) => {
-      return text === 1 ? '定额模式' : '自由模式'
+      return parseInt(text) === 1 ? '定额模式' : '自由模式'
     }
   },
   {
@@ -47,7 +47,7 @@ const machineColumns = [
   },
   {
     title: '所属档口',
-    dataIndex: 'windowId',
+    dataIndex: 'windowName',
     width: '10%'
   },
   {
