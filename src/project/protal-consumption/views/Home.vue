@@ -1,5 +1,8 @@
 <template>
   <div class="page-layout qui-fx-ver home">
+    <img :src="src" alt="" />
+    <a-input type="file" id="pic"></a-input>
+    <a-button type="primary" @click="upload">上传</a-button>
     <search-form is-reset @search-form="searchForm" :search-label="searchLabel"></search-form>
     <count-detail
       ref="countDetail"
@@ -50,6 +53,7 @@ export default {
   },
   data() {
     return {
+      src: '',
       searchLabel,
       moment,
       columnList,
@@ -69,6 +73,13 @@ export default {
   },
   methods: {
     ...mapActions('home', ['getCount']),
+    upload() {
+      const file = document.getElementById('pic').files[0]
+      const fileType = document.getElementById('pic').value.split('.')[1]
+      this.$tools.ossUpload('CANPOINTLIVE', file, fileType, res => {
+        this.src = res
+      })
+    },
     searchForm(values) {
       // console.log()
       this.rangeTime = values.rangeTime
