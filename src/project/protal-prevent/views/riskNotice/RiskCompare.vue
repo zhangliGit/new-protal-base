@@ -11,7 +11,6 @@
 
 <script>
 import Highcharts from 'highcharts/highstock'
-
 import Exporting from 'highcharts/modules/exporting'
 import { mapState, mapActions } from 'vuex'
 export default {

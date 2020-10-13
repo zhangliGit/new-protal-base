@@ -142,7 +142,7 @@ export default {
         path: path,
         query: {
           id: record ? record.record.id : '',
-          state: record.record.state
+          state: record ? record.record.state : ''
         }
       })
     },

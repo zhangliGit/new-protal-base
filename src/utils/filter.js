@@ -322,7 +322,7 @@ const filters = {
       return '已重报未提交'
     } else if (text === 7) {
       return '已重报已提交'
-    } else if (text === 7) {
+    } else if (text === 8) {
       return '已重报已补交'
     }
   },

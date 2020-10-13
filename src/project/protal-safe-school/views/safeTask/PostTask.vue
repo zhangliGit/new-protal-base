@@ -25,7 +25,6 @@
         <a-button class="mar-l10" type="primary" @click="submitOk" :disabled="isLoad">保存</a-button>
       </a-form-item>
     </a-form>
-    {{ chooseTeachersDeatil }}
     <choose-user
       ref="chooseUser"
       is-check
@@ -116,6 +115,10 @@ export default {
       this.form.validateFields((error, values) => {
         this.isLoad = false
         if (!error) {
+          if (this.userList.length === 0) {
+            this.$message.warning('请选择接收人员')
+            return false
+          }
           values.publisherCode = this.userInfo.userCode
           values.publisherName = this.userInfo.userName
           values.users = this.userList.map(el => {
@@ -142,6 +145,11 @@ export default {
     },
     cancel() {
       this.$router.go(-1)
+    }
+  },
+  watch: {
+    chooseTeachersDeatil(val) {
+      console.log(val)
     }
   }
 }

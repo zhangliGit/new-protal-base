@@ -28,7 +28,8 @@
             'checkJobList',
             { initialValue: appForm.leaderName, rules: [{ required: true, message: '请选择负责人' }] },
           ]"
-          @blur="handleChange"
+          @change="handleChange"
+          @deselect="handleChange"
           placeholder="请选择您要限定的职务，可多选"
         >
           <a-select-option v-for="list in jobList" :key="`${list.jobName}`">
@@ -79,7 +80,7 @@ export default {
       },
       // 选择学校
       schoolTag: false,
-      chooseTeachersDeatil: [],
+      chooseTeachersDeatil: [], // 选中的学校
       // xiaozuData,
       isLoad: false,
       appForm: {
@@ -124,6 +125,8 @@ export default {
     },
     // 选中职务
     handleChange(values) {
+      console.log(values)
+      console.log(1)
       if (values.length <= 0) return
       this.searchPeople(values, this.SchoolAll)
     },

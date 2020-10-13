@@ -15,8 +15,7 @@
     <div class="qui-fx-f1 qui-fx">
       <table-list :page-list="pageList" :columns="columnList.consumeColumns" :table-list="consumeList">
         <template v-slot:actions="action">
-          <a-tag color="#87d068" @click="refund(action.record)" v-if="action.record.refundedType === 1">退款</a-tag>
-          <a-tag color="#6882DA" v-if="action.record.refundedType === 2">已退款</a-tag>
+          <a-tag color="#87d068" @click="refund(action.record)" v-if="action.record.consumeStatus === '2'">退款</a-tag>
         </template>
       </table-list>
     </div>
@@ -25,7 +24,6 @@
 </template>
 
 <script>
-import hostEnv from '@config/host-env'
 import { mapState, mapActions } from 'vuex'
 import SearchForm from '@c/SearchForm'
 import TableList from '@c/TableList'
@@ -34,10 +32,9 @@ import SubmitForm from '../../component/SubmitForm'
 import columnList from '../../assets/table/consumeColumns'
 const searchLabel = [
   {
-    value: 'card',
-    type: 'input',
-    label: '卡号',
-    placeholder: '请输入卡号'
+    value: 'rangeTime',
+    type: 'rangeTime',
+    label: '时间'
   },
   {
     value: 'userName',
@@ -50,112 +47,50 @@ const searchLabel = [
       {
         key: '',
         val: '全部'
+      },
+      {
+        key: '0',
+        val: '消费已提交'
+      },
+      {
+        key: '1',
+        val: '消费处理中'
+      },
+      {
+        key: '2',
+        val: '消费成功'
+      },
+      {
+        key: '3',
+        val: '消费失败'
+      },
+      {
+        key: '4',
+        val: '已退款'
+      }
+    ],
+    value: 'consumeStatus',
+    type: 'select',
+    label: '状态'
+  },
+  {
+    list: [
+      {
+        key: '',
+        val: '全部'
       }
     ],
     value: 'deviceName',
     type: 'select',
     label: '设备'
-  },
-  {
-    value: 'rangeTime', // 日期区间
-    type: 'rangeTime',
-    label: '消费日期'
   }
 ]
 const formData = [
   {
-    value: 'oddNumbers',
-    initValue: '',
-    type: 'input',
-    label: '交易号',
-    disabled: true,
-    required: false
-  },
-  {
-    value: 'userName',
-    initValue: '',
-    type: 'input',
-    label: '姓名',
-    disabled: true,
-    required: false
-  },
-  {
-    value: 'orgName',
-    initValue: '',
-    type: 'input',
-    label: '班级/部门',
-    disabled: true,
-    required: false
-  },
-  {
-    value: 'userType',
-    initValue: '',
-    type: 'input',
-    label: '身份',
-    disabled: true,
-    required: false
-  },
-  {
-    value: 'workNo',
-    initValue: '',
-    type: 'input',
-    label: '学号/工号',
-    disabled: true,
-    required: false
-  },
-  {
-    value: 'card',
-    initValue: '',
-    type: 'input',
-    label: '卡号',
-    disabled: true,
-    required: false
-  },
-  {
-    value: 'orderAmount',
-    initValue: '',
-    type: 'input',
-    label: '订单金额',
-    disabled: true,
-    required: false
-  },
-  {
-    value: 'discountAmount',
-    initValue: '',
-    type: 'input',
-    label: '优惠金额',
-    disabled: true,
-    required: false
-  },
-  {
-    value: 'actualAmount',
-    initValue: '',
-    type: 'input',
-    label: '实付金额',
-    disabled: true,
-    required: false
-  },
-  {
-    value: 'deviceName',
-    initValue: '',
-    type: 'input',
-    label: '实付金额',
-    disabled: true,
-    required: false
-  },
-  {
-    value: 'createTime',
-    initValue: '',
-    type: 'input',
-    label: '消费时间',
-    disabled: true,
-    required: false
-  },
-  {
     value: 'remark',
     initValue: '',
     type: 'input',
-    label: '备注',
+    label: '退款原因',
     placeholder: '请输入退款原因'
   },
   {
@@ -198,41 +133,43 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
+    this._getMachineList()
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getConsumeDetail', 'userRefund']),
+    ...mapActions('home', ['getMachineList', 'getConsumeList', 'userRefund', 'exportConsumeList']),
     exportClick() {
-      var url = `${hostEnv.hpb_card}/consume/record/exportConsumeDetailList`
-      var xhr = new XMLHttpRequest()
-      xhr.open('POST', url, true) // 也可以使用POST方式，根据接口
-      xhr.responseType = 'blob'
-      xhr.onload = function () {
-        if (this.status === 200) {
-          var content = this.response
-          var aTag = document.createElement('a')
-          var blob = new Blob([content])
-          var headerName = xhr.getResponseHeader('Content-disposition')
-          var fileName = decodeURIComponent(headerName).substring(20)
-          aTag.download = fileName
-          aTag.href = URL.createObjectURL(blob)
-          aTag.click()
-          URL.revokeObjectURL(blob)
-        }
-      }
-      xhr.send(JSON.stringify(this.searchList))
+      this.exportConsumeList({
+        name: '消费记录',
+        ...this.searchList
+      })
+    },
+    async _getMachineList() {
+      const res = await this.getMachineList({
+        pageNum: 1,
+        pageSize: 9999
+      })
+      res.rows.forEach(ele => {
+        this.searchLabel[3].list.push({
+          key: ele.id,
+          val: ele.deviceName
+        })
+      })
     },
     async showList() {
       const req = {
-        ...this.pageList,
-        ...this.searchObj,
-        createTime: this.rangeTime[0] || undefined,
-        endTime: this.rangeTime[1] || undefined
+        pageNum: this.pageList.page,
+        pageSize: this.pageList.size,
+        userName: this.searchObj.userName,
+        consumeStatus: this.searchObj.consumeStatus,
+        deviceName: this.searchObj.deviceName,
+        beginTime: this.rangeTime[0] || '',
+        endTime: this.rangeTime[1] || ''
       }
       this.searchList = req
-      const res = await this.getConsumeDetail(req)
-      this.consumeList = res.data.list
-      this.total = res.data.total
+      const res = await this.getConsumeList(req)
+      this.consumeList = res.rows
+      this.total = res.total
     },
     searchForm(values) {
       this.searchObj = values
@@ -241,20 +178,12 @@ export default {
     },
     refund(record) {
       this.showTag = true
-      record.createTime = this.$tools.getDate(record.createTime)
-      record.userType = this.$tools.userType(record.userType)
-      this.userId = record.userId
-      this.userCode = record.userCode
-      this.formData = this.$tools.fillForm(formData, record)
+      this.refundRecord = record
     },
     async submitForm (values) {
       console.log(values)
       const req = {
-        userCode: this.userCode,
-        userId: this.userId,
-        card: values.card,
-        consumeBalance: values.actualAmount,
-        oddNumbers: values.oddNumbers,
+        ...this.refundRecord,
         remark: values.remark
       }
       await this.userRefund(req)
