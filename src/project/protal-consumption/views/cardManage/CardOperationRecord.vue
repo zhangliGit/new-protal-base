@@ -1,78 +1,91 @@
 <template>
-  <div class="account-list page-layout qui-fx-ver">
-    <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
-      <div slot="left">
-        <a-button type="primary" @click="batchAccount">批量开户</a-button>
-      </div>
-    </search-form>
-    <div class="qui-fx-f1 qui-fx">
-      <table-list is-zoom :page-list="pageList" :columns="accountColumns" :table-list="accountList">
-        <template v-slot:other1="other1">
-          <a-tag color="orange" @click="showDetail(other1.record)">{{ other1.record.userName }}</a-tag>
+  <div class="card-record page-layout qui-fx">
+    <div class="qui-fx-f1 qui-fx-ver">
+      <search-form isReset @search-form="searchForm" :search-label="searchLabel">
+        <div slot="left">
+          <a-button @click="handleTplDownload" icon="export" class="export-btn">导出</a-button>
+        </div>
+      </search-form>
+      <table-list :page-list="pageList" :columns="columns" :table-list="recordList">
+        <template v-slot:other1="record">
+          <a-tag :color="$tools.color(record.record.onState)">{{ record.record.onState | onState }}</a-tag>
         </template>
-        <template v-slot:actions="action">
-          <a-tag color="#2db7f5" @click="toDetail(action.record)">详情</a-tag>
-          <!-- v-if="action.record.status === 0" -->
-          <a-tag color="#2db7f5" @click="operationRecord(action.record)">操作记录</a-tag>
-          <!-- <a-tag color="#2db7f5" @click="handle('补助', action.record)" v-if="action.record.status === 0">补助</a-tag> -->
+        <template v-slot:other2="record">
+          <a-tag
+            :color="$tools.color(record.record.offState)"
+          >{{ record.record.offState | onState }}</a-tag>
         </template>
       </table-list>
+      <page-num v-model="pageList" :total="total" @change-page="_getAccountRecord"></page-num>
     </div>
-    <page-num v-model="pageList" :total="total"></page-num>
-    <count-detail
-      ref="countDetail"
-      isSearch
-      v-if="showDetailTag"
-      v-model="showDetailTag"
-      :columns="columnList.dealColumn"
-      :searchLabel="dealSearchLabel"
-      chooseType="6"
-      :userId="userId"
-      title="交易记录"
-    ></count-detail>
-    <batch-model ref="modal" :title="'批量开户'" @ok="submit">
-      <a-row :gutter="[20,20]">
-        <a-col :span="10" :gutter="2">1.下载模板，批量填写人员信息</a-col>
-        <a-col :span="10">
-          <a-button type="primary" @click="downloadTemplate()">下载模板</a-button>
-        </a-col>
-      </a-row>
-      <a-row :gutter="[20,20]">
-        <a-col :span="10" :gutter="2">2.上传填写好的开户信息Excel文件</a-col>
-        <a-col :span="10">
-          <a-button type="primary" @click="uploadFiles()">上传文件</a-button>&nbsp; &nbsp; 未选择任何文件
-        </a-col>
-      </a-row>
-    </batch-model>
-    <batch-import
-      ref="batchImport"
-      :title="title"
-      :url="importUrl"
-      :params="importParams"
-      @upload-success="handleUploadSuccess"
-    ></batch-import>
   </div>
 </template>
 
 <script>
 import { mapState, mapActions } from 'vuex'
 import SearchForm from '@c/SearchForm'
-import BatchModel from '../../component/Modal'
-import SubmitForm from '../../component/SubmitForm'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
+import Tools from '@u/tools'
 import baseData from '../../assets/js/base'
-import tools from '@u/tools'
-import CountDetail from '../../component/CountDetail'
-import accountColumns from '../../assets/table/accountColumns'
-import columnList from '../../assets/table/consumeColumns'
-import BatchImport from '../../component/BatchImport'
+const columns = [
+  {
+    title: '序号',
+    width: '8%',
+    scopedSlots: {
+      customRender: 'index'
+    }
+  },
+  {
+    title: '姓名',
+    dataIndex: 'userName',
+    width: '10%'
+  },
+  {
+    title: '学号/工号',
+    dataIndex: 'workNo',
+    width: '10%'
+  },
+  {
+    title: '班级/部门',
+    dataIndex: 'classBoards',
+    width: '12%'
+  },
+  {
+    title: '卡号',
+    dataIndex: 'cardNo',
+    width: '10%'
+  },
+  {
+    title: '操作类型',
+    dataIndex: 'operType',
+    width: '10%',
+    customRender: text => {
+      return baseData.getCardActionType(text)
+    }
+  },
+  {
+    title: '操作人员',
+    dataIndex: 'createBy',
+    width: '10%'
+  },
+  {
+    title: '操作时间',
+    dataIndex: 'updateTime',
+    width: '20%'
+  },
+  {
+    title: '备注',
+    width: '10%',
+    dataIndex: 'remark'
+  }
+]
 const searchLabel = [
   {
-    value: 'card',
+    value: 'cardNo',
     type: 'input',
-    label: '学号/工号',
-    placeholder: '学号/工号'
+    label: '卡号',
+    placeholder: '请输入卡号'
   },
   {
     value: 'userName',
@@ -81,351 +94,115 @@ const searchLabel = [
     placeholder: '请输入姓名'
   },
   {
+    value: 'workNo',
+    type: 'input',
+    label: '学号/工号',
+    placeholder: '请输入卡号'
+  },
+  {
     list: [
       {
         key: '',
         val: '全部'
       },
       {
-        key: 8,
-        val: '学生'
+        key: 1,
+        val: '发卡'
+      },
+      {
+        key: 2,
+        val: '挂失'
+      },
+      {
+        key: 3,
+        val: '解挂'
       },
       {
         key: 4,
-        val: '教职工'
+        val: '退卡'
       },
       {
         key: 5,
-        val: '其他'
+        val: '换卡'
       }
     ],
-    value: 'userIdentity',
+    value: 'operType',
     type: 'select',
-    label: '身份'
+    label: '操作类型'
   },
   {
-    list: tools.deepClone(baseData.cardStatus),
-    value: 'status',
-    type: 'select',
-    label: '状态'
-  },
-  {
-    list: [
-      {
-        key: '',
-        val: '全部'
-      }
-    ],
-    value: 'cardType',
-    type: 'select',
-    label: '类型'
-  }
-]
-const dealSearchLabel = [
-  {
-    value: 'rangeTime', // 日期区间
+    value: 'rangeTime',
     type: 'rangeTime',
-    label: '交易时间'
-  },
-  {
-    list: tools.deepClone(baseData.daelType),
-    value: 'status',
-    type: 'select',
-    label: '交易类型'
-  }
-]
-const formData = [
-  {
-    value: 'userName',
-    initValue: '',
-    type: 'input',
-    label: '姓名',
-    disabled: false,
-    required: true
-  },
-  {
-    value: 'orgName',
-    initValue: '',
-    type: 'input',
-    label: '班级/部门',
-    disabled: true,
-    required: false
-  },
-  {
-    value: 'userIdentity',
-    initValue: '',
-    type: 'input',
-    label: '身份',
-    disabled: true,
-    required: false
-  },
-  {
-    value: 'workNo',
-    initValue: '',
-    type: 'input',
-    label: '学号/工号',
-    disabled: true,
-    required: false
-  },
-  {
-    value: 'card',
-    initValue: '',
-    type: 'input',
-    label: '卡号',
-    disabled: true,
-    required: false
-  },
-  {
-    value: 'status',
-    initValue: '',
-    type: 'input',
-    label: '状态',
-    disabled: true,
-    required: false
-  },
-  {
-    value: 'cardName',
-    initValue: '',
-    type: 'input',
-    label: '卡类型',
-    disabled: true,
-    required: false
-  },
-  {
-    value: 'balance',
-    initValue: '',
-    type: 'input',
-    label: '账户余额',
-    disabled: true,
-    required: false
-  },
-  {
-    value: 'consumeBalance',
-    initValue: '',
-    type: 'input',
-    label: '充值金额',
-    placeholder: '请输入充值金额'
-  },
-  {
-    value: 'remark',
-    initValue: '',
-    type: 'input',
-    label: '备注',
-    placeholder: '请输入备注'
-  },
-  {
-    type: 'text',
-    label: '',
-    text: '* 请确认核对收到一致的现金金额',
-    style: {
-      color: 'red'
-    }
+    label: '时间'
   }
 ]
 export default {
   name: 'CardOperationRecord',
   components: {
-    CountDetail,
     SearchForm,
     TableList,
-    PageNum,
-    SubmitForm,
-    BatchModel,
-    BatchImport
+    PageNum
   },
   data() {
     return {
-      title: '绑卡',
-      importUrl: '',
-      confirmLoading: false,
-      visible: false,
-      showTag: false,
-      total: 0,
-      actionTitle: '',
       searchLabel,
-      dealSearchLabel,
-      accountColumns,
-      showDetailTag: false,
-      columnList,
-      formData,
+      searchList: {
+        workNo: '',
+        operType: '',
+        userName: ''
+      },
       pageList: {
         page: 1,
         size: 20
       },
-      importParams: {},
-      accountList: [
-        {
-          index: '1',
-          userName: '1',
-          userIdentity: '1',
-          workNo: '1',
-          classBoards: '1',
-          status: '1',
-          action: '1',
-          photoUrl: '1'
-        }
-      ],
-      userId: '',
-      rangeTime: [],
-      searchObj: {},
-      type: '',
-      id: '',
-      cardList: []
+      total: 0,
+      columns,
+      recordList: [],
+      exportTime: ''
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
-    // this.getCardList()
+    this._getCardRecord()
   },
   methods: {
-    ...mapActions('home', ['getCardType', 'getUserInfoList', 'recharge', 'charge', 'subsidy']),
-    async getCardList() {
-      const res = await this.getCardType()
-      this.cardList = res.data
-      const lastCount = this.searchLabel.length - 1
-      res.data.forEach(ele => {
-        this.searchLabel[lastCount].list.push({
-          key: ele.cardType,
-          val: ele.cardName
-        })
-      })
-      this.$nextTick(() => {
-        this.showList()
-      })
+    ...mapActions('home', ['getCardRecord', 'cardRecordExport']),
+    /**
+     * @description 导出操作记录
+     */
+    async handleTplDownload() {
+      await this.cardRecordExport(this.searchList)
+      this.$message.success('导出成功')
     },
-    showDetail(record) {
-      this.userId = record.userId
-      this.showDetailTag = true
-    },
-    submit() {},
-    async showList() {
-      const req = {
-        ...this.pageList,
-        ...this.searchObj
-      }
-      const res = await this.getUserInfoList(req)
-      // console.log(res)
-      this.accountList = res.data.list.map(el => {
-        return {
-          ...el,
-          id: el.userId
-        }
+    /**
+     * @description 查询账户操作记录
+     */
+    async _getCardRecord() {
+      const res = await this.getCardRecord({
+        pageNum: this.pageList.page,
+        pageSize: this.pageList.size,
+        ...this.searchList
       })
-      this.accountList.map(ele => {
-        const index = this.cardList.findIndex(list => {
-          return list.id === ele.cardType
-        })
-        if (index !== -1) {
-          ele.cardType = this.cardList[index].cardName
-        }
-      })
-      this.total = res.data.total
+      this.recordList = res.rows
+      this.total = res.total
     },
     searchForm(values) {
-      // console.log(values)
-      this.searchObj = values
-      this.showList()
-    },
-
-    handle(title, record) {
-      this.actionTitle = title
-      this.id = record.userId
-      this.formData = this.$tools.fillForm(formData, {
-        ...record,
-        userIdentity: this.$tools.userType(record.userIdentity),
-        status: this.$tools.getCardStatus(record.status)
-      })
-      if (title === '充值') {
-        this.type = '0'
-        this.formData.splice(-2, 1)
-      } else if (title === '扣款') {
-        this.type = '1'
-        this.formData[8].label = '扣款金额'
-        this.formData[8].placeholder = '请输入扣款金额'
-        this.formData[10].text = '* 请确认核对扣款金额'
-      } else if (title === '补助') {
-        this.type = '2'
-        this.formData[8].label = '补助金额'
-        this.formData[8].placeholder = '请输入补助金额'
-        this.formData[10].text = '* 补助金额将直接发放到用户账户中，请核实操作'
-      }
-      this.showTag = true
-    },
-    async submitForm(values) {
-      // console.log('values', values)
-      // return false
-      const req = {
+      this.pageList.page = 1
+      const date = values.rangeTime ? { beginTime: values.rangeTime[0], endTime: values.rangeTime[1] } : {}
+      this.searchList = {
         ...values,
-        userCode: this.userInfo.userCode,
-        userId: this.id,
-        card: values.card,
-        consumeBalance: values.consumeBalance,
-        remark: values.remark,
-        balance: values.balance
+        ...date
       }
-      if (this.type === '0') {
-        await this.recharge(req)
-        this.$message.success('充值成功')
-      } else if (this.type === '1') {
-        await this.charge(req)
-        this.$message.success('扣款成功')
-      } else if (this.type === '2') {
-        await this.subsidy(req)
-        this.$message.success('补助成功')
-      }
-      this.$tools.goNext(() => {
-        this.showList()
-        this.$refs.form.reset()
-      })
-    },
-    batchAccount() {
-      this.$refs.modal.visible = true
-    },
-    toDetail(record) {
-      this.$router.push({
-        path: '/accountList/accountDetails',
-        props: true,
-        query: {
-          userId: record.userId,
-          cardStatus: record.status
-        }
-      })
-    },
-    operationRecord(record) {
-      this.$router.push({
-        path: '/accountOperationRecord',
-        props: true,
-        query: {
-          userId: record.userId,
-          cardStatus: record.status
-        }
-      })
-    },
-    downloadTemplate() {
-      const a = document.createElement('a')
-      a.href = '/ljj_dorm/dorm/in/record/download/excel'
-      a.click()
-    },
-    // 上传文件
-    uploadFiles() {
-      this.$refs.batchImport.addVisible = true
-      this.title = '导入文件'
-      this.importParams = {
-        schoolCode: sessionStorage.getItem('schoolScheme'),
-        schoolName: sessionStorage.getItem('schoolName')
-      }
-      this.importUrl = '/ljj_dorm/dorm/in/record/import/excel'
-    },
-    // 导入成功
-    handleUploadSuccess() {
-      this.$refs.batchImport.addVisible = false
-      this.showRoom(this.floorCode)
+      delete this.searchList.rangeTime
+      this._getCardRecord()
     }
   }
 }
 </script>
-
 <style lang="less" scoped>
+.card-record {
+  padding: 20px 20px 0;
+}
 </style>

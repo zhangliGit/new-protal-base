@@ -213,7 +213,6 @@ export default {
       keyword: '',
       classChooseList: [],
       teaChooseList: [],
-      deviceChooseList: [],
       pageList: {
         page: 1,
         size: 999999
@@ -230,8 +229,7 @@ export default {
       teaTotalList: [],
       deviceTotalList: [],
       buildList: [],
-      classList: [],
-      chooseUser: {}
+      classList: []
     }
   },
   created() {},
@@ -277,6 +275,9 @@ export default {
           }
         })
       }
+      this.classChooseList = []
+      this.teaChooseList = []
+      this.chooseUser = ''
     },
     teaSearch(values) {
       this.keyword = values.userName
@@ -293,10 +294,6 @@ export default {
     error() {
       this.confirmLoading = false
     },
-    delClass(id, index) {
-      this.classTotalList.splice(index, 1)
-      this.classChooseList.splice(this.classChooseList.indexOf(id), 1)
-    },
     /**
      * @description 点击选中人员
      */
@@ -304,16 +301,11 @@ export default {
       this.chooseUser = item
     },
     submitOk() {
-      if (this.deviceTotalList.length === 0 && this.teaTotalList.length === 0 && this.classTotalList.length === 0) {
-        this.$message.warning('请选择发布对象')
+      if (!this.chooseUser) {
+        this.$message.warning('请选择用户')
         return
       }
-      this.confirmLoading = true
-      this.$emit('submit', {
-        classList: this.classTotalList,
-        teaList: this.teaTotalList,
-        deviceList: this.deviceTotalList
-      })
+      this.$emit('submit', { userType: this.activeKey, ...this.chooseUser })
     },
     classSelect(item) {
       this.gradeCode = item.gradeCode

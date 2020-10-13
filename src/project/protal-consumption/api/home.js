@@ -7,6 +7,6 @@ import hostEnv from '@config/host-env'
 
 const homeApi = {}
 for (const val in homeApi) {
-  homeApi[val] = `${hostEnv.ecard_hzz}${homeApi[val]}`
+  homeApi[val] = `${hostEnv.hzz_ecard}${homeApi[val]}`
 }
 export default homeApi
