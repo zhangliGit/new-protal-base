@@ -8,7 +8,7 @@
             <a-switch
               @click.native.stop
               @change="tie($event, action.record)"
-              v-model="action.record.machineStatus"
+              v-model="action.record.switch"
             />
           </div>
         </template>
@@ -52,7 +52,7 @@ const searchLabel = [
         val: '离线'
       }
     ],
-    value: 'machineStatus',
+    value: 'status',
     type: 'select',
     label: '状态'
   }
@@ -85,16 +85,21 @@ export default {
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getMachineList', 'addAuthor', 'unBindConsume']),
+    ...mapActions('home', ['getMachineList', 'editMachine', 'addAuthor', 'unBindConsume']),
     async showList() {
       const req = {
         pageNum: this.pageList.page,
         pageSize: this.pageList.size,
-        machineStatus: this.searchObj.machineStatus,
+        status: this.searchObj.status,
         deviceName: this.searchObj.deviceName
       }
       const res = await this.getMachineList(req)
-      this.machineList = res.rows
+      this.machineList = res.rows.map(ele => {
+        return {
+          ...ele,
+          switch: ele.isOpen === '1'
+        }
+      })
       this.total = res.total
     },
     searchForm(values) {
@@ -102,14 +107,13 @@ export default {
       this.showList()
     },
     // 授权
-    async tie (record) {
+    async tie (value, record) {
+      console.log(record)
       const req = {
-        deviceSn: record.deviceSn,
-        macAddress: record.macAddress,
         id: record.id,
-        schoolCode: this.schoolCode
+        isOpen: value ? '1' : '0'
       }
-      await this.addAuthor(req)
+      await this.editMachine(req)
       this.$message.success('操作成功')
       this.$tools.goNext(() => {
         this.showList()

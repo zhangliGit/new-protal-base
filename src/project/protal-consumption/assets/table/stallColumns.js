@@ -14,7 +14,10 @@ const stallColumns = [
   {
     title: '绑定场地',
     dataIndex: 'buildName',
-    width: '20%'
+    width: '20%',
+    scopedSlots: {
+      customRender: 'other2'
+    }
   },
   {
     title: '备注',
@@ -25,7 +28,7 @@ const stallColumns = [
     title: '操作',
     width: '20%',
     scopedSlots: {
-      customRender: 'action'
+      customRender: 'other1'
     }
   }
 ]
