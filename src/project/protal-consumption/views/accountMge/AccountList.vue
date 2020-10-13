@@ -1,6 +1,6 @@
 <template>
   <div class="account-list page-layout qui-fx-ver">
-    <open-card v-model="isOpen" ref="cardForm" :user-code="userCode"></open-card>
+    <open-card v-if="isOpen" v-model="isOpen" ref="cardForm" :user-code="userCode"></open-card>
     <choose-user @submit="chooseUser" title="请选择用户" v-model="userTag"></choose-user>
     <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
       <div slot="left">
@@ -31,13 +31,13 @@
       title="交易记录"
     ></count-detail>
     <batch-model ref="modal" :title="'批量开户'" @ok="batchSubmit">
-      <a-row :gutter="[20,20]">
+      <a-row :gutter="[20, 20]">
         <a-col :span="10" :gutter="2">1.下载模板，批量填写人员信息</a-col>
         <a-col :span="10">
           <a-button type="primary" @click="downloadTemplate()">下载模板</a-button>
         </a-col>
       </a-row>
-      <a-row :gutter="[20,20]">
+      <a-row :gutter="[20, 20]">
         <a-col :span="10" :gutter="2">2.上传填写好的开户信息Excel文件</a-col>
         <a-col :span="10">
           <a-button type="primary" @click="uploadFiles()">上传文件</a-button>&nbsp; &nbsp; 未选择任何文件
