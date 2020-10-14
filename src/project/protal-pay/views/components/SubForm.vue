@@ -1,39 +1,17 @@
 <template>
-  <div class="addTask page-layout qui-fx-ver">
+  <a-modal
+    :title="title"
+    v-model="addVisible"
+    :destroyOnClose="true"
+    :maskClosable="false"
+    width="840px"
+    @ok="addSubmit"
+    :okButtonProps="{ props: { disabled: isLoad } }"
+    :cancel-button-props="{ props: { disabled: isView } }"
+  >
     <a-form :form="form">
-      <a-form-item label="任务名称：" v-bind="formItemLayout">
-        <a-input
-          v-decorator="[
-            'taskName',
-            { initialValue: appForm.taskName, rules: [{ required: true, message: '请填写任务名称', whitespace: true }] }
-          ]"
-          placeholder="请输入任务名称"
-        />
-      </a-form-item>
-      <a-form-item label="收费截止日期" v-bind="formItemLayout">
-        <a-date-picker
-          format="YYYY-MM-DD"
-          v-decorator="[
-            'endTime',
-            {
-              initialValue: appForm.endTime,
-              rules: [{ required: true, message: '请选择截止日期' }]
-            }
-          ]"
-        />
-      </a-form-item>
       <a-form-item label="收费项" v-bind="formItemLayout" required>
-        <a-button icon="plus" class="add-btn" @click="add">添加</a-button>
-        <table-list isZoom :columns="columns" :table-list="recordList">
-          <template v-slot:actions="action">
-            <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm.stop="deleteList(action.record)">
-              <template slot="title">您确定删除吗?</template>
-              <a-tooltip placement="topLeft" title="删除">
-                <a-button size="small" class="del-action-btn" icon="delete"></a-button>
-              </a-tooltip>
-            </a-popconfirm>
-          </template>
-        </table-list>
+        <table-list isZoom :columns="columns" :table-list="recordList"> </table-list>
         <a-row>
           <a-col :span="2" :offset="17"> 共计：</a-col>
           <a-col :span="5">{{ this.totalMoney == '' ? '0' : this.totalMoney }}元 </a-col>
@@ -62,10 +40,6 @@
           </template>
         </div>
       </a-form-item>
-      <a-form-item :wrapper-col="{ span: 15, offset: 3 }">
-        <a-button style="margin-right:50px;" @click="cancle">取消</a-button>
-        <a-button type="primary" :loading="loading" @click="handleSubmit">保存</a-button>
-      </a-form-item>
     </a-form>
     <choose-student
       ref="chooseUser"
@@ -75,19 +49,18 @@
       @submit="chooseUser"
       title="选择学生"
     ></choose-student>
-    <add-charge ref="addCharge" :title="title" @getList="getCharge"></add-charge>
-  </div>
+  </a-modal>
 </template>
 <script>
+import { InputNumber } from 'ant-design-vue'
 import moment from 'moment'
 import { mapState, mapActions } from 'vuex'
 import ChooseStudent from '@c/ChooseStudent'
 import TableList from '@c/TableList'
-import AddCharge from './AddCharge'
 const columns = [
   {
     title: '序号',
-    width: '15%',
+    width: '20%',
     scopedSlots: {
       customRender: 'index'
     }
@@ -100,50 +73,37 @@ const columns = [
   {
     title: '收费标准',
     dataIndex: 'itemPrice',
-    width: '15%'
+    width: '20%'
   },
   {
     title: '数量',
     dataIndex: 'itemNum',
-    width: '15%'
+    width: '20%'
   },
   {
     title: '总金额',
-    dataIndex: 'totalMoneySum',
-    width: '15%'
-  },
-  {
-    title: '操作',
-    width: '20%',
-    scopedSlots: {
-      customRender: 'action'
-    }
+    dataIndex: 'moneySum',
+    width: '20%'
   }
 ]
 export default {
-  name: 'AddTask',
+  name: 'SubForm',
   components: {
     ChooseStudent,
-    TableList,
-    AddCharge
+    TableList
   },
   data() {
     return {
       moment,
       form: this.$form.createForm(this),
-      appForm: {
-        taskName: '',
-        endTime: ''
-      },
       loading: false,
       userTag: false,
       chooseTeachersDeatil: [],
       recordList: [],
       columns,
-      title: '新增',
       formItemLayout: {
-        labelCol: { span: 2 },
-        wrapperCol: { span: 10 }
+        labelCol: { span: 3 },
+        wrapperCol: { span: 21 }
       },
       totalMoney: '',
       amount: '',
@@ -151,7 +111,24 @@ export default {
       chargeObject: {
         chargeGrades: []
       },
-      getYearList: []
+      addVisible: false,
+      isView: false,
+      isLoad: false,
+      detailList: {}
+    }
+  },
+  props: {
+    title: {
+      type: String,
+      default: ''
+    },
+    popTaskCode: {
+      type: String,
+      default: ''
+    },
+    popTaskId: {
+      type: String,
+      default: ''
     }
   },
   created() {},
@@ -164,27 +141,23 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
-    this.getSchoolYearId()
+    this.init()
   },
   methods: {
-    ...mapActions('home', ['addChargetask', 'getSchoolYear']),
-    getCharge(item) {
-      this.recordList = item
+    ...mapActions('home', ['addChargetask', 'getCharge', 'addBillInfo', 'getchargeTaskInfo']),
+    async init() {
+      const res = await this.getCharge(this.popTaskCode)
+      const tas = await this.getchargeTaskInfo(this.popTaskId)
+      this.detailList = tas.data
+      this.recordList = res.data
       const array = []
       this.recordList.forEach(ele => {
-        array.push(ele.totalMoneySum)
+        array.push(ele.moneySum)
       })
       this.totalMoney = this.sum(array)
     },
     sum(array) {
-      var s = 0
-      for (var i = array.length - 1; i >= 0; i--) {
-        s += array[i]
-      }
-      return s
-    },
-    deleteList(removedTag) {
-      this.recordList = this.recordList.filter(tag => tag !== removedTag)
+      return eval(array.join('+'))
     },
     teacherSelect() {
       this.userTag = true
@@ -196,7 +169,7 @@ export default {
       this.$refs.chooseUser.reset()
       this.chooseTeachersDeatil = values
       this.chargeObject.schoolYearId = values[0].schoolYearId
-      this.chargeObject.schoolYearName = this.getYearList[0].schoolYear
+      this.chargeObject.schoolYearName = values[0].schoolYear
       values.forEach(item => {
         this.chargeObject.chargeGrades.push({
           gradeCode: item.gradeCode,
@@ -214,33 +187,27 @@ export default {
           })
         })
       })
-      console.log(this.chargeObject)
     },
-    add() {
-      this.title = '新增'
-      this.$refs.addCharge.addVisible = true
-    },
-    handleSubmit(e) {
+    addSubmit(e) {
       e.preventDefault()
       this.form.validateFields((err, values) => {
         if (!err) {
-          values.endTime = moment(values.endTime).format('YYYY-MM-DD HH:mm:ss')
           const req = {
             schoolCode: this.userInfo.schoolCode,
-            taskName: values.taskName,
-            itemVOList: this.recordList,
-            cutOffTime: values.endTime,
-            createUserCode: this.userInfo.userCode,
             preMoney: this.amount,
+            taskCode: this.detailList.taskCode,
+            taskName: this.detailList.billMoneySum,
             taskMoney: this.receivable,
-            chargeObject: this.chargeObject
+            itemVOList: this.recordList,
+            chargeObject: this.chargeObject,
+            cutOffTime: this.detailList.cutOffTime
           }
-          this.addChargetask(req).then(res => {
+          this.addBillInfo(req).then(res => {
             this.$message.success('添加成功')
+            this.addVisible = false
+            this.isLoad = false
             this.$tools.goNext(() => {
-              this.$router.push({
-                path: '/chargingTask'
-              })
+              this.$emit('update')
             })
           })
         }
@@ -250,13 +217,6 @@ export default {
       this.$router.push({
         path: '/chargingTask'
       })
-    },
-    async getSchoolYearId() {
-      const req = {
-        schoolCode: this.userInfo.schoolCode
-      }
-      const res = await this.getSchoolYear(req)
-      this.getYearList = res.data.list
     }
   }
 }

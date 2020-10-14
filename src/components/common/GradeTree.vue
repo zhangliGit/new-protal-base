@@ -1,6 +1,6 @@
 <template>
   <div class="grade-tree">
-    <a-skeleton v-if="treeData.length == 0 && !noData" active :paragraph="{rows: 10}" />
+    <a-skeleton v-if="treeData.length == 0 && !noData" active :paragraph="{ rows: 10 }" />
     <no-data v-if="noData" msg="暂无数据~"></no-data>
     <a-tree
       :style="{ maxHeight: maxHeight + 'px' }"
@@ -62,7 +62,7 @@ export default {
     onExpand() {},
     // 点击节点
     select(obj, tree) {
-      console.log(obj, tree)
+      console.log('1111111',obj, tree.selectedNodes[0].data.props)
       const gradeIds = []
       this.gradeList.forEach(el => {
         return gradeIds.push(el.gradeId)
@@ -79,7 +79,7 @@ export default {
         title: tree.selectedNodes[0].data.props.title,
         gradeCode: tree.selectedNodes[0].data.props.gradeCode,
         classCode: tree.selectedNodes[0].data.props.classCode,
-        isNewYear: tree.selectedNodes[0].data.props.schoolYearId === this.schoolYear
+        isNewYear: tree.selectedNodes[0].data.props.schoolYearId === this.schoolYear,
       }
       console.log(selectObj)
       this.$emit('select', selectObj)
@@ -109,12 +109,13 @@ export default {
         })
       }
       this.schoolYear = this.gradeList[0].id
+      this.schoolYearName = this.gradeList[0].schoolYear
       const selectObj = {
         schoolYearId: this.gradeList[0].id,
         title: this.gradeList[0].schoolYear,
         gradeCode: this.gradeList[0].gradeCode,
         classCode: this.gradeList[0].classCode,
-        isNewYear: true
+        isNewYear: true,
       }
       this.defaultSelectedKeys = [this.gradeList[0].id]
       if (this.isOnlyNewSchoolYear) {
@@ -123,7 +124,7 @@ export default {
             title: this.gradeList[0].schoolYear + '学年',
             code: this.gradeList[0].id,
             key: this.gradeList[0].id,
-            schoolYearId: this.gradeList[0].id
+            schoolYearId: this.gradeList[0].id,
           }
         ]
       } else {
@@ -158,7 +159,7 @@ export default {
                 title: item.name,
                 schoolYearId: treeNode.dataRef.schoolYearId,
                 isLeaf: this.isChoose,
-                gradeCode: item.code
+                gradeCode: item.code,
               }
             })
             treeNode.dataRef.children.forEach(item => {
@@ -179,7 +180,7 @@ export default {
                       schoolYearId: item.schoolYearId,
                       gradeCode: item.gradeCode,
                       classCode: ele.classCode,
-                      isLeaf: true
+                      isLeaf: true,
                     }
                   })
                   this.treeData = [...this.treeData]

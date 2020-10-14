@@ -1,14 +1,19 @@
 <template>
   <div class="page-layout qui-fx-ver">
-    <search-form is-reset @search-form="searchForm" :search-label="searchLabel"> 
-       <div slot="left">
-        <a-button  icon="plus" class="add-btn">添加</a-button>
+    <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
+      <div slot="left">
+        <a-button icon="plus" class="add-btn">添加</a-button>
       </div>
     </search-form>
     <table-list isZoom :page-list="pageList" :columns="columns" :table-list="recordList">
       <template v-slot:actions="action">
         <a-tooltip placement="topLeft" title="查看详情">
-          <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="detail(action.record.id)"></a-button>
+          <a-button
+            size="small"
+            class="detail-action-btn"
+            icon="ellipsis"
+            @click="detail(action.record.id)"
+          ></a-button>
         </a-tooltip>
       </template>
     </table-list>
@@ -20,7 +25,6 @@ import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import SearchForm from '@c/SearchForm'
 import PageNum from '@c/PageNum'
-import $tools from '@u/tools'
 const columns = [
   {
     title: '序号',
@@ -38,23 +42,28 @@ const columns = [
     title: '账单数',
     dataIndex: 'applicantName',
     width: '10%'
-  },{
+  },
+  {
     title: '已完成账单',
     dataIndex: 'applicantName',
     width: '10%'
-  },{
+  },
+  {
     title: '未缴费账单',
     dataIndex: 'applicantName',
     width: '10%'
-  },{
+  },
+  {
     title: '创建人',
     dataIndex: 'applicantName',
     width: '10%'
-  },{
+  },
+  {
     title: '创建时间',
     dataIndex: 'applicantName',
     width: '10%'
-  },{
+  },
+  {
     title: '截止时间',
     dataIndex: 'applicantName',
     width: '10%'
@@ -73,7 +82,7 @@ const searchLabel = [
     type: 'input',
     label: '任务名称',
     placeholder: '请输入任务名称'
-  },
+  }
 ]
 export default {
   name: 'Company',

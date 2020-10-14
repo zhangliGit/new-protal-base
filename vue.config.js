@@ -277,8 +277,8 @@ module.exports = {
         }
       },
       '/zk_examplan': {
-        target: 'http://192.168.1.23:11013/', // 张坤-考试计划
-        // target: 'http://192.168.2.242:11013/',
+        //target: 'http://192.168.1.23:11013/', // 张坤-考试计划
+        target: 'http://192.168.2.242:11013/',
         changeOrigin: true,
         pathRewrite: {
           '^/zk_examplan': ''
@@ -300,8 +300,8 @@ module.exports = {
         }
       },
       '/cl_oa': {
-        target: 'http://192.168.2.242:11014/', // 陈琳-oa
-        // target: 'http://192.168.1.23:11009/',
+        // target: 'http://192.168.2.242:11014/', // 陈琳-oa
+        target: 'http://192.168.2.242:11009/',
         changeOrigin: true,
         pathRewrite: {
           '^/cl_oa': ''
