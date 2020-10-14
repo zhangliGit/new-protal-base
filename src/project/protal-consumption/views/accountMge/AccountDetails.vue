@@ -13,7 +13,7 @@
                 <a-col
                   class="mar-b10 qui-fx-jc"
                   :span="8"
-                >状态 : {{ baseData.getAccountType(detail.status) }}</a-col>
+                >状态 : {{ datamap(detail.status, accountTypeList) }}</a-col>
                 <a-col class="mar-b10 qui-fx-jc" :span="8">开户时间 : {{ detail.createTime }}</a-col>
                 <a-col class="mar-b10 qui-fx-jc" :span="8">押金 : {{ detail.deposit }}</a-col>
               </a-row>
@@ -32,10 +32,10 @@
 </template>
 <script>
 import DetailShow from '@c/DetailShow'
+import Tools from '@u/tools'
 import { mapState, mapActions } from 'vuex'
 import crad from '../../component/card'
 import TableList from '@c/TableList'
-import baseData from '../../assets/js/base'
 const columns = [
   {
     title: '序号',
@@ -46,15 +46,18 @@ const columns = [
   },
   {
     title: '姓名',
-    dataIndex: 'userName'
+    dataIndex: 'parentName'
   },
   {
     title: '手机号',
-    dataIndex: 'phone'
+    dataIndex: 'mobile'
   },
   {
     title: '家属关系',
-    dataIndex: 'orgName'
+    dataIndex: 'relationship',
+    customRender: (text) => {
+      return Tools.relationship(text)
+    }
   }
 ]
 export default {
@@ -66,9 +69,10 @@ export default {
   },
   data() {
     return {
-      baseData,
       detailTitle: '基本信息',
       detailInfo: [],
+      userTypeList: [],
+      accountTypeList: [],
       detail: {},
       columns
     }
@@ -78,6 +82,8 @@ export default {
   },
   mounted() {
     this.detail = JSON.parse(window.localStorage.getItem('accountInfo'))
+    this.userTypeList = JSON.parse(window.localStorage.getItem('user_type'))
+    this.accountTypeList = JSON.parse(window.localStorage.getItem('ecard_account_status'))
     this.detailInfo = [
       {
         key: '姓名',
@@ -93,12 +99,15 @@ export default {
       },
       {
         key: '身份',
-        val: this.baseData.userType(this.detail.userType)
+        val: this.datamap(this.detail.userType, this.userTypeList)
       }
     ]
   },
   methods: {
-    ...mapActions('home', [''])
+    ...mapActions('home', ['']),
+    datamap(data, list) {
+      return list.filter((ele) => ele.key === data).length > 0 ? list.filter((ele) => ele.key === data)[0].val : ''
+    }
   }
 }
 </script>

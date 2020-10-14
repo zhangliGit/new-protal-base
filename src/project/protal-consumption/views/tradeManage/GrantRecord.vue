@@ -69,11 +69,12 @@ export default {
   },
   methods: {
     ...mapActions('home', ['getGrantList', 'exportGrantList', 'getDictList']),
-    exportClick() {
-      this.exportGrantList({
+    async exportClick() {
+      await this.exportGrantList({
         name: '补助发放记录',
         ...this.searchList
       })
+      this.$message.success('导出成功')
     },
     async _getDictList() {
       this.searchLabel[2].list = []

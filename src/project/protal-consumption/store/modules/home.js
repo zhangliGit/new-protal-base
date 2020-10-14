@@ -48,8 +48,8 @@ const home = {
       schoolCode: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolCode,
       schoolName: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolName,
       schoolId: JSON.parse(window.sessionStorage.getItem('loginInfo')).id,
-      userCode: JSON.parse(window.sessionStorage.getItem('loginInfo')).userCode,
-      userId: JSON.parse(window.sessionStorage.getItem('loginInfo')).id
+      userCode: JSON.parse(window.sessionStorage.getItem('loginType')).userCode,
+      userId: JSON.parse(window.sessionStorage.getItem('loginType')).id
     })
   },
   actions: {

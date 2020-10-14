@@ -7,8 +7,8 @@
           <a-tag color="orange" @click="showDetail(other1.record)">{{ other1.record.userName }}</a-tag>
         </template>
         <template v-slot:actions="action">
-          <a-tag color="#2db7f5" @click="toDetail(action.record)">详情</a-tag>
-          <a-tag color="#2db7f5" @click="operationRecord(action.record)">操作记录</a-tag>
+          <a-tag color="#2db7f5" @click="toDetail(action.record, 'cardDetails')">详情</a-tag>
+          <a-tag color="#2db7f5" @click="toDetail(action.record, 'cardOperationRecord')">操作记录</a-tag>
         </template>
       </table-list>
     </div>
@@ -23,8 +23,6 @@ import BatchModel from '../../component/Modal'
 import SubmitForm from '../../component/SubmitForm'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
-import baseData from '../../assets/js/base'
-import tools from '@u/tools'
 import cardColumns from '../../assets/table/cardColumns'
 import BatchImport from '../../component/BatchImport'
 const searchLabel = [
@@ -70,7 +68,7 @@ const searchLabel = [
     label: '身份'
   },
   {
-    list: tools.deepClone(baseData.cardStatus),
+    list: [],
     value: 'cardStatus',
     type: 'select',
     label: '卡状态'
@@ -103,10 +101,44 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
+    this._getDictList('card_status', 'cardStatus')
+    this._getDictList('user_type', 'userType')
+    this._getDictList('ecard_account_status', 'status')
     this._getCardList()
   },
   methods: {
-    ...mapActions('home', ['getCardList']),
+    ...mapActions('home', ['getCardList', 'getDictList']),
+    /* *
+     * @description 获取卡状态字典 type:字典类型，text:字段值
+     */
+    async _getDictList(type, text) {
+      const i = this.searchLabel.findIndex((list) => list.value === text)
+      if (i !== -1) this.searchLabel[i].list = []
+      const res = await this.getDictList({
+        pageNum: 1,
+        pageSize: 100,
+        dictType: type
+      })
+      const list = []
+      res.rows.forEach((ele) => {
+        list.push({
+          key: ele.dictValue,
+          val: ele.dictLabel
+        })
+      })
+      if (i !== -1) {
+        this.searchLabel[i].list = list
+      }
+      window.localStorage.setItem(type, JSON.stringify(list))
+      const index = this.cardColumns.findIndex((list) => list.dataIndex === text)
+      if (index !== -1) {
+        this.cardColumns[index].customRender = (text) => {
+          return res.rows.filter((ele) => ele.dictValue === text).length > 0
+            ? res.rows.filter((ele) => ele.dictValue === text)[0].dictLabel
+            : ''
+        }
+      }
+    },
     /**
      * @description 获取卡片信息列表
      */
@@ -130,11 +162,9 @@ export default {
     batchAccount() {
       this.$refs.modal.visible = true
     },
-    toDetail(record) {
+    toDetail(record, name) {
       window.localStorage.setItem('cardInfo', JSON.stringify(record))
-      this.$router.push({
-        name: 'cardDetails'
-      })
+      this.$router.push({ name, query: { name } })
     }
   }
 }

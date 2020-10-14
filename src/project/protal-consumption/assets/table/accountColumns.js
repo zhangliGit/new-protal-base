@@ -1,4 +1,4 @@
-import baseData from '../js/base'
+
 const accountColumns = [
   {
     title: '序号',
@@ -15,10 +15,7 @@ const accountColumns = [
   {
     title: '身份',
     dataIndex: 'userType',
-    width: '15%',
-    customRender: text => {
-      return baseData.userType(text)
-    }
+    width: '15%'
   },
   {
     title: '学号/工号',
@@ -33,10 +30,7 @@ const accountColumns = [
   {
     title: '账户状态',
     dataIndex: 'status',
-    width: '10%',
-    customRender: text => {
-      return baseData.getAccountType(text)
-    }
+    width: '10%'
   },
   {
     title: '账户余额',

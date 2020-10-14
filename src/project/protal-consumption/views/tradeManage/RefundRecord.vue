@@ -75,11 +75,12 @@ export default {
   },
   methods: {
     ...mapActions('home', ['getRefundList', 'exportRefundList', 'getDictList']),
-    exportClick() {
-      this.exportRefundList({
+    async exportClick() {
+      await this.exportRefundList({
         name: '退款记录',
         ...this.searchList
       })
+      this.$message.success('导出成功')
     },
     async _getDictList() {
       this.searchLabel[3].list = []

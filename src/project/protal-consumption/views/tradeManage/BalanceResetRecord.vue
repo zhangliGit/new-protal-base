@@ -73,11 +73,12 @@ export default {
   },
   methods: {
     ...mapActions('home', ['getClearList', 'exportClearList', 'getDictList']),
-    exportClick() {
-      this.exportClearList({
+    async exportClick() {
+      await this.exportClearList({
         name: '余额清零记录',
         ...this.searchList
       })
+      this.$message.success('导出成功')
     },
     async _getDictList() {
       this.searchLabel[2].list = []

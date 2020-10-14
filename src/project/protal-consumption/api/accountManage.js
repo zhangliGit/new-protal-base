@@ -18,7 +18,8 @@ const accountApi = {
   immedGrantSubsidy: '/subsidyManage/immedGrant#postWithQueryAndBody', // 立即发放补助
   deleteSubsidy: '/subsidyManage#delWithQuery', // 删除补助管理
   getAccountRecord: '/accountRecords/list#get', // 查询账户操作记录
-  exportAccountRecord: '/accountrecords/export#post' // 导出操作记录
+  exportAccountRecord: '/accountRecords/export#export', // 导出操作记录
+  importTemplate: '/accountInfo/importTemplate#export' // 下载开户模板
 }
 for (const val in accountApi) {
   accountApi[val] = `${hostEnv.hzz_ecard}${accountApi[val]}`

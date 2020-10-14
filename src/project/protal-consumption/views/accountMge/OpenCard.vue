@@ -18,24 +18,29 @@
           <span class="ant-form-text">未开户</span>
         </a-form-item>
         <a-form-item label="每日消费限额">
-          <a-input v-model="detail.everydayConsume" placeholder="请输入每日消费限额" />
+          <a-input disabled v-model="detail.consumeRule.everydayConsume" placeholder="请输入每日消费限额" />
         </a-form-item>
         <a-form-item label="单次消费限额">
-          <a-input v-model="detail.singleConsume" placeholder="请输入单次消费限额" />
+          <a-input disabled v-model="detail.consumeRule.singleConsume" placeholder="请输入单次消费限额" />
         </a-form-item>
-
         <a-form-item label="优惠类型">
-          <a-radio-group v-model="preferType">
+          <a-radio-group disabled v-model="detail.consumeRule.preferType">
             <a-radio value="0">无优惠</a-radio>
             <a-radio value="1">折扣</a-radio>
             <a-radio value="2">减免</a-radio>
           </a-radio-group>
         </a-form-item>
+        <a-form-item v-if="detail.consumeRule.preferType === '1'" label="折扣比例">
+          <a-input disabled v-model="detail.consumeRule.discount" placeholder="请输入折扣比例" />
+        </a-form-item>
+        <a-form-item v-if="detail.consumeRule.preferType === '2'" label="减免金额">
+          <a-input disabled v-model="detail.consumeRule.remit" placeholder="请输入减免金额" />
+        </a-form-item>
         <a-form-item label="账户余额">
-          <span class="ant-form-text">0.00</span>
+          <span class="ant-form-text">{{ detail.balance }}</span>
         </a-form-item>
         <a-form-item label="押金">
-          <span class="ant-form-text">0.00</span>
+          <span class="ant-form-text">{{ detail.deposit }}</span>
         </a-form-item>
       </a-form>
     </div>
@@ -46,7 +51,7 @@
 </template>
 <script>
 import baseData from '../../assets/js/base'
-import { mapActions } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 export default {
   name: 'OpenCard',
   props: {
@@ -59,6 +64,7 @@ export default {
     }
   },
   computed: {
+    ...mapState('home', ['schoolCode']),
     status: {
       get() {
         return this.value
@@ -92,9 +98,8 @@ export default {
      * @description 查询开户人信息
      */
     async _getOpenAccount() {
-      console.log(22)
       try {
-        const res = await this.getOpenAccount('P14y1ab8tq8gu1')
+        const res = await this.getOpenAccount(this.userCode)
         this.detail = res.data
       } catch (err) {
         this.$emit('hide')
@@ -116,31 +121,10 @@ export default {
       this.loading = true
       try {
         await this.addOpenAccount({
-          balance: 0,
-          classBoards: this.detail.classBoards,
           consumeRule: {
-            createBy: '',
-            createTime: '',
-            discount: 0,
-            everydayConsume: this.detail.everydayConsume,
-            id: '',
-            params: {},
-            preferType: this.preferType,
-            remark: '',
-            remit: 0,
-            schoolCode: 'CANPOINTLIVE',
-            searchValue: '',
-            singleConsume: this.detail.singleConsume,
-            updateBy: '',
-            updateTime: '',
-            userType: ''
+            ...this.detail
           },
-          deposit: 0,
-          schoolCode: '',
-          userCode: this.detail.userCode,
-          userName: this.detail.userName,
-          userType: '',
-          workNo: ''
+          ...this.detail
         })
         this.$message.success('开户成功')
         this.loading = true
@@ -151,13 +135,6 @@ export default {
       } catch (err) {
         this.status = false
       }
-    },
-    handleSubmit(e) {
-      e.preventDefault()
-      this.form.validateFields((err, values) => {
-        if (!err) {
-        }
-      })
     }
   }
 }

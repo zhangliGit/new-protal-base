@@ -69,11 +69,12 @@ export default {
   },
   methods: {
     ...mapActions('home', ['getRechargeList', 'exportRechargeList', 'getDictList']),
-    exportClick() {
-      this.exportRechargeList({
+    async exportClick() {
+      await this.exportRechargeList({
         name: '充值记录',
         ...this.searchList
       })
+      this.$message.success('导出成功')
     },
     async _getDictList() {
       this.searchLabel[2].list = []

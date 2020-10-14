@@ -27,7 +27,6 @@ import SearchForm from '@c/SearchForm'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
 import Tools from '@u/tools'
-import baseData from '../../assets/js/base'
 const columns = [
   {
     title: '序号',
@@ -54,10 +53,7 @@ const columns = [
   {
     title: '操作类型',
     dataIndex: 'operType',
-    width: '10%',
-    customRender: text => {
-      return baseData.actionType(text)
-    }
+    width: '10%'
   },
   {
     title: '操作人员',
@@ -96,22 +92,6 @@ const searchLabel = [
       {
         key: '',
         val: '全部'
-      },
-      {
-        key: 1,
-        val: '开户'
-      },
-      {
-        key: 2,
-        val: '冻结'
-      },
-      {
-        key: 3,
-        val: '解冻'
-      },
-      {
-        key: 4,
-        val: '销户'
       }
     ],
     value: 'operType',
@@ -153,15 +133,51 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
+    this._getDictList('account_oper_type', 'operType')
+    this.searchList.userName = this.$route.query.userName
     this._getAccountRecord()
   },
   methods: {
-    ...mapActions('home', ['getAccountRecord', 'exportAccountRecord']),
+    ...mapActions('home', ['getAccountRecord', 'exportAccountRecord', 'getDictList']),
+    /**
+     * @description 数据字典
+     */
+    async _getDictList(type, text) {
+      const i = this.searchLabel.findIndex((list) => list.value === text)
+      if (i !== -1) this.searchLabel[i].list = []
+      const res = await this.getDictList({
+        pageNum: 1,
+        pageSize: 100,
+        dictType: type
+      })
+      const list = []
+      res.rows.forEach((ele) => {
+        list.push({
+          key: ele.dictValue,
+          val: ele.dictLabel
+        })
+      })
+      if (i !== -1) {
+        this.searchLabel[i].list = list
+      }
+      window.localStorage.setItem(type, JSON.stringify(list))
+      const index = this.columns.findIndex((list) => list.dataIndex === text)
+      if (index !== -1) {
+        this.columns[index].customRender = (text) => {
+          return res.rows.filter((ele) => ele.dictValue === text).length > 0
+            ? res.rows.filter((ele) => ele.dictValue === text)[0].dictLabel
+            : ''
+        }
+      }
+    },
     /**
      * @description 导出操作记录
      */
     async handleTplDownload() {
-      await this.exportAccountRecord(this.searchList)
+      await this.exportAccountRecord({
+        name: '账户操作记录',
+        ...this.searchList
+      })
       this.$message.success('导出成功')
     },
     /**

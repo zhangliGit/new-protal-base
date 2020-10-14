@@ -7,14 +7,14 @@ import hostEnv from '@config/host-env'
 
 const cardApi = {
   getCardRecord: '/cardRecord/list#get', // 获取卡操作记录
-  cardRecordExport: '/cardrecord/export#post', // 导出卡操作记录
+  cardRecordExport: '/cardRecord/export#export', // 导出卡操作记录
   getCardList: '/accountInfo/cardAccountlist#get', // 查询卡片信息列表
   getCardInfoList: '/cardInfo/list#get', // 查询卡信息列表
   openCard: '/cardInfo/openCard#post', // 开卡
   lossCard: '/cardInfo/lossCard#post', // 卡挂失
   unlockCard: '/cardInfo/unlockCard#post', // 卡解挂
   changeCard: '/cardInfo/changeCard#post', // 换卡
-  returnCard: '/cardInfo/returnCard' // 退卡
+  returnCard: '/cardInfo/returnCard#post' // 退卡
 }
 for (const val in cardApi) {
   cardApi[val] = `${hostEnv.hzz_ecard}${cardApi[val]}`
