@@ -20,12 +20,10 @@
     </div>
     <table-list :page-list="pageList" :columns="columns" :table-list="recordList">
       <template v-slot:accessTimes="accessTime">
-        <div class="qui-fx-ver">
-          <div class="qu-fx" v-for="(ele, i) in JSON.parse(accessTime.record.ruleTime)" :key="i">
-            <span style="margin-right:10px;" v-if="ele.startTime">{{ ele.dayName | getWeekDay }}</span>
-            <span v-if="ele.startTime">{{ ele.startTime }}</span>
-            <span v-if="ele.startTime"> ~ </span>
-            <span v-if="ele.startTime">{{ ele.endTime }}</span>
+        <div class="qui-fx" v-for="(ele, i) in accessTime.record.ruleTime" :key="i">
+          <div>{{ ele.dayName | getWeekDay }}</div>
+          <div class="qui-fx u-mar-l10" v-for="(list,index) in ele.ruleTimeDtoList" :key="index">
+            {{ list.startTime }} ~ {{ list.endTime }}
           </div>
         </div>
       </template>
@@ -76,7 +74,7 @@ import ChooseUser from '@c/ChooseUser'
 const columns = [
   {
     title: '序号',
-    width: '16%',
+    width: '8%',
     scopedSlots: {
       customRender: 'index'
     }
@@ -84,12 +82,12 @@ const columns = [
   {
     title: '考勤组名称',
     dataIndex: 'name',
-    width: '16%'
+    width: '15%'
   },
   {
     title: '考勤时间',
     dataIndex: 'ruleTime',
-    width: '16%',
+    width: '30%',
     scopedSlots: {
       customRender: 'accessTime'
     }
@@ -97,7 +95,7 @@ const columns = [
   {
     title: '考勤设备',
     dataIndex: 'controllerNames',
-    width: '16%',
+    width: '15%',
     scopedSlots: {
       customRender: 'accessEq'
     }
@@ -105,7 +103,7 @@ const columns = [
   {
     title: '考勤人员',
     dataIndex: 'userCount',
-    width: '16%',
+    width: '15%',
     scopedSlots: {
       customRender: 'crew'
     }
@@ -146,14 +144,14 @@ export default {
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getAccessList', 'delAccess', 'bindAccessUser']),
+    ...mapActions('home', ['getAttendanceGroup', 'delAccess', 'bindAccessUser']),
     async showList() {
       const req = {
         ...this.pageList,
         schoolCode: this.userInfo.schoolCode,
         type: '1'
       }
-      const res = await this.getAccessList(req)
+      const res = await this.getAttendanceGroup(req)
       this.total = res.data.total
       this.recordList = res.data.list
     },
@@ -161,8 +159,8 @@ export default {
     addGroup(type, id) {
       console.log(123)
       const obj = {
-        path: '/teacherAccessSet/setGroup',
-        query: type === 0 ? { type: 'teacher' } : { id, type: 'teacher' }
+        path: '/teacherAccessSet/teacherSet'
+        // query: type === 0 ? { type: 'teacher' } : { id, type: 'teacher' }
       }
       this.$router.push(obj)
     },

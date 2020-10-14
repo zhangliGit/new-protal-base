@@ -16,8 +16,8 @@
         <a-tab-pane tab="正常次数" key="5"></a-tab-pane>
         <a-tab-pane tab="迟到次数" key="1"></a-tab-pane>
         <a-tab-pane tab="早退次数" key="2"></a-tab-pane>
-        <a-tab-pane tab="上班缺卡" key="3"></a-tab-pane>
-        <a-tab-pane tab="下班缺卡" key="6"></a-tab-pane>
+        <a-tab-pane tab="上班缺卡次数" key="3"></a-tab-pane>
+        <a-tab-pane tab="下班缺卡次数" key="6"></a-tab-pane>
         <a-tab-pane tab="请假次数" key="4"></a-tab-pane>
         <a-tab-pane tab="缺勤次数" key="7"></a-tab-pane>
       </a-tabs>
@@ -68,7 +68,7 @@ const columns = [
   {
     title: '日期',
     dataIndex: 'dayTime',
-    width: '15%',
+    width: '20%',
     customRender: (text) => {
       const d = new Date(text)
       return d.getFullYear() + '-' +
@@ -77,19 +77,16 @@ const columns = [
     }
   },
   {
-    title: '打卡时间',
-    dataIndex: 'dealTime',
-    width: '35%',
-    scopedSlots: {
-      customRender: 'other1'
-    }
+    title: '班次',
+    dataIndex: 'photoUrl',
+    width: '20%'
   },
   {
-    title: '底照',
-    dataIndex: 'photoUrl',
-    width: '15%',
+    title: '打卡时间',
+    dataIndex: 'dealTime',
+    width: '25%',
     scopedSlots: {
-      customRender: 'photoPic'
+      customRender: 'other1'
     }
   },
   {
@@ -144,6 +141,10 @@ export default {
         },
         {
           key: '组织机构',
+          value: res.data.orgName
+        },
+        {
+          key: '日期',
           value: res.data.orgName
         }
       ]
