@@ -18,7 +18,7 @@
     </a-row>
     <div class="choose-user qui-fx">
       <no-data v-if="noData" msg="暂无学科~"></no-data>
-      <div class="org-box">
+      <div class="org-box u-auto">
         <a-tree
           v-if="subjectList.length > 0"
           @select="select"

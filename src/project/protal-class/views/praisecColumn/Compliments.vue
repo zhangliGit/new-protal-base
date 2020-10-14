@@ -39,7 +39,7 @@
                 @click.stop="_addPraise(1, action.record)"
               ></a-button>
             </a-tooltip>
-            <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="deleteList(1,action.record)">
+            <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="deleteList(1, action.record)">
               <template slot="title">
                 您确定删除吗?
               </template>
@@ -135,11 +135,12 @@ const formData = [
     initValue: '',
     type: 'input',
     label: '表扬语',
+    max: 5,
     placeholder: '请输入表扬语'
   },
   {
     value: 'category',
-    initValue: [],
+    initValue: 1,
     list: [
       {
         key: 1,
@@ -150,7 +151,7 @@ const formData = [
         val: '个人表扬'
       }
     ],
-    type: 'select',
+    type: 'radio',
     label: '表扬类型',
     placeholder: '请选择表扬类型'
   }
@@ -252,7 +253,7 @@ export default {
     async deleteList(type, record) {
       if (type) {
         const req = {
-          ids: [record.id],
+          ids: [record.id]
         }
         await this.delPraise(req)
         this.$message.success('删除成功')
@@ -265,7 +266,7 @@ export default {
           return
         }
         const req = {
-          ids: this.chooseList,
+          ids: this.chooseList
         }
         this.$tools.delTip('您确定删除吗?', () => {
           this.delPraise(req).then(res => {
@@ -278,8 +279,7 @@ export default {
         })
       }
     },
-    clickRow(id) {
-    }
+    clickRow(id) {}
   }
 }
 </script>

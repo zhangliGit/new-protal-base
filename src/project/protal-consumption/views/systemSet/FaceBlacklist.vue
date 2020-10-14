@@ -125,20 +125,19 @@ export default {
     },
     async bindSubmit(value) {
       await this.addNewBlack({
-        stuList: value.stuList.map(el => {
+        userList: value.stuList.map(el => {
           return {
             userName: el.userName,
             userCode: el.userCode,
             userType: 1
           }
-        }),
-        teacherList: value.teaList.map(el => {
+        }).concat(value.teaList.map(el => {
           return {
-            userCode: el.userCode,
             userName: el.userName,
+            userCode: el.userCode,
             userType: 2
           }
-        }),
+        })),
         schoolCode: this.userInfo.schoolCode
       })
       this.$message.success('添加成功')

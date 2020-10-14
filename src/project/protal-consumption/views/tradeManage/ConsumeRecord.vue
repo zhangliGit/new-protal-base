@@ -5,12 +5,7 @@
         <a-button icon="export" class="export-btn" @click="exportClick">导出</a-button>
       </div>
     </search-form>
-    <submit-form
-      ref="form"
-      @submit-form="submitForm"
-      title="退款"
-      v-model="showTag"
-      :form-data="formData">
+    <submit-form ref="form" @submit-form="submitForm" title="退款" v-model="showTag" :form-data="formData">
     </submit-form>
     <div class="qui-fx-f1 qui-fx">
       <table-list :page-list="pageList" :columns="columnList.consumeColumns" :table-list="consumeList">
@@ -43,32 +38,7 @@ const searchLabel = [
     placeholder: '请输入姓名'
   },
   {
-    list: [
-      {
-        key: '',
-        val: '全部'
-      },
-      {
-        key: '0',
-        val: '消费已提交'
-      },
-      {
-        key: '1',
-        val: '消费处理中'
-      },
-      {
-        key: '2',
-        val: '消费成功'
-      },
-      {
-        key: '3',
-        val: '消费失败'
-      },
-      {
-        key: '4',
-        val: '已退款'
-      }
-    ],
+    list: [],
     value: 'consumeStatus',
     type: 'select',
     label: '状态'
@@ -133,25 +103,47 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
+    this._getDictList()
     this._getMachineList()
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getMachineList', 'getConsumeList', 'userRefund', 'exportConsumeList']),
-    exportClick() {
-      this.exportConsumeList({
+    ...mapActions('home', ['getMachineList', 'getConsumeList', 'userRefund', 'exportConsumeList', 'getDictList']),
+    async _getDictList() {
+      this.searchLabel[2].list = []
+      const res = await this.getDictList({
+        pageNum: 1,
+        pageSize: 100,
+        dictType: 'consume_status'
+      })
+      res.rows.forEach((ele) => {
+        this.searchLabel[2].list.push({
+          key: ele.dictValue,
+          val: ele.dictLabel
+        })
+      })
+      const index = this.columnList.consumeColumns.findIndex(list => list.dataIndex === 'consumeStatus')
+      this.columnList.consumeColumns[index].customRender = (text) => {
+        return res.rows.filter(ele => ele.dictValue === text).length > 0 ? res.rows.filter(ele => ele.dictValue === text)[0].dictLabel : ''
+      }
+    },
+    async exportClick() {
+      await this.exportConsumeList({
         name: '消费记录',
         ...this.searchList
       })
+      this.$message.success('导出成功')
     },
     async _getMachineList() {
+      this.searchLabel[3].list = []
       const res = await this.getMachineList({
         pageNum: 1,
-        pageSize: 9999
+        pageSize: 9999,
+        isOpen: '1'
       })
-      res.rows.forEach(ele => {
+      res.rows.forEach((ele) => {
         this.searchLabel[3].list.push({
-          key: ele.id,
+          key: ele.sn,
           val: ele.deviceName
         })
       })
@@ -162,7 +154,7 @@ export default {
         pageSize: this.pageList.size,
         userName: this.searchObj.userName,
         consumeStatus: this.searchObj.consumeStatus,
-        deviceName: this.searchObj.deviceName,
+        sn: this.searchObj.deviceName,
         beginTime: this.rangeTime[0] || '',
         endTime: this.rangeTime[1] || ''
       }
@@ -180,10 +172,10 @@ export default {
       this.showTag = true
       this.refundRecord = record
     },
-    async submitForm (values) {
+    async submitForm(values) {
       console.log(values)
       const req = {
-        ...this.refundRecord,
+        id: this.refundRecord.id,
         remark: values.remark
       }
       await this.userRefund(req)

@@ -28,7 +28,7 @@
           <a-tooltip placement="topLeft" title="编辑">
             <a-button size="small" class="edit-action-btn" icon="form" @click.stop="add(1, action.record)"></a-button>
           </a-tooltip>
-          <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="del(action.record)">
+          <a-popconfirm v-if="action.record.userType !== '1' && action.record.userType !== '2'" placement="left" okText="确定" cancelText="取消" @confirm="del(action.record)">
             <template slot="title">您确定删除吗?</template>
             <a-tooltip placement="topLeft" title="删除">
               <a-button size="small" class="del-action-btn" icon="delete"></a-button>
@@ -58,10 +58,7 @@ const columns = [
   {
     title: '身份',
     dataIndex: 'userType',
-    width: '10%',
-    customRender: (text) => {
-      return text === '1' ? '学生' : text === '2' ? '教职工' : '其它'
-    }
+    width: '10%'
   },
   {
     title: '优惠类型',
@@ -92,21 +89,9 @@ const columns = [
 const formData = [
   {
     value: 'userType',
-    initValue: [],
-    list: [
-      {
-        key: '1',
-        val: '学生'
-      },
-      {
-        key: '2',
-        val: '教职工'
-      },
-      {
-        key: '3',
-        val: '其他'
-      }
-    ],
+    initValue: '3',
+    list: [],
+    disabled: true,
     type: 'radio',
     label: '身份',
     placeholder: '请选择身份'
@@ -158,7 +143,7 @@ export default {
     ASwitch: Switch
   },
   computed: {
-    ...mapState('home', ['userInfo'])
+    ...mapState('home', ['userInfo', 'schoolCode'])
   },
   data() {
     return {
@@ -176,10 +161,29 @@ export default {
     }
   },
   mounted() {
+    this._getDictList()
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getRuleList', 'editRule']),
+    ...mapActions('home', ['getRuleList', 'editRule', 'addRule', 'delRule', 'getDictList']),
+    async _getDictList() {
+      this.formData[0].list = []
+      const res = await this.getDictList({
+        pageNum: 1,
+        pageSize: 100,
+        dictType: 'user_type'
+      })
+      res.rows.forEach((ele) => {
+        this.formData[0].list.push({
+          key: ele.dictValue,
+          val: ele.dictLabel
+        })
+      })
+      const index = this.columns.findIndex(list => list.dataIndex === 'userType')
+      this.columns[index].customRender = (text) => {
+        return res.rows.filter(ele => ele.dictValue === text).length > 0 ? res.rows.filter(ele => ele.dictValue === text)[0].dictLabel : ''
+      }
+    },
     async showList(keyword = '') {
       const req = {
         pageNum: this.pageList.page,
@@ -193,48 +197,26 @@ export default {
       this.formStatus = true
       if (type) {
         this.type = 1
+        this.record = record
         this.title = '编辑消费规则'
-        if (record.userType !== '3') {
-          this.formData[0].disabled = true
-        }
-        if (record.preferType === '0') {
-          this.formData.splice(4, 1)
-        } else if (record.preferType === '1') {
-          this.formData[4] = {
-            value: 'discount',
-            initValue: record.discount,
-            type: 'numberInput',
-            label: '折扣比例',
-            placeholder: '请输入折扣比例'
-          }
-        } else if (record.preferType === '2') {
-          this.formData[4] = {
-            value: 'remit',
-            initValue: record.remit,
-            type: 'numberInput',
-            label: '减免金额',
-            placeholder: '请输入减免金额'
-          }
-        }
         this.formData = this.$tools.fillForm(formData, record)
+        this.radioChange(record.preferType, record)
       } else {
         this.type = 0
         this.title = '添加消费规则'
         this.formData = formData
-        this.formData[0].disabled = false
         if (this.formData.length === 5) {
           this.formData.splice(4, 1)
         }
       }
     },
-    radioChange(value) {
-      console.log(value)
+    radioChange(value, record) {
       if (value === '0') {
         this.formData.splice(4, 1)
       } else if (value === '1') {
         this.formData[4] = {
           value: 'discount',
-          initValue: '',
+          initValue: record ? record.discount : '',
           type: 'numberInput',
           label: '折扣比例',
           placeholder: '请输入折扣比例'
@@ -242,7 +224,7 @@ export default {
       } else if (value === '2') {
         this.formData[4] = {
           value: 'remit',
-          initValue: '',
+          initValue: record ? record.remit : '',
           type: 'numberInput',
           label: '减免金额',
           placeholder: '请输入减免金额'
@@ -251,12 +233,14 @@ export default {
     },
     submitForm(values) {
       const req = {
-        ...values
+        ...values,
+        schoolCode: this.schoolCode
       }
       let res = null
       if (this.type === 0) {
-        res = this.addTeacher(req)
+        res = this.addRule(req)
       } else {
+        req.id = this.record.id
         res = this.editRule(req)
       }
       res
@@ -275,7 +259,14 @@ export default {
           this.$refs.form.error()
         })
     },
-    del(record) {}
+    del(record) {
+      this.delRule(record.id).then((res) => {
+        this.$message.success('删除成功')
+        this.$tools.goNext(() => {
+          this.showList()
+        })
+      })
+    }
   }
 }
 </script>

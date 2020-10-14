@@ -38,28 +38,7 @@ const searchLabel = [
     placeholder: '请输入原账单'
   },
   {
-    list: [
-      {
-        key: '',
-        val: '全部'
-      },
-      {
-        key: '1',
-        val: '退款已提交'
-      },
-      {
-        key: '2',
-        val: '退款处理中'
-      },
-      {
-        key: '3',
-        val: '退款成功'
-      },
-      {
-        key: '4',
-        val: '退款失败'
-      }
-    ],
+    list: [],
     value: 'returnStatus',
     type: 'select',
     label: '状态'
@@ -91,15 +70,35 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
+    this._getDictList()
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getRefundList', 'exportRefundList']),
-    exportClick() {
-      this.exportRefundList({
+    ...mapActions('home', ['getRefundList', 'exportRefundList', 'getDictList']),
+    async exportClick() {
+      await this.exportRefundList({
         name: '退款记录',
         ...this.searchList
       })
+      this.$message.success('导出成功')
+    },
+    async _getDictList() {
+      this.searchLabel[3].list = []
+      const res = await this.getDictList({
+        pageNum: 1,
+        pageSize: 100,
+        dictType: 'return_status'
+      })
+      res.rows.forEach((ele) => {
+        this.searchLabel[3].list.push({
+          key: ele.dictValue,
+          val: ele.dictLabel
+        })
+      })
+      const index = this.columnList.refundColumns.findIndex(list => list.dataIndex === 'returnStatus')
+      this.columnList.refundColumns[index].customRender = (text) => {
+        return res.rows.filter(ele => ele.dictValue === text).length > 0 ? res.rows.filter(ele => ele.dictValue === text)[0].dictLabel : ''
+      }
     },
     async showList() {
       const req = {

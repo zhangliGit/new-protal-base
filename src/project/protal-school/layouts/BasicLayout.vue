@@ -37,18 +37,20 @@ export default {
     HeaderTop,
     RouteNavigator
   },
-  data () {
+  data() {
     return {
-      isDev: true,
+      isDev: false,
       routeAddress: [],
       slideTag: false,
       menus: asyncRouterMap
     }
   },
-  created () {
-    this.menus = this.menus.find(item => item.path === '/').children.filter(item => {
-      return !item.meta.isHide
-    })
+  created() {
+    this.menus = this.menus
+      .find(item => item.path === '/')
+      .children.filter(item => {
+        return !item.meta.isHide
+      })
     this.menus.forEach(item => {
       if (item.children) {
         item.children.forEach((it, index) => {
@@ -60,10 +62,9 @@ export default {
     })
     this.collapsed = !this.sidebarOpened
   },
-  mounted () {
-  },
+  mounted() {},
   methods: {
-    toggle () {
+    toggle() {
       this.slideTag = !this.slideTag
     }
   }
@@ -85,7 +86,7 @@ export default {
   padding: 5px 15px 15px;
 }
 .slide-left {
-  transition: width .3s ease;
+  transition: width 0.3s ease;
   width: 240px;
   overflow: hidden;
 }
