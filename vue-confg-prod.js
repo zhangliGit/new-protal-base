@@ -97,6 +97,14 @@ module.exports = {
     port: 8001,
     open: true,
     proxy: {
+      '/oss_upload': {
+        target: 'http://canpoint-photo.oss-cn-beijing.aliyuncs.com',
+        changeOrigin: true,
+        ws: true,
+        pathRewrite: {
+          '^/oss_upload': ''
+        }
+      },
       '/ljj_dorm': {
         target: 'http://ps.canpointlive.com/ljj_dorm', // 柳继杰-宿管
         changeOrigin: true,

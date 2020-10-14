@@ -3,6 +3,7 @@
  */
 
 import Vue from 'vue'
+import axios from 'axios'
 import baseData from './base-data'
 import autoImg from '@a/img/auto_app.png'
 const vm = new Vue({})
@@ -49,7 +50,6 @@ const Tools = {
   },
   // html图片转换格式的方法
   dataURLToBlob(dataurl) {
-    // console.log(dataurl)
     const arr = dataurl.split(',')
     const mime = arr[0].match(/:(.*?);/)[1]
     const bstr = atob(arr[1])
@@ -109,6 +109,32 @@ const Tools = {
   // 加载图片错误处理
   errorImg(event, img) {
     event.target.src = img || autoImg
+  },
+  // oss图片上传 code:学生code file: 上传文件或base64 fileType: 文件类型，base64时传jpg
+  ossUpload(code, file, fileType = 'jpg', callback) {
+    const _self = this
+    axios.get(`http://canpointlive.com:8090/ossApi/oss-policy?schoolCode=${code}&fileType=${fileType}`).then(res => {
+      const aliyunOssToken = res.data.data
+      var formData = new FormData()
+      // 注意formData里append添加的键的大小写
+      formData.append('key', aliyunOssToken.startsWith) // 存储在oss的文件路径
+      formData.append('OSSAccessKeyId', aliyunOssToken.OSSAccessKeyId) // accessKeyId
+      formData.append('policy', aliyunOssToken.policy) // policy
+      formData.append('callback', aliyunOssToken.callback)
+      formData.append('Signature', aliyunOssToken.signature) // 签名
+      const _file = typeof file === 'object' ? file : _self.dataURLToBlob(file)
+      formData.append('file', _file)
+      formData.append('success_action_status', 200) // 成功后返回的操作码
+      axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
+      axios
+        .post('/oss_upload', formData)
+        .then(function(res) {
+          callback(res.data.data)
+        })
+        .catch(() => {
+          callback()
+        })
+    })
   },
   color(text) {
     if (text === 1) {
