@@ -43,7 +43,7 @@
     </div>
     <div class="upload-title u-mar-t u-mar-b u-fx-ac u-fx-jsb">
       <div>导入结果</div>
-      <div v-if="userList.length > 0">
+      <div>
         <span>成功：{{ successNum }}</span>
         <span class="u-padd-l u-type-error">失败：{{ failureNum }}</span>
       </div>
@@ -219,10 +219,8 @@ export default {
         .then(res => {
           if (res.data.code === 200) {
             this.userList = res.data.data.datelist
-            if (this.userList.length > 0) {
-              this.successNum = res.data.data.successNum
-              this.failureNum = res.data.data.failureNum
-            }
+            this.successNum = res.data.data.successNum
+            this.failureNum = res.data.data.failureNum
           } else {
             this.$message.warning('导入成绩失败')
           }

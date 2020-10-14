@@ -82,24 +82,14 @@
         </div>
       </a-form-item>
       <a-form-item :label-col="{ span: 3 }" :wrapper-col="{ span: 21 }" label="评分周期：">
-        <a-radio-group
-          v-decorator="[
-            'cycle',
-            { initialValue: cycle }
-          ]">
+        <a-radio-group v-decorator="['cycle', { initialValue: cycle }]">
           <a-radio value="D"> 按日打分 </a-radio>
           <a-radio value="W"> 按周打分 </a-radio>
           <a-radio value="M"> 按月打分 </a-radio>
         </a-radio-group>
       </a-form-item>
     </a-form>
-    <choose-user
-      ref="chooseUser"
-      is-check
-      v-if="userTag"
-      v-model="userTag"
-      @submit="chooseUser"
-      title="添加考勤人员">
+    <choose-user ref="chooseUser" is-check v-if="userTag" v-model="userTag" @submit="chooseUser" title="添加人员">
     </choose-user>
     <choose-class
       ref="chooseClass"

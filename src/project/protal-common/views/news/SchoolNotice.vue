@@ -169,7 +169,6 @@ export default {
     },
     noticeDetail(record) {
       this.newsForm = record
-      console.log(this.newsForm)
       this.previewVisible = true
     },
     readStatus(record) {

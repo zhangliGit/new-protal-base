@@ -14,7 +14,6 @@
 </template>
 
 <script>
-import hostEnv from '@config/host-env'
 import { mapState, mapActions } from 'vuex'
 import SearchForm from '@c/SearchForm'
 import TableList from '@c/TableList'
@@ -22,10 +21,9 @@ import PageNum from '@c/PageNum'
 import columnList from '../../assets/table/consumeColumns'
 const searchLabel = [
   {
-    value: 'card',
-    type: 'input',
-    label: '卡号',
-    placeholder: '请输入卡号'
+    value: 'rangeTime',
+    type: 'rangeTime',
+    label: '时间'
   },
   {
     value: 'userName',
@@ -34,15 +32,16 @@ const searchLabel = [
     placeholder: '请输入姓名'
   },
   {
-    value: 'oddNumbers',
+    value: 'origBillNo',
     type: 'input',
-    label: '原消费单交易号',
-    placeholder: '请输入单号'
+    label: '原账单号',
+    placeholder: '请输入原账单'
   },
   {
-    value: 'rangeTime', // 日期区间
-    type: 'rangeTime',
-    label: '时间'
+    list: [],
+    value: 'returnStatus',
+    type: 'select',
+    label: '状态'
   }
 ]
 export default {
@@ -71,41 +70,50 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
+    this._getDictList()
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getRefundDetail']),
-    exportClick() {
-      var url = `${hostEnv.hpb_card}/consume/record/exportRefundDetailList`
-      var xhr = new XMLHttpRequest()
-      xhr.open('POST', url, true) // 也可以使用POST方式，根据接口
-      xhr.responseType = 'blob'
-      xhr.onload = function () {
-        if (this.status === 200) {
-          var content = this.response
-          var aTag = document.createElement('a')
-          var blob = new Blob([content])
-          var headerName = xhr.getResponseHeader('Content-disposition')
-          var fileName = decodeURIComponent(headerName).substring(20)
-          aTag.download = fileName
-          aTag.href = URL.createObjectURL(blob)
-          aTag.click()
-          URL.revokeObjectURL(blob)
-        }
+    ...mapActions('home', ['getRefundList', 'exportRefundList', 'getDictList']),
+    async exportClick() {
+      await this.exportRefundList({
+        name: '退款记录',
+        ...this.searchList
+      })
+      this.$message.success('导出成功')
+    },
+    async _getDictList() {
+      this.searchLabel[3].list = []
+      const res = await this.getDictList({
+        pageNum: 1,
+        pageSize: 100,
+        dictType: 'return_status'
+      })
+      res.rows.forEach((ele) => {
+        this.searchLabel[3].list.push({
+          key: ele.dictValue,
+          val: ele.dictLabel
+        })
+      })
+      const index = this.columnList.refundColumns.findIndex(list => list.dataIndex === 'returnStatus')
+      this.columnList.refundColumns[index].customRender = (text) => {
+        return res.rows.filter(ele => ele.dictValue === text).length > 0 ? res.rows.filter(ele => ele.dictValue === text)[0].dictLabel : ''
       }
-      xhr.send(JSON.stringify(this.searchList))
     },
     async showList() {
       const req = {
-        ...this.pageList,
-        ...this.searchObj,
-        createTime: this.rangeTime[0] || undefined,
-        endTime: this.rangeTime[1] || undefined
+        pageNum: this.pageList.page,
+        pageSize: this.pageList.size,
+        userName: this.searchObj.userName,
+        origBillNo: this.searchObj.origBillNo,
+        returnStatus: this.searchObj.returnStatus,
+        beginTime: this.rangeTime[0] || '',
+        endTime: this.rangeTime[1] || ''
       }
       this.searchList = req
-      const res = await this.getRefundDetail(req)
-      this.refundList = res.data.list
-      this.total = res.data.total
+      const res = await this.getRefundList(req)
+      this.refundList = res.rows
+      this.total = res.total
     },
     searchForm(values) {
       this.searchObj = values

@@ -405,7 +405,7 @@ export default {
     this.getnumofweeks(this.value)
   },
   methods: {
-    ...mapActions('home', ['getTaskDetail', 'getInspectionArea', 'addDailyTask',
+    ...mapActions('home', ['getAllTaskDetail', 'getInspectionArea', 'addDailyTask',
       'updateDailyTask', 'addDeviceTask', 'updateDeviceTask', 'addSafeTask', 'updateSafeTask'
     ]),
     moment,
@@ -540,7 +540,7 @@ export default {
     },
     // 获取详情
     async showDetail() {
-      const res = await this.getTaskDetail(this.detailId)
+      const res = await this.getAllTaskDetail(this.detailId)
       const data = res.data
       this.cardInfo = data
       this.value = data.year

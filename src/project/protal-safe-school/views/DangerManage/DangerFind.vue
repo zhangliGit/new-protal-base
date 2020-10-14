@@ -30,7 +30,7 @@
         <a-tooltip placement="topLeft" title="整改通知书" v-if="action.record.notificationUrl">
           <a-button size="small" class="edit-action-btn" icon="form" @click.stop="go(action)"></a-button>
         </a-tooltip>
-        <a-tooltip placement="topLeft" title="撤销" v-if="action.record.state !== '5' || action.record.state !== '4'">
+        <a-tooltip placement="topLeft" title="撤销" v-if="action.record.state === '1' || action.record.state === '2' || action.record.state === '3'">
           <a-button size="small" class="del-action-btn" icon="delete" @click.stop="modify('3', action)"></a-button>
         </a-tooltip>
       </template>
@@ -78,7 +78,9 @@ export default {
       findList: [],
       form: this.$form.createForm(this),
       formStatus: false,
-      searchList: {},
+      searchList: {
+        hasSupervise: false
+      },
       title: '指派',
       formItemLayout: {
         labelCol: { span: 6 },
@@ -162,7 +164,7 @@ export default {
     },
     // 导出
     exportClick(type) {
-      const url = `${hostEnv.lz_safe}/dangerTask/export`
+      const url = `${hostEnv.lz_safe}/dangerTask/export/school`
       var xhr = new XMLHttpRequest()
       xhr.open('POST', url, true) // 也可以使用POST方式，根据接口
       xhr.responseType = 'blob'
@@ -187,7 +189,7 @@ export default {
         path: url,
         query: {
           id: record ? record.record.id : '',
-          type: type || undefined
+          type: type
         }
       })
     },
@@ -207,6 +209,7 @@ export default {
           await this.transferDanger(values)
         } else {
           values.dangerTaskId = this.detailId
+          values.optUserName = this.userInfo.userName
           await this.delDanger(values)
         }
         this.$message.success('操作成功')

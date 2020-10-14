@@ -124,6 +124,7 @@ export default {
     },
     async showList() {
       this.searchList.schoolCode = this.userInfo.schoolCode
+      this.searchList.publisherCode = this.userInfo.userCode
       this.searchList = Object.assign(this.searchList, this.pageList)
       const res = await this.getSafeTask(this.searchList)
       this.userList = res.data.records
@@ -140,7 +141,8 @@ export default {
       this.$router.push({
         path: path,
         query: {
-          id: record ? record.record.id : ''
+          id: record ? record.record.id : '',
+          state: record ? record.record.state : ''
         }
       })
     },

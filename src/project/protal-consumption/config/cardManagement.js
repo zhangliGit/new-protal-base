@@ -1,28 +1,37 @@
-// 系统表单
+// 卡务管理
 import { RouteView } from '../layouts'
-const AccountList = resolve => require(['../views/accountMge/AccountList.vue'], resolve)
-const SubsidyManage = resolve => require(['../views/accountMge/SubsidyManage.vue'], resolve)
+const CardAccount = resolve => require(['../views/cardManage/CardAccount.vue'], resolve)
+const CardDetails = resolve => require(['../views/cardManage/CardDetails.vue'], resolve)
+const CardOperationRecord = resolve => require(['../views/cardManage/CardOperationRecord.vue'], resolve)
 const cardManagement = {
-  path: '/billingRecord',
-  name: 'billingRecord',
+  path: '/cardAccount',
+  name: 'cardAccount',
   component: RouteView,
   meta: {
-    title: '账单记录'
+    title: '卡务管理'
   },
   children: [
     {
-      path: '/accountList',
-      name: 'accountList',
-      component: AccountList,
+      path: '/cardAccount',
+      name: 'cardAccount',
+      component: CardAccount,
       meta: {
-        title: '账户列表'
+        title: '卡列表'
       }
     },
-
+    {
+      path: '/cardAccount/cardDetails',
+      name: 'cardDetails',
+      component: CardDetails,
+      meta: {
+        title: '卡务详情',
+        isHide: true
+      }
+    },
     {
       path: '/cardOperationRecord',
       name: 'cardOperationRecord',
-      component: SubsidyManage,
+      component: CardOperationRecord,
       meta: {
         title: '卡操作记录'
       }

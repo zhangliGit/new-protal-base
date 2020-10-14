@@ -308,7 +308,6 @@ export default {
     },
     // 监听选中或取消
     clickRow(item, type) {
-      console.log('1', item)
       if (type) {
         if (this.isCheck) {
           this.totalList.push(item)

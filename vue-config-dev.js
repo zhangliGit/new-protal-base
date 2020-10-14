@@ -97,6 +97,14 @@ module.exports = {
     port: 8001,
     open: true,
     proxy: {
+      '/oss_upload': {
+        target: 'http://canpoint-photo.oss-cn-beijing.aliyuncs.com',
+        changeOrigin: true,
+        ws: true,
+        pathRewrite: {
+          '^/oss_upload': ''
+        }
+      },
       '/ljj_dorm': {
         target: 'http://192.168.2.242:11006/', // 柳继杰-宿管
         changeOrigin: true,
@@ -341,6 +349,13 @@ module.exports = {
         changeOrigin: true,
         pathRewrite: {
           '^/lz_safe': ''
+        }
+      },
+      '/hzz_ecard': {
+        target: 'http://192.168.2.242:11031/', // 胡周志-一卡通消费
+        changeOrigin: true,
+        pathRewrite: {
+          '^/hzz_ecard': ''
         }
       }
     }

@@ -97,6 +97,14 @@ module.exports = {
     port: 8001,
     open: true,
     proxy: {
+      '/oss_upload': {
+        target: 'http://canpoint-photo.oss-cn-beijing.aliyuncs.com',
+        changeOrigin: true,
+        ws: true,
+        pathRewrite: {
+          '^/oss_upload': ''
+        }
+      },
       '/ljj_dorm': {
         target: 'http://ps.canpointlive.com/ljj_dorm', // 柳继杰-宿管
         changeOrigin: true,
@@ -320,6 +328,35 @@ module.exports = {
         changeOrigin: true,
         pathRewrite: {
           '^/lz_safe': ''
+        }
+      },
+      '/ljj_people': {
+        // target: 'http://192.168.1.76:11002/', // 刘继杰-局端安全任务根据选中的学校职务查人
+        target: 'http://192.168.2.242:11002/',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/ljj_people': ''
+        }
+      },
+      '/wxz_pay': {
+        target: 'http://192.168.1.123:10097/', // 王选章-缴费系统
+        changeOrigin: true,
+        pathRewrite: {
+          '^/wxz_pay': ''
+        }
+      },
+      '/img_download': {
+        target: 'http://canpoint-file.oss-cn-beijing.aliyuncs.com/', // 图片代理
+        changeOrigin: true,
+        pathRewrite: {
+          '^/img_download': ''
+        }
+      },
+      '/hzz_ecard': {
+        target: 'http://192.168.2.242:11031/', // 胡周志-一卡通消费
+        changeOrigin: true,
+        pathRewrite: {
+          '^/hzz_ecard': ''
         }
       }
     }

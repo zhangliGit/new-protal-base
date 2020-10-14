@@ -1,40 +1,25 @@
 <template>
   <div class="page-layout qui-fx-ver">
-    <submit-form
-      ref="form"
-      @submit-form="submitForm"
-      :title="title"
-      v-model="formStatus"
-      :form-data="formData"
-    >
+    <submit-form ref="form" @submit-form="submitForm" :title="title" v-model="formStatus" :form-data="formData">
     </submit-form>
     <div class="top-btn-group">
       <a-button icon="plus" class="add-btn" @click="modify(0)">新增指标</a-button>
     </div>
-    <table-list
-      :page-list="pageList"
-      :columns="columns"
-      :table-list="scorePlanList"
-    >
+    <table-list :page-list="pageList" :columns="columns" :table-list="scorePlanList">
       <template v-slot:other1="record">
         <a-button size="small" class="power-action-btn" icon="lock" @click="check(record.record)"></a-button>
       </template>
       <template v-slot:actions="action">
-        <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="del(1,action.record)">
+        <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="del(1, action.record)">
           <template slot="title">您确定{{ action.record.status === '2' ? '启用' : '禁用' }}吗?</template>
-          <a-tooltip placement="topLeft" :title="action.record.status === '2' ? '启用' : '禁用' " >
-            <a-button size="small" class="play-action-btn" icon="play-circle" ></a-button>
+          <a-tooltip placement="topLeft" :title="action.record.status === '2' ? '启用' : '禁用'">
+            <a-button size="small" class="play-action-btn" icon="play-circle"></a-button>
           </a-tooltip>
         </a-popconfirm>
-        <a-tooltip placement="topLeft" title="编辑" >
-          <a-button
-            size="small"
-            class="edit-action-btn"
-            icon="form"
-            @click="modify(2,action.record)"
-          ></a-button>
+        <a-tooltip placement="topLeft" title="编辑">
+          <a-button size="small" class="edit-action-btn" icon="form" @click="modify(2, action.record)"></a-button>
         </a-tooltip>
-        <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="del(0,action.record)">
+        <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="del(0, action.record)">
           <template slot="title">您确定删除吗?</template>
           <a-tooltip placement="topLeft" title="删除">
             <a-button size="small" class="del-action-btn" icon="delete"></a-button>
@@ -45,7 +30,7 @@
             size="small"
             class="detail-action-btn"
             icon="ellipsis"
-            @click.stop="modify(1,action.record)"
+            @click.stop="modify(1, action.record)"
           ></a-button>
         </a-tooltip>
       </template>
@@ -59,15 +44,11 @@
       @submit="chooseUser"
       :chooseType="chooseType"
       :bindObj="bindObj"
-      title="添加考勤人员">
+      title="添加人员"
+    >
     </choose-user>
     <a-modal title="查看人列表" width="700px" :footer="null" v-model="visible">
-      <table-list
-        :page-list="pageList"
-        :columns="authorColumns"
-        :table-list="authorList"
-        :scroll-h="360"
-      ></table-list>
+      <table-list :page-list="pageList" :columns="authorColumns" :table-list="authorList" :scroll-h="360"></table-list>
     </a-modal>
   </div>
 </template>
@@ -88,63 +69,67 @@ const formData = [
     placeholder: '请输入名称'
   }
 ]
-const columns = [{
-  title: '序号',
-  scopedSlots: {
-    customRender: 'index'
+const columns = [
+  {
+    title: '序号',
+    scopedSlots: {
+      customRender: 'index'
+    },
+    width: '10%'
   },
-  width: '10%'
-},
-{
-  title: '方案名称',
-  dataIndex: 'name',
-  width: '20%'
-},
-{
-  title: '状态',
-  dataIndex: 'status',
-  width: '20%',
-  customRender: (text) => {
-    if (text === '1') {
-      return '启用'
-    } else {
-      return '禁用'
+  {
+    title: '方案名称',
+    dataIndex: 'name',
+    width: '20%'
+  },
+  {
+    title: '状态',
+    dataIndex: 'status',
+    width: '20%',
+    customRender: text => {
+      if (text === '1') {
+        return '启用'
+      } else {
+        return '禁用'
+      }
+    }
+  },
+  {
+    title: '查看人',
+    width: '20%',
+    scopedSlots: {
+      customRender: 'other1'
+    }
+  },
+  {
+    title: '操作',
+    dataIndex: 'action',
+    width: '30%',
+    scopedSlots: {
+      customRender: 'action'
     }
   }
-},
-{
-  title: '查看人',
-  width: '20%',
-  scopedSlots: {
-    customRender: 'other1'
-  }
-},
-{
-  title: '操作',
-  dataIndex: 'action',
-  width: '30%',
-  scopedSlots: {
-    customRender: 'action'
-  }
-}]
+]
 
-const authorColumns = [{
-  title: '序号',
-  width: '20%',
-  scopedSlots: {
-    customRender: 'index'
+const authorColumns = [
+  {
+    title: '序号',
+    width: '20%',
+    scopedSlots: {
+      customRender: 'index'
+    }
+  },
+  {
+    title: '姓名',
+    dataIndex: 'userName',
+    width: '40%'
+  },
+  {
+    title: '编码',
+    width: '40%',
+    dataIndex: 'userCode'
   }
-},
-{
-  title: '姓名',
-  dataIndex: 'userName',
-  width: '40%'
-},
-{
-  title: '编码',
-  width: '40%',
-  dataIndex: 'userCode'
-}]
+]
 export default {
   name: 'BehaviorIndex',
   components: {
@@ -153,7 +138,7 @@ export default {
     SubmitForm,
     ChooseUser
   },
-  data () {
+  data() {
     return {
       authorColumns,
       userTag: false,
@@ -183,15 +168,19 @@ export default {
   computed: {
     ...mapState('home', ['userInfo'])
   },
-  mounted () {
+  mounted() {
     this.categoryGet()
   },
   methods: {
-    ...mapActions('home',
-      [
-        'getIndex', 'delIndex', 'indexDetail', 'getAuthorList',
-        'updateIndex', 'addIndex', 'updateAuthor'
-      ]),
+    ...mapActions('home', [
+      'getIndex',
+      'delIndex',
+      'indexDetail',
+      'getAuthorList',
+      'updateIndex',
+      'addIndex',
+      'updateAuthor'
+    ]),
     // 授权查看人选择
     async chooseUser(teacherList) {
       const userCodes = teacherList.map(el => {
@@ -209,16 +198,16 @@ export default {
       })
     },
     // 操作分页组件回调, 更新searchForm的值
-    changePage () {
+    changePage() {
       this.categoryGet()
     },
-    filterSearch (data) {
+    filterSearch(data) {
       data.forEach((el, index) => {
         this.$set(el, 'code', index)
       })
       return data
     },
-    async modify (type, record) {
+    async modify(type, record) {
       if (type) {
         // const res = await this.indexDetail(text.id)
         if (type === 1) {
@@ -239,14 +228,14 @@ export default {
         this.formStatus = true
       }
     },
-    categoryGet () {
+    categoryGet() {
       this.pageList.schoolCode = this.userInfo.schoolCode
       this.getIndex(this.pageList).then(res => {
         this.scorePlanList = res.data.list
         this.total = res.data.total
       })
     },
-    async submitForm (values) {
+    async submitForm(values) {
       try {
         const params = {
           schoolCode: this.userInfo.schoolCode,
@@ -269,7 +258,7 @@ export default {
         this.$refs.form.error()
       }
     },
-    del (type, text) {
+    del(type, text) {
       if (type) {
         // 启用禁用
         const req = {
@@ -310,7 +299,7 @@ export default {
   flex: 3;
   position: relative;
 }
-.score-info{
+.score-info {
   display: inline-block;
   width: 75px;
   color: #000;

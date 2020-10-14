@@ -31,6 +31,7 @@
       v-if="userTag"
       v-model="userTag"
       @submit="chooseUser"
+      :teacherList="chooseTeachersDeatil"
       title="添加人员">
     </choose-user>
   </div>
@@ -105,7 +106,7 @@ export default {
     // 授权查看人选择
     chooseUser(userList) {
       this.userList = userList
-      console.log('111', this.userList)
+      this.chooseTeachersDeatil = userList
       this.$refs.chooseUser.reset()
     },
     // 提交
@@ -114,12 +115,17 @@ export default {
       this.form.validateFields((error, values) => {
         this.isLoad = false
         if (!error) {
+          if (this.userList.length === 0) {
+            this.$message.warning('请选择接收人员')
+            return false
+          }
           values.publisherCode = this.userInfo.userCode
           values.publisherName = this.userInfo.userName
           values.users = this.userList.map(el => {
             return {
               ...el,
-              schoolCode: this.userInfo.schoolCode
+              schoolCode: this.userInfo.schoolCode,
+              schoolName: this.userInfo.schoolName
             }
           })
           values.taskId = this.taskId
@@ -139,6 +145,11 @@ export default {
     },
     cancel() {
       this.$router.go(-1)
+    }
+  },
+  watch: {
+    chooseTeachersDeatil(val) {
+      console.log(val)
     }
   }
 }

@@ -6,7 +6,7 @@
           placeholder="请输入任务名称"
           v-decorator="[
             'name',
-            { initialValue: appForm.address, rules: [{max: 20,required: true, message: '请输入机构名称限20字,支持中英文数字' } ]}
+            { initialValue: address, rules: [{max: 20,required: true, message: '请输入机构名称限20字,支持中英文数字' } ]}
           ]"
         />
       </a-form-item>
@@ -26,9 +26,10 @@
           placeholder="专项指标"
           v-decorator="[
             'specificIndicators',
-            { initialValue: appForm.specificIndicators, rules: [ {required: true, message: '请选择专项指标' } ]}
+            { initialValue: specificIndicators, rules: [ {required: true, message: '请选择专项指标' } ]}
           ]"
         />
+
       </a-form-item>
       <a-form-item label="督查小组：" v-bind="formItemLayout" required>
         <a-input
@@ -36,7 +37,7 @@
           placeholder="督查小组"
           v-decorator="[
             'supervisionTeam',
-            { initialValue: appForm.supervisionTeam, rules: [ {required: true, message: '请选择督查小组' } ]}
+            { initialValue: supervisionTeam, rules: [ {required: true, message: '请选择督查小组' } ]}
           ]"
         />
       </a-form-item>
@@ -96,10 +97,10 @@ export default {
       },
       // xiaozuData,
       isLoad: false,
-      appForm: {
-        supervisionTeam: '',
-        specificIndicators: ''
-      },
+      address: '',
+      supervisionTeam: '',
+      specificIndicators: '',
+
       count: 0
     }
   },
@@ -124,7 +125,6 @@ export default {
         eduCode: this.userInfo.schoolCode // 机构编码
       }
       const res = await this.getTreeGroup(req)
-      console.log(this.initSpecificAll(res.data))
       this.specificAll = this.initSpecificAll(res.data)
       // return res.data[0].memberList && res.data[0].memberList.map(v => v.eduCode)
     },
@@ -163,17 +163,20 @@ export default {
     },
     setItem(data) {
       this.selectItem = data.map(v => v.id)
-      console.log(data.map(item => item.name) + '')
-      this.appForm.specificIndicators = data.map(item => item.name) + ''
+      // appForm.specificIndicators: data.map(item => item.name) + ''
+      this.form.setFieldsValue({
+        specificIndicators: data.map(item => item.name) + ''
+      })
+      // this.appForm.specificIndicators = data.map(item => item.name) + ''
     },
     async showSupervision() {
       this.$refs.supervisio.$refs.modal.visible = true
     },
     setSupervisio(data) {
       // 展示数据
-      console.log(data)
-      console.log(data.map(v => v.title) + '')
-      this.appForm.supervisionTeam = data.map(v => v.title) + ''
+      this.form.setFieldsValue({
+        supervisionTeam: data.map(v => v.title) + ''
+      })
       this.groupList = data.map(res => {
         const { teamLeaderCode, teamLeaderName, schoolDTOList, streetCode, streetName } = res
         return {
@@ -184,7 +187,6 @@ export default {
           streetName: streetName
         }
       })
-      console.log(this.groupList)
     },
     // 提交
     submitOk(e) {
@@ -203,7 +205,6 @@ export default {
           this.isLoad = true
           this.addSpecialTask(req)
             .then(res => {
-              // console.log(res)
               this.$message.success('操作成功')
               this.$tools.goNext(() => {
                 this.$router.go(-1)
@@ -216,7 +217,6 @@ export default {
       })
     },
     onOk(value) {
-      // console.log('onOk: ', value)
     },
     cancel() {
       this.$router.go(-1)

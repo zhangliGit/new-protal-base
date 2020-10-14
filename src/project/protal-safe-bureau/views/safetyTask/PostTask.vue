@@ -17,7 +17,7 @@
           placeholder="请选择接受学校"
           v-decorator="[
             'specificIndicators',
-            { initialValue: appForm.schoolName, rules: [ {required: true, message: '请选择专项指标' } ]}
+            { initialValue: specificIndicators, rules: [ {required: true, message: '请选择专项指标' } ]}
           ]"
         />
       </a-form-item>
@@ -28,7 +28,7 @@
             'checkJobList',
             { initialValue: appForm.leaderName, rules: [{ required: true, message: '请选择负责人' }] },
           ]"
-          @blur="handleChange"
+          @change="handleChange"
           placeholder="请选择您要限定的职务，可多选"
         >
           <a-select-option v-for="list in jobList" :key="`${list.jobName}`">
@@ -59,7 +59,7 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
-import ChooseSchool from '@c/choose/ChooseSchool'
+import ChooseSchool from '../../component/ChooseSchool'
 export default {
   name: 'PostTask',
   components: {
@@ -83,9 +83,9 @@ export default {
       // xiaozuData,
       isLoad: false,
       appForm: {
-        supervisionTeam: '',
-        specificIndicators: ''
-      }
+        supervisionTeam: ''
+      },
+      specificIndicators: ''
     }
   },
   computed: {
@@ -106,7 +106,9 @@ export default {
       this.schoolTag = true
     },
     async submitSchool(values) {
-      this.appForm.schoolName = values.map(v => v.schoolName) + ''
+      this.chooseTeachersDeatil = values
+      const names = values.map(v => v.schoolName) + ''
+      this.form.setFieldsValue({ specificIndicators: names })
       this.SchoolAll = values
       this.$refs.ChooseSchool.reset()
       if (values.length === 0) return
@@ -139,7 +141,6 @@ export default {
       e.preventDefault()
       this.form.validateFields((error, values) => {
         this.isLoad = false
-        // console.log(peopleLists)
         if (!error) {
           const req = {
             publisherCode: this.publisherCode,
@@ -150,7 +151,6 @@ export default {
           this.isLoad = true
           this.taskPublish(req)
             .then(res => {
-              console.log(res)
               this.$message.success('操作成功')
               this._testTask()
               this.$tools.goNext(() => {

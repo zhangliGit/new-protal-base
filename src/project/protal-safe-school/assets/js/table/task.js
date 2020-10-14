@@ -61,14 +61,18 @@ const task = {
       dataIndex: 'state',
       width: '10%',
       customRender: text => {
-        if (text === '0') {
-          return '未发布'
-        } else if (text === '1') {
-          return '未开始'
+        if (text === '1') {
+          return '未填报'
         } else if (text === '2') {
-          return '进行中'
+          return '已填报待提交'
         } else if (text === '3') {
-          return '已结束'
+          return '已提交'
+        } else if (text === '4') {
+          return '已补交'
+        } else if (text === '5') {
+          return '已打回，请重报'
+        } else if (text === '6') {
+          return '已重报，请提交'
         } else {
           return ''
         }
@@ -84,7 +88,7 @@ const task = {
   ],
   taskSearchLabel: [
     {
-      value: 'userName',
+      value: 'taskName',
       type: 'input',
       label: '任务名称',
       placeholder: '请输入'
@@ -114,6 +118,10 @@ const task = {
         {
           key: '5',
           val: '已打回,请重报'
+        },
+        {
+          key: '6',
+          val: '已重报,请提交'
         }
       ],
       value: 'state',
@@ -127,11 +135,11 @@ const task = {
           val: '全部'
         },
         {
-          key: '1',
+          key: '2',
           val: '教育局发布'
         },
         {
-          key: '2',
+          key: '1',
           val: '学校发布'
         }
       ],
@@ -224,7 +232,7 @@ const task = {
   ],
   assignSearchLabel: [
     {
-      value: 'userName',
+      value: 'taskName',
       type: 'input',
       label: '任务名称',
       placeholder: '请输入'
@@ -248,7 +256,7 @@ const task = {
           val: '月计划'
         }
       ],
-      value: 'state',
+      value: 'taskType',
       type: 'select',
       label: '任务类型'
     },
@@ -259,23 +267,23 @@ const task = {
           val: '全部'
         },
         {
-          key: '1',
+          key: '0',
           val: '未发布'
         },
         {
-          key: '2',
+          key: '1',
           val: '未开始'
         },
         {
-          key: '3',
+          key: '2',
           val: '进行中'
         },
         {
-          key: '4',
+          key: '3',
           val: '已结束'
         }
       ],
-      value: 'source',
+      value: 'state',
       type: 'select',
       label: '任务状态'
     }

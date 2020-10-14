@@ -19,7 +19,7 @@
     <no-data msg="暂无班级" v-if="false">
       <div slot="btn">
         <a-button type="primary" @click="addClass(0)">
-          <a-icon type="plus" />添加班级
+          <a-icon type="plus"/>添加班级
         </a-button>
       </div>
     </no-data>

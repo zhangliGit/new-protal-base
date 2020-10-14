@@ -121,23 +121,34 @@ var option2 = {
 export default {
   name: 'PreBarEcharts',
   props: {
-    dataList: {}
+    dataList: {
+      type: Array,
+      default: function () {
+        return {}
+      }
+    }
   },
   data() {
     return {
     }
   },
   mounted() {
+    this.initPieData(this.dataList[0])
+    this.initColumnarData()
   },
   created() {
   },
   watch: {
-    dataList(val) {
-      this.initPieData(val[0])
-      this.initColumnarData()
-    }
+    // dataList(val) {
+    //   this.initPieData(val[0])
+    //   this.initColumnarData()
+    // }
   },
   methods: {
+    fomartData(val) {
+      const fomartData = JSON.parse(JSON.stringify(val).replace(/answer/g, 'name').replace(/count/g, 'value'))
+      return fomartData
+    },
     initPieData(data) {
       // 对饼状图dom，初始化echarts实例
       var myChart1 = echarts.init(document.getElementById('main1'), 'shine')
@@ -147,6 +158,7 @@ export default {
         { value: data.biggerCount, name: '较大风险' },
         { value: data.heavyCount, name: '重大风险' }
       ]
+      console.log(preData1)
       myChart1.setOption({
         // 图表标题
         title: {

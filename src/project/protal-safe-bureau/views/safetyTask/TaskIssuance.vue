@@ -35,7 +35,7 @@
           </a-tooltip>
         </a-popconfirm>
         <a-tooltip placement="topLeft" v-if="action.record.state!=='0'" title="复用">
-          <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="add(2,action.record)"></a-button>
+          <a-button size="small" class="copy-action-btn" icon="copy" @click="add(2,action.record)"></a-button>
         </a-tooltip>
         <a-tooltip placement="topLeft" v-if="action.record.state!=='0'" title="预览">
           <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="preview(action.record)"></a-button>
@@ -44,7 +44,7 @@
           <a-button size="small" class="export-all-btn" icon="export" @click="viewStatistics(action.record)"></a-button>
         </a-tooltip>
         <a-tooltip placement="topLeft" v-if="action.record.state!=='0'" title="查看完成情况">
-          <a-button size="small" class="copy-action-btn" icon="copy" @click="checkCompletion(action.record)"></a-button>
+          <a-button size="small" class="edit-action-btn" icon="edit" @click="checkCompletion(action.record)"></a-button>
         </a-tooltip>
       </template>
     </table-list>
@@ -89,7 +89,7 @@ export default {
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getTaskList', 'removeTask', 'removeTaskAll' ]),
+    ...mapActions('home', ['getTaskList', 'removeTask', 'removeTaskAll']),
     async showList() {
       const req = {
         ...this.pageList,
@@ -108,7 +108,6 @@ export default {
     },
     selectAll() {},
     async delTask(record) {
-      console.log(record)
       await this.removeTask(record.id)
       this.showList()
     },

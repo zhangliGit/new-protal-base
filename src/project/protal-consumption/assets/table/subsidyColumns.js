@@ -17,9 +17,10 @@ const subsidyColumns = [
     dataIndex: 'userType',
     width: '10%',
     customRender: text => {
-      if (text === 8) {
+      const num = parseInt(text)
+      if (num === 1) {
         return '学生'
-      } else if (text === 4) {
+      } else if (num === 2) {
         return '教职工'
       }
     }
@@ -34,15 +35,16 @@ const subsidyColumns = [
   },
   {
     title: '状态',
-    dataIndex: 'status',
+    dataIndex: 'grantStatus',
     width: '10%',
     customRender: text => {
-      if (text === 1) {
-        return '已发放'
-      } else if (text === 2) {
+      const num = parseInt(text)
+      if (num === 0) {
         return '未发放'
-      } else if (text === 3) {
-        return '已删除'
+      } else if (num === 1) {
+        return '已发放'
+      } else {
+        return '未知'
       }
     }
   },
@@ -60,7 +62,7 @@ const subsidyColumns = [
     title: '发放时间',
     dataIndex: 'grantTime',
     width: '10%',
-    customRender: (text) => {
+    customRender: text => {
       return Tools.getDate(text)
     }
   },
@@ -68,7 +70,7 @@ const subsidyColumns = [
     title: '创建时间',
     dataIndex: 'createTime',
     width: '10%',
-    customRender: (text) => {
+    customRender: text => {
       return Tools.getDate(text)
     }
   },

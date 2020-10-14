@@ -84,8 +84,6 @@
         </a-timeline>
         <no-data v-else msg="未检查，暂无处理流程记录~"></no-data>
       </div>
-      <!-- v-if="(userInfo.userCode== detailInfo.stat && detailInfo.state=='2')||
-            (userInfo.userCode== detailInfo.stat && detailInfo.state=='2')" -->
       <div class="qui-tx-c u-mar-t" >
         <a-button
           type="primary"
@@ -175,14 +173,14 @@ export default {
     ...mapState('home', ['userInfo']),
     userCode: {
       get() {
-        return this.userInfo.schoolCode
+        return this.userInfo.userCode
       },
       set() {
         this.$emit('input', false)
       }
     },
     supervisionCode() {
-      const a = this.userInfo.postList.some(v => v.postCode == 'J14x1qwxj8izet')
+      const a = this.userInfo.postList.some(v => v.postCode === 'J14x1qwxj8izet')
       return a
     }
   },
@@ -191,14 +189,13 @@ export default {
   methods: {
     ...mapActions('home', ['specialTaskDetail', 'updateInspect', 'modifySpecial']),
     getsupervisionCode() {
-      const a = this.userInfo.postList.some(v => v.postCode == 'J14x1qwxj8izet')
+      const a = this.userInfo.postList.some(v => v.postCode === 'J14x1qwxj8izet')
       return a
     },
     moment,
     async showDetail(id) {
       this.id = id
       const res = await this.specialTaskDetail(id)
-      console.log(res)
       this.detailInfo = res.data
       this.teamLeaderCode = res.data.teamLeaderCode
       this.detailInfo.itemList = this.detailInfo.itemList.map(el => {

@@ -31,8 +31,8 @@ const {
 } = JSON.parse(window.sessionStorage.getItem('loginType') || JSON.stringify({}))
 axios.defaults.headers.common['token'] = token
 axios.defaults.headers.common['userCode'] = userCode
-axios.defaults.headers.common['schoolCode'] = schoolCode
-
+axios.defaults.headers.common['schoolCode'] = 'CANPOINTLIVE'
+axios.defaults.headers.common['operator'] = 'admin'
 // 拦截请求
 axios.interceptors.request.use(
   function (config) {
@@ -74,7 +74,7 @@ function responseRes(res, obj) {
     } else {
       Modal.warning({
         title: '提示',
-        content: res.message || '数据请求失败, 请联系管理员',
+        content: res.message || res.msg || '数据请求失败, 请联系管理员',
         onOk: function () {}
       })
       reject(res.message)

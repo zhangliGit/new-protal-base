@@ -50,7 +50,6 @@ export default {
       const res = await this.getDangerInfo(this.id)
       this.url = res.data.notificationUrl || ''
       this.src = `${hostEnv.zx_subject}/file/preview/doc?url=${this.url}`
-      console.log('aa', this.src)
     },
     exportClick() {
       const url = `${hostEnv.zx_subject}/file/downLoad/doc?url=${this.url}`

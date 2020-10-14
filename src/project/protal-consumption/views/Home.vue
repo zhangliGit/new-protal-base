@@ -1,22 +1,19 @@
 <template>
-  <div class="page-layout qui-fx-ver home">
+  <div class="page-layout u-fx-ver card-home">
     <search-form is-reset @search-form="searchForm" :search-label="searchLabel"></search-form>
-    <count-detail
-      ref="countDetail"
-      v-if="showDetailTag"
-      v-model="showDetailTag"
-      :columns="columns"
-      :rangeTime="rangeTime"
-      :chooseType="chooseType"
-      :title="detailTitle">
-    </count-detail>
-    <div>
-      <div class="attend-card qui-fx-ver" v-for="(teacher, index) in teacherData" :key="index" @click="showDetail(teacher.key)">
+    <div class="u-auto">
+      <div class="view-card qui-fx-ver" v-for="(view, index) in viewList" :key="index">
         <ul class="box">
-          <li class="tip">{{ teacher.title }}</li>
-          <li class="total">{{ teacher.total }}</li>
-          <li class="count">{{ teacher.tip }}笔</li>
+          <li class="tip">{{ view.title }}</li>
+          <li class="total">￥{{ view.total }}</li>
+          <li class="count">{{ view.tip }}笔</li>
         </ul>
+      </div>
+    </div>
+    <div class="u-fx-f1 u-fx-ver show-bi">
+      <div class="title">每日消费动态</div>
+      <div class="u-fx-f1 u-mar-t">
+        <money-show :categories="categories" :series="series"></money-show>
       </div>
     </div>
   </div>
@@ -24,8 +21,7 @@
 
 <script>
 import SearchForm from '@c/SearchForm'
-import CountDetail from '../component/CountDetail'
-import columnList from '../assets/table/consumeColumns'
+import MoneyShow from './MoneyShow'
 import { mapState, mapActions } from 'vuex'
 import moment from 'moment'
 const searchLabel = [
@@ -40,109 +36,90 @@ export default {
   name: 'AttendanceData',
   components: {
     SearchForm,
-    CountDetail
+    MoneyShow
   },
   data() {
     return {
+      categories: ['10/01', '10/02', '10/03', '10/04', '10/05', '10/06', '10/07', '10/08'],
+      series: [
+        {
+          name: '每日消费态势图',
+          color: '#8988E2',
+          data: [100, 200, 123, 456, 1234, 982, 345, 456]
+        }
+      ],
       searchLabel,
-      moment,
-      columnList,
-      columns: [],
-      teacherData: [],
-      chooseType: '1',
-      showDetailTag: false,
-      rangeTime: [],
-      detailTitle: '消费明细'
+      viewList: [
+        {
+          title: '消费',
+          total: '100',
+          tip: '200'
+        },
+        {
+          title: '充值',
+          total: '100',
+          tip: '200'
+        },
+        {
+          title: '补助',
+          total: '100',
+          tip: '200'
+        },
+        {
+          title: '退款',
+          total: '100',
+          tip: '200'
+        },
+        {
+          title: '余额清零',
+          total: '100',
+          tip: '200'
+        }
+      ]
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
-  mounted() {
-    // this.showCount()
-  },
+  mounted() {},
   methods: {
     ...mapActions('home', ['getCount']),
     searchForm(values) {
-      // console.log()
       this.rangeTime = values.rangeTime
-      this.showCount()
+      this._showCount()
     },
-    async showCount() {
+    async _showCount() {
       const req = {
         createTime: this.rangeTime[0] ? `${this.rangeTime[0]} 00:00:00` : '',
         endTime: this.rangeTime[1] ? `${this.rangeTime[1]} 00:00:00` : ''
       }
-      const res = await this.getCount(req)
-      const data = res.data
-      this.teacherData = [
-        {
-          title: '充值',
-          total: data.totalRechargeAmount ? data.totalRechargeAmount : 0,
-          tip: data.totalRechargeNumber,
-          key: '2'
-        },
-        {
-          title: '补助',
-          total: data.totalSubsidyAmount ? data.totalSubsidyAmount : 0,
-          tip: data.totalSubsidyNumber,
-          key: '3'
-        },
-        {
-          title: '扣款',
-          total: data.totalDeductionAmount ? data.totalDeductionAmount : 0,
-          tip: data.totalDeductionNumber,
-          key: '4'
-        },
-        {
-          title: '消费',
-          total: data.totalAmount ? data.totalAmount : 0,
-          tip: data.totalNumber,
-          key: '1'
-        },
-        {
-          title: '退款',
-          total: data.totalRefundsAmount ? data.totalRefundsAmount : 0,
-          tip: data.totalRefundsNumber,
-          key: '5'
-        }
-      ]
-    },
-    showDetail(key) {
-      this.chooseType = key
-      if (key === '1') {
-        this.detailTitle = '消费明细'
-        this.columns = this.columnList.consumeColumns.slice(0, -1)
-      } else if (key === '2') {
-        this.detailTitle = '充值明细'
-        this.columns = this.columnList.rechargeColumns
-      } else if (key === '3') {
-        this.detailTitle = '补助明细'
-        this.columns = this.columnList.subsidyColumns
-      } else if (key === '4') {
-        this.detailTitle = '扣款明细'
-        this.columns = this.columnList.deducColumns
-      } else if (key === '5') {
-        this.detailTitle = '退款明细'
-        this.columns = this.columnList.refundColumns
-      }
-      this.showDetailTag = true
     }
   }
 }
 </script>
 <style lang="less" scoped>
-.home {
-  background-color: #fff;
-  .attend-card {
+.card-home {
+  padding-top: 20px;
+  .show-bi {
+    margin: 20px 20px 0;
+    .title {
+      height: 18px;
+      line-height: 18px;
+      font-weight: bold;
+      border-left: 3px #9698d6 solid;
+      padding-left: 10px;
+    }
+  }
+
+  .view-card {
     padding: 10px 20px;
     margin-top: 20px;
-    width: 22.5%;
+    width: 18%;
     float: left;
-    margin-left: 2%;
+    margin-left: 1.66%;
     height: 180px;
-    .box{
-      margin:auto 0 ;
+    .box {
+      margin: auto 0;
     }
     .tip {
       font-size: 18px;
@@ -150,10 +127,11 @@ export default {
     }
     .total {
       font-size: 32px;
+      padding: 10px 0;
       font-weight: bold;
       color: #fff;
     }
-    .count{
+    .count {
       width: 85px;
       height: 25px;
       line-height: 25px;
@@ -162,28 +140,28 @@ export default {
       text-align: center;
     }
     &:nth-child(1) {
-      color: #5C71F6;
-      background: url('../../../assets/img/cz.png') no-repeat center;
+      color: #44cc61;
+      background: url(../assets/img/xf-bg.png) no-repeat center;
       background-size: 100% 100%;
     }
     &:nth-child(2) {
-      color: #398FE2;
-      background: url('../../../assets/img/bz.png') no-repeat center;
+      color: #6176fe;
+      background: url('../assets/img/cz-bg.png') no-repeat center;
       background-size: 100% 100%;
     }
     &:nth-child(3) {
-      color: #DC9B5B;
-      background: url('../../../assets/img/kk.png') no-repeat center;
+      color: #398fe2;
+      background: url('../assets/img/bz-bg.png') no-repeat center;
       background-size: 100% 100%;
     }
     &:nth-child(4) {
-      color: #44CC61;
-      background: url('../../../assets/img/xf.png') no-repeat center;
+      color: #dc9b5b;
+      background: url('../assets/img/tk-bg.png') no-repeat center;
       background-size: 100% 100%;
     }
     &:nth-child(5) {
-      color: #D45E5E;
-      background: url('../../../assets/img/tk.png') no-repeat center;
+      color: #d45e5e;
+      background: url('../assets/img/ye-bg.png') no-repeat center;
       background-size: 100% 100%;
     }
   }

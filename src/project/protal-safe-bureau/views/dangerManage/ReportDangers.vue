@@ -115,15 +115,6 @@ export default {
   },
   data() {
     return {
-      rules: {
-        card: /^[a-zA-Z0-9_]+$/,
-        password: /^[a-zA-Z0-9_]+$/,
-        url: /^(((ht|f)tps?):\/\/)?[\w-]+(\.[\w-]+)+([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/,
-        file: /\//,
-        ip: /^((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3}$/,
-        phone: /^(?:(?:\+|00)86)?1[3-9]\d{9}$/,
-        email: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
-      },
       confirmLoading: false,
       form: this.$form.createForm(this),
       formItemLayout: {
@@ -159,7 +150,6 @@ export default {
     ...mapActions('home', ['addDangerTask', 'subsidy', 'getSchool', 'getGroupDetail']),
     // 获取指定人
     async getUserList(schoolCode) {
-      console.log(schoolCode)
       const res = await this.getGroupDetail({ schoolCode: schoolCode })
       this.userList = res.data.leaders
     },

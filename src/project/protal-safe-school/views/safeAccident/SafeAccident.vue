@@ -78,7 +78,7 @@ export default {
       'reportAccident'
     ]),
     async showList() {
-      this.searchList.schoolCode = this.userInfo.schoolCode
+      this.searchList.schoolCodeList = [this.userInfo.schoolCode]
       this.searchList = Object.assign(this.searchList, this.pageList)
       const res = await this.getAccident(this.searchList)
       this.accidentList = res.data.records

@@ -6,7 +6,7 @@
         <a-tooltip
           placement="topLeft"
           title="预览"
-          v-if="action.record.state === '2' || action.record.state === '3' || action.record.state === '4'"
+          v-if="action.record.state === '2' || action.record.state === '3' || action.record.state === '4' || action.record.state === '6'"
         >
           <a-button
             size="small"
@@ -22,14 +22,14 @@
         >
           <a-button size="small" class="add-action-btn" icon="plus" @click="add(1, action.record)"></a-button>
         </a-tooltip>
-        <a-tooltip placement="topLeft" title="修改" v-if="action.record.state === '2'">
+        <a-tooltip placement="topLeft" title="修改" v-if="action.record.state === '2' || action.record.state === '6'">
           <a-button size="small" class="edit-action-btn" icon="form" @click="add(2, action.record)"></a-button>
         </a-tooltip>
         <a-popconfirm
           placement="left"
           okText="确定"
           cancelText="取消"
-          v-if="action.record.state === '2' || action.record.state === '5'"
+          v-if="action.record.state === '2' || action.record.state === '5' || action.record.state === '6'"
           @confirm="submit(action)"
         >
           <template slot="title">提交之后不允许再次编辑内容，确定提交么？</template>
@@ -113,7 +113,8 @@ export default {
           id: record ? record.id : '',
           taskCode: record ? record.taskCode : '',
           taskTemplateCode: record ? record.taskTemplateCode : '',
-          state: type
+          state: type,
+          status: record.state
         }
       })
     },

@@ -11,7 +11,7 @@
               <div class="title">{{ detailInfo.taskName }}</div>
               <div class="qui-fx-jc u-mar-t10">
                 <div class="qui-fx-ver">
-                  <div>发布人：{{ detailInfo.userName }}</div>
+                  <div>发布人：{{ detailInfo.publisherName }}</div>
                   <div>任务开始时间：{{ detailInfo.beginTime | gmtToDate('date') }}</div>
                 </div>
                 <div class="qui-fx-ver u-mar-l20">
@@ -19,6 +19,7 @@
                   <div>任务结束时间：{{ detailInfo.endTime | gmtToDate('date') }}</div>
                 </div>
               </div>
+              <div class="rich-text u-padd-l40 u-padd-r40" v-html="detailInfo.des"></div>
               <div class="fill-describe u-mar-t10 u-padd-l10 u-padd-r10">{{ detailInfo.reason }}</div>
               <div class="u-mar-t20">
                 <div class="upload u-mar-l20 u-mar-r20 u-mar-b10">
@@ -152,7 +153,8 @@ export default {
       fillList: [],
       fileList: [],
       url: '',
-      show: true
+      show: true,
+      state: ''
     }
   },
   computed: {
@@ -164,6 +166,7 @@ export default {
     this.taskId = this.$route.query.id
     this.taskCode = this.$route.query.taskCode
     this.taskTemplateCode = this.$route.query.taskTemplateCode
+    this.state = this.$route.query.status
     if (this.taskId) {
       this.showDetail()
     }
@@ -223,6 +226,7 @@ export default {
     delFile(i) {
       this.fileList[i].show = true
       this.fileList[i].docName = ''
+      this.fileList[i].answers = []
     },
     cancel() {
       this.$router.go(-1)
@@ -242,15 +246,19 @@ export default {
           questionType: el.questionType
         }
       })
+      const isTrue = []
       answers.forEach(element => {
         element.answers.forEach(el => {
-          console.log(el)
           if (!el) {
-            this.$message.warning('请填写完整题目')
-            return false
+            isTrue.push(1)
           }
         })
       })
+      if (isTrue.length > 0) {
+        this.$message.warning('请填写完整题目')
+        return false
+      }
+      req.state = this.state === '1' || this.state === '2' ? '2' : this.state === '5' || this.state === '6' ? '6' : this.state
       req.answers = answers
       this.isLoad = true
       this.answerTask(req)
@@ -333,5 +341,16 @@ export default {
 }
 .subject {
   background-color: #fafafa;
+}
+</style>
+<style lang="less">
+.rich-text {
+  width: 100%;
+  max-height: 400px;
+  overflow: scroll;
+  img {
+    width: 100%;
+    height: 100%;
+  }
 }
 </style>

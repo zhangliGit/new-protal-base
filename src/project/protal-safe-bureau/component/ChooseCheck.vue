@@ -6,7 +6,11 @@
         <div class="dc-left">
           <a-input-search placeholder="请输入" @search="search" />
           <div class="dc-left-bd">
-            <a-checkbox @change="onCheckAllChange" style="display:block; padding-bottom: 3px;" :checked="checkAll">所有检查项</a-checkbox>
+            <a-checkbox
+              v-if="userList.length>0"
+              @change="onCheckAllChange"
+              style="display:block; padding-bottom: 3px;"
+              :checked="checkAll">所有检查项</a-checkbox>
             <a-checkbox-group v-model="selectedList" @change="groupChange">
               <a-checkbox class="userList" v-for="item in userList" :value="item.index" :key="item.id">{{ item.name }}
               </a-checkbox>

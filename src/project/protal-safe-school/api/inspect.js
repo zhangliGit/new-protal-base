@@ -19,7 +19,7 @@ const inspectApi = {
   addDeviceTask: '/taskTemplate/add/device/check#post', // 新增设备巡查
   addSafeTask: '/taskTemplate/add/safe/check#post', // 新增安全护导
   changeTask: '/taskTemplate/changestate#get', // 日常巡查/设备巡查/安全护导-启用/禁用
-  getTaskDetail: '/taskTemplate/info#getUrl', // 日常巡查/设备巡查/安全护导详情
+  getAllTaskDetail: '/taskTemplate/info#getUrl', // 日常巡查/设备巡查/安全护导详情
   updateDailyTask: '/taskTemplate/modify#post', // 修改日常巡查
   updateDeviceTask: '/taskTemplate/modify/device#post', // 修改设备巡检
   updateSafeTask: '/taskTemplate/modify/safe#post', // 修改安全护导

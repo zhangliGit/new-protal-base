@@ -32,19 +32,12 @@
       :bindObj="fullDeviceInfo"
     ></choose-classcard>
     <div class="u-padd-10 qui-fx-je">
-      <a-button type="primary" @click="add(0)">
-        <a-icon type="plus" />上传视频
-      </a-button>
+      <a-button type="primary" @click="add(0)"> <a-icon type="plus" />上传视频 </a-button>
     </div>
     <no-data msg="暂无数据" v-if="dataList.length === 0"></no-data>
     <div v-else class="qui-fx-ver u-fx-f1">
-      <div class="u-auto" :style="{height: scrollH + 'px'}">
-        <div
-          class="notice-card qui-fx"
-          v-for="(item, i) in dataList"
-          :key="i"
-          style="position: relative;"
-        >
+      <div class="u-auto" :style="{ height: scrollH + 'px' }">
+        <div class="notice-card qui-fx" v-for="(item, i) in dataList" :key="i" style="position: relative;">
           <div class="pic qui-fx-f1 qui-fx-ver qui-fx-jsb">
             <div class="notice-img qui-fx-ac-jc">
               <video
@@ -60,12 +53,7 @@
               <div>{{ item.fileName }}</div>
               <div class="notice-action qui-fx">
                 <a-tooltip placement="topLeft" title="编辑">
-                  <a-button
-                    size="small"
-                    class="edit-action-btn"
-                    icon="form"
-                    @click.stop="add(1, item)"
-                  ></a-button>
+                  <a-button size="small" class="edit-action-btn" icon="form" @click.stop="add(1, item)"></a-button>
                 </a-tooltip>
                 <a-tooltip placement="topLeft" title="删除">
                   <a-button
@@ -98,12 +86,7 @@
         </div>
       </div>
     </div>
-    <page-num
-      v-if="dataList.length !== 0"
-      v-model="pageList"
-      :total="total"
-      @change-page="showList"
-    ></page-num>
+    <page-num v-if="dataList.length !== 0" v-model="pageList" :total="total" @change-page="showList"></page-num>
   </div>
 </template>
 <script>
@@ -187,12 +170,11 @@ export default {
       this.total = res.data.total
     },
     controls(e, id) {
-      this.dataList.forEach((el) => {
+      this.dataList.forEach(el => {
         if (id !== el.id) {
           this.$refs[el.id][0].pause()
         }
       })
-      console.log()
     },
     async useTo(item) {
       this.mediaCode = item.mediaCode
@@ -216,7 +198,6 @@ export default {
         okText: '设置为轮播',
         cancelText: '取消',
         onOk: async () => {
-          console.log(item.mediaCode)
           await this.editVideo({
             mediaCode: item.mediaCode,
             id: item.id,
@@ -228,9 +209,7 @@ export default {
             this.showList()
           })
         },
-        onCancel() {
-          console.log('Cancel')
-        }
+        onCancel() {}
       })
     },
     add(type, item) {
@@ -247,7 +226,7 @@ export default {
     },
     delClick(record) {
       this.$tools.delTip('确认要删除该视频吗?', () => {
-        this.deleteVideo(record.id).then((res) => {
+        this.deleteVideo(record.id).then(res => {
           this.$message.success('删除成功')
           this.$tools.goNext(() => {
             this.showList()
@@ -273,10 +252,8 @@ export default {
           this.$refs.form.error()
           return
         }
-        console.log(this.videoList)
         const formData = new FormData()
         formData.append('multipartFile', this.videoList[0])
-        console.log(formData)
         this.source = axios.CancelToken.source()
         const loading = this.$message.loading(`上传中...`, 0)
         const _this = this
@@ -292,31 +269,31 @@ export default {
               const loaded = progressEvent.loaded
               const total = progressEvent.total
               _this.uploadPercent = Math.floor((loaded / total) * 100) > 1 ? Math.floor((loaded / total) * 100) : 1
-              console.log(_this.uploadPercent)
             }
           }
-        })
-          .then(
-            res => {
-              this.$message.success('上传成功')
-              this.$tools.goNext(() => {
-                this.videoList = []
-                this.$refs.form.reset()
-                this.showList()
-              })
-            },
-            rej => { // 上传失败
-              console.log(rej)
-              setTimeout(loading, 0)
-              if (rej.message === 'cancel upload') { // 取消上传
-                this.$message.warning('取消上传')
-              } else { // 其他上传失败报错
-                this.$message.error('上传失败')
-              }
+        }).then(
+          res => {
+            this.$message.success('上传成功')
+            this.$tools.goNext(() => {
               this.videoList = []
               this.$refs.form.reset()
+              this.showList()
+            })
+          },
+          rej => {
+            // 上传失败
+            setTimeout(loading, 0)
+            if (rej.message === 'cancel upload') {
+              // 取消上传
+              this.$message.warning('取消上传')
+            } else {
+              // 其他上传失败报错
+              this.$message.error('上传失败')
             }
-          )
+            this.videoList = []
+            this.$refs.form.reset()
+          }
+        )
         /*  $ajax
           .post({
             url: `${hostEnv.zk_news}/school/media/uploadFile?schoolCode=${this.userInfo.schoolCode}&videoName=${values.fileName}`,
@@ -342,9 +319,8 @@ export default {
       }
     },
     async fullSubmit(value, formData) {
-      console.log(value, formData)
       await this.setFullShow({
-        deviceIdList: value.map((el) => {
+        deviceIdList: value.map(el => {
           return el.id
         }),
         isAll: 0,
@@ -360,9 +336,8 @@ export default {
       })
     },
     async bindSubmit(value) {
-      console.log(value)
       await this.addRelationData({
-        classList: value.classList.map((el) => {
+        classList: value.classList.map(el => {
           return {
             classCode: el.classCode,
             className: el.className,
@@ -374,7 +349,7 @@ export default {
             id: el.userId || undefined
           }
         }),
-        teacherList: value.teaList.map((el) => {
+        teacherList: value.teaList.map(el => {
           return {
             userCode: el.userCode,
             userName: el.userName,
@@ -383,7 +358,7 @@ export default {
             id: el.userId || undefined
           }
         }),
-        deviceList: value.deviceList.map((el) => {
+        deviceList: value.deviceList.map(el => {
           return {
             deviceIp: el.deviceIp,
             deviceName: el.deviceName,

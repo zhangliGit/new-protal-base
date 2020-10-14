@@ -145,14 +145,11 @@ export default {
     moment,
     // 获取详情
     async showDetail(record) {
-      console.log(record)
       const req = {
         schoolCode: record.schoolCode,
         taskCode: record.taskCode
       }
-      console.log(req)
       const res = await this.reportTaskDetail(req)
-      console.log(res)
       this.detailInfo = res.data
       let questions = []
       this.radioList = []
@@ -184,10 +181,6 @@ export default {
           this.fileList.push(el)
         }
       })
-      console.log('11',this.radioList)
-      console.log('2',this.checkList)
-      console.log('31',this.fillList)
-      console.log('41',this.fileList)
       this.processes = res.data.outSafeTaskProcessDtoList
     },
     exportClick (docUrl) {

@@ -1,7 +1,8 @@
-// 系统表单
+// 报表统计
 import { RouteView } from '../layouts'
 const DayReport = resolve => require(['../views/reportManage/DayReport.vue'], resolve)
 const MonthReport = resolve => require(['../views/reportManage/MonthReport.vue'], resolve)
+const ViewReport = resolve => require(['../views/reportManage/ViewReport.vue'], resolve)
 const report = {
   path: '/report',
   name: 'report',
@@ -24,6 +25,14 @@ const report = {
       component: MonthReport,
       meta: {
         title: '营业月统计'
+      }
+    },
+    {
+      path: '/viewReport',
+      name: 'viewReport',
+      component: ViewReport,
+      meta: {
+        title: '档口营业统计'
       }
     }
   ]

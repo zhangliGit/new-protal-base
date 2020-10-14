@@ -6,8 +6,11 @@
       </div>
     </search-form>
     <div class="qui-fx-f1 qui-fx">
-      <table-list :page-list="pageList" :columns="columnList.deducColumns" :table-list="deductionList">
-      </table-list>
+      <table-list
+        :page-list="pageList"
+        :columns="columnList.deducColumns"
+        :table-list="deductionList"
+      ></table-list>
     </div>
     <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
   </div>
@@ -74,7 +77,7 @@ export default {
       var xhr = new XMLHttpRequest()
       xhr.open('POST', url, true) // 也可以使用POST方式，根据接口
       xhr.responseType = 'blob'
-      xhr.onload = function () {
+      xhr.onload = function() {
         if (this.status === 200) {
           var content = this.response
           var aTag = document.createElement('a')

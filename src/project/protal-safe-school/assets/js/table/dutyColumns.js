@@ -18,7 +18,7 @@ const dutyColumns = {
       dataIndex: 'reportTime',
       width: '12%',
       customRender: text => {
-        return $tools.getDate(text)
+        return text ? $tools.getDate(text) : ''
       }
     },
     {

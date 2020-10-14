@@ -1,6 +1,6 @@
 <template>
   <!-- 2. 柱状图Dom -->
-  <div id="main2" style="width: 50%;height:400px;"></div>
+  <div :id="id" ref="chart" style="width: 50%;height:400px;"></div>
 </template>
 <script>
 const echarts = require('echarts/lib/echarts')
@@ -22,6 +22,10 @@ export default {
       default: function() {
         return []
       }
+    },
+    id: {
+      type: String,
+      required: true
     }
   },
   data() {
@@ -29,7 +33,6 @@ export default {
     }
   },
   mounted() {
-    console.log(this.legendData)
     this.initColumnarData(this.multipleData)
   },
   created() {
@@ -39,7 +42,7 @@ export default {
   methods: {
     initColumnarData(data) {
       // 对柱状图dom，初始化echarts实例
-      var myChart2 = echarts.init(document.getElementById('main2'), 'shine')
+      var myChart2 = echarts.init(this.$refs.chart, 'shine')
       myChart2.setOption({
         tooltip: {
           trigger: 'axis',

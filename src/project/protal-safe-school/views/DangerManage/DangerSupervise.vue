@@ -224,7 +224,9 @@ export default {
         size: 20
       },
       findList: [],
-      searchList: {},
+      searchList: {
+        hasSupervise: true
+      },
       detailId: '',
       type: ''
     }
@@ -279,7 +281,7 @@ export default {
     },
     // 导出
     exportClick(type) {
-      const url = `${hostEnv.lz_safe}/dangerTask/export`
+      const url = `${hostEnv.lz_safe}/dangerTask/export/school`
       var xhr = new XMLHttpRequest()
       xhr.open('POST', url, true) // 也可以使用POST方式，根据接口
       xhr.responseType = 'blob'

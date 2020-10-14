@@ -1,6 +1,11 @@
 <template>
   <div class="page-layout qui-fx-ver" id="tableList">
-    <choose-user ref="user" v-if="chooseTag" @submit="submitUser" is-check v-model="chooseTag"></choose-user>
+    <choose-user
+      ref="user"
+      v-if="chooseTag"
+      @submit="submitUser"
+      is-check
+      v-model="chooseTag"></choose-user>
     <choose-control
       ref="chooseControl"
       is-check

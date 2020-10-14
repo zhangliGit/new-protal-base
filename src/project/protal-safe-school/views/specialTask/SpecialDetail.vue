@@ -12,7 +12,7 @@
             <div>{{ detailInfo.state === '1' ? '未开始检查' : detailInfo.checkTime }}</div>
           </div>
           <div>
-            <a-collapse v-model="activeKey" expand-icon-position="right">
+            <a-collapse v-model="activeKey" expand-icon-position="right" @change="changeActivekey">
               <template #expandIcon="props">
                 <a-icon type="caret-right" :rotate="props.isActive ? 90 : 0" />
               </template>
@@ -38,6 +38,7 @@
                   <div class="qui-fx">
                     <div class="collapse-state u-mar-l10 u-mar-r10" v-if="!(detailInfo.state === '1' && type === '3')">
                       <a-switch size="small" :disabled="type !== '1'" v-model="item.selfResult"/>
+                      <span class="u-mar-l10">{{ item.selfResult ? '符合' : '不符合' }}</span>
                       <div class="add" v-if="(!item.selfResult || !item.examineResult) && type === '1'" @click="add(item)">上报隐患</div>
                     </div>
                     <div class="collapse-state u-mar-l10" v-if="detailInfo.state === '3' || detailInfo.state === '4' || type === '2'" >
@@ -111,7 +112,7 @@ const formData = [
     label: '隐患图片上传'
   },
   {
-    value: 'leaderName',
+    value: 'leaderCode',
     initValue: [],
     list: [],
     type: 'select',
@@ -132,7 +133,7 @@ export default {
       detailInfo: [],
       detailImg: [],
       processes: [],
-      activeKey: ['1'],
+      activeKey: ["'1'"],
       isLoad: false,
       state: '',
       type: '',
@@ -161,6 +162,9 @@ export default {
   },
   methods: {
     ...mapActions('home', ['addInspect', 'addSpeDanger', 'specialTaskDetail', 'updateInspect', 'getGroupDetail', 'modifySpecial']),
+     changeActivekey(key) {
+      console.log(key);
+    },
     async showDetail() {
       const res = await this.specialTaskDetail(this.detailId)
       const data = res.data
@@ -178,7 +182,6 @@ export default {
           })
         }
       })
-      console.log('111', this.detailInfo)
     },
     async getUserList() {
       const res = await this.getGroupDetail({ schoolCode: this.userInfo.schoolCode })
@@ -194,11 +197,12 @@ export default {
     async submitForm(values) {
       if (this.fileList.length === 0) {
         this.$message.warning('请上传图片')
+        this.$refs.form.error()
         return
       }
       this.userList.map(el => {
-        if (el.name === values.leaderName) {
-          values.leaderCode = el.code
+        if (el.code === values.leaderCode) {
+          values.leaderName = el.name
         }
       })
       try {
@@ -226,14 +230,12 @@ export default {
       }
     },
     add(record) {
-      console.log(record)
       this.formData[0].initValue = record.itemName
       this.itemId = record.id
       this.itemInfo = record
       this.formStatus = true
     },
     goDetail(record) {
-      console.log('record', record)
       if (this.type === '3') {
         this.$router.push({
           path: '/dangerFind/dangerDetail',
@@ -375,7 +377,7 @@ export default {
       border-bottom: 1px solid #ccc;
     }
     .collapse-state {
-      width: 60px;
+      width: 80px;
       text-align: center;
     }
     .add{

@@ -122,7 +122,6 @@ const formData = [
     label: '事故直接经济损失',
     placeholder: '请输入事故直接经济损失',
     min: 0,
-    max: 99999,
     title: '元'
   },
   {
@@ -132,7 +131,6 @@ const formData = [
     label: '死亡人数',
     placeholder: '请输入死亡人数',
     min: 0,
-    max: 99999,
     title: '人'
   },
   {
@@ -142,7 +140,6 @@ const formData = [
     label: '受伤人数',
     placeholder: '请输入受伤人数',
     min: 0,
-    max: 99999,
     title: '人'
   },
   {
@@ -187,7 +184,8 @@ const formData = [
   },
   {
     type: 'upload',
-    label: '事故照片'
+    label: '事故照片',
+    required: false
   },
   {
     value: 'disposeInfo',
@@ -264,17 +262,13 @@ export default {
         this.formData[13].show = true
       }
     },
-    // disposeInfo	处理信息
-    // finishInfo	结案信息
     async submitForm(values) {
-      if (this.fileList.length === 0) {
-        this.$message.warning('请上传图片')
-        return false
-      }
       try {
         values.pictures = this.fileList.map(el => el.url)
         values.schoolCode = this.userInfo.schoolCode
         values.schoolName = this.userInfo.schoolName
+        values.userCode = this.userInfo.userCode
+        values.userName = this.userInfo.userName
         if (!this.detailId) {
           await this.addAccident(values)
         } else {

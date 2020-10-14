@@ -182,7 +182,7 @@ export default {
       if (!isJpg && !isPng) {
         this.$message.error('请上传图片格式的文件(jpg/png)')
       }
-      console.log(file.size / 1024)
+      // console.log(file.size / 1024)
       const isLt1M = file.size / 1024 < 100 && file.size / 1024 > 20
       if (!isLt1M) {
         this.$message.error('照片大小超过限制')
@@ -259,7 +259,6 @@ export default {
       var xhr = new XMLHttpRequest()
       xhr.timeout = 30000 // 设置超时
       var url = `${hostEnv.zx_subject}/file/upload/doc?schoolCode=${this.schoolCode}`
-      // var url = `${hostEnv.zk_school}/file/freeUpload?schoolCode=${this.schoolCode}`
       xhr.open('post', url, true)
       const token = sessionStorage.getItem('token')
       xhr.setRequestHeader('token', token)

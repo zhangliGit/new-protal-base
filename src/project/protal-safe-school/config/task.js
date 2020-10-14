@@ -47,7 +47,7 @@ const task = {
       name: 'taskPreview',
       component: TaskPreview,
       meta: {
-        title: '任务预览',
+        title: '查看任务',
         isHide: true
       }
     },

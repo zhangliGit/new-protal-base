@@ -138,6 +138,9 @@ const baseData9Api = {
   addDefaultJob: '/edu/job/manage/addDefaultJob#postQuery', // 岗位预设
   getQueryjob: '/edu/job/manage/queryjob/by/educode/and/definded#get' // 判断是否预设
 }
+const introApi = {
+  getIntro: `${hostEnv.ljj_user_center}/user/introduction/query/user/introduction#get` // 查询个人简介
+}
 for (const val in baseData1Api) {
   baseData1Api[val] = `${hostEnv.lz_user_center}${baseData1Api[val]}`
 }
@@ -178,6 +181,7 @@ const baseDataApi = {
   ...baseData7Api,
   ...baseData8Api,
   ...baseData9Api,
+  ...introApi,
   getDormChangeList: `${hostEnv.ljj_dorm}/dorm/in/history/dorm/change/record#postQuery` // 调宿记录
 }
 

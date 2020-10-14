@@ -28,6 +28,7 @@
       </div>
       <div class="qui-fx qui-fx-ac">
         <upload-video
+          v-if="flag"
           type="image"
           :length="1"
           v-model="fileList"
@@ -42,7 +43,6 @@
           保存
         </a-button>
       </div>
-      <div class="footer"></div>
     </div>
   </div>
 </template>
@@ -59,6 +59,7 @@ export default {
   },
   data () {
     return {
+      flag: true,
       inputText: '',
       areaText: '',
       fileInfo: {
@@ -80,6 +81,10 @@ export default {
     ...mapActions('home', ['getClassMotto', 'addClassMotto', 'delFile']),
     delUpload(value) {
       this.delFile(value.id || this.fileList[0].photoId)
+      this.flag = false
+      this.$nextTick(() => {
+        this.flag = true
+      })
     },
     // 选中年级
     select (item) {
@@ -157,6 +162,8 @@ export default {
     background: #fff;
     padding: 10px;
     width: calc(100% - 210px);
+    background: #fff url('../../assets/img/class_show.png') no-repeat fixed bottom;
+    background-size: 100% 200px;
     .tit{
       margin: 20px 0;
       p {
@@ -173,14 +180,6 @@ export default {
     }
     .button{
       margin: 20px auto;
-    }
-    .footer{
-      position: absolute;
-      width: calc(100% - 20px);
-      bottom: 0;
-      height: 200px;
-      background: url('../../assets/img/class_show.png') no-repeat;
-      background-size: 100% 200px;
     }
   }
 }

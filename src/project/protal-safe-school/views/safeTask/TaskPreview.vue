@@ -8,15 +8,15 @@
         <div class="u-tx-c">{{ detailInfo.taskName }}</div>
         <div class="qui-fx-jc u-mar-t10">
           <div class="qui-fx-ver">
-            <div>发布人：{{ detailInfo.userName }}</div>
-            <div class="u-mar-t10">任务开始时间：{{ detailInfo.beginTime | gmtToDate }}</div>
+            <div>发布人：{{ detailInfo.publisherName }}</div>
+            <div class="u-mar-t10">任务开始时间：{{ detailInfo.startDate | gmtToDate('date') }}</div>
           </div>
           <div class="qui-fx-ver u-mar-l20">
-            <div>发布时间：{{ detailInfo.completeTime | gmtToDate }}</div>
-            <div class="u-mar-t10">任务结束时间：{{ detailInfo.endTime | gmtToDate }}</div>
+            <div>发布时间：{{ detailInfo.publisherDate | gmtToDate }}</div>
+            <div class="u-mar-t10">任务结束时间：{{ detailInfo.endDate | gmtToDate('date') }}</div>
           </div>
         </div>
-        <div class="u-padd-l40 u-padd-r40" v-html="detailInfo.des"></div>
+        <div class="rich-text u-padd-l40 u-padd-r40" v-html="detailInfo.des"></div>
         <div class="u-mar-t20">
           <div class="upload u-mar-l20 u-mar-r20 u-mar-b10">
             <div class="upload-title">附件上传</div>
@@ -83,9 +83,11 @@
               <div class="subject u-mar-t10 u-padd-l20 u-padd-t10 u-padd-b10">
                 <div class="qui-fx u-mar-t10" v-for="(list, i) in fillList" :key="i">
                   <div class="qui-fx-ver">题目是：</div>
-                  <div class="qui-fx-ver u-mar-l20">
-                    <div class="u-mar-b10">{{ list.title }}</div>
-                    <a-input :disabled="disabled" v-model="list.answers[0]" />
+                  <div class="qui-fx-f1 qui-fx-ver u-mar-l20">
+                    <div>{{ list.title }}</div>
+                    <div class="u-mar-t10">
+                      <a-input style="width:100%" :disabled="disabled" v-model="list.answers[0]" />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -99,7 +101,7 @@
                     <div>{{ list.title }}</div>
                     <div class="u-mar-t10" v-if="disabled">
                       <img class="u-mar-r10" :src="img" alt /> 附件
-                      <span class="u-type-primary" @click="exportClick(list.answers[0])">下载</span>
+                      <text class="u-type-primary" @click="exportClick(list.answers[0])">下载</text>
                     </div>
                     <div class="u-mar-t10" v-else>
                       <a-upload
@@ -164,13 +166,15 @@ export default {
       show: true,
       params: {},
       isLoad: false,
-      flag: false
+      flag: false,
+      status: ''
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
+    this.status = this.$route.query.status
     this.taskTemplateCode = this.$route.query.taskTemplateCode
     this.taskCode = this.$route.query.taskCode
     this.url = `${hostEnv.zx_subject}/file/upload/doc`
@@ -219,8 +223,11 @@ export default {
     delFile(i) {
       this.fileList[i].show = true
       this.fileList[i].docName = ''
+      this.fileList[i].answers = []
+      console.log('this.fileList', this.fileList)
     },
     handleRemove(info, i) {
+      console.log(1243)
       this.fileList[i].show = true
     },
     handleChange(info, i) {
@@ -271,7 +278,25 @@ export default {
           questionType: el.questionType
         }
       })
+      const isTrue = []
+      answers.forEach(element => {
+        if (element.answers.length === 0) {
+          isTrue.push(1)
+        }
+        element.answers.forEach(el => {
+          if (!el) {
+            isTrue.push(1)
+          }
+        })
+      })
+      if (isTrue.length > 0) {
+        this.$message.warning('请填写完整题目')
+        return false
+      }
       req.answers = answers
+      if (this.status === '5') {
+        req.state = '6'
+      }
       this.isLoad = true
       this.answerTask(req)
         .then(res => {
@@ -339,5 +364,16 @@ export default {
 img {
   width: 30px;
   height: 30px;
+}
+</style>
+<style lang="less">
+.rich-text {
+  width: 100%;
+  max-height: 400px;
+  overflow: scroll;
+  img {
+    width: 100%;
+    height: 100%;
+  }
 }
 </style>

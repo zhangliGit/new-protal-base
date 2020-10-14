@@ -19,13 +19,13 @@
         <template v-slot:actions="action">
           <div>
             <a-tooltip placement="topLeft" title="审核" v-if="action.record.riskLevel && action.record.auditStatus === '1'">
-              <a-button size="small" class="edit-action-btn" icon="form" @click.stop="add(1, action)"></a-button>
+              <a-button size="small" class="edit-action-btn" icon="form" @click.stop="check(1, action)"></a-button>
             </a-tooltip>
-            <a-tooltip placement="topLeft" title="审核详情" v-if="action.record.auditStatus !== '1'">
+            <a-tooltip placement="topLeft" title="审核详情" v-if="action.record.auditStatus !== '1'" @click="check(1, action)">
               <a-button size="small" class="copy-action-btn" icon="copy"></a-button>
             </a-tooltip>
             <a-tooltip placement="topLeft" title="上报隐患">
-              <a-button size="small" icon="plus" class="add-btn" @click.stop="add(1,action.record.id)"></a-button>
+              <a-button size="small" icon="plus" class="add-btn" @click.stop="check(0, action.record.id)"></a-button>
             </a-tooltip>
           </div>
         </template>
@@ -40,6 +40,16 @@
       </table-list>
       <page-num v-model="pageList" :total="total" @change-page="_riskAssessList"></page-num>
     </div>
+    <check-assess
+      ref="checkAssess"
+      is-radio
+      v-if="checkTag"
+      v-model="checkTag"
+      :methodCode="methodCode"
+      :auditStatus="auditStatus"
+      :id="id"
+      @updata="checkAssess"
+    ></check-assess>
   </div>
 </template>
 
@@ -49,12 +59,14 @@ import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
 import { mapState, mapActions } from 'vuex'
 import assess from '../../assets/js/table/assess'
+import CheckAssess from '../../component/CheckAssess'
 export default {
   name: 'RiskAssess',
   components: {
     SearchForm,
     TableList,
-    PageNum
+    PageNum,
+    CheckAssess
   },
   data() {
     return {
@@ -77,7 +89,11 @@ export default {
       searchText: {
         riskContent: ''
       },
-      subjectName: []
+      subjectName: [],
+      checkTag: false,
+      methodCode: '',
+      auditStatus: '',
+      id: ''
     }
   },
   computed: {
@@ -121,11 +137,36 @@ export default {
       this.pageList.size = 20
       this._riskAssessList()
     },
+    check(type, record) {
+      console.log('record', record)
+      if (type) {
+        this.checkTag = true
+        this.id = record.record.id
+        this.methodCode = record.record.methodCode
+        this.auditStatus = record.record.auditStatus
+      } else {
+        this.$router.push({
+          path: '/riskAssess/addFind'
+        })
+      }
+    },
+    checkAssess() {
+      this.checkTag = false
+      this.showList()
+    },
     modify (record) {
+      console.log('record', record)
       this.$router.push({
         path: '/riskAssess/addAssess',
         query: {
-          id: record ? record.record.id : ''
+          id: record.record.id,
+          riskLevel: record.record.riskLevel,
+          accidentType: record.record.accidentType,
+          checkObject: record.record.checkObject,
+          riskContent: record.record.riskContent,
+          name: record.record.name,
+          methodCode: record.record.methodCode,
+          auditStatus: record.record.auditStatus
         }
       })
     }

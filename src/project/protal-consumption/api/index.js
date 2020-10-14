@@ -1,13 +1,12 @@
 import homeApi from './home'
-import cardApi from './card'
-import consumeApi from './consume'
-import baseDataApi from './baseData'
-import userApi from './user'
+import accountManage from './accountManage'
+import cardManage from './cardManage'
+import billRecord from './billRecord'
 const apiList = {
   ...homeApi,
-  ...cardApi,
-  ...consumeApi,
-  ...baseDataApi,
-  ...userApi
+  ...accountManage,
+  ...cardManage,
+  ...billRecord
 }
+
 export default apiList

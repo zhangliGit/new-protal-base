@@ -32,12 +32,14 @@ let zk_work = ''
 let ljj_attendance = ''
 let zk_oa = ''
 let lz_safe = ''
-let cl_oa=''
-let wxz_pay=''
-let cl_class=''
-let zk_class=''
-let zk_news=''
-let ljj_people=''
+let cl_oa = ''
+let wxz_pay = ''
+let cl_class = ''
+let zk_class = ''
+let zk_news = ''
+let ljj_people = ''
+let img_download = ''
+let hzz_ecard = ''
 if (ConfigEnv === 'test') {
   wxz_control = '/wxz_control'
   zk_school = '/zk_school'
@@ -70,12 +72,14 @@ if (ConfigEnv === 'test') {
   zq_oa = '/zq_oa'
   ljj_attendance = '/ljj_attendance'
   lz_safe = '/lz_safe'
-  cl_oa='/cl_oa'
-  wxz_pay='/wxz_pay'
-  cl_class='/cl_class'
-  zk_class='/zk_class'
-  zk_news='/zk_news'
-  ljj_people='/ljj_people'
+  cl_oa = '/cl_oa'
+  wxz_pay = '/wxz_pay'
+  cl_class = '/cl_class'
+  zk_class = '/zk_class'
+  zk_news = '/zk_news'
+  ljj_people = '/ljj_people'
+  img_download = '/img_download'
+  hzz_ecard = '/hzz_ecard'
 } else if (ConfigEnv === 'prod') {
   wxz_control = '/wxz_control'
   zk_school = '/zk_school'
@@ -108,12 +112,14 @@ if (ConfigEnv === 'test') {
   zq_oa = '/zq_oa'
   ljj_attendance = '/ljj_attendance'
   lz_safe = '/lz_safe'
-  cl_oa='/cl_oa'
-  wxz_pay='/wxz_pay'
-  cl_class='/cl_class'
-  zk_class='/zk_class'
-  zk_news='/zk_news'
-  ljj_people='/ljj_people'
+  cl_oa = '/cl_oa'
+  wxz_pay = '/wxz_pay'
+  cl_class = '/cl_class'
+  zk_class = '/zk_class'
+  zk_news = '/zk_news'
+  ljj_people = '/ljj_people'
+  img_download = '/img_download'
+  hzz_ecard = '/hzz_ecard'
 } else {
   wxz_control = '/wxz_control'
   zk_school = '/zk_school'
@@ -143,14 +149,17 @@ if (ConfigEnv === 'test') {
   ljj_ncov = '/ljj_ncov'
   zk_oa = '/zk_oa'
   hpb_face = '/hpb_face'
-  ;(zq_oa = '/zq_oa'), (ljj_attendance = '/ljj_attendance')
+  zq_oa = '/zq_oa'
+  ljj_attendance = '/ljj_attendance'
   lz_safe = '/lz_safe'
-  cl_oa='/cl_oa'
-  wxz_pay='/wxz_pay'
-  cl_class='/cl_class'
-  zk_class='/zk_class'
-  zk_news='/zk_news'
-  ljj_people='/ljj_people'
+  cl_oa = '/cl_oa'
+  wxz_pay = '/wxz_pay'
+  cl_class = '/cl_class'
+  zk_class = '/zk_class'
+  zk_news = '/zk_news'
+  ljj_people = '/ljj_people'
+  img_download = '/img_download'
+  hzz_ecard = '/hzz_ecard'
 }
 
 export default {
@@ -190,5 +199,7 @@ export default {
   cl_class,
   zk_class,
   zk_news,
-  ljj_people
+  ljj_people,
+  img_download,
+  hzz_ecard
 }

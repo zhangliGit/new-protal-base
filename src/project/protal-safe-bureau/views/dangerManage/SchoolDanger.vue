@@ -12,13 +12,11 @@
 </template>
 
 <script>
-import DiscoverDanger from './DiscoverDanger'
-import DangerSupervision from './DangerSupervision'
 export default {
   name: 'Danger',
   components: {
-    DiscoverDanger,
-    DangerSupervision
+    DiscoverDanger: () => import('./DiscoverDanger'),
+    DangerSupervision: () => import('./DangerSupervision')
   },
   data() {
     return {}
@@ -26,7 +24,6 @@ export default {
   mounted() {},
   methods: {
     callback(key) {
-      // console.log(key)
     }
   }
 }
