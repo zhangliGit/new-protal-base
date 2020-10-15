@@ -200,7 +200,8 @@ const filters = {
     }).join(',')
     return val
   },
-  onState: text => {
+  onState: val => {
+    const text = parseInt(val)
     if (text === 1) {
       return '迟到'
     } else if (text === 2) {

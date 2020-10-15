@@ -14,7 +14,9 @@ const classApi = {
   addAttendanceGroup: '/attendance/group/teacher/add#post', // 新增教职工考勤组
   delAttendanceGroup: '/attendance/group/teacher/delete#delQuery', // 删除教职工考勤组
   attendanceGroupDetail: '/attendance/group/teacher/detail#get', // 获取教职工考勤组详情
-  getAttendanceGroup: '/attendance/group/teacher/list#post' // 获取教职工考勤组列表
+  getAttendanceGroup: '/attendance/group/teacher/list#post', // 获取教职工考勤组列表
+  updateAttendanceGroup: '/attendance/group/teacher/update#post', // 修改教职工考勤组
+  changeAttendanceRecord: '/opt/record/teacher/update#post' // 修改操作教职工結果
 }
 for (const val in classApi) {
   classApi[val] = `${hostEnv.lz_attendance}${classApi[val]}`

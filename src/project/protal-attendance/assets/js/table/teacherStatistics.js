@@ -47,7 +47,7 @@ const teacherStatistics = [
   },
   {
     title: '上班缺卡次数',
-    dataIndex: 'onWork',
+    dataIndex: 'onNoRecordCount',
     width: '8%',
     scopedSlots: {
       customRender: 'other5'
@@ -55,13 +55,17 @@ const teacherStatistics = [
   },
   {
     title: '下班缺卡次数',
-    dataIndex: 'totalNum',
-    width: '8%'
+    width: '8%',
+    scopedSlots: {
+      customRender: 'totalNum'
+    }
   },
   {
     title: '请假次数',
-    dataIndex: 'leave',
-    width: '8%'
+    width: '8%',
+    scopedSlots: {
+      customRender: 'other6'
+    }
   },
   {
     title: '缺勤次数',
