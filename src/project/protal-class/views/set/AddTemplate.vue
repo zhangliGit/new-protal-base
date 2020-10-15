@@ -348,6 +348,7 @@ export default {
     allowMove(ev) {
       console.log(this.setList)
       if (ev.draggedContext.futureIndex < this.setList.length) {
+        this.$message.warning('超过模板大小')
         return false
       }
       let num = 0
@@ -355,6 +356,11 @@ export default {
         num += el.width * el.height
       })
       if (num >= 12) {
+        this.$message.warning('超过模板大小')
+        return false
+      }
+      if (this.setList.length > 0 && this.setList[this.setList.length - 1].position === 4 && this.transform('size', ev.draggedContext.element.y) > 1) {
+        this.$message.warning('组件尺寸不匹配')
         return false
       }
       const position =
@@ -369,9 +375,11 @@ export default {
         }) &&
         this.transform('size', ev.draggedContext.element.y) > 1
       ) {
+        this.$message.warning('组件尺寸不匹配')
         return false
       }
       if (position > 4 && num % 2 !== 0 && this.transform('size', ev.draggedContext.element.y) > 1) {
+        this.$message.warning('组件尺寸不匹配')
         return false
       }
       let allowTag = true
@@ -384,6 +392,7 @@ export default {
       })
       this.setList.forEach((el) => {
         if (!this.yzSize(el)) {
+          this.$message.warning('组件尺寸不匹配')
           allowTag = false
         }
       })

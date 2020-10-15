@@ -79,7 +79,7 @@ export default {
       loading: false,
       baseData,
       preferType: '0',
-      detail: { everydayConsume: 0, singleConsume: 0 },
+      detail: { consumeRule: { everydayConsume: 0, singleConsume: 0 } },
       formItemLayout: {
         labelCol: { span: 6 },
         wrapperCol: { span: 14 }
@@ -110,11 +110,11 @@ export default {
      */
     async _addOpenAccount() {
       console.log(this.preferType)
-      if (!this.detail.everydayConsume) {
+      if (!this.detail.consumeRule.everydayConsume) {
         this.$message.warning('请输入单日消费限额')
         return
       }
-      if (!this.detail.singleConsume) {
+      if (!this.detail.consumeRule.singleConsume) {
         this.$message.warning('请输入单次消费限额')
         return
       }

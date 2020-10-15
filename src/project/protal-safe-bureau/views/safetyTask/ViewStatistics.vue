@@ -45,7 +45,7 @@
                   <tr>
                     <td class="u-padd-10 " :colspan="3">答题人数：{{ list.answerSum }}</td>
                   </tr>
-                </table>  
+                </table>
               </div>
               <div class="list-cont u-mar-t20" v-if="list.statisticsAnswersByUserDtoList">
                 <a-table
@@ -126,6 +126,7 @@
             <div class="list-box  u-mar-20 " v-if="list.questionType==='4'">
               <div class="list-cont u-mar-t20" v-if="list.statisticsAnswersByUserDtoList">
                 <a-table
+                  :rowKey="(record, index) => index"
                   :columns="columnsUrl"
                   :pagination="false"
                   :data-source="list.statisticsAnswersByUserDtoList.records"
@@ -158,23 +159,25 @@ import { Empty } from 'ant-design-vue'
 const columns = [
   {
     title: '学校',
+    width: '20%',
     dataIndex: 'schoolName',
     scopedSlots: { customRender: 'name' }
   },
   {
     title: '回答人',
-    // width: '40%',
+    width: '20%',
     dataIndex: 'completeUserName'
   },
   {
     title: '选项',
-    width: '40%',
+    width: '60%',
     dataIndex: 'answer'
   }
 ]
 const columnsUrl = [
   {
     title: '学校',
+    width: '20%',
     dataIndex: 'schoolName',
     scopedSlots: { customRender: 'name' }
   },

@@ -1,15 +1,15 @@
 <template>
-  <div class="page-layout qui-fx-ver">
+  <div class="page-layout SafeClassItem qui-fx-ver">
     <div class="content pos-box bg-fff">
       <div class="qui-fx qui-fx-jsb" style="width:100%;height:100%" >
         <div class="left u-padd-l30 u-padd-t30 u-padd-b40">
           <grade-tree @select="select" :treeData="treeData"></grade-tree>
         </div>
         <div class="right qui-fx-ver qui-fx-f1" style="padding-right: 10px">
-          <search-form is-reset @search-form="searchForm" :search-label="KnowledgeSearchLabel">
+          <search-form is-reset @search-form="searchForm" :search-label="safeClassItemLabel">
             <div slot="right">
               <a-button icon="del" class="add-action-btn u-mar-l20" @click="delBatchAll">批量删除</a-button>
-              <a-button icon="plus" class="add-action-btn u-mar-l20" @click="add(0)">添加安全知识</a-button>
+              <a-button icon="plus" class="add-action-btn u-mar-l20" @click="add(0)">添加课堂</a-button>
             </div>
           </search-form>
           <table-list
@@ -18,7 +18,7 @@
             v-model="chooseList"
             @selectAll="selectAll"
             :page-list="pageList"
-            :columns="KnowledgeColumns"
+            :columns="safeClassItemColumns"
             :table-list="findList">
             <template v-slot:actions="action">
               <a-tooltip placement="topLeft" title="查看">
@@ -73,9 +73,9 @@ import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
 import SearchForm from '@c/SearchForm'
-import { KnowledgeSearchLabel } from '../../assets/js/searchLabel.js'
-import { KnowledgeColumns } from '../../assets/js/tableColumns'
-import GradeTree from './GradeTree'
+import { safeClassItemLabel } from '../../../assets/js/searchLabel.js'
+import { safeClassItemColumns } from '../../../assets/js/tableColumns'
+import GradeTree from '../GradeTree'
 const columnsUrl = [
   {
     title: '序号',
@@ -112,8 +112,8 @@ export default {
       columnsUrl,
       visible: false,
       categoryId: '', // 树选择的id
-      KnowledgeColumns,
-      KnowledgeSearchLabel,
+      safeClassItemColumns,
+      safeClassItemLabel,
       total: 0,
       treeData: [],
       pageList: {
@@ -142,14 +142,14 @@ export default {
     await this.showList()
   },
   methods: {
-    ...mapActions('home', ['klgPublicList', 'batchRemove', 'batchRemoveAll', 'treeView', 'statistics', 'pageStatistics']),
+    ...mapActions('home', ['claroomLocalList', 'claroomRemove', 'claroomRemoves', 'treeView', 'statistics', 'pageStatistics']),
     async showList() {
       const req = {
         categoryId: this.categoryId,
         ...this.pageList,
         ...this.searchList
       }
-      const res = await this.klgPublicList(req)
+      const res = await this.claroomLocalList(req)
       this.findList = res.data.records
       this.total = res.data.total
     },
@@ -164,7 +164,7 @@ export default {
     },
     selectAll() {},
     async delBatch(record) {
-      await this.batchRemove(record.id)
+      await this.claroomRemove(record.id)
       this.showList()
     },
     async delBatchAll() {
@@ -172,9 +172,9 @@ export default {
       const that = this
       this.$confirm({
         title: '提示',
-        content: '确定批量删除选中的任务吗?',
+        content: '确定批量删除选中的课堂吗?',
         onOk () {
-          that.batchRemoveAll(that.chooseList).then(res => {
+          that.claroomRemoves(that.chooseList).then(res => {
             that.$message.success('操作成功')
             that.showList()
           })
@@ -185,7 +185,7 @@ export default {
     },
     add(type, record) {
       this.$router.push({
-        path: '/library/addKlg',
+        path: '/safeClass/addClass',
         query: {
           id: record ? record.id : '',
           type: type
@@ -244,6 +244,16 @@ export default {
 }
 </script>
 <style lang="less" scoped>
+.SafeClassItem{
+  height: 100%;
+  width: 100%;
+  .left{
+    padding-bottom: 30px;
+    .grade-tree{
+      height: 100%;
+    }
+  }
+}
 @deep: ~'>>>';
     .statistic{
       @{deep} .ant-table-thead > tr >th{

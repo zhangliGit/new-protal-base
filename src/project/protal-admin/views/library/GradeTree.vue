@@ -9,7 +9,7 @@
       :treeData="data"
       :defaultExpandAll="false"
     >
-      <template slot="title" slot-scope="{ title,id }">
+      <template slot="title" slot-scope="{ title,id}">
         <span @click="select(id)" class="u-type-primary-ligth-bg u-bd" >
           {{ title }}
         </span>
@@ -17,7 +17,6 @@
     </a-tree>
   </div>
 </template>
-
 <script>
 import NoData from '@c/NoData'
 import { mapState } from 'vuex'

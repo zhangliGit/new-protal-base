@@ -19,7 +19,6 @@
               <!-- 检查项信息列表 -->
               <a-collapse-panel :key="`'${index+1}'`" :header="list.name" :style="customStyle" v-for="(list,index) in detailInfo.itemList">
                 <div class="collapse-title qui-fx-jsb">
-
                   <div>检查标准</div>
                   <div class="qui-fx">
                     <div class="collapse-state u-mar-l10" v-if="!(detailInfo.state === '1' )">自查结果</div>
@@ -165,8 +164,7 @@ export default {
       activeKey: ['1'],
       isLoad: false,
       type: '',
-      customStyle:
-        'background: #9698d6;margin-bottom: 24px;border: 0;overflow: hidden'
+      customStyle: 'background: #9698d6;margin-bottom: 24px;border: 0;overflow: hidden'
     }
   },
   computed: {
@@ -232,21 +230,22 @@ export default {
         resultList: resultList,
         submitType: type,
         taskId: this.detailInfo.taskId,
-        userCode: this.userInfo.schoolCode,
-        userName: this.userInfo.schoolName
+        userCode: this.userInfo.userCode,
+        userName: this.userInfo.userName
       }
-      this.modifySpecial(req)
-        .then(res => {
-          this.isLoad = false
-          this.$message.success('操作成功')
-          this.$tools.goNext(() => {
-            this.$refs.modal.visible = false
-            this.$parent.showList()
-          })
-        })
-        .catch(res => {
-          this.isLoad = false
-        })
+      console.log(req)
+      // this.modifySpecial(req)
+      //   .then(res => {
+      //     this.isLoad = false
+      //     this.$message.success('操作成功')
+      //     this.$tools.goNext(() => {
+      //       this.$refs.modal.visible = false
+      //       this.$parent.showList()
+      //     })
+      //   })
+      //   .catch(res => {
+      //     this.isLoad = false
+      //   })
     }
   }
 }

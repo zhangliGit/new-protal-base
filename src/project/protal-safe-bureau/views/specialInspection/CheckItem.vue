@@ -35,9 +35,7 @@
     <add-check-item
       width="1000px"
       ref="addCheck"
-      v-if="flag"
     >
-      <!-- :key="count" -->
     </add-check-item>
   </div>
 </template>
@@ -63,7 +61,6 @@ export default {
   data() {
     return {
       count: 0,
-      flag: true,
       checkColumns,
       checkSearchLabel,
       total: 0,
@@ -72,7 +69,6 @@ export default {
         size: 20
       },
       findList: [],
-      form: this.$form.createForm(this),
       searchList: {},
       detailId: '',
       type: ''
@@ -96,7 +92,7 @@ export default {
       this.total = res.data.total
     },
     async delMenu(id) {
-      const res = await this.delItem(id)
+      await this.delItem(id)
       this.$message.success('删除成功')
       this.showList()
     },
@@ -106,16 +102,10 @@ export default {
     },
     // 打开子组件传给子组件的数据
     async goDetail(type, id) {
-      this.$refs.addCheck.reset()
+      // this.$refs.addCheck.reset()
       this.$refs.addCheck.$refs.modal.visible = true
       this.$refs.addCheck.detailId = id
       this.$refs.addCheck.type = type
-      // this.flag = false
-      // const that = this
-      // this.$nextTick(() => {
-      //   this.flag = true
-      //   // console.log(that.$refs.$refs.modal)
-      // })
       if (type === 1 || type === 2) {
         this.$refs.addCheck.showDetail()
       } else if (type === 0) {
