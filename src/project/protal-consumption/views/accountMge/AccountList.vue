@@ -76,6 +76,7 @@ import accountColumns from '../../assets/table/accountColumns'
 /* import columnList from '../../assets/table/consumeColumns' */
 import hostEnv from '@config/host-env'
 import axios from 'axios'
+import { Modal } from 'ant-design-vue'
 const searchLabel = [
   {
     value: 'workNo',
@@ -238,7 +239,9 @@ export default {
     /**
      * @description 批量开户
      */
-    batchSubmit() {},
+    batchSubmit() {
+      this.$refs.modal.visible = false
+    },
     /* showDetail(record) {
       this.userId = record.userId
       this.showDetailTag = true
@@ -285,22 +288,23 @@ export default {
         url: `${hostEnv.hzz_ecard}/accountInfo/importData?operator=${this.userInfo.userCode}`,
         data: formData
       }).then(res => {
-        if (res.data.code === 200) {
-          console.log(res.data.data)
-          if (typeof res.data.data === 'string') {
-            this.$message.error(res.data.data)
-            return
+        console.log(res)
+        Modal.success({
+          content: res.data.msg,
+          onOk: () => {
+            this.fileList = []
+            this._getAccountList()
           }
-          this.$refs.importResult.addVisible = true
-          this.bindObj = res.data.data
-          this.bindObj.failData.map((ele, i) => {
-            ele.id = i
-          })
-          this.fileList = []
-        } else {
-          this.$message.error(res.data.message)
-          this.fileList = []
-        }
+        })
+        this.$refs.modal.visible = false
+      }).catch(err => {
+        console.log(err.response.data.message)
+        Modal.error({
+          content: err.response.data.message,
+          onOk: () => {
+            this.fileList = []
+          }
+        })
       })
     },
     async onFocus(value) {

@@ -337,7 +337,7 @@ module.exports = {
         }
       },
       '/zx_center': {
-        target: 'http://192.168.2.147:11002/', // 王选章-平台人员统计
+        target: 'http://192.168.2.242:11002/', // 王选章-平台人员统计
         changeOrigin: true,
         pathRewrite: {
           '^/zx_center': ''

@@ -16,35 +16,35 @@
     >
       <a-col>
         <span>姓名/学号：</span>
-        <a-input v-model="keyword" style="width: 120px;margin-right: 10px" placeholder="请输入关键字" />
+        <a-input v-model="keyword" style="width: 120px; margin-right: 10px" placeholder="请输入关键字" />
         <span>性别：</span>
-        <a-select style="width: 120px;margin-right: 10px" v-model="sex">
+        <a-select style="width: 120px; margin-right: 10px" v-model="sex">
           <a-select-option value>全部</a-select-option>
           <a-select-option value="1">男</a-select-option>
           <a-select-option value="2">女</a-select-option>
         </a-select>
         <span>是否有人脸：</span>
-        <a-select v-model="hasPhoto" style="width: 120px;margin-right: 10px">
+        <a-select v-model="hasPhoto" style="width: 120px; margin-right: 10px">
           <a-select-option value>全部</a-select-option>
           <a-select-option :value="1">是</a-select-option>
           <a-select-option :value="0">否</a-select-option>
         </a-select>
         <span>走住读类型：</span>
-        <a-select style="width: 120px;margin-right: 10px" v-model="hasDorm">
+        <a-select style="width: 120px; margin-right: 10px" v-model="hasDorm">
           <a-select-option value>全部</a-select-option>
           <a-select-option value="1">住读</a-select-option>
           <a-select-option value="0">走读</a-select-option>
         </a-select>
         <a-button type="primary" @click="getStudentList(chooseType !== '')">查询</a-button>
       </a-col>
-      <a-col v-if="hasAdd" style=" margin-left: 45px; line-height:35px;">
+      <a-col v-if="hasAdd" style="margin-left: 45px; line-height: 35px">
         <span>
           <a @click="newStudent">未找到学生?点击新建学生></a>
         </span>
       </a-col>
     </a-row>
     <div class="choose-user qui-fx">
-      <grade-tree @select="select"></grade-tree>
+      <grade-tree isOnlyNewSchoolYear @select="select"></grade-tree>
       <div class="qui-fx-ver qui-fx-f1">
         <table-list
           :is-check="isCheck"
@@ -59,9 +59,9 @@
           :table-list="userList"
         >
           <template v-slot:other1="other1">
-            <a-tag
-              :color="parseInt(other1.record.hasDorm) === 1 ? '#87d068' : '#2db7f5'"
-            >{{ $tools.hasDorm(other1.record.hasDorm) }}</a-tag>
+            <a-tag :color="parseInt(other1.record.hasDorm) === 1 ? '#87d068' : '#2db7f5'">{{
+              $tools.hasDorm(other1.record.hasDorm)
+            }}</a-tag>
           </template>
         </table-list>
         <page-num
@@ -116,7 +116,7 @@ const columns = [
     title: '性别',
     dataIndex: 'sex',
     width: '10%',
-    customRender: text => {
+    customRender: (text) => {
       return parseInt(text) === 1 ? '男' : '女'
     }
   },
@@ -221,7 +221,7 @@ export default {
         }
       })
       const users = res.data
-      users.forEach(item => {
+      users.forEach((item) => {
         this.chooseList.push(item.userCode)
         this.totalList.push({
           id: item.userCode,
@@ -232,10 +232,9 @@ export default {
       this.getStudentList(true)
     } else if (this.chooseType === 'door') {
       this.getDoorTotal(1)
-    }
-    else if (this.chooseType === 'class') {
-       this.classList.forEach(item => {
-      this.chooseList.push(item.userCode)
+    } else if (this.chooseType === 'class') {
+      this.classList.forEach((item) => {
+        this.chooseList.push(item.userCode)
         this.totalList.push({
           id: item.userCode,
           userCode: item.userCode,
@@ -252,7 +251,7 @@ export default {
         }
       })
       const users = res.data
-      users.forEach(item => {
+      users.forEach((item) => {
         this.chooseList.push(item.userCode)
         this.totalList.push({
           id: item.userCode,
@@ -297,7 +296,7 @@ export default {
         }
       })
       const users = res.data.list
-      users.forEach(item => {
+      users.forEach((item) => {
         this.chooseList.push(item.userCode)
         this.totalList.push({
           id: item.userCode,
@@ -336,13 +335,13 @@ export default {
           hasPhoto: this.hasPhoto,
           sex: this.sex,
           schoolCode: this.schoolCode,
-          gradeId: this.treeObj.gradeCode,
-          classId: this.treeObj.classCode,
-          schoolYearId: this.treeObj.schoolYearId,
+          gradeId: this.treeObj ? this.treeObj.gradeCode : '',
+          classId: this.treeObj ? this.treeObj.classCode : '',
+          schoolYearId: this.treeObj ? this.treeObj.schoolYearId : '',
           ...this.pageList
         }
       })
-      this.userList = res.data.list.map(item => {
+      this.userList = res.data.list.map((item) => {
         return {
           ...item,
           id: type ? item.userCode : item.id
@@ -365,8 +364,8 @@ export default {
       if (type) {
         this.totalList = this.totalList.concat(item)
       } else {
-        item.forEach(item => {
-          const index = this.totalList.findIndex(list => {
+        item.forEach((item) => {
+          const index = this.totalList.findIndex((list) => {
             return list.id === item.id
           })
           this.totalList.splice(index, 1)
@@ -382,7 +381,7 @@ export default {
             userCode: item.userCode,
             userName: item.userName,
             hasDorm: item.hasDorm,
-            photoUrl:item.photoUrl,
+            photoUrl: item.photoUrl,
             classCode: item.classCode,
             className: item.className,
             gradeCode: item.gradeCode,
@@ -392,7 +391,7 @@ export default {
           this.totalList = [item]
         }
       } else {
-        const index = this.totalList.findIndex(list => list.id === item.id)
+        const index = this.totalList.findIndex((list) => list.id === item.id)
         this.totalList.splice(index, 1)
       }
     },

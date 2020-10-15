@@ -36,17 +36,7 @@ const subsidyColumns = [
   {
     title: '状态',
     dataIndex: 'grantStatus',
-    width: '10%',
-    customRender: text => {
-      const num = parseInt(text)
-      if (num === 0) {
-        return '未发放'
-      } else if (num === 1) {
-        return '已发放'
-      } else {
-        return '未知'
-      }
-    }
+    width: '10%'
   },
   {
     title: '每人发放金额',
@@ -63,7 +53,7 @@ const subsidyColumns = [
     dataIndex: 'grantTime',
     width: '10%',
     customRender: text => {
-      return Tools.getDate(text)
+      return text ? Tools.getDate(text) : '--'
     }
   },
   {
