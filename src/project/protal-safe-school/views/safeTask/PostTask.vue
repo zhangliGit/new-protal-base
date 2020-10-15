@@ -115,6 +115,10 @@ export default {
       this.form.validateFields((error, values) => {
         this.isLoad = false
         if (!error) {
+          if (this.userList.length === 0) {
+            this.$message.warning('请选择接收人员')
+            return false
+          }
           values.publisherCode = this.userInfo.userCode
           values.publisherName = this.userInfo.userName
           values.users = this.userList.map(el => {

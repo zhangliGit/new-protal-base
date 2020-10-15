@@ -225,7 +225,7 @@ export default {
       },
       findList: [],
       searchList: {
-        hasSupervise: false
+        hasSupervise: true
       },
       detailId: '',
       type: ''

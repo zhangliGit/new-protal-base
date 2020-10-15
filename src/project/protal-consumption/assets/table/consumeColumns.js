@@ -74,11 +74,8 @@ const consumeColumns = [
   {
     title: '状态',
     dataIndex: 'consumeStatus',
-    width: '6%',
-    customRender: (text) => {
-      return Tools.consumeStatus(text)
-    }
-  },
+    width: '6%'
+  }/* ,
   {
     title: '操作',
     key: 'action',
@@ -86,7 +83,7 @@ const consumeColumns = [
     scopedSlots: {
       customRender: 'action'
     }
-  }
+  } */
 ]
 const rechargeColumns = [
   {
@@ -155,10 +152,7 @@ const rechargeColumns = [
   {
     title: '状态',
     dataIndex: 'status',
-    width: '9%',
-    customRender: (text) => {
-      return Tools.rechargeStatus(text)
-    }
+    width: '9%'
   }
 ]
 const subsidyColumns = [
@@ -220,10 +214,7 @@ const subsidyColumns = [
   {
     title: '状态',
     dataIndex: 'status',
-    width: '9%',
-    customRender: (text) => {
-      return Tools.grantStatus(text)
-    }
+    width: '9%'
   }
 ]
 const deducColumns = [
@@ -347,10 +338,7 @@ const refundColumns = [
   {
     title: '状态',
     dataIndex: 'returnStatus',
-    width: '10%',
-    customRender: (text) => {
-      return Tools.refundStatus(text)
-    }
+    width: '10%'
   },
   {
     title: '备注',
@@ -422,10 +410,7 @@ const clearColumns = [
   {
     title: '状态',
     dataIndex: 'clearStatus',
-    width: '10%',
-    customRender: (text) => {
-      return Tools.clearStatus(text)
-    }
+    width: '10%'
   },
   {
     title: '备注',

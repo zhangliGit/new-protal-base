@@ -111,7 +111,7 @@ export default {
   },
   mounted() {
     this.detailId = this.$route.query.id
-    this.title = this.$route.query.type === '1' ? '处理隐患' : '验收隐患'
+    this.title = parseInt(this.$route.query.type) === 1 ? '处理隐患' : '验收隐患'
     if (this.detailId) {
       this.showDetail()
     }

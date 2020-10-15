@@ -489,6 +489,7 @@ export default {
           if (this.formData[3].initValue[0] === '') {
             this.formData[3].initValue[0] = this.userInfo.schoolCode
           }
+          console.log(this.formData[3].initValue)
         })
         record.birthday = this.$tools.getDate(record.birthday, 1)
         this.fileList = record.photoUrl ? [{ url: record.photoUrl }] : []

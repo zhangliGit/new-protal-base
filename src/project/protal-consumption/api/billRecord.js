@@ -16,11 +16,11 @@ const billApi = {
   getGrantList: '/recharge/listSubsidy#get', // 补助记录
   exportGrantList: '/recharge/export#export', // 导出补助记录
 
-  getRefundList: '/refundrecord/list#get', // 退款记录
-  exportRefundList: '/refundrecord/export#export', // 导出补助记录
+  getRefundList: '/refundRecord/list#get', // 退款记录
+  exportRefundList: '/refundRecord/export#export', // 导出补助记录
 
-  getClearList: '/clearrecord/list#get', // 余额清零记录
-  exportClearList: '/clearrecord/export#export' // 导出余额清零记录
+  getClearList: '/clearRecord/list#get', // 余额清零记录
+  exportClearList: '/clearRecord/export#export' // 导出余额清零记录
 }
 for (const val in billApi) {
   billApi[val] = `${hostEnv.hzz_ecard}${billApi[val]}`

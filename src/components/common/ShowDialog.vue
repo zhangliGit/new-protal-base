@@ -56,7 +56,6 @@ export default {
   },
   methods: {
     handleOk() {
-      this.status = false
       this.$emit('submit')
     }
   }

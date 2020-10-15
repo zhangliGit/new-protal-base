@@ -226,6 +226,7 @@ export default {
     delFile(i) {
       this.fileList[i].show = true
       this.fileList[i].docName = ''
+      this.fileList[i].answers = []
     },
     cancel() {
       this.$router.go(-1)

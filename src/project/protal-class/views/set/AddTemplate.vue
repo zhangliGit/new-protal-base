@@ -47,7 +47,7 @@
               />
             </a-form-item>
             <a-form-item :wrapper-col="{ span: 12, offset: 4 }">
-              <a-button class="mar-r10">取消</a-button>
+              <a-button class="mar-r10" @click="cancle">取消</a-button>
               <a-button type="primary" @click="addSubmit">保存</a-button>
             </a-form-item>
           </a-form>
@@ -416,6 +416,9 @@ export default {
     async showList() {},
     chooseImg(item, index) {
       this.active = index
+    },
+    cancle() {
+      this.$router.push({ path: '/templateManage' })
     },
     addSubmit() {
       console.log(this.setList)

@@ -59,9 +59,9 @@
           :table-list="userList"
         >
           <template v-slot:other1="other1">
-            <a-tag
-              :color="parseInt(other1.record.hasDorm) === 1 ? '#87d068' : '#2db7f5'"
-            >{{ $tools.hasDorm(other1.record.hasDorm) }}</a-tag>
+            <a-tag :color="parseInt(other1.record.hasDorm) === 1 ? '#87d068' : '#2db7f5'">{{
+              $tools.hasDorm(other1.record.hasDorm)
+            }}</a-tag>
           </template>
         </table-list>
         <page-num
@@ -116,7 +116,7 @@ const columns = [
     title: '性别',
     dataIndex: 'sex',
     width: '10%',
-    customRender: text => {
+    customRender: (text) => {
       return parseInt(text) === 1 ? '男' : '女'
     }
   },
@@ -221,7 +221,7 @@ export default {
         }
       })
       const users = res.data
-      users.forEach(item => {
+      users.forEach((item) => {
         this.chooseList.push(item.userCode)
         this.totalList.push({
           id: item.userCode,
@@ -232,10 +232,9 @@ export default {
       this.getStudentList(true)
     } else if (this.chooseType === 'door') {
       this.getDoorTotal(1)
-    }
-    else if (this.chooseType === 'class') {
-       this.classList.forEach(item => {
-      this.chooseList.push(item.userCode)
+    } else if (this.chooseType === 'class') {
+      this.classList.forEach((item) => {
+        this.chooseList.push(item.userCode)
         this.totalList.push({
           id: item.userCode,
           userCode: item.userCode,
@@ -252,7 +251,7 @@ export default {
         }
       })
       const users = res.data
-      users.forEach(item => {
+      users.forEach((item) => {
         this.chooseList.push(item.userCode)
         this.totalList.push({
           id: item.userCode,
@@ -280,7 +279,8 @@ export default {
       total: 0,
       columns,
       userList: [],
-      totalList: []
+      totalList: [],
+      schoolYear:''
     }
   },
   methods: {
@@ -297,7 +297,7 @@ export default {
         }
       })
       const users = res.data.list
-      users.forEach(item => {
+      users.forEach((item) => {
         this.chooseList.push(item.userCode)
         this.totalList.push({
           id: item.userCode,
@@ -342,7 +342,7 @@ export default {
           ...this.pageList
         }
       })
-      this.userList = res.data.list.map(item => {
+      this.userList = res.data.list.map((item) => {
         return {
           ...item,
           id: type ? item.userCode : item.id
@@ -365,8 +365,8 @@ export default {
       if (type) {
         this.totalList = this.totalList.concat(item)
       } else {
-        item.forEach(item => {
-          const index = this.totalList.findIndex(list => {
+        item.forEach((item) => {
+          const index = this.totalList.findIndex((list) => {
             return list.id === item.id
           })
           this.totalList.splice(index, 1)
@@ -375,6 +375,7 @@ export default {
     },
     // 监听选中或取消
     clickRow(item, type) {
+      // console.log(item)
       if (type) {
         if (this.isCheck) {
           this.totalList.push({
@@ -382,17 +383,18 @@ export default {
             userCode: item.userCode,
             userName: item.userName,
             hasDorm: item.hasDorm,
-            photoUrl:item.photoUrl,
+            photoUrl: item.photoUrl,
             classCode: item.classCode,
             className: item.className,
             gradeCode: item.gradeCode,
-            gradeName: item.gradeName
+            gradeName: item.gradeName,
+            schoolYearId: item.schoolYearId,
           })
         } else {
           this.totalList = [item]
         }
       } else {
-        const index = this.totalList.findIndex(list => list.id === item.id)
+        const index = this.totalList.findIndex((list) => list.id === item.id)
         this.totalList.splice(index, 1)
       }
     },

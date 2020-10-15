@@ -10,13 +10,13 @@
         <a-tooltip placement="topLeft" title="查看">
           <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="goDetail('3', action)"></a-button>
         </a-tooltip>
-        <a-tooltip placement="topLeft" title="自查" v-if="action.record.state === '1' && action.record.schoolCode !== userInfo.schoolCode">
+        <a-tooltip placement="topLeft" title="自查" v-if="action.record.state === '1' && action.record.schoolCode === userInfo.schoolCode">
           <a-button size="small" class="user-action-btn" icon="form" @click="goDetail('1', action)"></a-button>
         </a-tooltip>
         <a-tooltip
           placement="topLeft"
           title="审核"
-          v-if="action.record.state === '2' && action.record.teamLeaderCode === userInfo.userCode && action.record.schoolCode !== userInfo.schoolCode"
+          v-if="action.record.state === '2' && action.record.teamLeaderCode === userInfo.userCode && action.record.schoolCode === userInfo.schoolCode"
         >
           <a-button size="small" class="power-action-btn" icon="lock" @click="goDetail('2', action)"></a-button>
         </a-tooltip>

@@ -3,6 +3,7 @@
  */
 
 import Vue from 'vue'
+import axios from 'axios'
 import baseData from './base-data'
 import autoImg from '@a/img/auto_app.png'
 const vm = new Vue({})
@@ -49,7 +50,6 @@ const Tools = {
   },
   // html图片转换格式的方法
   dataURLToBlob(dataurl) {
-    // console.log(dataurl)
     const arr = dataurl.split(',')
     const mime = arr[0].match(/:(.*?);/)[1]
     const bstr = atob(arr[1])
@@ -110,6 +110,32 @@ const Tools = {
   errorImg(event, img) {
     event.target.src = img || autoImg
   },
+  // oss图片上传 code:学生code file: 上传文件或base64 fileType: 文件类型，base64时传jpg
+  ossUpload(code, file, fileType = 'jpg', callback) {
+    const _self = this
+    axios.get(`http://canpointlive.com:8090/ossApi/oss-policy?schoolCode=${code}&fileType=${fileType}`).then(res => {
+      const aliyunOssToken = res.data.data
+      var formData = new FormData()
+      // 注意formData里append添加的键的大小写
+      formData.append('key', aliyunOssToken.startsWith) // 存储在oss的文件路径
+      formData.append('OSSAccessKeyId', aliyunOssToken.OSSAccessKeyId) // accessKeyId
+      formData.append('policy', aliyunOssToken.policy) // policy
+      formData.append('callback', aliyunOssToken.callback)
+      formData.append('Signature', aliyunOssToken.signature) // 签名
+      const _file = typeof file === 'object' ? file : _self.dataURLToBlob(file)
+      formData.append('file', _file)
+      formData.append('success_action_status', 200) // 成功后返回的操作码
+      axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
+      axios
+        .post('/oss_upload', formData)
+        .then(function(res) {
+          callback(res.data.data)
+        })
+        .catch(() => {
+          callback()
+        })
+    })
+  },
   color(text) {
     if (text === 1) {
       return '#ff9900'
@@ -139,6 +165,8 @@ const Tools = {
       return '家长'
     } else if (text === 32) {
       return '访客'
+    } else {
+      return '未知'
     }
   },
   getCardStatus(text) {
@@ -196,6 +224,22 @@ const Tools = {
       return '已处理'
     } else {
       return '已撤回'
+    }
+  },
+  opeType(text) {
+    text = parseInt(text)
+    if (text === 1) {
+      return '付款'
+    } else if (text === 2) {
+      return '关闭'
+    } else if (text === 3) {
+      return '删除'
+    } else if (text === 4) {
+      return '打印'
+    } else if (text === 5) {
+      return '创建'
+    } else {
+      return '催缴'
     }
   },
   stateTypeColor(text) {
@@ -381,73 +425,6 @@ const Tools = {
       return '小组已审核'
     } else if (text === 4) {
       return '督查完成'
-    }
-  },
-  // 消费状态
-  consumeStatus(text) {
-    text = parseInt(text)
-    if (text === 0) {
-      return '消费已提交'
-    } else if (text === 1) {
-      return '消费处理中'
-    } else if (text === 2) {
-      return '消费成功'
-    } else if (text === 3) {
-      return '消费失败'
-    } else if (text === 4) {
-      return '已退款'
-    }
-  },
-  // 充值状态
-  rechargeStatus(text) {
-    text = parseInt(text)
-    if (text === 0) {
-      return '充值已提交'
-    } else if (text === 1) {
-      return '充值处理中'
-    } else if (text === 2) {
-      return '充值成功'
-    } else if (text === 3) {
-      return '充值失败'
-    }
-  },
-  // 补助状态
-  grantStatus(text) {
-    text = parseInt(text)
-    if (text === 0) {
-      return '补助已提交'
-    } else if (text === 1) {
-      return '补助处理中'
-    } else if (text === 2) {
-      return '补助成功'
-    } else if (text === 3) {
-      return '补助失败'
-    }
-  },
-  // 退款状态
-  refundStatus(text) {
-    text = parseInt(text)
-    if (text === 0) {
-      return '退款已提交'
-    } else if (text === 1) {
-      return '退款处理中'
-    } else if (text === 2) {
-      return '退款成功'
-    } else if (text === 3) {
-      return '退款失败'
-    }
-  },
-  // 余额清零状态
-  clearStatus(text) {
-    text = parseInt(text)
-    if (text === 0) {
-      return '余额清零已提交'
-    } else if (text === 1) {
-      return '余额清零处理中'
-    } else if (text === 2) {
-      return '余额清零成功'
-    } else if (text === 3) {
-      return '余额清零失败'
     }
   },
   ...baseData
