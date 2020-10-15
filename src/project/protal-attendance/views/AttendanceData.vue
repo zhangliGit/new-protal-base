@@ -352,7 +352,7 @@ export default {
               this.stuDate[5][i] = ele.noRecord
               this.stuDate[6][i] = ele.leaveCount
             }
-          })
+          })  
         })
       }
     },

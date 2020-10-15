@@ -133,7 +133,7 @@ export default {
     }
   },
   mounted() {
-    this.initPieData(this.dataList[0])
+    this.initPieData(this.dataList)
     this.initColumnarData()
   },
   created() {
@@ -150,15 +150,18 @@ export default {
       return fomartData
     },
     initPieData(data) {
+      console.log(data.map(v=>v.biggerCount).reduce(getSum))
+       function getSum(total, num) {
+          return total + num;
+      }
       // 对饼状图dom，初始化echarts实例
       var myChart1 = echarts.init(document.getElementById('main1'), 'shine')
       const preData1 = [
-        { value: data.lowCount, name: '低风险' },
-        { value: data.generalCount, name: '一般风险' },
-        { value: data.biggerCount, name: '较大风险' },
-        { value: data.heavyCount, name: '重大风险' }
+        { value: data.map(v=>v.lowCount).reduce(getSum), name: '低风险' },
+        { value:data.map(v=>v.generalCount).reduce(getSum), name: '一般风险' },
+        { value:data.map(v=>v.biggerCount).reduce(getSum), name: '较大风险' },
+        { value:data.map(v=>v.heavyCount).reduce(getSum), name: '重大风险' } 
       ]
-      console.log(preData1)
       myChart1.setOption({
         // 图表标题
         title: {
@@ -326,10 +329,10 @@ export default {
 
         ]
       })
-      myChart2.on('click', (params) => {
-        const setPieData = this.dataList.filter(v => v.schoolName === params.name)
-        this.initPieData(setPieData[0])
-      })
+      // myChart2.on('click', (params) => {
+      //   const setPieData = this.dataList.filter(v => v.schoolName === params.name)
+      //   this.initPieData(setPieData[0])
+      // })
     }
   }
 }
