@@ -1,46 +1,60 @@
 <template>
-  <div class="page-layout qui-fx-ver attend-data">
-    <a-tabs v-model="autoKey">
-      <a-tab-pane tab="教职工上下班考勤" key="1" forceRender>
-        <div id="container" style="height: 340px; margin-top: 20px" v-show="tearcherType !== '1'"></div>
-        <div v-show="tearcherType === '1'">
-          <div class="attend-card qui-fx-ver" v-for="(teacher, index) in teacherData" :key="index">
-            <ul>
-              <li class="tip">{{ teacher.title }}</li>
-              <li class="total">{{ teacher.total }}</li>
-              <li>{{ teacher.tip }}</li>
-            </ul>
+  <div class="page-layout attend-data qui-fx-ver">
+    <div class="box">
+      <div class="teacher-box">
+        <div class="qui-fx-jsb qui-fx-ac u-padd-t20 u-padd-l20 u-padd-r20">
+          <div class="qui-fx-ac">
+            <img class="u-font-02" :src="kaoqin" alt="">
+            <span class="u-mar-l10">教职工考勤数据统计</span>
+          </div>
+          <div>
+            日期：<a-date-picker :allowClear="false"/>
           </div>
         </div>
-      </a-tab-pane>
-      <a-tab-pane tab="学生上下学考勤" key="2" forceRender>
-        <div id="container1" style="height: 340px; margin-top: 20px" v-show="studentType !== '1'"></div>
-        <div v-show="studentType === '1'">
-          <div class="attend-card qui-fx-ver" v-for="(student, index) in studentData" :key="index">
-            <ul>
-              <li class="tip">{{ student.title }}</li>
-              <li class="total">{{ student.total }}</li>
-              <li>{{ student.tip }}</li>
-            </ul>
+        <div class="u-padd-l20 u-padd-r20">
+          <div class="list" v-for="(item,index) in teacherList" :key="index">
+            <div class="item qui-fx-ac">
+              <div class="item-title u-tx-r">{{ item.title }}</div>
+              <div class="attend-card qui-fx-ver" v-for="(teacher, i) in teacherData" :key="i">
+                <ul>
+                  <li class="tip">{{ teacher.title }}</li>
+                  <li :class="['total',teacher.key === '1' ? 'u-type-success' : teacher.key === '2' ? 'u-type-error' : 'u-type-warning' ]">{{ teacher.total }}</li>
+                  <li>{{ teacher.tip }}</li>
+                </ul>
+                <div class="list-icon"></div>
+              </div>
+            </div>
           </div>
         </div>
-      </a-tab-pane>
-      <div slot="tabBarExtraContent">
-        <a-radio-group v-show="autoKey === '1'" v-model="tearcherType" buttonStyle="solid">
-          <a-radio-button value="1">昨天</a-radio-button>
-          <a-radio-button value="7">近7天</a-radio-button>
-          <a-radio-button value="30">一个月</a-radio-button>
-          <a-radio-button value="0">自定义</a-radio-button>
-        </a-radio-group>
-        <a-radio-group v-show="autoKey === '2'" v-model="studentType" buttonStyle="solid">
-          <a-radio-button value="1">昨天</a-radio-button>
-          <a-radio-button value="7">近7天</a-radio-button>
-          <a-radio-button value="30">一个月</a-radio-button>
-          <a-radio-button value="0">自定义</a-radio-button>
-        </a-radio-group>
-        <a-range-picker style="margin-left:10px" :disabledDate="disabledEndDate" @change="onChange" v-if="tearcherType === '0' || studentType === '0'"/>
       </div>
-    </a-tabs>
+      <div class="student-box">
+        <div class="qui-fx-jsb qui-fx-ac u-padd-t20 u-padd-l20 u-padd-r20">
+          <div class="qui-fx-ac">
+            <img class="u-font-02" :src="kaoqin" alt="">
+            <span class="u-mar-l10">学生考勤数据统计</span>
+          </div>
+          <div>
+            日期：<a-date-picker :allowClear="false"/>
+          </div>
+        </div>
+        <div class="u-padd-l20 u-padd-r20">
+          <div class="list" v-for="item in studentList" :key="item.key">
+            <div class="item qui-fx-ac">
+              <div class="item-title u-tx-r">{{ item.title }}</div>
+              <div class="attend-card qui-fx-ver" v-for="(student, index) in teacherData" :key="index">
+                <ul>
+                  <li class="tip">{{ student.title }}</li>
+                  <li :class="['total',student.key === '1' ? 'u-type-success' : student.key === '2' ? 'u-type-error' : 'u-type-warning' ]">{{ student.total }}</li>
+                  <li>{{ student.tip }}</li>
+                </ul>
+                <div class="list-icon"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="bottom"></div>
   </div>
 </template>
 
@@ -49,11 +63,15 @@ import Highcharts from 'highcharts/highstock'
 import { mapState, mapActions } from 'vuex'
 import moment from 'moment'
 import 'moment/locale/zh-cn'
+import kaoqin from '../assets/img/kaoqin.png'
+import iconChidao from '../assets/img/icon_chidao.png'
 export default {
   name: 'AttendanceData',
   components: {},
   data() {
     return {
+      iconChidao,
+      kaoqin,
       moment,
       autoKey: '1',
       studentType: '1',
@@ -62,78 +80,39 @@ export default {
         page: 1,
         size: 20
       },
-      startDay: this.getDate(new Date().getTime(), '1'),
-      endDay: this.getDate(new Date().getTime(), '1'),
       teacherData: [
         {
-          title: '正常',
+          key: '1',
+          title: '正常(人)',
           total: '0',
           tip: ''
         },
         {
-          title: '迟到',
+          key: '2',
+          title: '迟到(人)',
           total: '0',
           tip: ''
         },
         {
-          title: '上班缺卡',
-          total: '0',
-          tip: ''
-        },
-        {
-          title: '早退',
-          total: '0',
-          tip: ''
-        },
-        {
-          title: '下班缺卡',
-          total: '0',
-          tip: ''
-        },
-        {
-          title: '缺勤',
-          total: '0',
-          tip: ''
-        },
-        {
-          title: '请假',
+          key: '3',
+          title: '缺卡(人)',
           total: '0',
           tip: ''
         }
       ],
       studentData: [
         {
-          title: '正常',
+          title: '正常(人)',
           total: '0',
           tip: ''
         },
         {
-          title: '迟到',
+          title: '迟到(人)',
           total: '0',
           tip: ''
         },
         {
-          title: '缺卡',
-          total: '0',
-          tip: ''
-        },
-        {
-          title: '早退',
-          total: '0',
-          tip: ''
-        },
-        {
-          title: '缺卡',
-          total: '0',
-          tip: ''
-        },
-        {
-          title: '缺勤',
-          total: '0',
-          tip: ''
-        },
-        {
-          title: '请假',
+          title: '缺卡(人)',
           total: '0',
           tip: ''
         }
@@ -147,7 +126,32 @@ export default {
       earlyList: [],
       offNoRecordList: [],
       noRecordList: [],
-      leaveList: []
+      leaveList: [],
+      teacherList: [
+        {
+          title: '上午上班'
+        },
+        {
+          key: '2',
+          title: '上午下班'
+        },
+        {
+          key: '3',
+          title: '下午上班'
+        },
+        {
+          key: '4',
+          title: '下午下班'
+        }
+      ],
+      studentList: [
+        {
+          title: '上学'
+        },
+        {
+          title: '放学'
+        }
+      ]
     }
   },
   computed: {
@@ -156,16 +160,6 @@ export default {
   watch: {
     autoKey: {
       handler (newVal, oldVal) {
-        if (this.tearcherType === '1' || this.studentType === '1') {
-          this.startDay = this.getDate(new Date().getTime(), '1')
-          this.endDay = this.getDate(new Date().getTime(), '1')
-        } else if (this.tearcherType === '7' || this.studentType === '7') {
-          this.startDay = this.getDate(new Date().getTime(), '2')
-          this.endDay = this.getDate(new Date().getTime(), '1')
-        } else if (this.tearcherType === '30' || this.studentType === '30') {
-          this.startDay = this.getDate(new Date().getTime(), '3')
-          this.endDay = this.getDate(new Date().getTime(), '1')
-        }
         if (newVal === '1') {
           this.showTeaData()
         } else if (newVal === '2') {
@@ -176,109 +170,27 @@ export default {
     },
     tearcherType: {
       handler (newVal, oldVal) {
-        if (newVal === '7') {
-          this.startDay = this.getDate(new Date().getTime(), '2')
-          this.endDay = this.getDate(new Date().getTime(), '1')
-          this.xDate = []
-          this.teaDate = [[], [], [], [], [], [], []]
-          this.stuDate = [[], [], [], [], [], [], []]
-          for (var i = 0; i < 7; i++) {
-            this.xDate.unshift(moment(new Date(new Date().setDate(new Date().getDate() - i - 1))).format('MM-DD'))
-            this.teaDate.forEach(ele => {
-              ele.unshift(0)
-            })
-            this.stuDate.forEach(ele => {
-              ele.unshift(0)
-            })
-          }
-        } else if (newVal === '30') {
-          this.startDay = this.getDate(new Date().getTime(), '3')
-          this.endDay = this.getDate(new Date().getTime(), '1')
-          this.xDate = []
-          this.teaDate = [[], [], [], [], [], [], []]
-          this.stuDate = [[], [], [], [], [], [], []]
-          for (var j = 0; j < 30; j++) {
-            this.xDate.unshift(moment(new Date(new Date().setDate(new Date().getDate() - j - 1))).format('MM-DD'))
-            this.teaDate.forEach(ele => {
-              ele.unshift(0)
-            })
-            this.stuDate.forEach(ele => {
-              ele.unshift(0)
-            })
-          }
-        } else if (newVal === '1') {
-          this.startDay = this.getDate(new Date().getTime(), '1')
-          this.endDay = this.getDate(new Date().getTime(), '1')
-        }
         if (this.autoKey === '1' && this.tearcherType !== '0' && this.studentType !== '0') {
           this.showTeaData()
-          setTimeout(() => {
-            this.showBI('container', this.xDate, this.teaDate)
-          }, 500)
         } else if (this.autoKey === '2' && this.tearcherType !== '0' && this.studentType !== '0') {
           this.showStuData()
-          setTimeout(() => {
-            this.showBI('container1', this.xDate, this.stuDate)
-          }, 500)
         }
       },
       deep: true
     },
     studentType: {
       handler (newVal, oldVal) {
-        if (newVal === '7') {
-          this.startDay = this.getDate(new Date().getTime(), '2')
-          this.endDay = this.getDate(new Date().getTime(), '1')
-          this.xDate = []
-          this.teaDate = [[], [], [], [], [], [], []]
-          this.stuDate = [[], [], [], [], [], [], []]
-          for (var i = 0; i < 7; i++) {
-            this.xDate.unshift(moment(new Date(new Date().setDate(new Date().getDate() - i - 1))).format('MM-DD'))
-            this.teaDate.forEach(ele => {
-              ele.unshift(0)
-            })
-            this.stuDate.forEach(ele => {
-              ele.unshift(0)
-            })
-          }
-        } else if (newVal === '30') {
-          this.startDay = this.getDate(new Date().getTime(), '3')
-          this.endDay = this.getDate(new Date().getTime(), '1')
-          this.xDate = []
-          this.teaDate = [[], [], [], [], [], [], []]
-          this.stuDate = [[], [], [], [], [], [], []]
-          for (var j = 0; j < 30; j++) {
-            this.xDate.unshift(moment(new Date(new Date().setDate(new Date().getDate() - j - 1))).format('MM-DD'))
-            this.teaDate.forEach(ele => {
-              ele.unshift(0)
-            })
-            this.stuDate.forEach(ele => {
-              ele.unshift(0)
-            })
-          }
-        } else if (newVal === '1') {
-          this.startDay = this.getDate(new Date().getTime(), '1')
-          this.endDay = this.getDate(new Date().getTime(), '1')
-        }
         if (this.autoKey === '1' && this.tearcherType !== '0' && this.studentType !== '0') {
           this.showTeaData()
-          setTimeout(() => {
-            this.showBI('container', this.xDate, this.teaDate)
-          }, 500)
         } else if (this.autoKey === '2' && this.tearcherType !== '0' && this.studentType !== '0') {
           this.showStuData()
-          setTimeout(() => {
-            this.showBI('container1', this.xDate, this.stuDate)
-          }, 500)
         }
       },
       deep: true
     }
   },
-  created() {
-  },
   mounted() {
-    this.showTeaData()
+    // this.showTeaData()
   },
   methods: {
     ...mapActions('home', [
@@ -352,7 +264,7 @@ export default {
               this.stuDate[5][i] = ele.noRecord
               this.stuDate[6][i] = ele.leaveCount
             }
-          })
+          })  
         })
       }
     },
@@ -411,14 +323,8 @@ export default {
       console.log(this.teaDate)
       if (this.autoKey === '1') {
         this.showTeaData()
-        setTimeout(() => {
-          this.showBI('container', this.xDate, this.teaDate)
-        }, 500)
       } else if (this.autoKey === '2') {
         this.showStuData()
-        setTimeout(() => {
-          this.showBI('container1', this.xDate, this.stuDate)
-        }, 500)
       }
     },
     showBI(id, xDate, yDate) {
@@ -522,10 +428,12 @@ export default {
   .attend-card {
     padding: 10px 20px;
     margin-top: 20px;
-    width: 22.5%;
+    width: 28%;
     float: left;
     margin-left: 2%;
     height: 120px;
+    background-color: #f1f6ff;
+    position: relative;
     .tip {
       font-size: 16px;
     }
@@ -534,34 +442,45 @@ export default {
       font-size: 24px;
       font-weight: bold;
     }
-    &:nth-child(1) {
-      background: url('../assets/img/zc.png') no-repeat center;
+    .list-icon {
+      width: 60px;
+      height: 60px;
+      position: absolute;
+      right: 0;
+      bottom: 0;
       background-size: 100% 100%;
     }
-    &:nth-child(2) {
-      background: url('../assets/img/cd.png') no-repeat center;
-      background-size: 100% 100%;
+    &:nth-child(2) .list-icon {
+      background: url('../assets/img/icon_chidao.png') no-repeat center;
     }
-    &:nth-child(3) {
-      background: url('../assets/img/qk.png') no-repeat center;
-      background-size: 100% 100%;
+    &:nth-child(3) .list-icon{
+      background: url('../assets/img/icon_queka.png') no-repeat center;
     }
-    &:nth-child(4) {
-      background: url('../assets/img/zt.png') no-repeat center;
-      background-size: 100% 100%;
-    }
-    &:nth-child(5) {
-      background: url('../assets/img/qk.png') no-repeat center;
-      background-size: 100% 100%;
-    }
-    &:nth-child(6) {
-      background: url('../assets/img/qk.png') no-repeat center;
-      background-size: 100% 100%;
-    }
-    &:nth-child(7) {
-      background: url('../assets/img/qj.png') no-repeat center;
-      background-size: 100% 100%;
+    &:nth-child(4) .list-icon{
+      background: url('../assets/img/icon_zaotui.png') no-repeat center;
     }
   }
+}
+
+.list {
+  .item {
+    float: left;
+    width: 50%;
+  }
+}
+.bottom {
+  position: fixed;
+  bottom: 10px;
+  height: 258px;
+  width: calc(100% - 272px);
+  background: url('../assets/img/dbct.png') no-repeat center;
+  background-size: 100% 100%;
+}
+.box {
+  max-height: 550px;
+  overflow-y: scroll;
+}
+.item-title {
+  width: 60px;
 }
 </style>

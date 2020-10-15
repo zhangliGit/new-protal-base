@@ -1,104 +1,101 @@
 const teacherRecord = [
   {
     title: '序号',
-    width: '6%',
+    width: 100,
     scopedSlots: {
       customRender: 'index'
-    }
+    },
+    fixed: 'left'
   },
   {
     title: '姓名',
-    dataIndex: 'userName',
-    width: '6%'
+    dataIndex: 'riskContent',
+    width: 100,
+    fixed: 'left'
   },
   {
-    title: '部门',
-    dataIndex: 'orgName',
-    width: '10%'
+    title: '组织机构',
+    width: 100,
+    fixed: 'left'
   },
   {
     title: '日期',
-    dataIndex: 'dateTime',
-    width: '8%',
-    customRender: text => {
-      if (text) {
-        const d = new Date(text)
-        return (
-          d.getFullYear() +
-          '-' +
-          (d.getMonth() + 1 > 9 ? d.getMonth() + 1 : '0' + (d.getMonth() + 1)) +
-          '-' +
-          (d.getDate() > 9 ? d.getDate() : '0' + d.getDate())
-        )
+    width: 100,
+    fixed: 'left'
+  },
+  {
+    title: '班次',
+    dataIndex: 'accidentType',
+    width: 100,
+    fixed: 'left'
+  },
+  {
+    title: '上午上班',
+    children: [
+      {
+        title: '时间',
+        dataIndex: 'scientificMeasures1'
+      },
+      {
+        title: '体温',
+        dataIndex: 'manageMeasures1'
+      },
+      {
+        title: '状态',
+        dataIndex: 'trainingMeasures1'
       }
-    }
+    ]
   },
   {
-    title: '上班时间',
-    dataIndex: 'onTime',
-    width: '10%',
-    customRender: text => {
-      if (text) {
-        const d = new Date(text)
-        return (
-          (d.getHours() > 9 ? d.getHours() : '0' + d.getHours()) +
-          ':' +
-          (d.getMinutes() > 9 ? d.getMinutes() : '0' + d.getMinutes()) +
-          ':' +
-          (d.getSeconds() > 9 ? d.getSeconds() : '0' + d.getSeconds())
-        )
+    title: '上午下班',
+    children: [
+      {
+        title: '时间',
+        dataIndex: 'scientificMeasures2'
+      },
+      {
+        title: '体温',
+        dataIndex: 'manageMeasures2'
+      },
+      {
+        title: '状态',
+        dataIndex: 'trainingMeasures2'
       }
-    }
+    ]
   },
   {
-    title: '上班状态',
-    dataIndex: 'onState',
-    width: '8%',
-    scopedSlots: {
-      customRender: 'other1'
-    }
-  },
-  {
-    title: '上班温度',
-    dataIndex: 'onTemperature',
-    width: '8%'
-  },
-  {
-    title: '下班时间',
-    dataIndex: 'offTime',
-    width: '10%',
-    customRender: text => {
-      if (text) {
-        const d = new Date(text)
-        return (
-          (d.getHours() > 9 ? d.getHours() : '0' + d.getHours()) +
-          ':' +
-          (d.getMinutes() > 9 ? d.getMinutes() : '0' + d.getMinutes()) +
-          ':' +
-          (d.getSeconds() > 9 ? d.getSeconds() : '0' + d.getSeconds())
-        )
+    title: '下午上班',
+    children: [
+      {
+        title: '时间',
+        dataIndex: 'scientificMeasures3'
+      },
+      {
+        title: '体温',
+        dataIndex: 'manageMeasures3'
+      },
+      {
+        title: '状态',
+        dataIndex: 'trainingMeasures3'
       }
-    }
+    ]
   },
   {
-    title: '下班状态',
-    dataIndex: 'offState',
-    width: '8%',
-    scopedSlots: {
-      customRender: 'other2'
-    }
-  },
-  {
-    title: '下班温度',
-    dataIndex: 'offTemperature',
-    width: '8%'
-  },
-  {
-    title: '操作',
-    width: '16%',
-    scopedSlots: {
-      customRender: 'action'
-    }
+    title: '下午下班',
+    children: [
+      {
+        title: '时间',
+        dataIndex: 'scientificMeasures4'
+      },
+      {
+        title: '体温',
+        dataIndex: 'manageMeasures4'
+      },
+      {
+        title: '状态',
+        dataIndex: 'trainingMeasures4'
+      }
+    ]
   }
 ]
 export default teacherRecord

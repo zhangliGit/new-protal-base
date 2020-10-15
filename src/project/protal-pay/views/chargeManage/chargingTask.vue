@@ -1,14 +1,19 @@
 <template>
   <div class="page-layout qui-fx-ver">
-    <search-form is-reset @search-form="searchForm" :search-label="searchLabel"> 
-       <div slot="left">
-        <a-button  icon="plus" class="add-btn"  @click="add">添加</a-button>
+    <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
+      <div slot="left">
+        <a-button icon="plus" class="add-btn" @click="add">添加</a-button>
       </div>
     </search-form>
     <table-list isZoom :page-list="pageList" :columns="columns" :table-list="recordList">
       <template v-slot:actions="action">
         <a-tooltip placement="topLeft" title="查看详情">
-          <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="detail(action.record.id)"></a-button>
+          <a-button
+            size="small"
+            class="detail-action-btn"
+            icon="ellipsis"
+            @click.stop="goDetail('/components/ChargeDetail', action.record)"
+          ></a-button>
         </a-tooltip>
       </template>
     </table-list>
@@ -31,33 +36,44 @@ const columns = [
   },
   {
     title: '任务名称',
-    dataIndex: 'applicantName',
+    dataIndex: 'taskName',
     width: '10%'
   },
   {
     title: '账单数',
-    dataIndex: 'applicantName1',
+    dataIndex: 'billSum',
     width: '10%'
-  },{
+  },
+  {
     title: '已完成账单',
-    dataIndex: 'applicantName2',
+    dataIndex: 'paidSum',
     width: '10%'
-  },{
+  },
+  {
     title: '未缴费账单',
-    dataIndex: 'applicantName3',
+    dataIndex: 'unpaidSum',
     width: '10%'
-  },{
+  },
+  {
     title: '创建人',
-    dataIndex: 'applicantName4',
+    dataIndex: 'createUserCode',
     width: '10%'
-  },{
+  },
+  {
     title: '创建时间',
-    dataIndex: 'applicantName5',
-    width: '10%'
-  },{
+    dataIndex: 'createTime',
+    width: '10%',
+    customRender: text => {
+      return $tools.getDate(text)
+    }
+  },
+  {
     title: '截止时间',
-    dataIndex: 'applicantName6',
-    width: '10%'
+    dataIndex: 'cutOffTime',
+    width: '10%',
+    customRender: text => {
+      return $tools.getDate(text)
+    }
   },
   {
     title: '操作',
@@ -73,7 +89,7 @@ const searchLabel = [
     type: 'input',
     label: '任务名称',
     placeholder: '请输入任务名称'
-  },
+  }
 ]
 export default {
   name: 'ChargingTask',
@@ -106,48 +122,38 @@ export default {
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getchargeTaskList']),
+    ...mapActions('home', ['getchargeTaskList', 'getchargeTaskInfo']),
     async showList(searchObj = {}) {
-      this.searchList.page = this.pageList.page
-      this.searchList.size = this.pageList.size
+      this.searchList.pageNum = this.pageList.page
+      this.searchList.pageSize = this.pageList.size
       this.searchList.schoolCode = this.userInfo.schoolCode
       this.searchList = Object.assign(this.searchList, searchObj)
       const res = await this.getchargeTaskList(this.searchList)
-      // this.recordList = res.data.list
-      // this.total = res.data.total
+      this.recordList = res.data.records
+      this.total = res.data.total
     },
     searchForm(values) {
       this.pageList.page = 1
       this.taskName = values.taskName
       this.state = values.state
       const searchObj = {
-        taskName: this.taskName,
+        taskName: this.taskName
       }
       this.showList(searchObj)
     },
-       add() {
-        this.$router.push({
-          path: '/components/AddTask'
-        })
+    add() {
+      this.$router.push({
+        path: '/components/AddTask'
+      })
     },
-    async detail(id) {
-      this.previewVisible = true
-      const res = await this.getcollectionDetail(id)
-      this.detailList = res.data
-    },
-    async change() {
-      const req = {
-        userCode: this.userInfo.userCode,
-        userName: this.userInfo.userName,
-        formId: this.detailList.id,
-        remark: '',
-        state: '3'
-      }
-      await this.updateState(req)
-      this.$message.success('发放成功')
-      this.previewVisible = false
-      this.$tools.goNext(() => {
-        this.showList()
+    // 详情
+    goDetail(path, record) {
+      this.$router.push({
+        path,
+        query: {
+          id: record.id,
+          taskCode: record.taskCode
+        }
       })
     }
   }

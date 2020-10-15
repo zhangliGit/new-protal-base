@@ -1,52 +1,74 @@
 <template>
   <div class="page-layout qui-fx-ver">
-    <div class="qui-fx qui-fx-jsb" style="width:100%;height:100%" >
-      <div class="left u-padd-l30 u-padd-t30">
-        <grade-tree @select="select" :treeData="treeData"></grade-tree>
-      </div>
-      <div class="right qui-fx-ver qui-fx-f1" style="padding-right: 10px">
-        <search-form is-reset @search-form="searchForm" :search-label="KnowledgeSearchLabel">
-          <div slot="right">
-            <a-button icon="del" class="add-action-btn u-mar-l20" @click="delTaskAll">批量删除</a-button>
-            <a-button icon="plus" class="add-action-btn u-mar-l20" @click="add(0)">添加安全知识</a-button>
-          </div>
-        </search-form>
-        <table-list
-          is-check
-          is-zoom
-          v-model="chooseList"
-          @selectAll="selectAll"
-          :page-list="pageList"
-          :columns="KnowledgeColumns"
-          :table-list="findList">
-          <template v-slot:actions="action">
-            <a-tooltip placement="topLeft" v-if="action.record.state!=='0'" title="查看">
-              <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="preview(action.record)"></a-button>
-            </a-tooltip>
-            <a-tooltip placement="topLeft" v-if="action.record.state!=='0'" title="使用统计">
-              <a-button size="small" class="export-all-btn" icon="export" @click="viewStatistics(action.record)"></a-button>
-            </a-tooltip>
-            <a-popconfirm
-              v-if="action.record.state==='0'"
-              placement="topLeft"
-              ok-text="确定"
-              cancel-text="取消"
-              @confirm="delTask(action.record)">
-              <template slot="title">
-                确定删除该任务吗？
-              </template>
-              <a-tooltip placement="topLeft" title="删除">
-                <a-button size="small" class="del-action-btn" icon="delete" ></a-button>
+    <div class="content pos-box bg-fff">
+      <div class="qui-fx qui-fx-jsb" style="width:100%;height:100%" >
+        <div class="left u-padd-l30 u-padd-t30 u-padd-b40">
+          <grade-tree @select="select" :treeData="treeData"></grade-tree>
+        </div>
+        <div class="right qui-fx-ver qui-fx-f1" style="padding-right: 10px">
+          <search-form is-reset @search-form="searchForm" :search-label="KnowledgeSearchLabel">
+            <div slot="right">
+              <a-button icon="del" class="add-action-btn u-mar-l20" @click="delBatchAll">批量删除</a-button>
+              <a-button icon="plus" class="add-action-btn u-mar-l20" @click="add(0)">添加安全知识</a-button>
+            </div>
+          </search-form>
+          <table-list
+            is-check
+            is-zoom
+            v-model="chooseList"
+            @selectAll="selectAll"
+            :page-list="pageList"
+            :columns="KnowledgeColumns"
+            :table-list="findList">
+            <template v-slot:actions="action">
+              <a-tooltip placement="topLeft" title="查看">
+                <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="preview(action.record)"></a-button>
               </a-tooltip>
-            </a-popconfirm>
-          </template>
-        </table-list>
-        <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
+              <a-tooltip placement="topLeft" title="编辑" >
+                <a-button size="small" class="user-action-btn" icon="form" @click="add(1,action.record)"></a-button>
+              </a-tooltip>
+              <a-tooltip placement="topLeft" title="使用统计">
+                <a-button size="small" class="export-all-btn" icon="export" @click="getStatistics(action.record)"></a-button>
+              </a-tooltip>
+              <a-popconfirm
+                placement="topLeft"
+                ok-text="确定"
+                cancel-text="取消"
+                @confirm="delBatch(action.record)">
+                <template slot="title">
+                  确定删除该任务吗？
+                </template>
+                <a-tooltip placement="topLeft" title="删除">
+                  <a-button size="small" class="del-action-btn" icon="delete" ></a-button>
+                </a-tooltip>
+              </a-popconfirm>
+            </template>
+          </table-list>
+          <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
+        </div>
       </div>
+      <a-modal width="600px" title="使用统计" v-model="visible" :footer="null" @cancel="close">
+        <div class="qui-fx-ver statistic" v-if="Object.keys(statisticsData).length">
+          <div class="number u-mar-b10">使用总数：{{ statisticsData.count }}</div>
+          <div class="number u-mar-b20">最近一次使用记录：{{ statisticsData.recent }}</div>
+          <a-table
+            :rowKey="(record, index) => index"
+            :columns="columnsUrl"
+            :pagination="false"
+            :data-source="statisticsData.records"
+            bordered>
+            <template slot="index" slot-scope="text, record, index">
+              {{ index }}
+            </template>
+          </a-table>
+          <page-num v-model="statisticsPageList" :total="statisticsData.total" @change-page="_pageStatistics"></page-num>
+        </div>
+      </a-modal>
     </div>
   </div>
 </template>
 <script>
+import Tools from '@u/tools'
 import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
@@ -54,6 +76,29 @@ import SearchForm from '@c/SearchForm'
 import { KnowledgeSearchLabel } from '../../assets/js/searchLabel.js'
 import { KnowledgeColumns } from '../../assets/js/tableColumns'
 import GradeTree from './GradeTree'
+const columnsUrl = [
+  {
+    title: '序号',
+    align: 'center',
+    scopedSlots: {
+      customRender: 'index'
+    }
+  },
+  {
+    title: '使用人员',
+    align: 'center',
+    dataIndex: 'name'
+  },
+  {
+    title: '使用时间',
+    width: '40%',
+    align: 'center',
+    dataIndex: 'time',
+    customRender: text => {
+      return Tools.getDate(text)
+    }
+  }
+]
 export default {
   name: 'TaskRecord',
   components: {
@@ -64,6 +109,9 @@ export default {
   },
   data() {
     return {
+      columnsUrl,
+      visible: false,
+      categoryId: '', // 树选择的id
       KnowledgeColumns,
       KnowledgeSearchLabel,
       total: 0,
@@ -72,7 +120,14 @@ export default {
         page: 1,
         size: 20
       },
-
+      statisticsPageList: {
+        page: 1,
+        size: 5
+      },
+      statisticsData: {
+        // record: [],
+        // total: '20'
+      },
       findList: [],
       chooseList: [], // 当有选择项时，被选中的项，返回每项的唯一id
       searchList: {}
@@ -87,7 +142,7 @@ export default {
     await this.showList()
   },
   methods: {
-    ...mapActions('home', ['klgPublicList', 'removeTask', 'removeTaskAll', 'treeView']),
+    ...mapActions('home', ['klgPublicList', 'batchRemove', 'batchRemoveAll', 'treeView', 'statistics', 'pageStatistics']),
     async showList() {
       const req = {
         categoryId: this.categoryId,
@@ -100,7 +155,7 @@ export default {
     },
     async _treeView() {
       const res = await this.treeView()
-      this.categoryId = res.data[0].id
+      // this.categoryId = res.data[0].id
       this.treeData = res.data
     },
     searchForm(values) {
@@ -108,19 +163,18 @@ export default {
       this.showList()
     },
     selectAll() {},
-    async delTask(record) {
-      await this.removeTask(record.id)
+    async delBatch(record) {
+      await this.batchRemove(record.id)
       this.showList()
     },
-    async delTaskAll() {
-      this.chooseList.filter(v => v === '1')
+    async delBatchAll() {
       if (this.chooseList.length <= 0) return
       const that = this
       this.$confirm({
         title: '提示',
-        content: '确定删除该任务吗?',
+        content: '确定批量删除选中的任务吗?',
         onOk () {
-          that.removeTaskAll(that.chooseList).then(res => {
+          that.batchRemoveAll(that.chooseList).then(res => {
             that.$message.success('操作成功')
             that.showList()
           })
@@ -131,9 +185,8 @@ export default {
     },
     add(type, record) {
       this.$router.push({
-        path: '/library/AddKlg',
+        path: '/library/addKlg',
         query: {
-          categoryId: this.categoryId,
           id: record ? record.id : '',
           type: type
         }
@@ -144,65 +197,57 @@ export default {
       this.categoryId = id
       this.showList()
     },
-    // 预览
+    // 查看预览
     preview(record) {
       this.$router.push({
-        path: '/taskIssuance/preview',
+        path: '/library/preview',
         query: {
-          categoryId: this.categoryId,
           id: record ? record.id : ''
-          // type: type
-        }
-      })
-    },
-    // 发布
-    release(record) {
-      this.$router.push({
-        path: '/taskIssuance/postTask',
-        query: {
-          id: record ? record.id : '',
-          taskName: record ? record.taskName : '',
-          publisherCode: record.publisherCode ? record.publisherCode : '',
-          publisherName: record.publisherName ? record.publisherName : '',
-          taskCode: record.taskCode ? record.taskCode : ''
-          // type: type
-        }
-      })
-    },
-    // 任务完成情况
-    checkCompletion(record) {
-      this.$router.push({
-        path: '/taskIssuance/checkCompletion',
-        query: {
-          id: record ? record.id : '',
-          state: record ? record.state : '',
-          taskCode: record ? record.taskCode : '',
-          taskType: record ? record.taskType : '',
-          taskName: record ? record.taskName : ''
         }
       })
     },
     // 查看统计
-    viewStatistics(record) {
-      this.$router.push({
-        path: '/taskIssuance/viewStatistics',
-        query: {
-          taskCode: record ? record.taskCode : '',
-          publishDate: record ? record.publishDate : '',
-          taskName: record ? record.taskName : '',
-          taskType: record ? record.taskType : ''
-        }
-      })
+    getStatistics(record) {
+      this.visible = true
+      this.StatisticsId = record.id
+      this.getStatisticsData(record.id)
     },
-    goReport(code) {
-      this.$router.push({
-        path: '/specialInspection/viewsReport',
-        query: {
-          code: code
-        }
-      })
+    // 获取查看统计数据
+    async getStatisticsData(id) {
+      const req = {
+        'id': id,
+        'schoolCode': this.userInfo.schoolCode,
+        'source': '1'
+      }
+      const res1 = await this.statistics(req)
+      this.statisticsData = res1.data
+      this._pageStatistics()
+    },
+    // table
+    async  _pageStatistics() {
+      const req = {
+        ...this.statisticsPageList,
+        'id': this.StatisticsId,
+        'schoolCode': this.userInfo.schoolCode,
+        'source': '1'
+      }
+      const res = await this.pageStatistics(req)
+      this.statisticsData = Object.assign({}, this.statisticsData, res.data)
+    },
+    // 关闭重置数据
+    close() {
+      this.visible = false
+      this.StatisticsId = ''
+      this.statisticsData = {}
     }
   }
 }
 </script>
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+@deep: ~'>>>';
+    .statistic{
+      @{deep} .ant-table-thead > tr >th{
+      background: #ecf5ff !important;
+    }
+  }
+</style>

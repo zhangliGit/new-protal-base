@@ -279,7 +279,8 @@ export default {
       total: 0,
       columns,
       userList: [],
-      totalList: []
+      totalList: [],
+      schoolYear:''
     }
   },
   methods: {
@@ -374,6 +375,7 @@ export default {
     },
     // 监听选中或取消
     clickRow(item, type) {
+      // console.log(item)
       if (type) {
         if (this.isCheck) {
           this.totalList.push({
@@ -385,7 +387,8 @@ export default {
             classCode: item.classCode,
             className: item.className,
             gradeCode: item.gradeCode,
-            gradeName: item.gradeName
+            gradeName: item.gradeName,
+            schoolYearId: item.schoolYearId,
           })
         } else {
           this.totalList = [item]

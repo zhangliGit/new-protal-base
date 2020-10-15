@@ -1,0 +1,483 @@
+<template>
+  <div class="set-group page-layout qui-fx-ver">
+    <down-record v-if="recordTag" :device-sn="bussCode" buss-code="KQGLXT" v-model="recordTag"></down-record>
+    <a-form :form="form" :style="{ maxHeight: maxHeight }">
+      <a-form-item label="考勤组名称" :label-col="{ span: 3 }" :wrapper-col="{ span: 15 }">
+        <a-input
+          placeholder="请输入考勤组名称"
+          v-decorator="['name', { initialValue: groupName, rules: [{ required: true, message: '请输入考勤组名称' }] }]"
+        />
+      </a-form-item>
+      <a-form-item label="考勤时间" :label-col="{ span: 3 }" :wrapper-col="{ span: 18 }" :required="true">
+        <a-table
+          :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+          :columns="set.columns"
+          :dataSource="data"
+          :bordered="true"
+          :pagination="false"
+          class="table"
+        >
+          <template slot="action" slot-scope="text, record">
+            <div class="qui-fx">
+              <div>{{ record.accessTimeList.name ? `${record.accessTimeList.name}班次：` : '休息' }}</div>
+              <div class="u-mar-r20" v-for="(ele, i) in record.accessTimeList.ruleTimeDtoList" :key="i">
+                {{ ele.startTime }} ~ {{ ele.endTime }}
+              </div>
+            </div>
+          </template>
+          <template slot="other1" slot-scope="text, record">
+            <a-tag color="#6882da" @click="add(0, record.id)">更改班次</a-tag>
+          </template>
+        </a-table>
+      </a-form-item>
+      <a-form-item label="特殊日期" :label-col="{ span: 3 }" :wrapper-col="{ span: 18 }" :required="true">
+        <a-checkbox>法定节假日自动排休</a-checkbox>
+        <div>
+          <div>
+            必须打卡的日期：<a-button size="small" class="add-action-btn" icon="plus" @click="add(1)">添加</a-button>
+          </div>
+          <a-table
+            :columns="set.specialColumns"
+            :dataSource="clockList"
+            :bordered="true"
+            :pagination="false"
+            class="table"
+          >
+            <template slot="action" slot-scope="text, record">
+              <div class="qui-fx">
+                <div>{{ record.name }}班次：</div>
+                <div class="u-mar-r20" v-for="(ele, i) in record.ruleTimeDtoList" :key="i">
+                  {{ ele.startTime }} ~ {{ ele.endTime }}
+                </div>
+              </div>
+            </template>
+            <template slot="other1" slot-scope="text, record">
+              <a-tooltip placement="topLeft" title="编辑">
+                <a-button size="small" class="edit-action-btn" icon="form" @click="add(2,record)"></a-button>
+              </a-tooltip>
+              <template slot="title">
+                您确定删除吗?
+              </template>
+              <a-tooltip placement="topLeft" title="删除">
+                <a-button size="small" class="del-action-btn" icon="delete" @click="del('clockList',record)"></a-button>
+              </a-tooltip>
+            </template>
+          </a-table>
+        </div>
+        <div>
+          <div>
+            不用打卡的日期：<a-button size="small" class="add-action-btn" icon="plus" @click="clockTag = true">添加</a-button>
+          </div>
+          <a-table
+            :columns="set.specialColumns"
+            :dataSource="unClockList"
+            :bordered="true"
+            :pagination="false"
+            class="table"
+          >
+            <template slot="action" slot-scope="text, record">
+              休息
+            </template>
+            <template slot="other1" slot-scope="text, record">
+              <a-tooltip placement="topLeft" title="删除">
+                <a-button size="small" class="del-action-btn" icon="delete" @click="del('unClockList',record)"></a-button>
+              </a-tooltip>
+            </template>
+          </a-table>
+        </div>
+      </a-form-item>
+      <a-form-item label="考勤设备" :label-col="{ span: 3 }" :wrapper-col="{ span: 18 }" :required="true">
+        <device-list
+          :table-list="groupList"
+          :columns="set.deviceColumns"
+          :page-list="pageList"
+          :chooseType="chooseType"
+          :bind-code="groupId"
+          :schoolCode="userInfo.schoolCode"
+          @groupList="addGroup"
+          @showData="showData"
+          @getRecordList="getRecordList"
+        >
+          <template v-slot:actions="action">
+            <div>
+              a
+              <!-- <a-switch
+                :defaultChecked="action.record.status"
+                checked-children="上学考勤"
+                un-checked-children="放学考勤"
+                v-model="action.record.inOrOut"
+              /> -->
+            </div>
+          </template>
+        </device-list>
+      </a-form-item>
+      <a-form-item :wrapper-col="{ span: 15, offset: 3 }">
+        <a-button style="margin-right:50px;" @click="cancle">取消</a-button>
+        <a-button type="primary" :loading="loading" @click="handleSubmit">保存</a-button>
+      </a-form-item>
+    </a-form>
+    <change-class v-model="visible" :show="show" ref="changeClass" @submit="changeClass"></change-class>
+    <no-clock ref="noClock" @submit="noClock" v-model="clockTag"> </no-clock>
+  </div>
+</template>
+
+<script>
+import moment from 'moment'
+import { mapState, mapActions } from 'vuex'
+import DownRecord from '@c/DownRecord'
+import { Switch } from 'ant-design-vue'
+import DeviceList from '@c/DeviceList'
+import ChangeClass from '../../component/ChangeClass'
+import NoClock from '../../component/NoClock'
+import TableList from '@c/TableList'
+import set from '../../assets/js/table/set.js'
+
+export default {
+  name: 'SetGroup',
+  components: {
+    DeviceList,
+    ASwitch: Switch,
+    DownRecord,
+    ChangeClass,
+    TableList,
+    NoClock
+  },
+  computed: {
+    ...mapState('home', ['userInfo'])
+  },
+  data() {
+    return {
+      set,
+      loading: false,
+      recordTag: false,
+      bussCode: '',
+      moment,
+      userTag: false,
+      maxHeight: 0,
+      dateData: [],
+      data: [
+        {
+          key: 2,
+          weekDay: '星期一',
+          accessTimeList: {},
+          id: 0
+        },
+        {
+          key: 3,
+          weekDay: '星期二',
+          accessTimeList: {},
+          id: 1
+        },
+        {
+          key: 4,
+          weekDay: '星期三',
+          accessTimeList: {},
+          id: 2
+        },
+        {
+          key: 5,
+          weekDay: '星期四',
+          accessTimeList: {},
+          id: 3
+        },
+        {
+          key: 6,
+          weekDay: '星期五',
+          accessTimeList: {},
+          id: 4
+        },
+        {
+          key: 7,
+          weekDay: '星期六',
+          accessTimeList: {},
+          id: 5
+        },
+        {
+          key: 1,
+          weekDay: '星期日',
+          accessTimeList: {},
+          id: 6
+        }
+      ],
+      formLayout: 'horizontal',
+      selectedRowKeys: [],
+      pageList: {
+        page: 1,
+        size: 9999
+      },
+      form: this.$form.createForm(this),
+      groupList: [],
+      groupId: '',
+      chooseType: '',
+      detailData: null,
+      groupName: '',
+      type: '',
+      visible: false,
+      clockTag: false,
+      clockList: [],
+      unClockList: [],
+      classId: '',
+      state: '',
+      show: false
+    }
+  },
+  created() {
+    this.maxHeight = window.screen.height - 280 + 'px'
+    // this.groupId = this.$route.query.id ? this.$route.query.id.toString() : ''
+    // if (this.type === 'student') {
+    //   this.columns[1].title = '上学时间一放学时间'
+    // }
+    // if (this.groupId) {
+    //   this.chooseType = 'attendance'
+    //   this.showData()
+    // } else {
+    //   this.data.forEach(ele => {
+    //     ele.accessTimeList = [{ startTime: '00:00', endTime: '00:00', canAdd: true }]
+    //   })
+    // }
+  },
+  async mounted() {
+    this.getShiftManage_()
+  },
+  methods: {
+    ...mapActions('home', ['addAccess', 'getShiftManage', 'updateAccess', 'attendanceGroupDetail']),
+    // 列表
+    async getShiftManage_() {
+      this.pageList.schoolCode = this.userInfo.schoolCode
+      const res = await this.getShiftManage(this.pageList)
+      this.$refs.changeClass.recordList = res.data.list
+    },
+    // 获取详情
+    async attendanceGroupDetail_() {
+      const res = await this.attendanceGroupDetail({ id: this.groupId })
+      this.recordList = res.data.list
+    },
+    // 获取下发记录
+    getRecordList(record) {
+      this.bussCode = record.deviceSn
+      this.recordTag = true
+    },
+    add(type, id) {
+      this.state = type
+      if (type) {
+        console.log(id)
+        this.$refs.changeClass.chooseList = type === 2 ? [id.id] : []
+        this.$refs.changeClass.defaultValue = type === 2 ? moment(id.current).format('YYYY-MM-DD HH:mm:ss') : ''
+        this.show = false
+      } else {
+        this.show = true
+        this.$refs.changeClass.chooseList = JSON.stringify(this.data[id].accessTimeList) === '{}' ? [] : [this.data[id].accessTimeList.id]
+        this.classId = id
+      }
+      this.visible = true
+    },
+    changeClass(record) {
+      if (this.state) {
+        this.clockList.push(record)
+      } else {
+        this.data[this.classId].accessTimeList = record
+      }
+      this.$refs.changeClass.reset()
+    },
+    noClock(record) {
+      this.unClockList.push(record)
+      this.$refs.noClock.reset()
+    },
+    // 表单回填
+    async showData(value) {
+      if (!value) return
+      this.detailData = value
+      this.groupName = value.groupName
+      this.groupList = value.controllerGroups
+      this.groupList.map(ele => {
+        ele.snapSite = ele.address
+        ele.deviceType = ele.type
+        ele.status = ele.inOrOut === '1'
+        ele.inOrOut = ele.inOrOut === '1'
+      })
+      this.data.forEach(ele => {
+        ele.accessTimeList = [{ startTime: '00:00', endTime: '00:00', canAdd: true }]
+      })
+      value.rules.forEach(item => {
+        this.selectedRowKeys.push(parseInt(item.dayName))
+        if (item.dayName === '1') {
+          this.data[6].accessTimeList[0] = { startTime: item.startTime, endTime: item.endTime, canAdd: true }
+        } else {
+          this.data[parseInt(item.dayName) - 2].accessTimeList[0] = {
+            startTime: item.startTime,
+            endTime: item.endTime,
+            canAdd: true
+          }
+        }
+      })
+      console.log(this.selectedRowKeys)
+    },
+    // 添加测温设备
+    addGroup(value) {
+      this.groupList.forEach(ele => {
+        value.forEach(item => {
+          if (ele.deviceSn === item.id) {
+            item.inOrOut = ele.inOrOut
+          }
+        })
+      })
+      console.log(this.groupList)
+      this.$nextTick(() => {
+        this.groupList = value
+      })
+    },
+    // 考勤日期选择
+    onSelectChange(selectedRowKeys) {
+      console.log('selectedRowKeys changed: ', selectedRowKeys)
+      this.selectedRowKeys = selectedRowKeys
+    },
+    cancle() {
+      const path = '/teacherAccessSet'
+      this.$router.push({ path })
+    },
+    async submitForm (values) {
+      values.listType = '1'
+      values.sysSourceCode = localStorage.getItem('appCode')
+      values.sysSourceName = localStorage.getItem('appName')
+      await this.addList({
+        ...this.userInfo,
+        ...this.choosePeople,
+        ...values
+      })
+      this.$message.success('操作成功')
+      this.blackForm = false
+      this.$refs.blackForm.confirmLoading = false
+      this.$tools.goNext(() => {
+        this.showTableList()
+      })
+    },
+    del(type, record) {
+      this[type] = this[type].filter(list => list !== record)
+    },
+    // 提交权限组
+    handleSubmit(e) {
+      e.preventDefault()
+      this.form.validateFields((err, values) => {
+        if (!err) {
+          console.log(values)
+          console.log(this.data)
+          console.log(this.groupList)
+          console.log(this.selectedRowKeys)
+          if (this.selectedRowKeys.length === 0) {
+            this.$message.warning('请勾选考勤时间')
+            return
+          }
+          if (this.groupList.length === 0) {
+            this.$message.warning('请添加考勤设备')
+            return
+          }
+          const rules = []
+          const weeks = []
+          this.selectedRowKeys.forEach(item => {
+            var id = 1
+            if (item === 1) {
+              id = 6
+            } else {
+              id = item - 2
+            }
+            weeks.push(this.data[id])
+          })
+          weeks.forEach(ele => {
+            rules.push({
+              dayName: ele.key,
+              startTime: ele.accessTimeList[0].startTime ? ele.accessTimeList[0].startTime : '00:00',
+              endTime: ele.accessTimeList[0].endTime ? ele.accessTimeList[0].endTime : '00:00'
+            })
+          })
+          let result = true
+          console.log(rules)
+          rules.forEach(eve => {
+            if (
+              parseInt(eve.startTime.split(':')[0]) * 60 + parseInt(eve.startTime.split(':')[1]) >
+              parseInt(eve.endTime.split(':')[0]) * 60 + parseInt(eve.endTime.split(':')[1])
+            ) {
+              result = false
+            }
+          })
+          if (!result) {
+            this.$message.warning('考勤开始时间不能晚于结束时间')
+            return
+          }
+          const deviceGroups = []
+          this.groupList.forEach(ele => {
+            deviceGroups.push({
+              address: ele.snapSite,
+              deviceName: ele.deviceName,
+              deviceSn: ele.deviceSn,
+              inOrOut: this.type === 'teacher' ? null : ele.inOrOut ? '1' : '2',
+              type: ele.deviceType
+            })
+          })
+          const req = {
+            deviceGroups,
+            groupName: values.name,
+            rules,
+            schoolCode: this.userInfo.schoolCode,
+            type: this.type === 'teacher' ? 1 : 2
+          }
+          console.log(req)
+          this.loading = true
+          const path = this.type === '/teacherAccessSet'
+          if (this.groupId) {
+            req.id = this.groupId
+            this.updateAccess(req)
+              .then(res => {
+                this.$message.success('编辑成功')
+                this.$tools.goNext(() => {
+                  this.loading = true
+                  this.$router.push({ path })
+                })
+              })
+              .catch(() => {
+                this.loading = false
+              })
+          } else {
+            this.addAccess(req)
+              .then(res => {
+                this.$message.success('添加成功')
+                this.$tools.goNext(() => {
+                  this.loading = true
+                  this.$router.push({ path })
+                })
+              })
+              .catch(() => {
+                this.loading = false
+              })
+          }
+        }
+      })
+    }
+  }
+}
+</script>
+
+<style lang="less" scoped>
+.set-group {
+  background: #fff;
+  padding-top: 20px;
+  overflow: auto;
+  .table {
+    max-height: 300px;
+    overflow: auto;
+  }
+  .action {
+    margin: 5px 0;
+    span {
+      margin: 0 5px;
+    }
+    .right {
+      img {
+        width: 24px;
+        height: 24px;
+        margin: 0 10px;
+        cursor: pointer;
+      }
+    }
+  }
+}
+</style>

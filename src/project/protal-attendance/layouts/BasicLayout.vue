@@ -39,7 +39,7 @@ export default {
   },
   data () {
     return {
-      isDev: false,
+      isDev: true,
       routeAddress: [],
       slideTag: false,
       menus: asyncRouterMap

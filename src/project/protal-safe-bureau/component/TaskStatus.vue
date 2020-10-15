@@ -38,7 +38,8 @@
                   <div class="qui-fx-ver u-mar-l20">
                     <div>{{ list.title }}</div>
                     <div class="u-mar-t10">
-                      <a-radio-group v-model="list.answer[0]">
+                      <!-- v-model="list.answer[0]" -->
+                      <a-radio-group >
                         <a-radio
                           v-for="(element,index) in list.content"
                           :value="element"
@@ -77,7 +78,8 @@
                   <div class="qui-fx-ver">题目是：</div>
                   <div class="qui-fx-ver u-mar-l20">
                     <div class="u-mar-b10">{{ list.title }}</div>
-                    <a-input v-model="list.answer[0]" />
+                    <!-- v-model="list.answer[0]" -->
+                    <a-input />
                   </div>
                 </div>
               </div>
@@ -91,7 +93,8 @@
                     <div>{{ list.title }}</div>
                     <div class="u-mar-t10">
                       <img class="u-mar-r10" :src="img" alt /> 附件
-                      <span class="u-type-primary" @click="exportClick(list.answer[0])">下载</span>
+                      <!-- @click="exportClick(list.answer[0])" -->
+                      <span class="u-type-primary" >下载</span>
                     </div>
                   </div>
                 </div>
@@ -109,8 +112,8 @@
                 <div class="time-left">{{ item.content }}</div>
                 <div class="qui-fx-f1">{{ item.createTime | gmtToDate }}</div>
               </div>
-              <div class="qui-fx">
-                <div>打回原因：</div>
+              <div class="qui-fx" v-if='item.remark'>
+                <div>备注：</div>
                 <div> {{ item.remark }}</div>
               </div>
             </a-timeline-item>
@@ -256,6 +259,7 @@ export default {
             this.$refs.form.reset()
             this.$tools.goNext(() => {
               this.visible = false
+              this.$parent.showList()
             })
           })
         })

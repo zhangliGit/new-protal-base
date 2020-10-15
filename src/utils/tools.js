@@ -226,6 +226,22 @@ const Tools = {
       return '已撤回'
     }
   },
+  opeType(text) {
+    text = parseInt(text)
+    if (text === 1) {
+      return '付款'
+    } else if (text === 2) {
+      return '关闭'
+    } else if (text === 3) {
+      return '删除'
+    } else if (text === 4) {
+      return '打印'
+    } else if (text === 5) {
+      return '创建'
+    } else {
+      return '催缴'
+    }
+  },
   stateTypeColor(text) {
     text = parseInt(text)
     if (parseInt(text) === 0) {

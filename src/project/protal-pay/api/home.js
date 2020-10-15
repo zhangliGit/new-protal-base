@@ -5,18 +5,57 @@
 
 import hostEnv from '@config/host-env'
 
-const Api = {
-  //收费管理
-  getchargeTaskList: '/chargeTaskInfo/page#post', // 获取收费项目名称下拉列表
-  getItemList: '/itemInfo/info/#getUrl', // 通过id获取收费项信息
-  getselectList: '/itemInfo/listSelect#postQuery', // 获取收费详情下拉列表
-  getList: '/billInfo/list#post', // 查询账单列表
-  getbatchInfoList: '/batchInfo/listSelect#postQuery', // 获取批次下拉列表
-  addbillInfo: '/billInfo/checkStand#post' ,// 收银台新增账单
-  getbillDetail:'/billInfo/billDetailInfo/#getUrl',//查看账单详细
-  delbillInfo:'/billInfo/shutDownBill/#postQuery',//关闭账单
+const baseData2Api = {
+  // 收费管理
+  getchargeTaskList: '/chargeTaskInfo/page#post', // 收费任务列表
+  addChargetask: '/chargeTaskInfo/add#post', // 新增收费任务
+  getchargeTaskInfo: '/chargeTaskInfo/info#getUrl', // 查看收费任务详情
+  getCharge: '/taskItemRelation/getChargeItemByCode#getUrl', // 收费项列表
+  addtaskItem: '/taskItemRelation/add#post', // 已有收费项
+  addRelationItem: '/taskItemRelation/addRelationItem#post', // 新增收费项
+  // 账单列表
+  getbillInfo: '/billInfo/page#post', // 账单列表
+  addBillInfo: '/billInfo/addBillInfo#post', //新增账单
+  // 系统设置-收费项
+  getSelect: '/chargeItemInfo/page#post', // 收费项下拉列表
+  addSelect: '/chargeItemInfo/add#post', // 新增收费项
+  delSelect: '/chargeItemInfo/remove#getUrl', // 删除收费项
+  updateSelect: '/chargeItemInfo/modify#post', // 更新收费项
+  getInfoSelect: '/chargeItemInfo/info#getUrl', // 收费项详细
+  // 报表统计-班级汇总统计
+  downClassList: '/classCollectStat/getClassStatExcel#export', // 导出
+  getClassList: '/classCollectStat/page#post', // 班级汇总统计列表
+  // 报表统计-收费日统计
+  downdayBillList: '/dayBillStat/getDayBillStatExcel#export', // 导出
+  getdayBillList: '/dayBillStat/page#post', // 收费日统计列表
+  // 报表统计-收费预警统计
+  downoverdueBillInfo: '/overdueBillInfo/getOverdueBillExcel/#export', // 导出
+  getoverdueBillInfo: '/overdueBillInfo/listOverdueBillInfo#postQuery', // 收费预警统计列表
+  // 首页
+  getChargeBasic: '/index/getChargeBasicStatInfo#getUrl', // 收费基本统计
+  getChargeCurve: '/index/getChargeCurve#getUrl', // 图表数据
+  getChargeMoney: '/index/getChargeMoneyStatInfo#get', // 总收费统计统计
+  //任务详情操作
+  delayTaskTime: '/chargeTaskInfo/delayTaskTime#postQuery', // 收费任务延期
+  callBill: '/billInfo/callBill#post', // 账单催缴
+  shutDownBill: '/billInfo/shutDownBill#post', // 账单关闭
+  //账单详情操作接口
+  getOpeListByBillNum: '/billOpeInfo/getOpeListByBillNum#getUrl', //  获取账单操作信息
+  confirmPayBill: '/billInfo/confirmPayBill#post', //  确认收款
+  getbillDetail: '/billInfo/info#getUrl' //  获取账单详细
 }
-for (const val in Api) {
-  Api[val] = `${hostEnv.wxz_pay}${Api[val]}`
+const baseData1Api = {
+  getSchoolYear: '/schoolYearSemester/list#postForm' // 查询学年列表
+
 }
-export default Api
+for (const val in baseData2Api) {
+  baseData2Api[val] = `${hostEnv.wxz_pay}${baseData2Api[val]}`
+}
+for (const val in baseData1Api) {
+  baseData1Api[val] = `${hostEnv.lz_user_center}${baseData1Api[val]}`
+}
+const baseDataApi = {
+  ...baseData1Api,
+  ...baseData2Api
+}
+export default baseDataApi
