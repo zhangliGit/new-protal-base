@@ -1,10 +1,10 @@
 <template>
   <div class="common-set page-layout qui-fx-ver">
     <div class="form">
-      <a-form :form="form">
+      <a-form>
         <div>
           <a-form-item v-bind="formItemLayout" label="消息类型">
-            <a-checkbox-group @change="msgChange" :defaultValue="msgType">
+            <a-checkbox-group @change="msgChange" v-model="msgType">
               <a-row>
                 <a-col :span="24">
                   <a-checkbox value="1">
@@ -21,9 +21,7 @@
                 <a-col :span="16">
                   <a-row type="flex" justify="center" align="middle">
                     <a-col :span="5" class="u-mar-r10">剩余</a-col>
-                    <a-col :span="10"
-                      ><a-input addon-after="天" defaultValue="200" :min="0" type="number" v-model="warnDay"
-                    /></a-col>
+                    <a-col :span="10"><a-input addon-after="天" :min="0" type="number" v-model="warnDay"/></a-col>
                     <a-col :span="5" class="u-mar-l10">提醒</a-col>
                   </a-row>
                 </a-col>
@@ -40,7 +38,7 @@
         </div>
         <div>
           <a-form-item v-bind="formItemLayout" label="通知方式">
-            <a-checkbox-group @change="informChange" :defaultValue="informType">
+            <a-checkbox-group @change="informChange" v-model="informType">
               <a-row class="u-mar-b10" type="flex" justify="center" align="middle">
                 <a-col :span="24">
                   <a-checkbox value="1">
@@ -122,13 +120,17 @@ export default {
       const res = await this.getMsgSet(this.userInfo.schoolCode)
       res.data.msgTypeSettings.forEach(item => {
         this.msgType.push(item.msgType)
-        console.log(item.warnDay)
-        this.warnDay = item.warnDay
+        this.warnDay = item.msgType == '2' ? item.warnDay : ''
+      })
+      res.data.noticeTypeSettings.forEach(item => {
+        this.informType.push(item.noticeType)
+      })
+      res.data.noticeUserSettings.forEach(item => {
+        this.targetType.push(item.userType)
       })
       this.msgType = String(this.msgType).split(',')
-      console.log(this.msgType)
-      this.informType = res.data.noticeTypeSettings
-      this.targetType = res.data.noticeUserSettings
+      this.informType = String(this.informType).split(',')
+      this.targetType = String(this.targetType).split(',')
     },
     msgChange(checkedValues) {
       this.msgType = []
@@ -147,23 +149,19 @@ export default {
     targetChange(checkedValues) {
       this.targetType = checkedValues
     },
-    handleSubmit(e) {
-      e.preventDefault()
-      this.form.validateFields((err, values) => {
-        if (!err) {
-          const req = {
-            msgTypeSettings: this.msgType,
-            noticeTypeCodes: this.informType,
-            noticeUserCodes: this.targetType,
-            schoolCode: this.userInfo.schoolCode
-          }
-          this.addMessageSet(req).then(res => {
-            this.$message.success('保存成功')
-            this.$tools.goNext(() => {
-              this.init()
-            })
-          })
-        }
+    handleSubmit() {
+      const req = {
+        msgTypeSettings: this.msgType,
+        noticeTypeCodes: this.informType,
+        noticeUserCodes: this.targetType,
+        schoolCode: this.userInfo.schoolCode
+      }
+      this.addMessageSet(req).then(res => {
+        this.$message.success('保存成功')
+        this.msgType = []
+        this.informType = []
+        this.targetType = []
+        this.init()
       })
     }
   }

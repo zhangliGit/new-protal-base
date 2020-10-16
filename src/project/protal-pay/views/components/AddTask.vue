@@ -151,17 +151,7 @@ export default {
       chargeObject: {
         chargeGrades: []
       },
-      getYearList: [],
-      chargeObject: [
-        {
-          schoolYearId: '56',
-          chargeGrades: [{ gradeName: '一年级', chargeClasses: [{ className: '二班', userCodes: ['张三', '李四'] }] }]
-        }
-      ],
-      list: [
-        { schoolYearId: '56', gradeName: '一年级', className: '二班', userCode: '张三' },
-        { schoolYearId: '56', gradeName: '一年级', className: '二班', userCode: '李四' }
-      ]
+      getYearList: []
     }
   },
   created() {},
