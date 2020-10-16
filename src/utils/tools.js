@@ -68,6 +68,12 @@ const Tools = {
       return document.getElementById(id).offsetHeight - 40
     }
   },
+  // 设置table滚动高度
+  setScrollX(id) {
+    if (document.getElementById(id)) {
+      return document.getElementById(id).offsetWidth
+    }
+  },
   // 延迟处理方法
   goNext: fn => {
     setTimeout(() => {

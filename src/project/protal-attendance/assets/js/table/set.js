@@ -7,7 +7,6 @@ const set = {
     },
     {
       title: '考勤时间',
-      dataIndex: 'accessTime',
       align: 'center',
       scopedSlots: {
         customRender: 'action'
@@ -15,7 +14,6 @@ const set = {
     },
     {
       title: '操作',
-      dataIndex: 'accessTime1',
       align: 'center',
       scopedSlots: {
         customRender: 'other1'
@@ -25,7 +23,7 @@ const set = {
   deviceColumns: [
     {
       title: '序号',
-      width: '15%',
+      width: '8%',
       scopedSlots: {
         customRender: 'index'
       },
@@ -34,19 +32,19 @@ const set = {
     {
       title: '安装位置',
       dataIndex: 'snapSite',
-      width: '28%',
+      width: '20%',
       align: 'center'
     },
     {
       title: '设备名称',
       dataIndex: 'deviceName',
-      width: '20%',
+      width: '30%',
       align: 'center'
     },
     {
       title: '设备类型',
       dataIndex: 'deviceType',
-      width: '15%',
+      width: '12%',
       customRender: text => {
         return parseInt(text) === 1 ? '相机' : '面板机'
       },
@@ -54,7 +52,7 @@ const set = {
     },
     {
       title: '操作',
-      width: '12%',
+      width: '20%',
       scopedSlots: {
         customRender: 'action'
       }
@@ -120,6 +118,6 @@ const set = {
         customRender: 'other1'
       }
     }
-  ],
+  ]
 }
 export default set

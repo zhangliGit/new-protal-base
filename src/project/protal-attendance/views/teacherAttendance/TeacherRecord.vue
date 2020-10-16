@@ -21,7 +21,7 @@
       <div class="qui-fx-f1" id="tableList">
         <a-table
           style="height: 400px"
-          :scroll="{ x: 'calc(700px + 50%)', y: this.$tools.setScroll('tableList') - 40 }"
+          :scroll="{ x: 100, y: this.$tools.setScroll('tableList') - 40 }"
           :columns="teacherRecord.columns"
           :data-source="recordList"
           bordered
@@ -160,10 +160,11 @@ export default {
     }
   },
   async mounted () {
+    console.log('this.$route.query.type',this.$route.query.type)
     if (this.$route.query.type) {
       this.teacherRecord.searchLabel[1].initValue = [moment(this.$route.query.date).format('YYYY-MM-DD'), moment(this.$route.query.date).format('YYYY-MM-DD')]
       const type = parseInt(this.$route.query.type) + 1
-      const state = this.$tools.attendanceState(this.$route.query.state)
+      const state = this.$tools.attendanceState(this.$route.query.state, type)
       this.teacherRecord.searchLabel[type].initValue = state
       this.searchList.startDay = moment(this.$route.query.date).format('YYYY-MM-DD')
       this.searchList.endDay = moment(this.$route.query.date).format('YYYY-MM-DD')
