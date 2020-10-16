@@ -151,13 +151,32 @@ export default {
       chargeObject: {
         chargeGrades: []
       },
-      getYearList: []
+      getYearList: [],
+      chargeObject: [
+        {
+          schoolYearId: '56',
+          chargeGrades: [{ gradeName: '一年级', chargeClasses: [{ className: '二班', userCodes: ['张三', '李四'] }] }]
+        }
+      ],
+      list: [
+        { schoolYearId: '56', gradeName: '一年级', className: '二班', userCode: '张三' },
+        { schoolYearId: '56', gradeName: '一年级', className: '二班', userCode: '李四' }
+      ]
     }
   },
   created() {},
   watch: {
     amount(val) {
       this.receivable = Number(this.totalMoney) - Number(val)
+    },
+    recordList(val) {
+      const array = []
+      val.forEach(ele => {
+        array.push(ele.totalMoneySum)
+      })
+      this.totalMoney = this.sum(array)
+      this.receivable = this.totalMoney
+      this.amount = ''
     }
   },
   computed: {
@@ -170,11 +189,6 @@ export default {
     ...mapActions('home', ['addChargetask', 'getSchoolYear']),
     getCharge(item) {
       this.recordList = item
-      const array = []
-      this.recordList.forEach(ele => {
-        array.push(ele.totalMoneySum)
-      })
-      this.totalMoney = this.sum(array)
     },
     sum(array) {
       var s = 0
@@ -185,6 +199,7 @@ export default {
     },
     deleteList(removedTag) {
       this.recordList = this.recordList.filter(tag => tag !== removedTag)
+      this.$refs.addCharge.itemVOList = this.recordList
     },
     teacherSelect() {
       this.userTag = true
@@ -193,10 +208,12 @@ export default {
       this.chooseTeachersDeatil = this.chooseTeachersDeatil.filter(tag => tag !== removedTag)
     },
     chooseUser(values) {
+      console.log(values)
       this.$refs.chooseUser.reset()
       this.chooseTeachersDeatil = values
       this.chargeObject.schoolYearId = values[0].schoolYearId
       this.chargeObject.schoolYearName = this.getYearList[0].schoolYear
+      this.chargeObject.chargeGrades = []
       values.forEach(item => {
         this.chargeObject.chargeGrades.push({
           gradeCode: item.gradeCode,
@@ -209,15 +226,16 @@ export default {
             className: item.className,
             userCodes: []
           })
-          ele.chargeClasses.forEach(list => {
-            list.userCodes.push(item.userCode)
-          })
+          ele.chargeClasses[0].userCodes.push(item.userName)
         })
       })
       console.log(this.chargeObject)
     },
     add() {
       this.title = '新增'
+      this.$refs.addCharge.formData = {}
+      this.$refs.addCharge.unitPrice = ''
+      this.$refs.addCharge.totalPrice = ''
       this.$refs.addCharge.addVisible = true
     },
     handleSubmit(e) {
@@ -231,6 +249,7 @@ export default {
             itemVOList: this.recordList,
             cutOffTime: values.endTime,
             createUserCode: this.userInfo.userCode,
+            createUserName: this.userInfo.userName,
             preMoney: this.amount,
             taskMoney: this.receivable,
             chargeObject: this.chargeObject
