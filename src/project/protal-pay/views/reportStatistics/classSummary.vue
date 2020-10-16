@@ -15,6 +15,7 @@ import TableList from '@c/TableList'
 import SearchForm from '@c/SearchForm'
 import PageNum from '@c/PageNum'
 import $tools from '@u/tools'
+import hostEnv from '@config/host-env'
 const columns = [
   {
     title: '序号',
@@ -40,12 +41,12 @@ const columns = [
   },
   {
     title: '应收总金额',
-    dataIndex: 'paidMoneySum',
+    dataIndex: 'recMoneySum',
     width: '15%'
   },
   {
     title: '已缴费总金额',
-    dataIndex: 'recMoneySum',
+    dataIndex: 'paidMoneySum',
     width: '15%'
   },
   {
@@ -126,7 +127,10 @@ export default {
       }
       this.showList(searchObj)
     },
-    exportClick() {}
+    exportClick() {
+      const url = `${hostEnv.wxz_pay}/classCollectStat/getClassStatExcel/${this.userInfo.schoolCode}`
+      window.open(url)
+    }
   }
 }
 </script>

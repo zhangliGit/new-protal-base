@@ -27,9 +27,11 @@
             >
           </a-select>
         </a-form-item>
-        <a-form-item label="收费标准" v-bind="formItemLayout">{{ this.unitPrice }}元/期</a-form-item>
+        <a-form-item label="收费标准" v-bind="formItemLayout"
+          >{{ this.unitPrice == '' ? '0' : this.unitPrice }}元/期</a-form-item
+        >
       </div>
-      <div v-if="isHide">
+      <!-- <div v-if="isHide">
         <a-form-item label="收费项名称" v-bind="formItemLayout">
           <a-input
             v-decorator="[
@@ -55,7 +57,7 @@
             placeholder="请填写单价"
           />
         </a-form-item>
-      </div>
+      </div> -->
       <a-form-item v-bind="formItemLayout" label="数量">
         <a-input-number
           v-model="orders"
@@ -64,7 +66,9 @@
           v-decorator="['itemNum', { initialValue: formData.itemNum }]"
         />
       </a-form-item>
-      <a-form-item label="总金额" v-bind="formItemLayout">{{ this.totalPrice }}元</a-form-item>
+      <a-form-item label="总金额" v-bind="formItemLayout"
+        >{{ this.totalPrice == '' ? '0' : this.totalPrice }}元</a-form-item
+      >
     </a-form>
   </a-modal>
 </template>
@@ -101,12 +105,12 @@ export default {
       },
       isShow: true,
       isHide: false,
-      unitPrice: '',
-      totalPrice: '',
       orders: '',
       itemPrice: '',
       type: 1,
-      itemVOList: []
+      itemVOList: [],
+      totalPrice: '',
+      unitPrice: ''
     }
   },
   computed: {
@@ -141,6 +145,7 @@ export default {
     },
     chooseCharge(value) {
       this.unitPrice = value.split('+')[2]
+      console.log(this.formData.unitPrice)
       this.itemCode = value.split('+')[1]
       this.itemName = value.split('+')[0]
     },

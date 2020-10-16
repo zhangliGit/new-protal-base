@@ -21,7 +21,13 @@ const accountApi = {
   deleteSubsidy: '/subsidyManage#delWithQuery', // 删除补助管理
   getAccountRecord: '/accountRecords/list#get', // 查询账户操作记录
   exportAccountRecord: '/accountRecords/export#export', // 导出操作记录
-  importTemplate: '/accountInfo/importTemplate#export' // 下载开户模板
+  importTemplate: '/accountInfo/importTemplate#export', // 下载开户模板
+
+  getAccountDetail: '/accountInfo#getUrl', // 获取账户信息详细信息
+  accountSubsidy: '/accountInfo/accountSubsidy#post', // 账户发放补助
+  accountFrozen: '/accountInfo/accountFrozen#post', // 账户冻结
+  accountThaw: '/accountInfo/accountThaw#post', // 账户解冻
+  accountCancel: '/accountInfo/accountCancel#post', // 账户销户
 }
 for (const val in accountApi) {
   accountApi[val] = `${hostEnv.hzz_ecard}${accountApi[val]}`

@@ -1,29 +1,77 @@
 <template>
   <div class="account-list page-layout qui-fx-ver">
-    <search-form @search-form="searchForm" :search-label="searchLabel">
+    <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
       <div slot="left">
         <a-button icon="export" class="export-btn" @click="exportClick">导出</a-button>
       </div>
     </search-form>
     <div class="qui-fx-f1 qui-fx">
-      <table-list :page-list="pageList" :columns="reportColumns" :table-list="monthList"></table-list>
+      <table-list :page-list="pageList" :columns="reportColumns" :table-list="dataList"></table-list>
     </div>
     <page-num v-model="pageList" :total="total"></page-num>
   </div>
 </template>
 
 <script>
-import hostEnv from '@config/host-env'
 import { mapState, mapActions } from 'vuex'
 import SearchForm from '@c/SearchForm'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
-import reportColumns from '../../assets/table/reportColumns'
+const reportColumns = [
+  {
+    title: '序号',
+    scopedSlots: {
+      customRender: 'index'
+    },
+    width: '10%'
+  },
+  {
+    title: '统计日期',
+    dataIndex: 'stateDate',
+    width: '10%'
+  },
+  {
+    title: '档口',
+    dataIndex: 'windowName',
+    width: '10%'
+  },
+  {
+    title: '设备名称',
+    dataIndex: 'deviceName',
+    width: '10%'
+  },
+  {
+    title: '消费总金额',
+    dataIndex: 'consumeAmount',
+    width: '10%'
+  },
+  {
+    title: '消费总次数',
+    dataIndex: 'consumeCount',
+    width: '10%'
+  },
+  {
+    title: '脱机消费次数',
+    dataIndex: 'offlineConsumeCount',
+    width: '10%'
+  }
+]
 const searchLabel = [
   {
     value: 'rangeTime',
     type: 'rangeTime',
-    label: '统计月份'
+    label: '统计日期'
+  },
+  {
+    list: [
+      {
+        key: '',
+        val: '全部'
+      }
+    ],
+    value: 'deviceId',
+    type: 'select',
+    label: '设备'
   }
 ]
 export default {
@@ -42,7 +90,7 @@ export default {
         page: 1,
         size: 20
       },
-      monthList: [],
+      dataList: [],
       rangeTime: [],
       searchList: {}
     }
@@ -51,49 +99,50 @@ export default {
     ...mapState('home', ['schoolCode'])
   },
   mounted() {
-    this.reportColumns[1].customRender = text => {
-      return this.$tools.getDate(text, 3)
-    }
+    this._getMachineList()
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getCountList']),
-    exportClick() {
-      var url = `${hostEnv.hpb_card}/business/count/exportStatisticMouthList`
-      var xhr = new XMLHttpRequest()
-      xhr.open('POST', url, true) // 也可以使用POST方式，根据接口
-      xhr.responseType = 'blob'
-      xhr.onload = function() {
-        if (this.status === 200) {
-          var content = this.response
-          var aTag = document.createElement('a')
-          var blob = new Blob([content])
-          var headerName = xhr.getResponseHeader('Content-disposition')
-          var fileName = decodeURIComponent(headerName).substring(20)
-          aTag.download = fileName
-          aTag.href = URL.createObjectURL(blob)
-          aTag.click()
-          URL.revokeObjectURL(blob)
-        }
-      }
-      xhr.send(JSON.stringify(this.searchList))
+    ...mapActions('home', ['getStallStatistics', 'exportStallStatistics', 'getMachineList']),
+    async exportClick() {
+      await this.exportStallStatistics({
+        name: '档口营业统计',
+        ...this.searchList
+      })
+      this.$message.success('导出成功')
     },
     async showList() {
       const req = {
-        ...this.pageList,
-        createTime: this.rangeTime[0] || undefined,
+        pageNum: this.pageList.page,
+        pageSize: this.pageList.size,
+        beginTime: this.rangeTime[0] || undefined,
         endTime: this.rangeTime[1] || undefined,
-        countType: '2'
+        deviceId: this.deviceId
       }
       this.searchList = req
-      const res = await this.getCountList(req)
-      this.monthList = res.data.list
-      this.total = res.data.total
+      const res = await this.getStallStatistics(req)
+      this.dataList = res.rows
+      this.total = res.total
     },
     searchForm(values) {
       console.log(values)
       this.rangeTime = values.rangeTime
+      this.deviceId = values.deviceId
       this.showList()
+    },
+    async _getMachineList() {
+      this.searchLabel[1].list = []
+      const res = await this.getMachineList({
+        pageNum: 1,
+        pageSize: 9999,
+        isOpen: '1'
+      })
+      res.rows.forEach((ele) => {
+        this.searchLabel[1].list.push({
+          key: ele.id,
+          val: ele.deviceName
+        })
+      })
     }
   }
 }

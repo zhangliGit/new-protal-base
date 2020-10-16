@@ -6,7 +6,7 @@
     <div class="qui-fx-f1 qui-fx-ver">
       <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
         <div slot="left">
-          <a-button icon="export" class="export-btn">导出</a-button>
+          <a-button icon="export" class="export-btn" @click="handleTplDownload">导出</a-button>
         </div>
       </search-form>
       <table-list :page-list="pageList" :columns="columns" :table-list="recordList">
@@ -115,19 +115,19 @@ const columns = [
 ]
 const searchLabel = [
   {
-    value: 'name',
+    value: 'billName',
     type: 'input',
     label: '账单名称',
     placeholder: '请输入账单名称'
   },
   {
-    value: 'name',
+    value: 'userName',
     type: 'input',
     label: '学生姓名',
     placeholder: '请输入学生姓名'
   },
   {
-    value: 'date',
+    value: 'rangeTime',
     type: 'rangeTime',
     label: '创建时间'
   },
@@ -154,7 +154,7 @@ const searchLabel = [
         val: '已关闭'
       }
     ],
-    value: 'state',
+    value: 'billStatus',
     type: 'select',
     label: '账单状态'
   }
@@ -189,7 +189,7 @@ export default {
   },
   mounted() {},
   methods: {
-    ...mapActions('home', ['getbillInfo']),
+    ...mapActions('home', ['getbillInfo', 'downBillExcelData']),
     async showList(searchObj = {}) {
       this.searchList.pageNum = this.pageList.page
       this.searchList.pageSize = this.pageList.size
@@ -201,11 +201,17 @@ export default {
     },
     searchForm(values) {
       this.pageList.page = 1
-      this.date = values.date
-      this.state = values.state
+      this.billName = values.billName
+      this.userName = values.userName
+      this.billStatus = values.billStatus
+      this.startTime = values.rangeTime ? values.rangeTime[0] : ''
+      this.endTime = values.rangeTime ? values.rangeTime[1] : ''
       const searchObj = {
-        state: this.state,
-        date: this.date
+        billName: this.billName,
+        userName: this.userName,
+        billStatus: this.billStatus,
+        startTime: this.startTime,
+        endTime: this.endTime
       }
       this.showList(searchObj)
     },
@@ -216,6 +222,13 @@ export default {
       this.searchList.classCode = item.classCode
       this.searchList.schoolYearId = item.schoolYearId
       this.showList()
+    },
+    async handleTplDownload() {
+      await this.downBillExcelData({
+        name: '账单列表',
+        ...this.searchList
+      })
+      this.$message.success('导出成功')
     },
     // 详情
     goDetail(path, record) {
