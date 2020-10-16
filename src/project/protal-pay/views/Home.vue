@@ -1,6 +1,6 @@
 <template>
-  <div class="home page-layout">
-    <div style="height: 10%;">
+  <div class="page-layout u-fx-ver home">
+    <div class="u-auto">
       <div class="daily-card u-bd-1px" v-for="item in baseList" :key="item.id">
         <div class="tip" :style="`color:${item.color}`">{{ item.tip }}</div>
         <div class="num">￥{{ item.num }}</div>
@@ -9,52 +9,54 @@
         </div>
       </div>
     </div>
-    <div style="height: 40%;">
-      <div class="middle-card task-list u-bd-1px">
-        <div><span class="line"></span><span class="u-font-3">近期收费任务</span></div>
-        <div class="u-bd-b u-mar-t10"></div>
-        <div v-for="item in recordList" :key="item.id">
+    <div class="u-fx-ver ">
+      <div class="u-fx-f1 u-mar-t">
+        <div class="middle-card task-list u-bd-1px">
+          <div><span class="line"></span><span class="u-font-3">近期收费任务</span></div>
+          <div class="u-bd-b u-mar-t10"></div>
+          <div v-for="item in recordList[0]" :key="item.id">
+            <div class=" u-mar-t10 u-fx-jsb">
+              <div class="set-width">{{ item.taskName }}</div>
+              <a-progress :percent="Number(GetPercent(item.paidSum, item.billSum))" strokeColor="#9698d6" />
+              <div></div>
+            </div>
+            <div class="u-bd-b u-mar-t10"></div>
+          </div>
+        </div>
+        <div class="middle-card charge-list u-bd-1px">
+          <div><span class="line"></span><span class="u-font-3">收费基本统计</span></div>
+          <div class="u-bd-b u-mar-t10"></div>
           <div class=" u-mar-t10 u-fx-jsb">
-            <div class="set-width">{{ item.taskName }}</div>
-            <a-progress :percent="GetPercent(item.paidSum, item.billSum)" />
-            <div></div>
+            所有收费任务
+            <div>{{ this.middleData.chargeTaskCount }}</div>
+          </div>
+          <div class="u-bd-b u-mar-t10"></div>
+          <div class=" u-mar-t10 u-fx-jsb">
+            所有账单
+            <div>{{ this.middleData.billCount }}</div>
+          </div>
+          <div class="u-bd-b u-mar-t10"></div>
+          <div class=" u-mar-t10 u-fx-jsb">
+            待缴费账单
+            <div>{{ this.middleData.unPaidBillCount }}</div>
+          </div>
+          <div class="u-bd-b u-mar-t10"></div>
+          <div class=" u-mar-t10 u-fx-jsb">
+            即将过期账单
+            <div>{{ this.middleData.willOverdueBillCount }}</div>
+          </div>
+          <div class="u-bd-b u-mar-t10"></div>
+          <div class=" u-mar-t10 u-fx-jsb">
+            缴费逾期账单
+            <div>{{ this.middleData.overdueBillCount }}</div>
           </div>
           <div class="u-bd-b u-mar-t10"></div>
         </div>
       </div>
-      <div class="middle-card charge-list u-bd-1px">
-        <div><span class="line"></span><span class="u-font-3">收费基本统计</span></div>
-        <div class="u-bd-b u-mar-t10"></div>
-        <div class=" u-mar-t10 u-fx-jsb">
-          所有收费任务
-          <div>{{ this.middleData.chargeTaskCount }}</div>
-        </div>
-        <div class="u-bd-b u-mar-t10"></div>
-        <div class=" u-mar-t10 u-fx-jsb">
-          所有账单
-          <div>{{ this.middleData.billCount }}</div>
-        </div>
-        <div class="u-bd-b u-mar-t10"></div>
-        <div class=" u-mar-t10 u-fx-jsb">
-          待缴费账单
-          <div>{{ this.middleData.unPaidBillCount }}</div>
-        </div>
-        <div class="u-bd-b u-mar-t10"></div>
-        <div class=" u-mar-t10 u-fx-jsb">
-          即将过期账单
-          <div>{{ this.middleData.willOverdueBillCount }}</div>
-        </div>
-        <div class="u-bd-b u-mar-t10"></div>
-        <div class=" u-mar-t10 u-fx-jsb">
-          缴费逾期账单
-          <div>{{ this.middleData.overdueBillCount }}</div>
-        </div>
-        <div class="u-bd-b u-mar-t10"></div>
-      </div>
     </div>
-    <div style="height: 50%;">
-      <div class=" chart-list">
-        <div><span class="line"></span><span class="u-font-3"> 每日收费态势图</span></div>
+    <div class="u-fx-f1 u-fx-ver chart-list u-mar-t">
+      <div><span class="line"></span><span class="u-font-3">每日收费姿势图</span></div>
+      <div class="u-fx-f1">
         <div id="heatId" :style="{ height: chartHeight }"></div>
       </div>
     </div>
@@ -162,19 +164,27 @@ export default {
       this.searchList.schoolCode = this.userInfo.schoolCode
       this.searchList = Object.assign(this.searchList)
       const tas = await this.getchargeTaskList(this.searchList)
-      this.recordList = tas.data.records
+      this.recordList = this.spArray(5, tas.data.records)
+    },
+    spArray(N, Q) {
+      var R = [],
+        F
+      for (F = 0; F < Q.length; ) {
+        R.push(Q.slice(F, (F += N)))
+      }
+      return R
     },
     async getChargeCurveList() {
       const res = await this.getChargeCurve(this.userInfo.schoolCode)
       if (res.data) {
         let i
-        res.data.forEach((ele) => {
+        res.data.forEach(ele => {
           this.xDate.filter((item, index) => {
             if (item === moment(ele.statDate).format('YYYY-MM-DD')) {
               i = index
             }
           })
-          this.feverData[i] = ele.paidSum
+          this.feverData[i] = ele.paidMoneySum
         })
       }
       this.initHeatChart('heatId', this.feverData, this.xDate)
@@ -190,29 +200,43 @@ export default {
         title: {
           text: ''
         },
-        legend: {
-          verticalAlign: 'top',
-          margin: 5,
-          align: 'right'
+        chart: {
+          backgroundColor: null,
+          type: 'areaspline'
+        },
+        plotOptions: {
+          areaspline: {
+            dataLabels: {
+              enabled: true,
+              color: '#666',
+              allowOverlap: false
+            }
+          }
         },
         xAxis: {
           allowDecimals: false,
           categories: xDate
         },
         yAxis: {
-          min: 0,
-          title: {
-            text: ''
+          gridLineColor: '#eee',
+          gridLineDashStyle: 'longdash',
+          splitLine: {
+            show: true
           },
-          allowDecimals: false,
           labels: {
-            formatter: function() {
-              return this.value
+            style: {
+              color: '#666'
+            }
+          },
+          title: {
+            text: '金额',
+            style: {
+              color: '#666'
             }
           }
         },
         tooltip: {
-          pointFormat: '{series.name} <b>{point.y:,.0f}</b>元'
+          pointFormat: '缴费金额<b>{point.y:,.0f}</b>元'
         },
         plotOptions: {
           area: {
@@ -231,8 +255,8 @@ export default {
         },
         series: [
           {
-            name: '缴费金额',
-            color: '#4E4CAC',
+            name: '收费动态图',
+            color: '#8988E2',
             data: feverData
           }
         ]
@@ -250,59 +274,57 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-.daily-card {
-  padding: 10px 10px;
-  width: 17.6%;
-  float: left;
-  margin-left: 2%;
-  height: 110px;
-  border-radius: 5px;
-  margin-top: 10px;
-  .num {
-    font-size: 24px;
-    font-weight: bold;
+.home {
+  padding-top: 20px;
+  .daily-card {
+    padding: 10px 10px;
+    width: 17.6%;
+    float: left;
+    margin-left: 2%;
+    height: 110px;
+    border-radius: 5px;
+    margin-top: 10px;
+    .num {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .tip {
+      font-size: 16px;
+    }
   }
-  .tip {
-    font-size: 16px;
+  .middle-card {
+    padding: 10px 10px;
+    float: left;
+    margin-left: 2%;
+    border-radius: 5px;
+    margin-top: 10px;
+    .line {
+      border: 2px solid #9698d6;
+      margin-right: 10px;
+    }
+    .num {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .tip {
+      font-size: 16px;
+    }
   }
-}
-.middle-card {
-  padding: 10px 10px;
-  float: left;
-  margin-left: 2%;
-  border-radius: 5px;
-  margin-top: 10px;
-  .line {
-    border: 2px solid #9698d6;
-    margin-right: 10px;
+  .task-list {
+    width: 52%;
+    .set-width {
+      width: 15%;
+    }
   }
-  .num {
-    font-size: 24px;
-    font-weight: bold;
+  .charge-list {
+    width: 42%;
   }
-  .tip {
-    font-size: 16px;
-  }
-}
-.task-list {
-  width: 52%;
-  .set-width {
-    width: 15%;
-  }
-}
-.charge-list {
-  width: 42%;
-}
-.chart-list {
-  height: 50%;
-  width: 96%;
-  padding: 10px 10px;
-  margin-top: 10px;
-  margin-left: 2%;
-
-  .line {
-    border: 2px solid #9698d6;
-    margin-right: 10px;
+  .chart-list {
+    padding: 0px 30px;
+    .line {
+      border: 2px solid #9698d6;
+      margin-right: 10px;
+    }
   }
 }
 </style>

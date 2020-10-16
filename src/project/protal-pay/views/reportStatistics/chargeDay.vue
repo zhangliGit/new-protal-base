@@ -15,6 +15,7 @@ import TableList from '@c/TableList'
 import SearchForm from '@c/SearchForm'
 import PageNum from '@c/PageNum'
 import $tools from '@u/tools'
+import hostEnv from '@config/host-env'
 const columns = [
   {
     title: '序号',
@@ -97,15 +98,18 @@ export default {
     },
     searchForm(values) {
       this.pageList.page = 1
-      this.statStartTime = values.rangeTime[0]
-      this.endStartTime = values.rangeTime[1]
+      this.statStartTime = values.rangeTime ? values.rangeTime[0] : ''
+      this.endStartTime = values.rangeTime ? values.rangeTime[1] : ''
       const searchObj = {
         statStartTime: this.statStartTime,
         endStartTime: this.endStartTime
       }
       this.showList(searchObj)
     },
-    exportClick() {}
+    exportClick() {
+      const url = `${hostEnv.wxz_pay}/dayBillStat/getDayBillStatExcel/${this.userInfo.schoolCode}`
+      window.open(url)
+    }
   }
 }
 </script>

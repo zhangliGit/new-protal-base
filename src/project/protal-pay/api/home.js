@@ -16,6 +16,7 @@ const baseData2Api = {
   // 账单列表
   getbillInfo: '/billInfo/page#post', // 账单列表
   addBillInfo: '/billInfo/addBillInfo#post', //新增账单
+  downBillExcelData: '/billInfo/getBillExcelData#export', //账单导出
   // 系统设置-收费项
   getSelect: '/chargeItemInfo/page#post', // 收费项下拉列表
   addSelect: '/chargeItemInfo/add#post', // 新增收费项
@@ -29,7 +30,7 @@ const baseData2Api = {
   downdayBillList: '/dayBillStat/getDayBillStatExcel#export', // 导出
   getdayBillList: '/dayBillStat/page#post', // 收费日统计列表
   // 报表统计-收费预警统计
-  downoverdueBillInfo: '/overdueBillInfo/getOverdueBillExcel/#export', // 导出
+  downoverdueBillInfo: '/overdueBillInfo/getOverdueBillExcel#export', // 导出
   getoverdueBillInfo: '/overdueBillInfo/listOverdueBillInfo#postQuery', // 收费预警统计列表
   // 首页
   getChargeBasic: '/index/getChargeBasicStatInfo#getUrl', // 收费基本统计
@@ -42,7 +43,11 @@ const baseData2Api = {
   //账单详情操作接口
   getOpeListByBillNum: '/billOpeInfo/getOpeListByBillNum#getUrl', //  获取账单操作信息
   confirmPayBill: '/billInfo/confirmPayBill#post', //  确认收款
-  getbillDetail: '/billInfo/info#getUrl' //  获取账单详细
+  getbillDetail: '/billInfo/info#getUrl', //  获取账单详细
+  // 消息设置
+  getMsgSet: '/msgTypeSetting/getMsgSet#getUrl', //  获取消息设置
+  addMessageSet: '/msgTypeSetting/addMessageSet#post', //  保存消息设置
+
 }
 const baseData1Api = {
   getSchoolYear: '/schoolYearSemester/list#postForm' // 查询学年列表
