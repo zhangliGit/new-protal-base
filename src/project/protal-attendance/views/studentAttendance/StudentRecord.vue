@@ -164,6 +164,9 @@ export default {
       const type = parseInt(this.$route.query.type) + 1
       const state = this.$tools.attendanceState(this.$route.query.state, type)
       this.searchLabel[type].initValue = state
+      if (parseInt(this.$route.query.type) === 2 && this.$route.query.state === '迟到') {
+        this.searchLabel[type].initValue = '2'
+      }
       if (type === 2) {
         this.searchList.onStatue = state
         this.searchList.offStatue = ''

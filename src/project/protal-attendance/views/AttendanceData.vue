@@ -1,6 +1,6 @@
 <template>
   <div class="page-layout attend-data qui-fx-ver">
-    <div class="box">
+    <div class="content pos-box">
       <div class="teacher-box">
         <div class="qui-fx-jsb qui-fx-ac u-padd-t20 u-padd-l20 u-padd-r20">
           <div class="qui-fx-ac">
@@ -273,5 +273,9 @@ export default {
 .item {
   float: left;
   width: 50%;
+}
+.content {
+  height: calc(100% - 10px);
+    overflow-y: scroll;
 }
 </style>

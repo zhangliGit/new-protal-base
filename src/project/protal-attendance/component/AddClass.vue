@@ -244,6 +244,10 @@ export default {
     },
     // 限制小时
     getDisabledHours(val, id, string) {
+      // console.log('val',val)
+      // console.log('id',id)
+      // console.log('string',string)
+      // console.log('this.data',this.data[id])
       if (id === 0 && string !== 'endTime') {
         return 0
       } else {
