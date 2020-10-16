@@ -4,6 +4,7 @@ import accountMge from './accountManage'
 import cardManagement from './cardManagement'
 import tradeManage from './tradeManage'
 import systemSet from './systemSet'
+import reportManage from './reportManage'
 const Home = resolve => require(['../views/Home.vue'], resolve)
 const consumerMachine = resolve => require(['../views/consumeManage/MachineManage.vue'], resolve)
 const SetMachine = resolve => require(['../views/consumeManage/SetMachine.vue'], resolve)
@@ -30,6 +31,7 @@ export const asyncRouterMap = [
       accountMge,
       cardManagement,
       tradeManage,
+      reportManage,
       {
         path: '/consumerMachine',
         name: 'consumerMachine',

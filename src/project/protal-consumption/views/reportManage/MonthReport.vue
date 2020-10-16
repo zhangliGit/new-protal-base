@@ -1,6 +1,6 @@
 <template>
   <div class="account-list page-layout qui-fx-ver">
-    <search-form @search-form="searchForm" :search-label="searchLabel">
+    <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
       <div slot="left">
         <a-button icon="export" class="export-btn" @click="exportClick">导出</a-button>
       </div>
@@ -14,7 +14,6 @@
 </template>
 
 <script>
-import hostEnv from '@config/host-env'
 import { mapState, mapActions } from 'vuex'
 import SearchForm from '@c/SearchForm'
 import TableList from '@c/TableList'
@@ -52,44 +51,28 @@ export default {
     ...mapState('home', ['schoolCode'])
   },
   mounted() {
-    this.reportColumns[1].customRender = (text) => {
-      return this.$tools.getDate(text, 3)
-    }
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getCountList']),
-    exportClick() {
-      var url = `${hostEnv.hpb_card}/business/count/exportStatisticMouthList`
-      var xhr = new XMLHttpRequest()
-      xhr.open('POST', url, true) // 也可以使用POST方式，根据接口
-      xhr.responseType = 'blob'
-      xhr.onload = function () {
-        if (this.status === 200) {
-          var content = this.response
-          var aTag = document.createElement('a')
-          var blob = new Blob([content])
-          var headerName = xhr.getResponseHeader('Content-disposition')
-          var fileName = decodeURIComponent(headerName).substring(20)
-          aTag.download = fileName
-          aTag.href = URL.createObjectURL(blob)
-          aTag.click()
-          URL.revokeObjectURL(blob)
-        }
-      }
-      xhr.send(JSON.stringify(this.searchList))
+    ...mapActions('home', ['getMonthStatistics', 'exportMonthStatistics']),
+    async exportClick() {
+      await this.exportMonthStatistics({
+        name: '营业月统计',
+        ...this.searchList
+      })
+      this.$message.success('导出成功')
     },
     async showList() {
       const req = {
-        ...this.pageList,
-        createTime: this.rangeTime[0] || undefined,
-        endTime: this.rangeTime[1] || undefined,
-        countType: '2'
+        pageNum: this.pageList.page,
+        pageSize: this.pageList.size,
+        beginTime: this.rangeTime[0] || undefined,
+        endTime: this.rangeTime[1] || undefined
       }
       this.searchList = req
-      const res = await this.getCountList(req)
-      this.monthList = res.data.list
-      this.total = res.data.total
+      const res = await this.getMonthStatistics(req)
+      this.monthList = res.rows
+      this.total = res.total
     },
     searchForm(values) {
       console.log(values)
