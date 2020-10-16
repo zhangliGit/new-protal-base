@@ -11,6 +11,8 @@ const accountApi = {
   getRechargeList: '/recharge/list#get', // 查询充值记录
   addRecharge: '/accountInfo/accountRecharge#post', // 新增充值记录
   getSubsidyList: '/subsidyManage/list#get', // 补助管理
+  getSubsidyDetail: '/subsidyManage#getUrl', // 补助详情
+  subsidyInfoList: '/subsidyPeople/list#get', // 补助发放名单
   getOpenAccount: '/accountInfo/isOpenAccount#getUrl', // 查询开户信息
   addOpenAccount: '/accountInfo/openAccount#post', // 开户
   grantSubsidy: '/subsidyManage/grantSubsidy#post', // 发放补助

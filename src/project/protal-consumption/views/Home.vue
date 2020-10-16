@@ -13,7 +13,7 @@
     <div class="u-fx-f1 u-fx-ver show-bi">
       <div class="title">每日消费动态</div>
       <div class="u-fx-f1 u-mar-t">
-        <money-show :categories="categories" :series="series"></money-show>
+        <money-show ref="monyShow" :categories="xData" :yData="yData"></money-show>
       </div>
     </div>
   </div>
@@ -40,59 +40,116 @@ export default {
   },
   data() {
     return {
-      categories: ['10/01', '10/02', '10/03', '10/04', '10/05', '10/06', '10/07', '10/08'],
-      series: [
-        {
-          name: '每日消费态势图',
-          color: '#8988E2',
-          data: [100, 200, 123, 456, 1234, 982, 345, 456]
-        }
-      ],
       searchLabel,
+      rangeTime: [],
       viewList: [
         {
           title: '消费',
-          total: '100',
-          tip: '200'
+          total: '0',
+          tip: '0'
         },
         {
           title: '充值',
-          total: '100',
-          tip: '200'
+          total: '0',
+          tip: '0'
         },
         {
           title: '补助',
-          total: '100',
-          tip: '200'
+          total: '0',
+          tip: '0'
         },
         {
           title: '退款',
-          total: '100',
-          tip: '200'
+          total: '0',
+          tip: '0'
         },
         {
           title: '余额清零',
-          total: '100',
-          tip: '200'
+          total: '0',
+          tip: '0'
         }
-      ]
+      ],
+      xData: [],
+      yData: []
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
-  mounted() {},
+  mounted() {
+    this._showDynamic()
+    this._showCount()
+  },
   methods: {
-    ...mapActions('home', ['getCount']),
+    ...mapActions('home', ['getCount', 'getDynamic']),
     searchForm(values) {
       this.rangeTime = values.rangeTime
       this._showCount()
     },
+    /**
+     * @description 数据统计
+     */
     async _showCount() {
       const req = {
-        createTime: this.rangeTime[0] ? `${this.rangeTime[0]} 00:00:00` : '',
-        endTime: this.rangeTime[1] ? `${this.rangeTime[1]} 00:00:00` : ''
+        beginTime: this.rangeTime[0] || moment(new Date()).format('YYYY-MM-DD'),
+        endTime: this.rangeTime[1] || moment(new Date()).format('YYYY-MM-DD'),
+        schoolCode: this.userInfo.schoolCode
       }
+      const res = await this.getCount(req)
+      this.viewList = res.data.map(item => {
+        return {
+          ...item,
+          title: this.tradeType(item.tradeType),
+          total: item.amountNum,
+          tip: item.countNum
+        }
+      })
+    },
+    tradeType(text) {
+      text = parseInt(text)
+      if (text === 1) {
+        return '消费'
+      } else if (text === 2) {
+        return '充值'
+      } else if (text === 3) {
+        return '补助'
+      } else if (text === 4) {
+        return '退款'
+      } else if (text === 5) {
+        return '余额清零'
+      }
+    },
+    /**
+     * @description 消费动态
+     */
+    async _showDynamic() {
+      for (var i = 0; i < 30; i++) {
+        this.xData.unshift(moment(new Date(new Date().setDate(new Date().getDate() - i))).format('YYYY-MM-DD'))
+        this.yData.unshift({
+          countNum: 0,
+          amountNum: 0,
+          dayStr: moment(new Date(new Date().setDate(new Date().getDate() - i))).format('YYYY-MM-DD')
+        })
+      }
+      const res = await this.getDynamic({ schoolCode: this.userInfo.schoolCode })
+      if (res.data) {
+        res.data.forEach(ele => {
+          const index = this.xData.findIndex(list => {
+            return list === moment(ele.dayStr).format('YYYY-MM-DD')
+          })
+          if (index !== -1) {
+            this.yData[index].countNum = ele.countNum
+            this.yData[index].amountNum = ele.amountNum
+            this.yData[index].dayStr = ele.dayStr
+          }
+        })
+      }
+      this.xData = this.xData.map(ele => {
+        return ele.substring(ele.length - 5)
+      })
+      console.log(this.xData)
+      console.log(this.yData)
+      this.$refs.monyShow.showTab()
     }
   }
 }

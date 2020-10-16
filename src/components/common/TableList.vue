@@ -85,6 +85,9 @@
         <template slot="other5" slot-scope="text, record">
           <slot name="other5" :record="record"></slot>
         </template>
+        <template slot="other6" slot-scope="text, record">
+          <slot name="other6" :record="record"></slot>
+        </template>
         <template slot="action" slot-scope="text, record">
           <slot name="actions" :record="record"></slot>
         </template>

@@ -31,8 +31,11 @@
         <a-tooltip placement="topLeft" v-if="action.record.superviseState==='0'" >
           <a-button size="small" class="user-action-btn" >{{ action.record.superviseUserName }}正在督办</a-button>
         </a-tooltip>
-        <a-tooltip placement="topLeft" v-else @click="supervise(action.record.id)" title="督办">
+        <a-tooltip placement="topLeft" v-if="action.record.superviseState==='1'" title="督办完成">
           <a-button size="small" class="user-action-btn" >督办完成</a-button>
+        </a-tooltip>
+        <a-tooltip placement="topLeft" v-if="!action.record.superviseState" @click="supervise(action.record.id)" title="督办完成">
+          <a-button size="small" class="user-action-btn" >督办</a-button>
         </a-tooltip>
       </template>
     </table-list>
@@ -265,7 +268,7 @@ export default {
         userCode: this.chooseUserList[0].userCode || '',
         userName: this.chooseUserList[0].userName || ''
       }
-      const res = await this.superviseDanger(req)
+      await this.superviseDanger(req)
       this.$tools.goNext(() => {
         this.$message.success(`督办操作成功`)
       })

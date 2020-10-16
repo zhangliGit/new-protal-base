@@ -152,7 +152,7 @@ export default {
           this.taskPublish(req)
             .then(res => {
               this.$message.success('操作成功')
-              this._testTask()
+              // this._testTask()
               this.$tools.goNext(() => {
                 this.$router.go(-1)
               })

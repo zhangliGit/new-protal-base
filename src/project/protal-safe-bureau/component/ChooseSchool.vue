@@ -277,7 +277,7 @@ export default {
   },
   async mounted() {
     this.teacherList.forEach(item => {
-      this.chooseList.push(item.eduCode)
+      this.chooseList.push(item.schoolCode)
       this.totalList.push({
         id: item.id,
         schoolCode: item.schoolCode,
