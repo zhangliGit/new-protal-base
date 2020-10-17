@@ -182,7 +182,7 @@ export default {
       }
     },
     delUpload(value) {
-      this.delFile(value.id)
+      // this.delFile(value.id)
       this.flag = false
       this.$nextTick(() => {
         this.flag = true
