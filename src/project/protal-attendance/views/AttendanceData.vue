@@ -1,6 +1,6 @@
 <template>
   <div class="page-layout attend-data qui-fx-ver">
-    <div class="content pos-box">
+    <div class="box">
       <div class="teacher-box">
         <div class="qui-fx-jsb qui-fx-ac u-padd-t20 u-padd-l20 u-padd-r20">
           <div class="qui-fx-ac">
@@ -22,6 +22,7 @@
                     :class="['total',teacher.key === '1' ? 'u-type-success' : teacher.key === '2' ? 'u-type-error' : 'u-type-warning']"
                   >{{ index === 0 ? teacherTotal[i] : index === 1 ? teacherTotal[i + 3] : index === 2 ? teacherTotal[i + 6] : teacherTotal[i + 9] }}</li>
                 </ul>
+                <div class="list-icon"></div>
               </div>
             </div>
           </div>
@@ -48,6 +49,7 @@
                     {{ item.key === '1' ? studentTotal[index] : studentTotal[index + 3] }}
                   </li>
                 </ul>
+                <div class="list-icon"></div>
               </div>
             </div>
           </div>
@@ -153,25 +155,27 @@ export default {
       'getTeaRecordStatic', 'getStuRecordStatic'
     ]),
     async showTeaData() {
+      this.teacherTotal = []
       const req = {
         date: this.teacherDate,
         schoolCode: this.userInfo.schoolCode
       }
       const res = await this.getTeaRecordStatic(req)
-      this.teacherTotal.push(res.data.morningOnNormalCount || 0)
-      this.teacherTotal.push(res.data.morningOnLateCount || 0)
-      this.teacherTotal.push(res.data.morningOnNoRecordCount || 0)
-      this.teacherTotal.push(res.data.morningOffNormalCount || 0)
-      this.teacherTotal.push(res.data.morningOffEarlyCount || 0)
-      this.teacherTotal.push(res.data.morningOffNoRecordCount || 0)
-      this.teacherTotal.push(res.data.noonOnNormalCount || 0)
-      this.teacherTotal.push(res.data.noonOnLateCount || 0)
-      this.teacherTotal.push(res.data.noonOnNoRecordCount || 0)
-      this.teacherTotal.push(res.data.noonOffNormalCount || 0)
-      this.teacherTotal.push(res.data.noonOffEarlyCount || 0)
-      this.teacherTotal.push(res.data.noonOffNoRecordCount || 0)
+      this.teacherTotal.push(res.data[0].morningOnNormalCount || 0)
+      this.teacherTotal.push(res.data[0].morningOnLateCount || 0)
+      this.teacherTotal.push(res.data[0].morningOnNoRecordCount || 0)
+      this.teacherTotal.push(res.data[0].morningOffNormalCount || 0)
+      this.teacherTotal.push(res.data[0].morningOffEarlyCount || 0)
+      this.teacherTotal.push(res.data[0].morningOffNoRecordCount || 0)
+      this.teacherTotal.push(res.data[0].noonOnNormalCount || 0)
+      this.teacherTotal.push(res.data[0].noonOnLateCount || 0)
+      this.teacherTotal.push(res.data[0].noonOnNoRecordCount || 0)
+      this.teacherTotal.push(res.data[0].noonOffNormalCount || 0)
+      this.teacherTotal.push(res.data[0].noonOffEarlyCount || 0)
+      this.teacherTotal.push(res.data[0].noonOffNoRecordCount || 0)
     },
     async showStuData() {
+      this.studentTotal = []
       const req = {
         date: this.studentDate,
         schoolCode: this.userInfo.schoolCode
@@ -273,9 +277,5 @@ export default {
 .item {
   float: left;
   width: 50%;
-}
-.content {
-  height: calc(100% - 10px);
-    overflow-y: scroll;
 }
 </style>
