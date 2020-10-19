@@ -78,6 +78,7 @@ export default {
           }
         ]
         formData.formData1[1].initValue = '手提式泡沫灭火器'
+        this.formData.formData1[6].label = '灭火器图片'
       } else {
         formData.formData1[1].list = [
           {
@@ -90,6 +91,7 @@ export default {
           }
         ]
         formData.formData1[1].initValue = '室内消火栓'
+        this.formData.formData1[6].label = '消火栓图片'
       }
       this.formList = formData.formData1
     }

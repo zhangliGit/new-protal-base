@@ -197,6 +197,10 @@ export {
 }
   from '@ant-design/icons/lib/outline/QuestionCircleOutline'
 export {
+  default as CheckCircleOutline
+}
+  from '@ant-design/icons/lib/outline/CheckCircleOutline'
+export {
   default as CloseCircleOutline
 }
   from '@ant-design/icons/lib/outline/CloseCircleOutline'
@@ -218,6 +222,7 @@ export {
   default as CloseCircleFill
 }
   from '@ant-design/icons/lib/fill/CloseCircleFill'
+
 // 暂停
 export {
   default as PlayCircleOutline

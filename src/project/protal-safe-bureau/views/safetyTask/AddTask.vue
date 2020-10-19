@@ -87,6 +87,7 @@
             v-if="cardInfo.taskType === '1'"
           >
             <a-range-picker
+              :disabled-date="disabledDate"
               v-decorator="['data', {initialValue: [moment(new Date(), 'YYYY-MM-DD'), moment( new Date(), 'YYYY-MM-DD')], rules: [{ required: 'required', message: '请选择时间' }]}]"
             />
           </a-form-item>
@@ -388,6 +389,11 @@ export default {
       'modifySchoolTask'
     ]),
     moment,
+    disabledDate(current) {
+      // console.log( moment().endOf('day'))
+      // Can not select days before today and today
+      return current && current <= moment().endOf('day');
+    },
     // 获取详情
     async showDetail() {
       const res = await this.getTaskDetail(this.detailId)

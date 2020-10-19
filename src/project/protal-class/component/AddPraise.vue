@@ -13,26 +13,23 @@
       <a-form-item label="表扬班级" :label-col="{ span: 3 }" :wrapper-col="{ span: 21 }" required>
         <div>
           <template v-for="tag in classList">
-            <a-tag :key="tag.classCode" :closable="true" :afterClose="() => classClose(tag)">
-              {{ tag.gradeName }}{{ tag.className }}
-            </a-tag>
+            <a-tag
+              :key="tag.classCode"
+              :closable="true"
+              :afterClose="() => classClose(tag)"
+            >{{ tag.gradeName }}{{ tag.className }}</a-tag>
           </template>
-          <a-tag @click="addTag()" style="background: #fff; borderStyle: dashed;"> <a-icon type="plus" />添加 </a-tag>
+          <a-tag @click="addTag()" style="background: #fff; borderStyle: dashed;">
+            <a-icon type="plus"/>添加
+          </a-tag>
         </div>
       </a-form-item>
       <a-form-item :label-col="{ span: 3 }" :wrapper-col="{ span: 21 }" label="选择表扬语" required>
-        <a-select
-           mode="multiple"
-          v-decorator="[
-            'label',
-            { initialValue: appForm.label, rules: [{ required: true, message: '请选择选择表扬语' }] }
-          ]"
-          placeholder="请选择选择表扬语"
-        >
-          <a-select-option v-for="list in batchList" :key="`${list.label}`">
-            {{ list.label }}
-          </a-select-option>
-        </a-select>
+        <a-checkbox-group @change="onChange" v-model="value">
+          <span v-for="item in batchList" :key="item.id">
+            <a-checkbox :value="`${item.id}`" :disabled="item.disabled">{{ item.label }}</a-checkbox>
+          </span>
+        </a-checkbox-group>
       </a-form-item>
     </a-form>
     <choose-class
@@ -45,7 +42,6 @@
     ></choose-class>
   </a-modal>
 </template>
-
 <script>
 import { mapState, mapActions } from 'vuex'
 import moment from 'moment'
@@ -78,6 +74,9 @@ export default {
       },
       isView: false,
       batchList: [],
+      labelList: [],
+      value: [],
+      getList: []
     }
   },
   computed: {
@@ -88,11 +87,27 @@ export default {
   },
   methods: {
     ...mapActions('home', ['addsetPraise', 'updatesetPraise', 'praiseList']),
-   handleChange(value) {
-    //  if(value.length>3){
-    //   this.$message.warning('表扬语不能超过3个!')
-    //    return false
-    //  }
+    onChange(checkedValues) {
+      this.labelList = []
+      this.getList = checkedValues
+      this.batchList.forEach((item) => {
+        this.getList.forEach((el) => {
+          if (item.id == el) {
+            this.labelList.push(item.label)
+          }
+        })
+      })
+      if (this.value.length >= 3) {
+        this.batchList.forEach((el) => {
+          el.disabled = this.value.indexOf(el.id.toString()) == -1 ? true : false
+        })
+      } else {
+        this.batchList.forEach((el) => {
+          if (el.disabled) {
+            el.disabled = false
+          }
+        })
+      }
     },
     addTag() {
       this.studentTag = true
@@ -104,6 +119,9 @@ export default {
       }
       const res = await this.praiseList(req)
       this.batchList = res.data.list.filter((item) => item.category === 1)
+      this.batchList.forEach((el) => {
+        this.$set(el, 'disabled', false)
+      })
     },
     classClose(removedTag) {
       this.classList = this.classList.filter((tag) => tag !== removedTag)
@@ -134,7 +152,7 @@ export default {
           }
           this.isLoad = true
           const req = {
-            labelList: values.label,
+            labelList: this.labelList,
             praiseList: this.classList
           }
           this.addsetPraise(req)

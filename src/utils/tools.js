@@ -68,6 +68,12 @@ const Tools = {
       return document.getElementById(id).offsetHeight - 40
     }
   },
+  // 设置table滚动高度
+  setScrollX(id) {
+    if (document.getElementById(id)) {
+      return document.getElementById(id).offsetWidth
+    }
+  },
   // 延迟处理方法
   goNext: fn => {
     setTimeout(() => {
@@ -224,6 +230,22 @@ const Tools = {
       return '已处理'
     } else {
       return '已撤回'
+    }
+  },
+  opeType(text) {
+    text = parseInt(text)
+    if (text === 1) {
+      return '付款'
+    } else if (text === 2) {
+      return '关闭'
+    } else if (text === 3) {
+      return '删除'
+    } else if (text === 4) {
+      return '打印'
+    } else if (text === 5) {
+      return '创建'
+    } else {
+      return '催缴'
     }
   },
   stateTypeColor(text) {
@@ -409,6 +431,39 @@ const Tools = {
       return '小组已审核'
     } else if (text === 4) {
       return '督查完成'
+    }
+  },
+  // 考勤班次
+  classState(text) {
+    text = parseInt(text)
+    if (text === 1) {
+      return '上午上班'
+    } else if (text === 2) {
+      return '上午下班'
+    } else if (text === 3) {
+      return '下午上班'
+    } else if (text === 4) {
+      return '下午下班'
+    }
+  },
+  // 考勤状态
+  attendanceState(text, type) {
+    if (text === '迟到') {
+      return '1'
+    } else if (text === '早退') {
+      return '2'
+    } else if (text === '上午缺卡') {
+      return '3'
+    } else if (text === '请假') {
+      return '4'
+    } else if (text === '正常') {
+      return '5'
+    } else if (text === '下午缺卡') {
+      return '6'
+    } else if (text === '缺卡' && type === 2) {
+      return '3'
+    } else if (text === '缺卡' && type === 3) {
+      return '6'
     }
   },
   ...baseData

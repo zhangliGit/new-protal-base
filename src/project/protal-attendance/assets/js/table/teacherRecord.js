@@ -1,104 +1,266 @@
-const teacherRecord = [
-  {
+import $tools from '@u/tools'
+const teacherRecord = {
+  columns: [{
     title: '序号',
-    width: '6%',
+    width: 50,
     scopedSlots: {
       customRender: 'index'
-    }
+    },
+    fixed: 'left'
   },
   {
     title: '姓名',
     dataIndex: 'userName',
-    width: '6%'
+    width: 80,
+    fixed: 'left'
   },
   {
-    title: '部门',
+    title: '组织机构',
     dataIndex: 'orgName',
-    width: '10%'
+    width: 150,
+    fixed: 'left'
   },
   {
     title: '日期',
     dataIndex: 'dateTime',
-    width: '8%',
+    width: 120,
+    fixed: 'left',
     customRender: text => {
-      if (text) {
-        const d = new Date(text)
-        return (
-          d.getFullYear() +
-          '-' +
-          (d.getMonth() + 1 > 9 ? d.getMonth() + 1 : '0' + (d.getMonth() + 1)) +
-          '-' +
-          (d.getDate() > 9 ? d.getDate() : '0' + d.getDate())
-        )
+      return text ? $tools.getDate(text, 1) : ''
+    }
+  },
+  {
+    title: '班次',
+    dataIndex: 'shiftTime',
+    width: 280,
+    fixed: 'left'
+  },
+  {
+    title: '上午上班',
+    children: [
+      {
+        title: '时间',
+        dataIndex: 'morningOnRealTime',
+        customRender: text => {
+          return text ? $tools.getDate(text, 1) : ''
+        },
+        width: 120
+      },
+      {
+        title: '体温',
+        dataIndex: 'morningOnTemperature',
+        width: 80
+      },
+      {
+        title: '状态',
+        scopedSlots: {
+          customRender: 'other1'
+        },
+        width: 100
       }
-    }
+    ]
   },
   {
-    title: '上班时间',
-    dataIndex: 'onTime',
-    width: '10%',
-    customRender: text => {
-      if (text) {
-        const d = new Date(text)
-        return (
-          (d.getHours() > 9 ? d.getHours() : '0' + d.getHours()) +
-          ':' +
-          (d.getMinutes() > 9 ? d.getMinutes() : '0' + d.getMinutes()) +
-          ':' +
-          (d.getSeconds() > 9 ? d.getSeconds() : '0' + d.getSeconds())
-        )
+    title: '上午下班',
+    children: [
+      {
+        title: '时间',
+        dataIndex: 'morningOffRealTime',
+        customRender: text => {
+          return text ? $tools.getDate(text, 1) : ''
+        },
+        width: 120
+      },
+      {
+        title: '体温',
+        dataIndex: 'morningOffTemperature',
+        width: 80
+      },
+      {
+        title: '状态',
+        scopedSlots: {
+          customRender: 'other2'
+        },
+        width: 100
       }
-    }
+    ]
   },
   {
-    title: '上班状态',
-    dataIndex: 'onState',
-    width: '8%',
-    scopedSlots: {
-      customRender: 'other1'
-    }
-  },
-  {
-    title: '上班温度',
-    dataIndex: 'onTemperature',
-    width: '8%'
-  },
-  {
-    title: '下班时间',
-    dataIndex: 'offTime',
-    width: '10%',
-    customRender: text => {
-      if (text) {
-        const d = new Date(text)
-        return (
-          (d.getHours() > 9 ? d.getHours() : '0' + d.getHours()) +
-          ':' +
-          (d.getMinutes() > 9 ? d.getMinutes() : '0' + d.getMinutes()) +
-          ':' +
-          (d.getSeconds() > 9 ? d.getSeconds() : '0' + d.getSeconds())
-        )
+    title: '下午上班',
+    children: [
+      {
+        title: '时间',
+        dataIndex: 'noonOnRealTime',
+        customRender: text => {
+          return text ? $tools.getDate(text, 1) : ''
+        },
+        width: 120
+      },
+      {
+        title: '体温',
+        dataIndex: 'noonOnTemperature',
+        width: 80
+      },
+      {
+        title: '状态',
+        scopedSlots: {
+          customRender: 'other3'
+        },
+        width: 100
       }
-    }
+    ]
   },
   {
-    title: '下班状态',
-    dataIndex: 'offState',
-    width: '8%',
-    scopedSlots: {
-      customRender: 'other2'
-    }
-  },
-  {
-    title: '下班温度',
-    dataIndex: 'offTemperature',
-    width: '8%'
-  },
-  {
-    title: '操作',
-    width: '16%',
-    scopedSlots: {
-      customRender: 'action'
-    }
+    title: '下午下班',
+    children: [
+      {
+        title: '时间',
+        dataIndex: 'noonOffRealTime',
+        customRender: text => {
+          return text ? $tools.getDate(text, 1) : ''
+        },
+        width: 80
+      },
+      {
+        title: '体温',
+        dataIndex: 'noonOffTemperature',
+        width: 80
+      },
+      {
+        title: '状态',
+        scopedSlots: {
+          customRender: 'other4'
+        },
+        width: 100
+      }
+    ]
   }
-]
+  ],
+  searchLabel: [
+    {
+      value: 'searchKey', // 表单属性
+      type: 'input', // 表单类型
+      label: '姓名', // 表单label值
+      placeholder: '请输入姓名' // 表单默认值(非必选字段)
+    },
+    {
+      value: 'rangeTime', // 日期区间
+      type: 'rangeTime',
+      initValue: [],
+      label: '日期'
+    },
+    {
+      list: [ // 选择列表项，select控件必传
+        {
+          key: '',
+          val: '全部'
+        },
+        {
+          key: '5',
+          val: '正常'
+        },
+        {
+          key: '1',
+          val: '迟到'
+        },
+        {
+          key: '3',
+          val: '缺卡'
+        },
+        {
+          key: '4',
+          val: '请假'
+        }
+      ],
+      value: 'morningOnState',
+      type: 'select',
+      initValue: '',
+      label: '上午上班'
+    },
+    {
+      list: [ // 选择列表项，select控件必传
+        {
+          key: '',
+          val: '全部'
+        },
+        {
+          key: '5',
+          val: '正常'
+        },
+        {
+          key: '1',
+          val: '早退'
+        },
+        {
+          key: '3',
+          val: '缺卡'
+        },
+        {
+          key: '4',
+          val: '请假'
+        }
+      ],
+      value: 'morningOffState',
+      type: 'select',
+      initValue: '',
+      label: '上午下班'
+    },
+    {
+      list: [ // 选择列表项，select控件必传
+        {
+          key: '',
+          val: '全部'
+        },
+        {
+          key: '5',
+          val: '正常'
+        },
+        {
+          key: '1',
+          val: '迟到'
+        },
+        {
+          key: '3',
+          val: '缺卡'
+        },
+        {
+          key: '4',
+          val: '请假'
+        }
+      ],
+      value: 'noonOnState',
+      type: 'select',
+      initValue: '',
+      label: '下午上班'
+    },
+    {
+      list: [ // 选择列表项，select控件必传
+        {
+          key: '',
+          val: '全部'
+        },
+        {
+          key: '5',
+          val: '正常'
+        },
+        {
+          key: '1',
+          val: '早退'
+        },
+        {
+          key: '3',
+          val: '缺卡'
+        },
+        {
+          key: '4',
+          val: '请假'
+        }
+      ],
+      value: 'noonOffState',
+      type: 'select',
+      initValue: '',
+      label: '下午下班'
+    }
+  ]
+}
 export default teacherRecord

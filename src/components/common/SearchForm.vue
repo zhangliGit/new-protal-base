@@ -50,8 +50,7 @@
               <a-form-item :label="item.label" v-if="item.type === 'select'">
                 <a-select
                   @change="item.selectChange"
-                  :initialValue="item.initValue"
-                  v-decorator="[item.value, { rules: [{ required: false, message: item.placeholder }] }]"
+                  v-decorator="[item.value, { initialValue: item.initValue,rules: [{ required: false, message: item.placeholder }] }]"
                   style="width: 120px"
                   :placeholder="item.placeholder || '全部'"
                 >

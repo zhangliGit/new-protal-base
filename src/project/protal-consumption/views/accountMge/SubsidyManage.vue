@@ -10,7 +10,15 @@
         </template>
 
         <template v-slot:actions="action">
-          <a-tooltip placement="topLeft" title="编辑">
+          <a-tooltip placement="topLeft" title="详情" v-if="action.record.grantStatus === '1'">
+            <a-button
+              size="small"
+              class="detail-action-btn"
+              icon="ellipsis"
+              @click.stop="addSubsidy('detail', action.record)"
+            ></a-button>
+          </a-tooltip>
+          <a-tooltip placement="topLeft" title="编辑" v-if="action.record.grantStatus === '0'">
             <a-button
               size="small"
               class="edit-action-btn"
@@ -19,6 +27,7 @@
             ></a-button>
           </a-tooltip>
           <a-popconfirm
+            v-if="action.record.grantStatus === '0'"
             placement="left"
             okText="确定"
             cancelText="取消"
@@ -45,6 +54,7 @@
       </table-list>
     </div>
     <page-num v-model="pageList" :total="total"></page-num>
+    <subsidy-person ref="subsidyPerson"></subsidy-person>
   </div>
 </template>
 
@@ -80,10 +90,37 @@ export default {
     ...mapState('home', ['schoolCode'])
   },
   mounted() {
+    this._getDictList('grant_status', 'grantStatus')
     this._getSubsidyList()
   },
   methods: {
-    ...mapActions('home', ['getSubsidyList', 'deleteSubsidy', 'immedGrantSubsidy']),
+    ...mapActions('home', ['getSubsidyList', 'deleteSubsidy', 'immedGrantSubsidy', 'getDictList']),
+    /**
+     * @description 数据字典
+     */
+    async _getDictList(type, text) {
+      const res = await this.getDictList({
+        pageNum: 1,
+        pageSize: 100,
+        dictType: type
+      })
+      const list = []
+      res.rows.forEach((ele) => {
+        list.push({
+          key: ele.dictValue,
+          val: ele.dictLabel
+        })
+      })
+      window.localStorage.setItem(type, JSON.stringify(list))
+      const index = this.subsidyColumns.findIndex((list) => list.dataIndex === text)
+      if (index !== -1) {
+        this.subsidyColumns[index].customRender = (text) => {
+          return res.rows.filter((ele) => ele.dictValue === text).length > 0
+            ? res.rows.filter((ele) => ele.dictValue === text)[0].dictLabel
+            : ''
+        }
+      }
+    },
     /**
      * @description 新增和编辑补助
      * @params {tag: number} 1：编辑 0：新增
@@ -93,7 +130,7 @@ export default {
         path: '/subsidyManage/addSubsidy',
         query: {
           type: tag,
-          detail
+          id: detail ? detail.id : undefined
         }
       })
     },

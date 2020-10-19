@@ -99,7 +99,7 @@ const formData = {
     },
     {
       type: 'upload',
-      label: '灭火器图片'
+      label: '灭火毯图片'
     }
   ],
   formData3: [

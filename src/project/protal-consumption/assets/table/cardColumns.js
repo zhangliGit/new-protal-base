@@ -1,5 +1,4 @@
-import Tools from '@u/tools'
-import baseData from '../js/base'
+
 const cardColumns = [
   {
     title: '序号',
@@ -16,10 +15,7 @@ const cardColumns = [
   {
     title: '身份',
     dataIndex: 'userType',
-    width: '9%',
-    customRender: text => {
-      return baseData.userType(text)
-    }
+    width: '9%'
   },
   {
     title: '学号/工号',
@@ -34,18 +30,12 @@ const cardColumns = [
   {
     title: '账户状态',
     dataIndex: 'status',
-    width: '8%',
-    customRender: text => {
-      return baseData.actionType(text)
-    }
+    width: '8%'
   },
   {
     title: '卡状态',
     dataIndex: 'cardStatus',
-    width: '8%',
-    customRender: text => {
-      return baseData.getCardStatus(text)
-    }
+    width: '8%'
   },
   {
     title: '卡号',

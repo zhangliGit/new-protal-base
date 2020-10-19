@@ -156,6 +156,10 @@ export default {
           this.uploadTag = false
           return
         }
+        if (this.fileList.length >= this.length) {
+          this.type === 'video' ? this.$message.error(`视频数量不能超过${this.length}个`) : this.$message.error(`图片数量不能超过${this.length}张`)
+          return
+        }
         this.fileList.unshift({
           uid: info.file.uid,
           uname: info.file.name,

@@ -15,10 +15,10 @@ const libraryApi = {
   addBoutique: '/knowledge/boutique#get', // 安全知识-加精
   cancelBoutique: '/knowledge/boutique/cancel/#get', // 安全知识-取消加精
   klgInfo: '/knowledge/info#post', // 安全知识-查看详情
-  klgInfoEidt: '/knowledge/info/#get', // 安全知识-查询详情-用于编辑时的显示
+  klgInfoEidt: '/knowledge/info/#getUrl', // 安全知识-查询详情-用于编辑时的显示
   klgModify: '/knowledge/modify#post', // 安全知识-修改
   batchRemoveAll: '/knowledge/remove/batch#post', // 安全知识-批量删除
-  batchRemove: '/knowledge/remove/#get', // 安全知识-删除
+  batchRemove: '/knowledge/remove/#getUrl', // 安全知识-删除
   statistics: '/knowledge/statistics#post', // 安全知识-查看统计
   pageStatistics: '/knowledge/statistics/page#post', // 安全知识-点击记录分页查询
 
@@ -26,12 +26,12 @@ const libraryApi = {
   addClass: '/class/add#post', // 安全课堂-新增
   classAddbou: '/class/boutique#get', // 安全课堂-加精
   classCancelbou: '/class/boutique/cancel#get', // 安全课堂-取消加精
+  classSearchBasic: '/class/class/basic#getUrl', // 课堂编辑-基本信息查询
   classModifyBasic: '/class/class/basic/modify#post', // 课堂编辑-基本信息修改
-  classSearchBasic: '/class/class/basic#post', // 课堂编辑-基本信息查询
-  exercisesBind: '/class/class/exercises/bind#post', // 课堂编辑-习题绑定
-  exercisesSearch: '/class/class/exercises#get', // 课堂编辑-习题查询
+  planSearch: '/class/class/plan#getUrl', // 课堂编辑-教案查询
   planBind: '/class/class/plan/bind#post', // 课堂编辑-教案绑定
-  planSearch: '/class/class/plan#get', // 课堂编辑-教案查询
+  exercisesSearch: '/class/class/exercises#getUrl', // 课堂编辑-习题查询
+  exercisesBind: '/class/class/exercises/bind#post', // 课堂编辑-习题绑定
   resourceBind: '/class/class/resource/bind#post', // 课堂编辑-资源绑定
   resourceSearch: '/class/class/resource#get', // 课堂编辑-资源查询
 
@@ -50,8 +50,8 @@ const libraryApi = {
   claroomGreatList: '/class/page/local#post', // 安全课堂-分页条件查询-本地库
   claroomLocalList: '/class/page/public#post', // 安全课堂分页条件查询-公共库
   claroomUnderList: '/class/page/underline#post', // 安全课堂-分页条件查询-下属库
-  claroomRemove: '/class/remove#get', // 安全课堂-删除
-  claroomRemoves: '/class/removes#post', // 安全课堂-删除
+  claroomRemove: '/class/remove#getUrl', // 安全课堂-删除
+  claroomRemoves: '/class/removes#post', // 安全课堂-批量删除
   addResource: '/class/resource/add#post', // 课堂资源-新增
   delResource: '/class/resource/delete#get', // 课堂资源-删除
   infoResource: '/class/resource/info#get', // 课堂资源-详情

@@ -127,26 +127,12 @@ export default {
         return res.rows.filter(ele => ele.dictValue === text).length > 0 ? res.rows.filter(ele => ele.dictValue === text)[0].dictLabel : ''
       }
     },
-    // 消费状态
-    consumeStatus(text) {
-      text = parseInt(text)
-      if (text === 0) {
-        return '消费已提交'
-      } else if (text === 1) {
-        return '消费处理中'
-      } else if (text === 2) {
-        return '消费成功'
-      } else if (text === 3) {
-        return '消费失败'
-      } else if (text === 4) {
-        return '已退款'
-      }
-    },
-    exportClick() {
-      this.exportConsumeList({
+    async exportClick() {
+      await this.exportConsumeList({
         name: '消费记录',
         ...this.searchList
       })
+      this.$message.success('导出成功')
     },
     async _getMachineList() {
       this.searchLabel[3].list = []

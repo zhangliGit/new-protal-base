@@ -16,7 +16,7 @@
           >{{ record.record.offState | onState }}</a-tag>
         </template>
       </table-list>
-      <page-num v-model="pageList" :total="total" @change-page="_getAccountRecord"></page-num>
+      <page-num v-model="pageList" :total="total" @change-page="_getCardRecord"></page-num>
     </div>
   </div>
 </template>
@@ -26,8 +26,6 @@ import { mapState, mapActions } from 'vuex'
 import SearchForm from '@c/SearchForm'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
-import Tools from '@u/tools'
-import baseData from '../../assets/js/base'
 const columns = [
   {
     title: '序号',
@@ -59,10 +57,7 @@ const columns = [
   {
     title: '操作类型',
     dataIndex: 'operType',
-    width: '10%',
-    customRender: text => {
-      return baseData.getCardActionType(text)
-    }
+    width: '10%'
   },
   {
     title: '操作人员',
@@ -104,26 +99,6 @@ const searchLabel = [
       {
         key: '',
         val: '全部'
-      },
-      {
-        key: 1,
-        val: '发卡'
-      },
-      {
-        key: 2,
-        val: '挂失'
-      },
-      {
-        key: 3,
-        val: '解挂'
-      },
-      {
-        key: 4,
-        val: '退卡'
-      },
-      {
-        key: 5,
-        val: '换卡'
       }
     ],
     value: 'operType',
@@ -165,15 +140,52 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
+    this._getDictList('card_oper_status', 'operType')
+    this.detail = JSON.parse(window.localStorage.getItem('cardInfo'))
+    this.query = this.$route.query.name
+    if (this.query) {
+      this.searchList.userName = this.detail.userName
+    }
     this._getCardRecord()
   },
   methods: {
-    ...mapActions('home', ['getCardRecord', 'cardRecordExport']),
+    ...mapActions('home', ['getCardRecord', 'cardRecordExport', 'getDictList']),
+    async _getDictList(type, text) {
+      const i = this.searchLabel.findIndex((list) => list.value === text)
+      if (i !== -1) this.searchLabel[i].list = []
+      const res = await this.getDictList({
+        pageNum: 1,
+        pageSize: 100,
+        dictType: type
+      })
+      const list = []
+      res.rows.forEach((ele) => {
+        list.push({
+          key: ele.dictValue,
+          val: ele.dictLabel
+        })
+      })
+      if (i !== -1) {
+        this.searchLabel[i].list = list
+      }
+      window.localStorage.setItem(type, JSON.stringify(list))
+      const index = this.columns.findIndex((list) => list.dataIndex === text)
+      if (index !== -1) {
+        this.columns[index].customRender = (text) => {
+          return res.rows.filter((ele) => ele.dictValue === text).length > 0
+            ? res.rows.filter((ele) => ele.dictValue === text)[0].dictLabel
+            : ''
+        }
+      }
+    },
     /**
      * @description 导出操作记录
      */
     async handleTplDownload() {
-      await this.cardRecordExport(this.searchList)
+      await this.cardRecordExport({
+        name: '卡操作记录',
+        ...this.searchList
+      })
       this.$message.success('导出成功')
     },
     /**

@@ -153,32 +153,36 @@ import { Empty } from 'ant-design-vue'
 const columns = [
   {
     title: '学校',
+     width: '20%',
     dataIndex: 'schoolName',
     scopedSlots: { customRender: 'name' }
   },
   {
     title: '回答人',
-    width: '60%',
+    width: '20%',
     dataIndex: 'completeUserName'
   },
   {
     title: '选项',
+     width: '60%',
     dataIndex: 'answer'
   }
 ]
 const columnsUrl = [
   {
     title: '学校',
+     width: '20%',
     dataIndex: 'schoolName',
     scopedSlots: { customRender: 'name' }
   },
   {
     title: '回答人',
-    width: '60%',
+    width: '20%',
     dataIndex: 'completeUserName'
   },
   {
     title: '选项',
+    width: '60%',
     // dataIndex: 'answer',
     scopedSlots: { customRender: 'answer' }
   }

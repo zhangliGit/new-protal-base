@@ -15,10 +15,10 @@ export default {
     categories: {
       type: Array,
       default: () => {
-        return $tools.getLastDay(15)
+        return $tools.getLastDay(30)
       }
     },
-    series: {
+    yData: {
       type: Array,
       default: () => {
         return []
@@ -29,6 +29,11 @@ export default {
     return {}
   },
   methods: {
+    showTab() {
+      setTimeout(() => {
+        Highcharts.chart(this.id, this.getBi())
+      }, 50)
+    },
     getBi() {
       return {
         credits: {
@@ -83,17 +88,34 @@ export default {
           categories: this.categories,
           crosshair: true
         },
-        series: this.series,
+        series: [{
+          name: '消费金额',
+          color: '#8988E2',
+          data: this.yData.map(ele => {
+            return ele.amountNum
+          })
+        },
+        {
+          name: '消费笔数',
+          data: this.yData.map(ele => {
+            return ele.countNum
+          })
+        }],
         legend: {
           enabled: false
+        },
+        tooltip: {
+          shared: true,
+          useHTML: true,
+          headerFormat: '<small>{point.key}</small><table>',
+          pointFormat: '<tr><td style="color: {series.color}">{series.name}：</td>' +
+          '<td style="text-align: right"><b>{point.y}</b></td></tr>',
+          footerFormat: '</table>'
         }
       }
     }
   },
   mounted() {
-    setTimeout(() => {
-      Highcharts.chart(this.id, this.getBi())
-    }, 50)
   }
 }
 </script>

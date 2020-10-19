@@ -42,7 +42,7 @@
             <a-button v-if="isEdit" style="margin-left: 10px" @click="cancle">取消</a-button>
             <a-icon
               type="question-circle"
-              style="margin:0 10px 0 5px; cursor: pointer; font-size: 18px;"
+              style="margin: 0 10px 0 5px; cursor: pointer; font-size: 18px"
               @click="actionTag = true"
             />
             <a-button icon="export" class="del-btn" @click="educe(1)">导出课表</a-button>
@@ -72,8 +72,12 @@
             </a-upload> -->
           </div>
           <div class="mar-t10">
-            <a-button icon="download" class="play-action-btn" style="margin:0;" @click="download(1)"
-              >下载导入模板</a-button
+            <a-button
+              icon="download"
+              class="play-action-btn"
+              style="margin: 0"
+              @click="download(1)"
+            >下载导入模板</a-button
             >
           </div>
         </div>
@@ -124,9 +128,7 @@
                 <a-popover trigger="hover" v-for="(box, ind) in weekDays" :key="30 + ind">
                   <template slot="content">{{ contentHTML }}</template>
                   <li
-                    @click="
-                      addClass('class30' + box + (courseTime.morningNum + courseTime.forenoonNum + index + 1))
-                    "
+                    @click="addClass('class30' + box + (courseTime.morningNum + courseTime.forenoonNum + index + 1))"
                     :id="'class30' + box + (courseTime.morningNum + courseTime.forenoonNum + index + 1)"
                     class="qui-fx-f1 qui-fx-ac-jc"
                   ></li>
@@ -216,7 +218,7 @@ export default {
     const req = {
       schoolCode: this.userInfo.schoolCode
     }
-    this.getSchoolYear(req).then(res => {
+    this.getSchoolYear(req).then((res) => {
       if (!res.data) {
         return
       }
@@ -224,7 +226,7 @@ export default {
     })
     this.getClassNum({
       schoolCode: this.userInfo.schoolCode
-    }).then(res => {
+    }).then((res) => {
       if (!res.data) {
         this.$message.warning('请先设置课时')
         return
@@ -290,7 +292,7 @@ export default {
         method: 'post',
         url: `${hostEnv.zq_schedule}/class/schedule/import/excel?schoolCode=${this.userInfo.schoolCode}&classCode=${this.classCode}&schoolYearId=${this.schoolYearId}&placeId=${this.placeId}&placeName=${this.placeName}`,
         data: formData
-      }).then(res => {
+      }).then((res) => {
         if (res.data.code === 200) {
           console.log(res.data.data)
           if (typeof res.data.data === 'string') {
@@ -328,7 +330,7 @@ export default {
       }
       const res = await this.getGradeData(req)
       this.classesList = res.data.list
-      this.classesList.forEach(el => {
+      this.classesList.forEach((el) => {
         el.label = el.name
         el.value = el.code
         el.isLeaf = false
@@ -342,10 +344,10 @@ export default {
         schoolCode: this.userInfo.schoolCode,
         schoolYearId: this.schoolYearId
       }
-      this.getClassData(req).then(res => {
+      this.getClassData(req).then((res) => {
         targetOption.loading = false
         targetOption.children = res.data.list
-        targetOption.children.forEach(el => {
+        targetOption.children.forEach((el) => {
           el.label = el.className
           el.value = el.classCode
           el.isLeaf = true
@@ -377,16 +379,16 @@ export default {
         classCode: this.classCode,
         schoolCode: this.userInfo.schoolCode,
         schoolYearId: this.schoolYearId
-      }).then(res => {
+      }).then((res) => {
         const allClass = document.querySelector('.class-list').querySelectorAll('li')
-        allClass.forEach(item => {
+        allClass.forEach((item) => {
           item.innerHTML = ''
           item.style.background = '#fff'
         })
         if (!res.data) {
           return
         }
-        res.data.forEach(item => {
+        res.data.forEach((item) => {
           this.insertClass('class' + item.timeInterval + '0' + item.week + item.classNode, item)
         })
       })
@@ -404,7 +406,7 @@ export default {
     submitClass() {
       const allClass = document.querySelector('.class-list').querySelectorAll('li')
       const classScheduleList = []
-      allClass.forEach(item => {
+      allClass.forEach((item) => {
         if (item.innerHTML !== '') {
           classScheduleList.push({
             classCode: this.classCode,
@@ -423,7 +425,7 @@ export default {
         schoolYearId: this.schoolYearId,
         classScheduleList
       }
-      this.saveClassByTeacher(req).then(res => {
+      this.saveClassByTeacher(req).then((res) => {
         this.$message.success('排课成功')
         this.$tools.goNext(() => {
           this.isEdit = false
@@ -487,7 +489,14 @@ export default {
         if (!this.chooseTree.courseId) {
           return
         }
-        const req = {
+        this.chooseCourseInfo[id] = {
+          subjectName: this.chooseTree.courseName,
+          subjectId: this.chooseTree.courseId,
+          userName: this.chooseTree.title,
+          userCode: this.chooseTree.teacherId
+        }
+        this.addCouse(type, id, list)
+        /* const req = {
           timeInterval: id.substring(5, 6),
           week: id.substring(7, 8),
           classNode: id.substring(8, id.length),
@@ -503,7 +512,7 @@ export default {
             userCode: this.chooseTree.teacherId
           }
           this.addCouse(type, id, list)
-        })
+        }) */
       }
     }
   }

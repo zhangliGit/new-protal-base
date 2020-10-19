@@ -32,7 +32,7 @@
       </a-row>
       <a-row class="u-padd-10">
         <a-col :span="6" class="u-tx-r">身份：</a-col>
-        <a-col :span="16">{{ baseData.userType(this.detail.userType) }}</a-col>
+        <a-col :span="16">{{ datamap(detail.userType, userTypeList) }}</a-col>
       </a-row>
       <a-row class="u-padd-10">
         <a-col :span="6" class="u-tx-r">学号工号：</a-col>
@@ -44,7 +44,7 @@
       </a-row>
       <a-row class="u-padd-10">
         <a-col :span="6" class="u-tx-r">卡状态：</a-col>
-        <a-col :span="16">{{ baseData.getCardStatus(detail.cardStatus) }}</a-col>
+        <a-col :span="16">{{ datamap(detail.cardStatus, cardTypeList) }}</a-col>
       </a-row>
       <a-row class="u-padd-10">
         <a-col :span="6" class="u-tx-r">账户余额：</a-col>
@@ -88,7 +88,7 @@
     >
       <table-list :columns="columns" :table-list="historyList"></table-list>
     </show-dialog>
-    <detail-show :detail-info="detailInfo" :title="detailTitle">
+    <detail-show :detail-info="detailInfo" :title="detailTitle" :photoSrc="detail.photoUrl">
       <div>
         <a-button @click="showCard(0)" v-if="detail.cardStatus === '1'" class="add-btn">挂失</a-button>
         <a-button @click="showCard(1)" v-if="detail.cardStatus === '2'" class="export-btn">解挂</a-button>
@@ -117,7 +117,7 @@
                 <a-col
                   class="mar-b10 qui-fx-jc"
                   :span="8"
-                >状态 : {{ baseData.actionType(detail.status) }}</a-col>
+                >状态 : {{ datamap(detail.status, accountTypeList) }}</a-col>
                 <a-col class="mar-b10 qui-fx-jc" :span="8">开户时间 : {{ detail.openTime }}</a-col>
                 <a-col class="mar-b10 qui-fx-jc" :span="8">押金 : {{ detail.deposit }}</a-col>
               </a-row>
@@ -143,7 +143,7 @@
                 <a-col
                   class="mar-b10 qui-fx-jc"
                   :span="8"
-                >状态 : {{ baseData.getCardStatus(detail.cardStatus) }}</a-col>
+                >状态 : {{ datamap(detail.cardStatus, cardTypeList) }}</a-col>
                 <a-col class="mar-b10 qui-fx-jc" :span="8">发卡时间 : {{ detail.openTime }}</a-col>
               </a-row>
             </div>
@@ -175,7 +175,6 @@ import DetailShow from '@c/DetailShow'
 import ShowDialog from '@c/ShowDialog'
 import { mapState, mapActions } from 'vuex'
 import crad from '../../component/card'
-import baseData from '../../assets/js/base'
 import TableList from '@c/TableList'
 const columns = [
   {
@@ -193,10 +192,7 @@ const columns = [
   {
     title: '卡状态',
     width: '16%',
-    dataIndex: 'status',
-    customRender: text => {
-      return baseData.getCardStatus(text)
-    }
+    dataIndex: 'status'
   },
   {
     title: '发卡时间',
@@ -220,13 +216,15 @@ export default {
   data() {
     return {
       tipMsg: '',
-      baseData,
       columns,
       detailTitle: '基本信息',
       detailInfo: [],
       detail: {},
       dialogTag: false,
       historyList: [],
+      userTypeList: [],
+      cardTypeList: [],
+      accountTypeList: [],
       cardTag: false,
       cardTitle: '',
       actionType: ['挂失', '解挂', '换卡', '退卡', '开卡'],
@@ -241,6 +239,9 @@ export default {
   },
   mounted() {
     this.detail = JSON.parse(window.localStorage.getItem('cardInfo'))
+    this.userTypeList = JSON.parse(window.localStorage.getItem('user_type'))
+    this.cardTypeList = JSON.parse(window.localStorage.getItem('card_status'))
+    this.accountTypeList = JSON.parse(window.localStorage.getItem('ecard_account_status'))
     this.detailInfo = [
       {
         key: '姓名',
@@ -256,12 +257,21 @@ export default {
       },
       {
         key: '身份',
-        val: this.baseData.userType(this.detail.userType)
+        val: this.datamap(this.detail.userType, this.userTypeList)
       }
     ]
+    const index = this.columns.findIndex((list) => list.dataIndex === 'status')
+    if (index !== -1) {
+      this.columns[index].customRender = (text) => {
+        return this.datamap(text, this.cardTypeList)
+      }
+    }
   },
   methods: {
     ...mapActions('home', ['getCardInfoList', 'lossCard', 'unlockCard', 'changeCard', 'returnCard', 'openCard']),
+    datamap(data, list) {
+      return list.filter((ele) => ele.key === data).length > 0 ? list.filter((ele) => ele.key === data)[0].val : ''
+    },
     /**
      * @description 获取历史卡片信息
      */

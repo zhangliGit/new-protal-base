@@ -1,6 +1,6 @@
 <template>
   <div class="account-list page-layout qui-fx-ver">
-    <open-card v-if="isOpen" v-model="isOpen" ref="cardForm" :user-code="userCode"></open-card>
+    <open-card v-if="isOpen" v-model="isOpen" ref="cardForm" :user-code="userCode" @hide="hide"></open-card>
     <choose-user @submit="chooseUser" title="请选择用户" v-model="userTag"></choose-user>
     <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
       <div slot="left">
@@ -19,7 +19,7 @@
       </table-list>
     </div>
     <page-num v-model="pageList" :total="total"></page-num>
-    <count-detail
+    <!-- <count-detail
       ref="countDetail"
       isSearch
       v-if="showDetailTag"
@@ -29,7 +29,7 @@
       chooseType="6"
       :userId="userId"
       title="交易记录"
-    ></count-detail>
+    ></count-detail> -->
     <batch-model ref="modal" :title="'批量开户'" @ok="batchSubmit">
       <a-row :gutter="[20, 20]">
         <a-col :span="10" :gutter="2">1.下载模板，批量填写人员信息</a-col>
@@ -40,17 +40,24 @@
       <a-row :gutter="[20, 20]">
         <a-col :span="10" :gutter="2">2.上传填写好的开户信息Excel文件</a-col>
         <a-col :span="10">
-          <a-button type="primary" @click="uploadFiles()">上传文件</a-button>&nbsp; &nbsp; 未选择任何文件
+          <a-upload
+            style="width: 300px;"
+            class="qui-fx-ac"
+            :multiple="false"
+            :showUploadList="true"
+            name="file"
+            :data="{ fileType: 'xls' }"
+            accept=".xls"
+            :fileList="fileList"
+            :withCredentials="true"
+            :customRequest="customRequest"
+            :beforeUpload="beforeUpload"
+          >
+            <a-button type="primary">上传文件</a-button>
+          </a-upload>
         </a-col>
       </a-row>
     </batch-model>
-    <batch-import
-      ref="batchImport"
-      :title="title"
-      :url="importUrl"
-      :params="importParams"
-      @upload-success="handleUploadSuccess"
-    ></batch-import>
   </div>
 </template>
 
@@ -66,8 +73,10 @@ import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
 import CountDetail from '../../component/CountDetail'
 import accountColumns from '../../assets/table/accountColumns'
-import columnList from '../../assets/table/consumeColumns'
-import BatchImport from '../../component/BatchImport'
+/* import columnList from '../../assets/table/consumeColumns' */
+import hostEnv from '@config/host-env'
+import axios from 'axios'
+import { Modal } from 'ant-design-vue'
 const searchLabel = [
   {
     value: 'workNo',
@@ -86,18 +95,6 @@ const searchLabel = [
       {
         key: '',
         val: '全部'
-      },
-      {
-        key: 1,
-        val: '学生'
-      },
-      {
-        key: 2,
-        val: '教职工'
-      },
-      {
-        key: 3,
-        val: '其他'
       }
     ],
     value: 'userType',
@@ -109,22 +106,6 @@ const searchLabel = [
       {
         key: '',
         val: '全部'
-      },
-      {
-        key: '0',
-        val: '未开户'
-      },
-      {
-        key: '1',
-        val: '已开户'
-      },
-      {
-        key: '2',
-        val: '已冻结'
-      },
-      {
-        key: '3',
-        val: '已销户'
       }
     ],
     value: 'status',
@@ -141,13 +122,14 @@ export default {
     PageNum,
     SubmitForm,
     BatchModel,
-    BatchImport,
     ChooseUser,
     OpenCard,
     ShowDialog
   },
   data() {
     return {
+      fileList: [],
+      fileUrl: '',
       userCode: '',
       isOpen: false,
       accountList: [],
@@ -157,7 +139,7 @@ export default {
       total: 0,
       title: '',
       userTag: false,
-      columnList,
+      /* columnList, */
       pageList: {
         page: 1,
         size: 20
@@ -172,10 +154,43 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
+    this._getDictList('user_type', 'userType')
+    this._getDictList('ecard_account_status', 'status')
     this._getAccountList()
   },
   methods: {
-    ...mapActions('home', ['getAccountList']),
+    ...mapActions('home', ['getAccountList', 'getDictList', 'importTemplate']),
+    /**
+     * @description 数据字典
+     */
+    async _getDictList(type, text) {
+      const i = this.searchLabel.findIndex((list) => list.value === text)
+      if (i !== -1) this.searchLabel[i].list = []
+      const res = await this.getDictList({
+        pageNum: 1,
+        pageSize: 100,
+        dictType: type
+      })
+      const list = []
+      res.rows.forEach((ele) => {
+        list.push({
+          key: ele.dictValue,
+          val: ele.dictLabel
+        })
+      })
+      if (i !== -1) {
+        this.searchLabel[i].list = list
+      }
+      window.localStorage.setItem(type, JSON.stringify(list))
+      const index = this.accountColumns.findIndex((list) => list.dataIndex === text)
+      if (index !== -1) {
+        this.accountColumns[index].customRender = (text) => {
+          return res.rows.filter((ele) => ele.dictValue === text).length > 0
+            ? res.rows.filter((ele) => ele.dictValue === text)[0].dictLabel
+            : ''
+        }
+      }
+    },
     /**
      * @description 获取账户列表
      */
@@ -197,9 +212,11 @@ export default {
      * @description 账户详情
      */
     toDetail(record) {
-      window.localStorage.setItem('accountInfo', JSON.stringify(record))
       this.$router.push({
-        path: '/accountList/accountDetails'
+        path: '/accountList/accountDetails',
+        query: {
+          id: record.id
+        }
       })
     },
     /**
@@ -211,6 +228,10 @@ export default {
       this.isOpen = true
       this.userCode = user.userCode
     },
+    hide() {
+      this.userTag = true
+      this.isOpen = false
+    },
     /**
      * @description 单个开户
      */
@@ -220,11 +241,13 @@ export default {
     /**
      * @description 批量开户
      */
-    batchSubmit() {},
-    showDetail(record) {
+    batchSubmit() {
+      this.$refs.modal.visible = false
+    },
+    /* showDetail(record) {
       this.userId = record.userId
       this.showDetailTag = true
-    },
+    }, */
     batchAccount() {
       this.$refs.modal.visible = true
     },
@@ -233,30 +256,84 @@ export default {
         path: '/accountOperationRecord',
         props: true,
         query: {
-          userId: record.userId,
+          userName: record.userName,
           cardStatus: record.status
         }
       })
     },
-    downloadTemplate() {
-      const a = document.createElement('a')
-      a.href = '/ljj_dorm/dorm/in/record/download/excel'
-      a.click()
+    async downloadTemplate() {
+      await this.importTemplate({
+        name: '批量开户模板'
+      })
+      this.$message.success('下载成功')
     },
     // 上传文件
+    beforeUpload(file) {
+      console.log(file)
+      const isZip = file.type === 'application/vnd.ms-excel'
+      if (!isZip) {
+        this.$message.error('请上传格式为xls的文件')
+      }
+      return isZip
+    },
+    customRequest(data) {
+      // 上传提交
+      this.resList = []
+      const formData = new FormData()
+      formData.append('file', data.file)
+      this.fileList = [data.file]
+      this.saveFile(formData)
+    },
+    saveFile(formData) {
+      axios({
+        method: 'post',
+        url: `${hostEnv.hzz_ecard}/accountInfo/importData?operator=${this.userInfo.userCode}`,
+        data: formData
+      }).then(res => {
+        console.log(res)
+        Modal.success({
+          content: res.data.msg,
+          onOk: () => {
+            this.fileList = []
+            this._getAccountList()
+          }
+        })
+        this.$refs.modal.visible = false
+      }).catch(err => {
+        console.log(err.response.data.message)
+        Modal.error({
+          content: err.response.data.message,
+          onOk: () => {
+            this.fileList = []
+          }
+        })
+      })
+    },
+    async onFocus(value) {
+      this.classesList = []
+      const req = {
+        schoolCode: this.userInfo.schoolCode
+      }
+      const res = await this.getGradeData(req)
+      this.classesList = res.data.list
+      this.classesList.forEach(el => {
+        el.label = el.name
+        el.value = el.code
+        el.isLeaf = false
+      })
+    },
     uploadFiles() {
       this.$refs.batchImport.addVisible = true
       this.title = '导入文件'
       this.importParams = {
-        schoolCode: sessionStorage.getItem('schoolScheme'),
-        schoolName: sessionStorage.getItem('schoolName')
+        schoolCode: this.userInfo.schoolCode,
+        operator: this.userInfo.userCode
       }
-      this.importUrl = '/ljj_dorm/dorm/in/record/import/excel'
+      this.importUrl = `/hzz_ecard/accountInfo/importData?operator=${this.userInfo.userCode}`
     },
     // 导入成功
     handleUploadSuccess() {
       this.$refs.batchImport.addVisible = false
-      this.showRoom(this.floorCode)
     }
   }
 }

@@ -4,6 +4,7 @@
     <div class="qui-fx-f1 qui-fx-ver">
       <search-form
         isReset
+        ref="searchForm"
         @search-form="searchForm"
         :search-label="searchLabel">
         <div slot="left">
@@ -47,6 +48,7 @@ import RecordDetail from './RecordDetail'
 import RecordChange from './RecordChange'
 import columns from '../../assets/js/table/studentRecord'
 import hostEnv from '@config/host-env'
+import moment from 'moment'
 const searchLabel = [
   {
     value: 'searchKey', // 表单属性
@@ -57,6 +59,7 @@ const searchLabel = [
   {
     value: 'rangeTime', // 日期区间
     type: 'rangeTime',
+    initValue: [],
     label: '日期'
   },
   {
@@ -84,6 +87,7 @@ const searchLabel = [
     ],
     value: 'onStatue',
     type: 'select',
+    initValue: '',
     label: '上学状态'
   },
   {
@@ -111,6 +115,7 @@ const searchLabel = [
     ],
     value: 'offStatue',
     type: 'select',
+    initValue: '',
     label: '放学状态'
   }
 ]
@@ -152,6 +157,26 @@ export default {
     ])
   },
   mounted () {
+    if (this.$route.query.type) {
+      this.searchLabel[1].initValue = [moment(this.$route.query.date).format('YYYY-MM-DD'), moment(this.$route.query.date).format('YYYY-MM-DD')]
+      this.searchList.startDay = moment(this.$route.query.date).format('YYYY-MM-DD')
+      this.searchList.endDay = moment(this.$route.query.date).format('YYYY-MM-DD')
+      const type = parseInt(this.$route.query.type) + 1
+      const state = this.$tools.attendanceState(this.$route.query.state, type)
+      this.searchLabel[type].initValue = state
+      if (parseInt(this.$route.query.type) === 2 && this.$route.query.state === '迟到') {
+        this.searchLabel[type].initValue = '2'
+      }
+      if (type === 2) {
+        this.searchList.onStatue = state
+        this.searchList.offStatue = ''
+        this.searchLabel[3].initValue = ''
+      } else if (type === 3) {
+        this.searchList.onStatue = ''
+        this.searchList.offStatue = state
+        this.searchLabel[2].initValue = ''
+      }
+    }
     this.searchList.schoolCode = this.userInfo.schoolCode
     this.showList()
   },

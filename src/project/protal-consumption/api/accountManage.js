@@ -11,6 +11,8 @@ const accountApi = {
   getRechargeList: '/recharge/list#get', // 查询充值记录
   addRecharge: '/accountInfo/accountRecharge#post', // 新增充值记录
   getSubsidyList: '/subsidyManage/list#get', // 补助管理
+  getSubsidyDetail: '/subsidyManage#getUrl', // 补助详情
+  subsidyInfoList: '/subsidyPeople/list#get', // 补助发放名单
   getOpenAccount: '/accountInfo/isOpenAccount#getUrl', // 查询开户信息
   addOpenAccount: '/accountInfo/openAccount#post', // 开户
   grantSubsidy: '/subsidyManage/grantSubsidy#post', // 发放补助
@@ -18,7 +20,14 @@ const accountApi = {
   immedGrantSubsidy: '/subsidyManage/immedGrant#postWithQueryAndBody', // 立即发放补助
   deleteSubsidy: '/subsidyManage#delWithQuery', // 删除补助管理
   getAccountRecord: '/accountRecords/list#get', // 查询账户操作记录
-  exportAccountRecord: '/accountrecords/export#post' // 导出操作记录
+  exportAccountRecord: '/accountRecords/export#export', // 导出操作记录
+  importTemplate: '/accountInfo/importTemplate#export', // 下载开户模板
+
+  getAccountDetail: '/accountInfo#getUrl', // 获取账户信息详细信息
+  accountSubsidy: '/accountInfo/accountSubsidy#post', // 账户发放补助
+  accountFrozen: '/accountInfo/accountFrozen#post', // 账户冻结
+  accountThaw: '/accountInfo/accountThaw#post', // 账户解冻
+  accountCancel: '/accountInfo/accountCancel#post', // 账户销户
 }
 for (const val in accountApi) {
   accountApi[val] = `${hostEnv.hzz_ecard}${accountApi[val]}`

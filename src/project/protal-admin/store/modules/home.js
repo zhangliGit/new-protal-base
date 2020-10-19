@@ -43,6 +43,12 @@ const getState = (state, val) => {
 const home = {
   namespaced: true,
   state: {
+    userInfo: {
+      userCode: JSON.parse(window.sessionStorage.getItem('loginType')).userCode,
+      userName: JSON.parse(window.sessionStorage.getItem('loginType')).userName,
+      schoolCode: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolCode,
+      schoolName: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolName
+    },
     loginType: JSON.parse(window.sessionStorage.getItem('loginType')),
     schoolCode: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolCode
   },

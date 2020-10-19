@@ -2,7 +2,6 @@
   <Modal title="添加检查项" ref="modal" @close="reset" @ok="submitOk">
     <a-form :form="form">
       <a-form-item label="检查项目：" v-bind="formItemLayout">
-        <!-- initialValue: appForm.name, -->
         <a-input
           :disabled="type==1"
           v-decorator="[
@@ -21,10 +20,10 @@
               <div class="qui-fx-ac" v-if="!(type==1)">
                 <a-button icon="plus" class="add-btn mar-b10" size="small" @click="add">添加检查指标</a-button>
               </div>
-              <div v-for="(item,index) in normalList" :key="item.key">
+              <div v-for="(item,index) in normalList" :key="index">
                 <div class="qui-fx checkIndex-box u-mar-b10">
                   <a-textarea
-                    :disabled="type==1"
+                    :disabled="type==1" 
                     v-model="normalList[index].standardList"
                     placeholder="请输入检查指标内容"
                   />
@@ -38,7 +37,6 @@
     </a-form>
   </Modal>
 </template>
-
 <script>
 import Modal from '../../component/Modal'
 import { mapState, mapActions } from 'vuex'
@@ -103,19 +101,17 @@ export default {
     },
     // 提交
     submitOk(e) {
-      if (this.type == 1) {
+      if (this.type === 1) {
         this.$refs.modal.visible = false
         return
       }
       this.form.validateFields((error, values) => {
-        if (this.normalList.length === 0) {
-          this.$message.warning('请完善检查指标内容')
-          return
-        }
-        const standardLists = this.normalList.map(v => v.standardList)
-        values.standardList = standardLists
+        if(this.normalList.length===0)return this.$message.warning('检查指标内容不能为空')
+        const isEmpty = this.normalList.every(v =>!v.standardList)
+        if(isEmpty) return  this.$message.warning('请完善检查指标内容')
+        values.standardList = this.normalList.map(v=>v.standardList)
         values.schoolCode = this.userInfo.schoolCode
-        if (this.type == 0) {
+        if (this.type === 0) {
           this.addItem(values)
             .then(res => {
               this.$message.success('操作成功')
@@ -144,7 +140,6 @@ export default {
     // 置空
     reset() {
       this.form.setFieldsValue({ name: '' })
-      // this.appForm = {}
       this.normalList = []
     }
   },

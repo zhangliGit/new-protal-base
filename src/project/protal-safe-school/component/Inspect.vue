@@ -78,7 +78,7 @@
           {{ other4.record.startTime | getDate(2) }}({{ other4.record.startTime | getDate(3) }} - {{ other4.record.endTime | getDate(3) }})
         </div>
         <div v-if="other4.record.timeType ==='1' && other4.record.taskTimeType ==='2' ">
-          {{ other4.record.dateNum | getWeeks }}
+          {{ other4.record.dateNum | getWeek }}
         </div>
         <div v-if="other4.record.timeType ==='1' && other4.record.taskTimeType ==='3' ">
           {{ other4.record.dateNum > 9 ? `${other4.record.dateNum}日` : `0${other4.record.dateNum}日` }}

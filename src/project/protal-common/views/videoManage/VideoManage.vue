@@ -50,7 +50,7 @@
               />
             </div>
             <div class="qui-fx-jsb qui-fx-ac">
-              <div>{{ item.fileName }}</div>
+              <div class="u-te">{{ item.fileName }}</div>
               <div class="notice-action qui-fx">
                 <a-tooltip placement="topLeft" title="编辑">
                   <a-button size="small" class="edit-action-btn" icon="form" @click.stop="add(1, item)"></a-button>
@@ -58,13 +58,13 @@
                 <a-tooltip placement="topLeft" title="删除">
                   <a-button
                     size="small"
-                    class="del-action-btn u-mar-l5"
+                    class="del-action-btn"
                     icon="delete"
                     @click.stop="delClick(item)"
                   ></a-button>
                 </a-tooltip>
                 <a-dropdown>
-                  <a class="ant-dropdown-link u-mar-l5" @click="e => e.preventDefault()">
+                  <a class="ant-dropdown-link" @click="e => e.preventDefault()">
                     更多
                     <a-icon type="down" />
                   </a>
@@ -413,5 +413,8 @@ export default {
 }
 .u-mar-l5 {
   margin-left: 5px;
+}
+.ant-dropdown-link{
+  width: 45px;
 }
 </style>

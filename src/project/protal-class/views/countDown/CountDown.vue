@@ -70,7 +70,6 @@
 import { mapState, mapActions } from 'vuex'
 import SearchForm from '@c/SearchForm'
 import PageNum from '@c/PageNum'
-import Tools from '@u/tools'
 import moment from 'moment'
 import AddCount from '../../component/AddCount'
 import NoData from '@c/NoData'

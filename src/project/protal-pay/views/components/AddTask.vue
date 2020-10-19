@@ -1,16 +1,16 @@
 <template>
-  <div class=" addTask page-layout qui-fx-ver">
+  <div class="addTask page-layout qui-fx-ver">
     <a-form :form="form">
-      <a-form-item label="任务名称：" :label-col="{ span: 2 }" :wrapper-col="{ span: 10}">
+      <a-form-item label="任务名称：" v-bind="formItemLayout">
         <a-input
           v-decorator="[
-            'title',
-            { initialValue: appForm.title, rules: [{ required: true, message: '请填写任务名称', whitespace: true }] }
+            'taskName',
+            { initialValue: appForm.taskName, rules: [{ required: true, message: '请填写任务名称', whitespace: true }] }
           ]"
           placeholder="请输入任务名称"
         />
       </a-form-item>
-          <a-form-item label="收费截止日期"  :label-col="{ span: 2 }" :wrapper-col="{ span: 10}">
+      <a-form-item label="收费截止日期" v-bind="formItemLayout">
         <a-date-picker
           format="YYYY-MM-DD"
           v-decorator="[
@@ -22,91 +22,99 @@
           ]"
         />
       </a-form-item>
-             <a-form-item label="收费项"  :label-col="{ span: 2 }" :wrapper-col="{ span: 10}" required>
-            <a-button  icon="plus" class="add-btn"  @click="add">添加</a-button>
-      <table-list isZoom :columns="columns" :table-list="recordList">
-      <template v-slot:actions="action">
-        <a-tooltip placement="topLeft" title="查看详情">
-          <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="detail(action.record.id)"></a-button>
-        </a-tooltip>
-      </template>
-    </table-list>
+      <a-form-item label="收费项" v-bind="formItemLayout" required>
+        <a-button icon="plus" class="add-btn" @click="add">添加</a-button>
+        <table-list isZoom :columns="columns" :table-list="recordList">
+          <template v-slot:actions="action">
+            <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm.stop="deleteList(action.record)">
+              <template slot="title">您确定删除吗?</template>
+              <a-tooltip placement="topLeft" title="删除">
+                <a-button size="small" class="del-action-btn" icon="delete"></a-button>
+              </a-tooltip>
+            </a-popconfirm>
+          </template>
+        </table-list>
+        <a-row>
+          <a-col :span="2" :offset="17"> 共计：</a-col>
+          <a-col :span="5">{{ this.totalMoney == '' ? '0' : this.totalMoney }}元 </a-col>
+        </a-row>
+        <a-row>
+          <a-col :span="2" :offset="17"> 优惠 :</a-col>
+          <a-col :span="5"> <a-input placeholder="输入优惠金额" v-model="amount" /> </a-col>
+        </a-row>
+        <a-row>
+          <a-col :span="2" :offset="17"> 应收：</a-col>
+          <a-col :span="5">{{ this.receivable == '' ? '0' : this.receivable }}元 </a-col>
+        </a-row>
       </a-form-item>
-        <a-form-item label="收费对象"  :label-col="{ span: 2 }" :wrapper-col="{ span: 10}" required>
-          <div class="choose-input" @click="teacherSelect">
-            <div class="p" v-if="chooseTeachersDeatil.length === 0">请点击选择收费对象</div>
-            <template v-for="tag in chooseTeachersDeatil">
-              <a-tag
-                color="purple"
-                @click.stop.prevent
-                :key="tag.userCode"
-                :closable="true"
-                @close.stop="() => userClose(tag)">{{ tag.userName }}</a-tag>
-            </template>
-          </div>
-        </a-form-item>
-      <a-form-item>
-            <a-form-item :wrapper-col="{ span: 10, offset: 2 }">
+      <a-form-item label="收费对象" v-bind="formItemLayout" required>
+        <div class="choose-input" @click="teacherSelect">
+          <div class="p" v-if="chooseTeachersDeatil.length === 0">请点击选择收费对象</div>
+          <template v-for="tag in chooseTeachersDeatil">
+            <a-tag
+              color="purple"
+              @click.stop.prevent
+              :key="tag.userCode"
+              :closable="true"
+              @close.stop="() => userClose(tag)"
+              >{{ tag.userName }}</a-tag
+            >
+          </template>
+        </div>
+      </a-form-item>
+      <a-form-item :wrapper-col="{ span: 15, offset: 3 }">
         <a-button style="margin-right:50px;" @click="cancle">取消</a-button>
-        <a-button type="primary" @click="handleSubmit" :loading="state.loginBtn" :disabled="state.loginBtn">保存</a-button>
-      </a-form-item>
+        <a-button type="primary" :loading="loading" @click="handleSubmit">保存</a-button>
       </a-form-item>
     </a-form>
-     <choose-user
+    <choose-student
+      ref="chooseUser"
       is-check
-      ref="form"
-      :teacherList="chooseTeachersDeatil"
       v-if="userTag"
       v-model="userTag"
-      @submit="submit"
-      title="选择物品管理员"
-    >
-    </choose-user>
-        <add-charges ref="addcharges" :title="title" ></add-charges>
+      @submit="chooseUser"
+      title="选择学生"
+    ></choose-student>
+    <add-charge ref="addCharge" :title="title" @getList="getCharge"></add-charge>
   </div>
 </template>
 <script>
 import moment from 'moment'
 import { mapState, mapActions } from 'vuex'
-import ChooseUser from '@c/choose/ChooseUser'
+import ChooseStudent from '@c/ChooseStudent'
 import TableList from '@c/TableList'
-import Addcharges from './Addcharges'
+import AddCharge from './AddCharge'
 const columns = [
   {
     title: '序号',
-    width: '10%',
+    width: '15%',
     scopedSlots: {
       customRender: 'index'
     }
   },
   {
     title: '收费项',
-    dataIndex: 'applicantName',
-    width: '15%'
+    dataIndex: 'itemName',
+    width: '20%'
   },
   {
     title: '收费标准',
-    dataIndex: 'applicantName1',
+    dataIndex: 'itemPrice',
     width: '15%'
   },
   {
     title: '数量',
-    dataIndex: 'applicantName2',
+    dataIndex: 'itemNum',
     width: '15%'
   },
   {
     title: '总金额',
-    dataIndex: 'applicantName3',
-    width: '15%'
-  },
-  {
-    title: '创建人',
-    dataIndex: 'applicantName4',
+    dataIndex: 'totalMoneySum',
     width: '15%'
   },
   {
     title: '操作',
-    width: '15%',
+    width: '20%',
     scopedSlots: {
       customRender: 'action'
     }
@@ -115,108 +123,132 @@ const columns = [
 export default {
   name: 'AddTask',
   components: {
-    ChooseUser,
+    ChooseStudent,
     TableList,
-    Addcharges
+    AddCharge
   },
   data() {
     return {
       moment,
       form: this.$form.createForm(this),
       appForm: {
-        schoolCode: '',
-        title: '',
+        taskName: '',
         endTime: ''
-      },
-      state: {
-        time: 60,
-        loginBtn: false,
-        loginType: 0,
-        smsSendBtn: false
       },
       loading: false,
       userTag: false,
       chooseTeachersDeatil: [],
       recordList: [],
-      columns
-    }
-  },
-  props: {
-    refBuildList: {
-      type: Object,
-      default: function() {
-        return {}
-      }
-    },
-    title: {
-      type: String,
-      default: ''
+      columns,
+      title: '新增',
+      formItemLayout: {
+        labelCol: { span: 2 },
+        wrapperCol: { span: 10 }
+      },
+      totalMoney: '',
+      amount: '',
+      receivable: '',
+      chargeObject: {
+        chargeGrades: []
+      },
+      getYearList: []
     }
   },
   created() {},
-  watch: {},
+  watch: {
+    amount(val) {
+      this.receivable = Number(this.totalMoney) - Number(val)
+    },
+    recordList(val) {
+      const array = []
+      val.forEach(ele => {
+        array.push(ele.totalMoneySum)
+      })
+      this.totalMoney = this.sum(array)
+      this.receivable = this.totalMoney
+      this.amount = ''
+    }
+  },
   computed: {
     ...mapState('home', ['userInfo'])
   },
+  mounted() {
+    this.getSchoolYearId()
+  },
   methods: {
-    ...mapActions('home', ['addNotice', 'updateNotice', 'getNoticeDetail', 'getTeaList', 'getStuList']),
+    ...mapActions('home', ['addChargetask', 'getSchoolYear']),
+    getCharge(item) {
+      this.recordList = item
+    },
+    sum(array) {
+      var s = 0
+      for (var i = array.length - 1; i >= 0; i--) {
+        s += array[i]
+      }
+      return s
+    },
+    deleteList(removedTag) {
+      this.recordList = this.recordList.filter(tag => tag !== removedTag)
+      this.$refs.addCharge.itemVOList = this.recordList
+    },
     teacherSelect() {
       this.userTag = true
     },
     userClose(removedTag) {
-      this.chooseTeachersDeatil = this.chooseTeachersDeatil.filter((tag) => tag !== removedTag)
+      this.chooseTeachersDeatil = this.chooseTeachersDeatil.filter(tag => tag !== removedTag)
     },
-    async submit(values) {
-      this.$refs.form.reset()
-      this.chooseTeachersDeatil = []
-      values.forEach((ele) => {
-        this.chooseTeachersDeatil.push({
-          userName: ele.userName,
-          userCode: ele.userCode
+    chooseUser(values) {
+      console.log(values)
+      this.$refs.chooseUser.reset()
+      this.chooseTeachersDeatil = values
+      this.chargeObject.schoolYearId = values[0].schoolYearId
+      this.chargeObject.schoolYearName = this.getYearList[0].schoolYear
+      this.chargeObject.chargeGrades = []
+      values.forEach(item => {
+        this.chargeObject.chargeGrades.push({
+          gradeCode: item.gradeCode,
+          gradeName: item.gradeName,
+          chargeClasses: []
+        })
+        this.chargeObject.chargeGrades.forEach(ele => {
+          ele.chargeClasses.push({
+            classCode: item.classCode,
+            className: item.className,
+            userCodes: []
+          })
+          ele.chargeClasses[0].userCodes.push(item.userName)
         })
       })
+      console.log(this.chargeObject)
     },
     add() {
-      this.$refs.addCharges.addVisible = true
+      this.title = '新增'
+      this.$refs.addCharge.formData = {}
+      this.$refs.addCharge.unitPrice = ''
+      this.$refs.addCharge.totalPrice = ''
+      this.$refs.addCharge.addVisible = true
     },
     handleSubmit(e) {
       e.preventDefault()
       this.form.validateFields((err, values) => {
         if (!err) {
-          const adType = this.$route.query.type
-          if (this.teacherList.length === 0 && this.classList.length === 0) {
-            this.$message.warning('请选择发布对象')
-            return
-          }
-          if (this.classList.length !== 0) {
-            this.schoolYearId = this.classList[0].schoolYearId
-          }
-          this.classCodeList = []
-          this.classList.forEach((el) => {
-            this.classCodeList.push(el.classCode)
-          })
-          this.userList = []
-          this.teacherList.forEach((el) => {
-            this.userList.push(el.userCode)
-          })
+          values.endTime = moment(values.endTime).format('YYYY-MM-DD HH:mm:ss')
           const req = {
             schoolCode: this.userInfo.schoolCode,
-            createBy: this.userInfo.userName,
-            content: values.content,
-            title: values.title,
-            userCodes: this.userList,
-            classCodes: this.classCodeList,
-            schoolYearId: this.schoolYearId,
-            showFull: this.appForm.showFull === true ? 1 : 2,
-            fullEnd: this.appForm.endTime,
-            fullStart: this.appForm.startTime,
-            creatorCode: this.userInfo.userCode
+            taskName: values.taskName,
+            itemVOList: this.recordList,
+            cutOffTime: values.endTime,
+            createUserCode: this.userInfo.userCode,
+            createUserName: this.userInfo.userName,
+            preMoney: this.amount,
+            taskMoney: this.receivable,
+            chargeObject: this.chargeObject
           }
-          this.addNotice(req).then((res) => {
+          this.addChargetask(req).then(res => {
             this.$message.success('添加成功')
             this.$tools.goNext(() => {
               this.$router.push({
-                path: '/SchoolNotice'
+                path: '/chargingTask'
               })
             })
           })
@@ -225,8 +257,15 @@ export default {
     },
     cancle() {
       this.$router.push({
-        path: '/SchoolNotice'
+        path: '/chargingTask'
       })
+    },
+    async getSchoolYearId() {
+      const req = {
+        schoolCode: this.userInfo.schoolCode
+      }
+      const res = await this.getSchoolYear(req)
+      this.getYearList = res.data.list
     }
   }
 }

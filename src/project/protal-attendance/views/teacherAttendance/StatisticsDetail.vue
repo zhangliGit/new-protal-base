@@ -12,41 +12,21 @@
       </a-tabs>
     </div>
     <div class="qui-fx-f1 qui-fx-ver">
-      <a-tabs defaultActiveKey="5" @change="callback" style="height:50px;">
+      <a-tabs :defaultActiveKey="attendanceState" @change="callback" style="height:50px;">
         <a-tab-pane tab="正常次数" key="5"></a-tab-pane>
         <a-tab-pane tab="迟到次数" key="1"></a-tab-pane>
         <a-tab-pane tab="早退次数" key="2"></a-tab-pane>
-        <a-tab-pane tab="上班缺卡" key="3"></a-tab-pane>
-        <a-tab-pane tab="下班缺卡" key="6"></a-tab-pane>
+        <a-tab-pane tab="上班缺卡次数" key="3"></a-tab-pane>
+        <a-tab-pane tab="下班缺卡次数" key="6"></a-tab-pane>
         <a-tab-pane tab="请假次数" key="4"></a-tab-pane>
         <a-tab-pane tab="缺勤次数" key="7"></a-tab-pane>
       </a-tabs>
       <table-list
         is-zoom
         :page-list="pageList"
-        :columns="columns"
+        :columns="current === '4' ? leaveColumns : current === '7' ? absenceColumns : columns"
         :table-list="detailList"
         :rowKey="(record,index) => index">
-        <template v-slot:other1="dealTime">
-          <div>{{ dealTime.record.onWorkTime | gmtToDate }}</div>
-          <div>{{ dealTime.record.offWorkTime | gmtToDate }}</div>
-        </template>
-        <template v-slot:other2="text">
-          <a-popover placement="left">
-            <template slot="content">
-              <img :src="text.record.onSnacpUrl" style="max-width: 200px; max-height: 220px; display: block;" alt="">
-            </template>
-            <img :src="text.record.onSnacpUrl" style="width: 60px; height: 60px; display: inline-block;" alt="">
-          </a-popover>
-          <a-popover placement="left">
-            <template slot="content">
-              <img :src="text.record.offSnacpUrl" style="max-width: 200px; max-height: 220px; display: block;" alt="">
-            </template>
-            <img :src="text.record.offSnacpUrl" style="width: 60px; height: 60px; display: inline-block;margin-left:10px;" alt="">
-          </a-popover>
-          <!-- <img style="width: 60px; height: 60px; display: inline-block;" :src="onSnacpUrl.record.onSnacpUrl" alt="">
-          <img style="width: 60px; height: 60px; display: inline-block;margin-left:10px;" :src="onSnacpUrl.record.offSnacpUrl" alt=""> -->
-        </template>
       </table-list>
       <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
     </div>
@@ -57,6 +37,7 @@
 import { mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
+import $tools from '@u/tools'
 const columns = [
   {
     title: '序号',
@@ -68,36 +49,99 @@ const columns = [
   {
     title: '日期',
     dataIndex: 'dayTime',
-    width: '15%',
-    customRender: (text) => {
-      const d = new Date(text)
-      return d.getFullYear() + '-' +
-             ((d.getMonth() + 1) > 9 ? d.getMonth() + 1 : '0' + (d.getMonth() + 1)) + '-' +
-             (d.getDate() > 9 ? d.getDate() : '0' + d.getDate())
+    width: '20%',
+    customRender: text => {
+      return text ? $tools.getDate(text, 1) : ''
+    }
+  },
+  {
+    title: '班次',
+    dataIndex: 'shift',
+    width: '20%',
+    customRender: text => {
+      return text ? $tools.classState(text) : ''
     }
   },
   {
     title: '打卡时间',
-    dataIndex: 'dealTime',
-    width: '35%',
-    scopedSlots: {
-      customRender: 'other1'
-    }
-  },
-  {
-    title: '底照',
-    dataIndex: 'photoUrl',
-    width: '15%',
-    scopedSlots: {
-      customRender: 'photoPic'
+    dataIndex: 'realTime',
+    width: '25%',
+    customRender: text => {
+      return text ? $tools.getDate(text, 5) : ''
     }
   },
   {
     title: '抓拍照',
-    dataIndex: 'onSnacpUrl',
+    dataIndex: 'snacpUrl',
     width: '25%',
     scopedSlots: {
-      customRender: 'other2'
+      customRender: 'snapPic'
+    }
+  }
+]
+const leaveColumns = [
+  {
+    title: '序号',
+    width: '10%',
+    scopedSlots: {
+      customRender: 'index'
+    }
+  },
+  {
+    title: '日期',
+    dataIndex: 'dayTime',
+    width: '20%',
+    customRender: text => {
+      return text ? $tools.getDate(text, 1) : ''
+    }
+  },
+  {
+    title: '请假时间',
+    dataIndex: 'leaveTime',
+    width: '35%',
+    customRender: text => {
+      return text ? $tools.getDate(text, 5) : ''
+    }
+  },
+  {
+    title: '抓拍照',
+    dataIndex: 'snacpUrl',
+    width: '35%',
+    scopedSlots: {
+      customRender: 'snapPic'
+    }
+  }
+]
+const absenceColumns = [
+  {
+    title: '序号',
+    width: '10%',
+    scopedSlots: {
+      customRender: 'index'
+    }
+  },
+  {
+    title: '日期',
+    dataIndex: 'dayTime',
+    width: '20%',
+    customRender: text => {
+      return text ? $tools.getDate(text, 1) : ''
+    }
+  },
+  {
+    title: '打卡时间',
+    dataIndex: 'realTime',
+    width: '35%',
+    customRender: text => {
+      return text ? $tools.getDate(text, 5) : ''
+    }
+  },
+  {
+    title: '抓拍照',
+    dataIndex: 'snacpUrl',
+    width: '35%',
+    scopedSlots: {
+      customRender: 'snapPic'
     }
   }
 ]
@@ -116,10 +160,17 @@ export default {
       },
       total: 0,
       columns,
+      leaveColumns,
+      absenceColumns,
       detailList: [],
       detailId: '',
-      attendanceState: '5'
+      attendanceState: '5',
+      current: '5'
     }
+  },
+  created() {
+    console.log(this.$route.query.earlyCount)
+    this.attendanceState = this.$route.query.count
   },
   async mounted () {
     this.detailId = this.$route.query.id
@@ -128,8 +179,11 @@ export default {
   methods: {
     ...mapActions('home', ['teacherDetailStatistics']),
     async showList () {
+      this.pageList.userCode = this.$route.query.userCode
       this.pageList.userId = this.detailId
       this.pageList.attendanceState = this.attendanceState
+      this.pageList.startDay = this.$route.query.startDay
+      this.pageList.endDay = this.$route.query.endDay
       const res = await this.teacherDetailStatistics(this.pageList)
       this.detailList = res.data.pageInfo.list
       this.total = res.data.pageInfo.total
@@ -145,10 +199,15 @@ export default {
         {
           key: '组织机构',
           value: res.data.orgName
+        },
+        {
+          key: '日期',
+          value: `${res.data.startDay ? res.data.startDay : ''}~${res.data.startDay ? res.data.endDay : ''}`
         }
       ]
     },
     callback (key) {
+      this.current = key
       setTimeout(() => {
         this.pageList.size = 20
         this.pageList.page = 1
