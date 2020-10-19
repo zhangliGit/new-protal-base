@@ -25,9 +25,15 @@
                     v-decorator="['prefix', { initialValue: item.selectType[0].val }]"
                     style="min-width: 70px"
                   >
-                    <a-select-option :value="list.val" v-for="(list, index1) in item.selectType" :key="index1">{{
+                    <a-select-option
+                      :value="list.val"
+                      v-for="(list, index1) in item.selectType"
+                      :key="index1"
+                    >
+                      {{
                       list.val
-                    }}</a-select-option>
+                      }}
+                    </a-select-option>
                   </a-select>
                 </a-input>
               </a-form-item>
@@ -49,9 +55,15 @@
                   style="width: 120px"
                   :placeholder="item.placeholder || '全部'"
                 >
-                  <a-select-option v-for="(item2, index2) in item.list" :value="item2.key" :key="index2">{{
+                  <a-select-option
+                    v-for="(item2, index2) in item.list"
+                    :value="item2.key"
+                    :key="index2"
+                  >
+                    {{
                     item2.val
-                  }}</a-select-option>
+                    }}
+                  </a-select-option>
                 </a-select>
               </a-form-item>
               <!--单选日期-->
@@ -80,8 +92,7 @@
           style="margin-left: 5px; background:#e8e8e8;color:#999"
           type="default"
           @click="resetBtn"
-        >重置</a-button
-        >
+        >重置</a-button>
         <slot name="right"></slot>
       </a-col>
     </a-row>
