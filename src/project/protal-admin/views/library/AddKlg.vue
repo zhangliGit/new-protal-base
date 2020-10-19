@@ -26,20 +26,6 @@
               ]"
               :options="options"
             />
-            <!-- <a-cascader
-              v-decorator="[
-                'resourceType',
-                {
-                  initialValue: cardInfo.resourceType,
-                  rules: [{ required: true, message: '请填写资源名称' }]
-                }
-              ]"
-              :options="firstData"
-              :load-data="loadData"
-              placeholder="请选择资源类型"
-              change-on-select
-              @change="onChange"
-            /> -->
           </a-form-item>
           <a-form-item label="文件类型" v-bind="formItemLayout">
             <a-select
@@ -111,7 +97,6 @@ export default {
   data() {
     this.type = this.$route.query.type + ''
     return {
-      userList: {}, // 资源类型
       appForm: {},
       options: [], // 资源树
       firstData: [],

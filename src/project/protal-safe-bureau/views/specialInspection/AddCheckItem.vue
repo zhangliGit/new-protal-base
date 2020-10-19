@@ -23,7 +23,7 @@
               <div v-for="(item,index) in normalList" :key="index">
                 <div class="qui-fx checkIndex-box u-mar-b10">
                   <a-textarea
-                    :disabled="type==1" 
+                    :disabled="type==1"
                     v-model="normalList[index].standardList"
                     placeholder="请输入检查指标内容"
                   />
@@ -106,10 +106,10 @@ export default {
         return
       }
       this.form.validateFields((error, values) => {
-        if(this.normalList.length===0)return this.$message.warning('检查指标内容不能为空')
-        const isEmpty = this.normalList.every(v =>!v.standardList)
-        if(isEmpty) return  this.$message.warning('请完善检查指标内容')
-        values.standardList = this.normalList.map(v=>v.standardList)
+        if (this.normalList.length === 0) return this.$message.warning('检查指标内容不能为空')
+        const isEmpty = this.normalList.every(v => !v.standardList)
+        if (isEmpty) return this.$message.warning('请完善检查指标内容')
+        values.standardList = this.normalList.map(v => v.standardList)
         values.schoolCode = this.userInfo.schoolCode
         if (this.type === 0) {
           this.addItem(values)

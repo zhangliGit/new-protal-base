@@ -59,9 +59,27 @@ const library = {
     {
       path: '/safeClass/addClass',
       name: 'addClass',
-      component: () => import('../views/library/safeClass/AddClass.vue'),
+      component: () => import('../views/library/safeClass/addClass/AddClass.vue'),
       meta: {
         title: '添加安全课堂',
+        isHide: true
+      }
+    },
+    {
+      path: '/safeClass/addExercises',
+      name: 'addExercises',
+      component: () => import('../views/library/safeClass/AddExercises.vue'),
+      meta: {
+        title: '添加课堂习题',
+        isHide: true
+      }
+    },
+    {
+      path: '/safeClass/addResources',
+      name: 'addResources',
+      component: () => import('../views/library/safeClass/AddResources.vue'),
+      meta: {
+        title: '添加课堂资源',
         isHide: true
       }
     }

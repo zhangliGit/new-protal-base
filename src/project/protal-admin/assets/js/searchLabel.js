@@ -76,12 +76,49 @@ export const SafeClassItemLabel = [
     placeholder: '请输入课堂名称' // 表单默认值(非必选字段)
   }
 ]
-// 安全课堂
+// 安全课堂绑定习题列表
 export const exerciseSearchLabel = [
   {
     value: 'name', // 表单属性
     type: 'input', // 表单类型
     label: '搜索', // 表单label值
     placeholder: '请输入习题内容' // 表单默认值(非必选字段)
+  }
+]
+// 安全习题列表
+export const exrcisesPageSearchLabel = [
+  {
+    value: 'topicType', // 表单属性
+    type: 'select', // 表单类型
+    label: '习题类型', // 表单label值
+    list: [
+      {
+        key: '',
+        val: '全部'
+      },
+      {
+        key: '1',
+        val: '单选题'
+      },
+      {
+        key: '2',
+        val: '判断题'
+      }
+    ]
+  },
+  {
+    value: 'content', // 表单属性
+    type: 'input', // 表单类型
+    label: '习题内容', // 表单label值
+    placeholder: '请输入习题内容' // 表单默认值(非必选字段)
+  }
+]
+// 课堂资源列表
+export const resourcesPageSearchLabel = [
+  {
+    value: 'name', // 表单属性
+    type: 'input', // 表单类型
+    label: '资源名称', // 表单label值
+    placeholder: '请输入资源名称' // 表单默认值(非必选字段)
   }
 ]
