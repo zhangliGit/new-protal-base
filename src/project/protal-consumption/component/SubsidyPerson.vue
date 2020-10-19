@@ -43,29 +43,22 @@ const columns = [
   },
   {
     title: '班级/组织',
-    dataIndex: 'orgName',
+    dataIndex: 'classBoards',
     width: '15%'
   },
   {
     title: '发放金额',
-    dataIndex: 'balanceSubsidy',
+    dataIndex: 'grantBalance',
     width: '15%'
   },
   {
     title: '状态',
-    dataIndex: 'isWhether',
-    width: '10%',
-    customRender: text => {
-      if (text === 2) {
-        return '未发放'
-      } else if (text === 1) {
-        return '已发放'
-      }
-    }
+    dataIndex: 'grantStatus',
+    width: '10%'
   },
   {
     title: '发放时间',
-    dataIndex: 'createTime',
+    dataIndex: 'grantTime',
     width: '20%',
     customRender: text => {
       return Tools.getDate(text)
@@ -86,25 +79,8 @@ const searchLabel = [
     placeholder: '请输入'
   },
   {
-    list: [
-      {
-        key: '',
-        val: '全部'
-      },
-      {
-        key: 1,
-        val: '已发放'
-      },
-      {
-        key: 2,
-        val: '未发放'
-      },
-      {
-        key: 3,
-        val: '已删除'
-      }
-    ],
-    value: 'isWhether',
+    list: [],
+    value: 'grantStatus',
     type: 'select',
     label: '状态'
   }
@@ -129,29 +105,59 @@ export default {
       },
       total: 0,
       searchList: {
-        manageId: ''
+        subsidyId: ''
       }
     }
   },
+  mounted() {
+    this._getDictList('grant_status', 'grantStatus')
+  },
   methods: {
-    ...mapActions('home', ['subsidyInfoList']),
+    ...mapActions('home', ['subsidyInfoList', 'getDictList']),
     async showList (record) {
-      this.searchList.manageId = record
-      this.searchList = Object.assign(this.searchList, this.pageList)
-      const res = await this.subsidyInfoList(this.searchList)
-      this.recordList = res.data.list.map(el => {
-        return {
-          ...el,
-          id: el.userCode
-        }
+      this.searchList.subsidyId = record
+      const res = await this.subsidyInfoList({
+        ...this.searchList,
+        pageNum: this.pageList.page,
+        pageSize: this.pageList.size
       })
-      this.total = res.data.total
+      this.recordList = res.rows
+      this.total = res.total
+    },
+    /**
+     * @description 数据字典
+     */
+    async _getDictList(type, text) {
+      const i = this.searchLabel.findIndex((list) => list.value === text)
+      if (i !== -1) this.searchLabel[i].list = []
+      const res = await this.getDictList({
+        pageNum: 1,
+        pageSize: 100,
+        dictType: type
+      })
+      const list = []
+      res.rows.forEach((ele) => {
+        list.push({
+          key: ele.dictValue,
+          val: ele.dictLabel
+        })
+      })
+      if (i !== -1) {
+        this.searchLabel[i].list = list
+      }
+      window.localStorage.setItem(type, JSON.stringify(list))
+      const index = this.columns.findIndex((list) => list.dataIndex === text)
+      if (index !== -1) {
+        this.columns[index].customRender = (text) => {
+          return res.rows.filter((ele) => ele.dictValue === text).length > 0
+            ? res.rows.filter((ele) => ele.dictValue === text)[0].dictLabel
+            : ''
+        }
+      }
     },
     searchForm(values) {
-      this.pageList.page = 1
-      this.pageList.size = 20
       this.searchList = Object.assign(this.searchList, values)
-      this.showList(this.searchList.manageId)
+      this.showList(this.searchList.subsidyId)
     }
   }
 }

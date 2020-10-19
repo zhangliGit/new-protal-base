@@ -498,20 +498,20 @@ export default {
       if (type) {
         this.isCheck = true
         this.isRadio = false
-        if (this.detailId) {
-          setTimeout(() => {
-            this.$refs.chooseUser.chooseList = record.users.map(el => {
-              return Number(el.id)
-            })
-            this.$refs.chooseUser.totalList = record.users.map(el => {
-              return {
-                ...el,
-                userName: el.name,
-                userCode: el.code
-              }
-            })
-          }, 100)
-        }
+        // if (this.detailId) {
+        setTimeout(() => {
+          this.$refs.chooseUser.chooseList = record.users.map(el => {
+            return Number(el.id)
+          })
+          this.$refs.chooseUser.totalList = record.users.map(el => {
+            return {
+              ...el,
+              userName: el.name,
+              userCode: el.code
+            }
+          })
+        }, 100)
+        // }
       } else {
         this.isRadio = true
         this.isCheck = false

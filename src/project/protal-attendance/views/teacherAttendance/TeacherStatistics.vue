@@ -9,16 +9,25 @@
       </search-form>
       <table-list :page-list="pageList" :columns="columns" :table-list="recordList">
         <template v-slot:other1="record">
-          <a-tag color="#71d5a1">{{ record.record.normalCount }}</a-tag>
+          <a-tag @click="detail(1, record.record,'normalCount')" color="#71d5a1">{{ record.record.normalCount }}</a-tag>
         </template>
         <template v-slot:other2="record">
-          <a-tag color="#ff9900">{{ record.record.lateCount }}</a-tag>
+          <a-tag @click="detail(1, record.record,'lateCount')" color="#ff9900">{{ record.record.lateCount }}</a-tag>
         </template>
         <template v-slot:other3="record">
-          <a-tag color="#fa3534">{{ record.record.earlyCount }}</a-tag>
+          <a-tag @click="detail(1, record.record,'earlyCount')" color="#ff9900">{{ record.record.earlyCount }}</a-tag>
         </template>
         <template v-slot:other4="record">
-          <a-tag color="#fab6b6">{{ record.record.noRecord }}</a-tag>
+          <a-tag @click="detail(1, record.record,'noRecord')" color="#fab6b6">{{ record.record.noRecord }}</a-tag>
+        </template>
+        <template v-slot:other5="record">
+          <a-tag @click="detail(1, record.record,'onNoRecordCount')" color="#fab6b6">{{ record.record.onNoRecordCount }}</a-tag>
+        </template>
+        <template v-slot:other6="record">
+          <a-tag @click="detail(1, record.record,'leaveCount')" color="#ccc">{{ record.record.leaveCount }}</a-tag>
+        </template>
+        <template v-slot:totalNums="record">
+          <a-tag @click="detail(1, record.record,'offNoRecordCount')" color="#fab6b6">{{ record.record.offNoRecordCount }}</a-tag>
         </template>
         <template v-slot:actions="action">
           <div>
@@ -27,7 +36,7 @@
                 size="small"
                 style="margin-right: 5px; background: #909399; color:#fff"
                 icon="ellipsis"
-                @click="detail(action.record)"
+                @click="detail(0,action.record)"
               ></a-button>
             </a-tooltip>
           </div>
@@ -134,12 +143,19 @@ export default {
       this.searchList = Object.assign(this.searchList, values)
       this.showList()
     },
-    detail(record) {
+    detail(type, record, string) {
+      const req = {
+        id: record.id,
+        userCode: record.code,
+        startDay: this.searchList.startDay,
+        endDay: this.searchList.endDay
+      }
+      if (type) {
+        req.count = record[string]
+      }
       this.$router.push({
         path: '/teacherStatistics/detail',
-        query: {
-          id: record.id
-        }
+        query: req
       })
     }
   }

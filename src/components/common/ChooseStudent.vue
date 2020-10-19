@@ -16,35 +16,35 @@
     >
       <a-col>
         <span>姓名/学号：</span>
-        <a-input v-model="keyword" style="width: 120px;margin-right: 10px" placeholder="请输入关键字" />
+        <a-input v-model="keyword" style="width: 120px; margin-right: 10px" placeholder="请输入关键字" />
         <span>性别：</span>
-        <a-select style="width: 120px;margin-right: 10px" v-model="sex">
+        <a-select style="width: 120px; margin-right: 10px" v-model="sex">
           <a-select-option value>全部</a-select-option>
           <a-select-option value="1">男</a-select-option>
           <a-select-option value="2">女</a-select-option>
         </a-select>
         <span>是否有人脸：</span>
-        <a-select v-model="hasPhoto" style="width: 120px;margin-right: 10px">
+        <a-select v-model="hasPhoto" style="width: 120px; margin-right: 10px">
           <a-select-option value>全部</a-select-option>
           <a-select-option :value="1">是</a-select-option>
           <a-select-option :value="0">否</a-select-option>
         </a-select>
         <span>走住读类型：</span>
-        <a-select style="width: 120px;margin-right: 10px" v-model="hasDorm">
+        <a-select style="width: 120px; margin-right: 10px" v-model="hasDorm">
           <a-select-option value>全部</a-select-option>
           <a-select-option value="1">住读</a-select-option>
           <a-select-option value="0">走读</a-select-option>
         </a-select>
         <a-button type="primary" @click="getStudentList(chooseType !== '')">查询</a-button>
       </a-col>
-      <a-col v-if="hasAdd" style=" margin-left: 45px; line-height:35px;">
+      <a-col v-if="hasAdd" style="margin-left: 45px; line-height: 35px">
         <span>
           <a @click="newStudent">未找到学生?点击新建学生></a>
         </span>
       </a-col>
     </a-row>
     <div class="choose-user qui-fx">
-      <grade-tree @select="select"></grade-tree>
+      <grade-tree isOnlyNewSchoolYear @select="select"></grade-tree>
       <div class="qui-fx-ver qui-fx-f1">
         <table-list
           :is-check="isCheck"
@@ -336,9 +336,9 @@ export default {
           hasPhoto: this.hasPhoto,
           sex: this.sex,
           schoolCode: this.schoolCode,
-          gradeId: this.treeObj.gradeCode,
-          classId: this.treeObj.classCode,
-          schoolYearId: this.treeObj.schoolYearId,
+          gradeId: this.treeObj ? this.treeObj.gradeCode : '',
+          classId: this.treeObj ? this.treeObj.classCode : '',
+          schoolYearId: this.treeObj ? this.treeObj.schoolYearId : '',
           ...this.pageList
         }
       })

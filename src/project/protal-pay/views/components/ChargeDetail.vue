@@ -7,12 +7,12 @@
       v-model="formStatus"
       :form-data="formData"
     ></submit-form>
-    <div slot="tabBarExtraContent" class="mar-r10 detail-show">
-      <div class="qui-fx-jsb">
+    <div slot="tabBarExtraContent" class="detail-show">
+      <div class="qui-fx-jsb top-title mar-b10 mar-t10">
         <div class="title">基础信息</div>
         <div class="mar-top">
           <a-button icon="plus" class="add-btn mar-l10" @click="changeTime">延期</a-button>
-          <a-button icon="export" class="export-btn">下载对账单</a-button>
+          <a-button icon="export" class="export-btn" @click="handleTplDownload">下载对账单</a-button>
         </div>
       </div>
       <a-row>
@@ -26,15 +26,20 @@
           截止时间： <span>{{ this.detailList.cutOffTime }}</span></a-col
         >
         <a-col class="detail-row" :span="2">缴费进度: </a-col>
-        <a-col class="detail-row" :span="16"><a-progress :percent=" Number(GetPercent(this.detailList.paidMoneySum, this.detailList.unpaidMoneySum))" /> </a-col>
+        <a-col class="detail-row" :span="16"
+          ><a-progress
+            :percent="Number(GetPercent(this.detailList.paidMoneySum, this.detailList.unpaidMoneySum))"
+            strokeColor="#9698d6"
+          />
+        </a-col>
         <a-col class="detail-row" :span="6"
           ><span class="u-type-primary">已缴费￥{{ this.detailList.paidMoneySum }}</span
           ><span class="u-type-error">未缴费￥{{ this.detailList.unpaidMoneySum }}</span></a-col
         >
       </a-row>
     </div>
-    <div slot="tabBarExtraContent" class="mar-r10 detail-show">
-      <div class="qui-fx-jsb">
+    <div slot="tabBarExtraContent" class=" detail-show">
+      <div class="qui-fx-jsb top-title mar-b10 mar-t10">
         <div class="title">账单信息</div>
         <div class="mar-top">
           <a-button icon="plus" class="add-btn mar-l10" @click="modify()">新增账单</a-button>
@@ -61,7 +66,7 @@
                 size="small"
                 class="detail-action-btn"
                 icon="ellipsis"
-            @click.stop="goDetail('/components/BillDetail', action.record)"
+                @click.stop="goDetail('/components/BillDetail', action.record)"
               ></a-button>
             </a-tooltip>
           </template>
@@ -138,7 +143,7 @@ const columns = [
     title: '创建时间',
     dataIndex: 'createTime',
     width: '8%',
-    customRender: (text) => {
+    customRender: text => {
       return Tools.getDate(text).substring(0, 10)
     }
   },
@@ -146,7 +151,7 @@ const columns = [
     title: '截止时间',
     dataIndex: 'cutOffTime',
     width: '8%',
-    customRender: (text) => {
+    customRender: text => {
       return Tools.getDate(text).substring(0, 10)
     }
   },
@@ -154,7 +159,7 @@ const columns = [
     title: '账单状态',
     dataIndex: 'billStatus',
     width: '8%',
-    customRender: (text) => {
+    customRender: text => {
       if (text === '1') {
         return '待缴费'
       } else if (text === '2') {
@@ -257,10 +262,17 @@ export default {
   },
   mounted() {
     this.init()
-    this.showList(this.keywords)
+    this.showList()
   },
   methods: {
-    ...mapActions('home', ['getchargeTaskInfo', 'getbillInfo', 'delayTaskTime', 'callBill', 'shutDownBill']),
+    ...mapActions('home', [
+      'getchargeTaskInfo',
+      'getbillInfo',
+      'delayTaskTime',
+      'callBill',
+      'shutDownBill',
+      'downBillExcelData'
+    ]),
     async init() {
       const res = await this.getchargeTaskInfo(this.id)
       this.detailList = res.data
@@ -305,7 +317,7 @@ export default {
         taskCode: this.$route.query.taskCode
       }
       this.delayTaskTime(req)
-        .then((res) => {
+        .then(res => {
           this.formStatus = false
           this.$message.success('延期成功')
           this.$tools.goNext(() => {
@@ -340,16 +352,24 @@ export default {
       this.title = '新增账单'
       this.$refs.subForm.addVisible = true
     },
-   // 详情
+    // 详情
     goDetail(path, record) {
       this.$router.push({
         path,
         query: {
           id: record.id,
           taskCode: record.taskCode,
-          billNum:record.billNum
+          billNum: record.billNum
         }
       })
+    },
+    //下载账单
+    async handleTplDownload() {
+      await this.downBillExcelData({
+        name: '账单列表',
+        ...this.searchList
+      })
+      this.$message.success('下载成功')
     },
     clickRow(id) {}
   }
@@ -358,10 +378,14 @@ export default {
 <style lang="less" scoped>
 .charge-detail {
   height: 100%;
+  padding: 20px;
 }
 .detail-show {
   background-color: #fff;
   margin-bottom: 10px;
+  .top-title {
+    background-color: #ececec;
+  }
   .title {
     font-size: 18px;
     color: @main-color;

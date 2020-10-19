@@ -56,7 +56,7 @@ const columns = [
   },
   {
     title: '创建人',
-    dataIndex: 'createUserCode',
+    dataIndex: 'createUserName',
     width: '10%'
   },
   {
@@ -77,7 +77,7 @@ const columns = [
   },
   {
     title: '操作',
-    width: '15%',
+    width: '10%',
     scopedSlots: {
       customRender: 'action'
     }

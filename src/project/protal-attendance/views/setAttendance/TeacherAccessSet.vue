@@ -159,8 +159,10 @@ export default {
     addGroup(type, id) {
       console.log(123)
       const obj = {
-        path: '/teacherAccessSet/teacherSet'
-        // query: type === 0 ? { type: 'teacher' } : { id, type: 'teacher' }
+        path: '/teacherAccessSet/teacherSet',
+        query: {
+          id: type ? id : ''
+        }
       }
       this.$router.push(obj)
     },

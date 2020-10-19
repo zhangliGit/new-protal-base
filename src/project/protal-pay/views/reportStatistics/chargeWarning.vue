@@ -6,12 +6,7 @@
     <table-list isZoom :page-list="pageList" :columns="columns" :table-list="recordList">
       <template v-slot:actions="action">
         <a-tooltip placement="topLeft" title="查看详情">
-          <a-button
-            size="small"
-            class="detail-action-btn"
-            icon="ellipsis"
-            @click="detail(action.record.id)"
-          ></a-button>
+          <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="detail(action.record.id)"></a-button>
         </a-tooltip>
       </template>
     </table-list>
@@ -23,6 +18,7 @@ import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
 import $tools from '@u/tools'
+import hostEnv from '@config/host-env'
 const columns = [
   {
     title: '序号',
@@ -128,7 +124,10 @@ export default {
       const res = await this.getcollectionDetail(id)
       this.detailList = res.data
     },
-    exportClick() {}
+    exportClick() {
+      const url = `${hostEnv.wxz_pay}/overdueBillInfo/getOverdueBillExcel/${this.userInfo.schoolCode}`
+      window.open(url)
+    }
   }
 }
 </script>

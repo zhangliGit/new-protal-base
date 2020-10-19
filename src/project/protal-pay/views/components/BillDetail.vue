@@ -19,19 +19,16 @@
         </div>
       </div>
     </div>
-    <div slot="tabBarExtraContent" class="mar-r10 detail-show">
-      <div class="qui-fx-jsb">
-        <div class="title">
+    <div slot="tabBarExtraContent" class=" detail-show">
+        <div class="title top-title mar-b10 mar-t10">
           收费项信息
         </div>
-      </div>
     </div>
     <div style="height: 200px;">
       <table-list is-zoom :page-list="pageList" :columns="columns" :table-list="recordList"> </table-list>
     </div>
-    <div slot="tabBarExtraContent" class="mar-r10 detail-show">
-      <div>
-        <div class="title">
+    <div slot="tabBarExtraContent" class=" detail-show">
+        <div class="title top-title mar-b10 mar-t10">
           操作信息
         </div>
         <template>
@@ -44,7 +41,6 @@
             </a-timeline>
           </div>
         </template>
-      </div>
     </div>
     <sub-form
       ref="subForm"
@@ -62,7 +58,7 @@ import PageNum from '@c/PageNum'
 import SubmitForm from '@c/SubmitForm'
 import Tools from '@u/tools'
 import SubForm from '../components/SubForm'
-import DetailShow from '@c/DetailShow'
+import DetailShow from '../components/DetailShow'
 const formData = [
   {
     value: 'payTime',
@@ -309,6 +305,8 @@ export default {
 <style lang="less" scoped>
 .bill-detail {
   height: 100%;
+      padding: 20px;
+
 }
 .detail-show {
   background-color: #fff;
@@ -317,6 +315,9 @@ export default {
     font-size: 18px;
     color: @main-color;
     padding: 10px;
+  }
+   .top-title{
+    background-color: #ececec;
   }
   .mar-top {
     padding-top: 10px;

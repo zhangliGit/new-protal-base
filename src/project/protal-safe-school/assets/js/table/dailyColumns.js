@@ -102,7 +102,6 @@ const dailyColumn = {
     },
     {
       title: '巡查时间',
-      dataIndex: 'schoolCode',
       width: '20%',
       scopedSlots: {
         customRender: 'other4'

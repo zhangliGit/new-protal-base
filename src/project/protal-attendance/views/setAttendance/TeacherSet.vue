@@ -31,7 +31,7 @@
         </a-table>
       </a-form-item>
       <a-form-item label="特殊日期" :label-col="{ span: 3 }" :wrapper-col="{ span: 18 }" :required="true">
-        <a-checkbox>法定节假日自动排休</a-checkbox>
+        <a-checkbox v-decorator="['holidayFlag', { initialValue: holidayFlag, }]" >法定节假日自动排休</a-checkbox>
         <div>
           <div>
             必须打卡的日期：<a-button size="small" class="add-action-btn" icon="plus" @click="add(1)">添加</a-button>
@@ -97,18 +97,11 @@
           @groupList="addGroup"
           @showData="showData"
           @getRecordList="getRecordList"
+          @delRecord="delRecord"
+          :attendance="true"
+          :show="false"
+          :check="check"
         >
-          <template v-slot:actions="action">
-            <div>
-              a
-              <!-- <a-switch
-                :defaultChecked="action.record.status"
-                checked-children="上学考勤"
-                un-checked-children="放学考勤"
-                v-model="action.record.inOrOut"
-              /> -->
-            </div>
-          </template>
         </device-list>
       </a-form-item>
       <a-form-item :wrapper-col="{ span: 15, offset: 3 }">
@@ -218,29 +211,24 @@ export default {
       unClockList: [],
       classId: '',
       state: '',
-      show: false
+      show: false,
+      holidayFlag: '1',
+      check: false
     }
   },
   created() {
     this.maxHeight = window.screen.height - 280 + 'px'
-    // this.groupId = this.$route.query.id ? this.$route.query.id.toString() : ''
-    // if (this.type === 'student') {
-    //   this.columns[1].title = '上学时间一放学时间'
-    // }
-    // if (this.groupId) {
-    //   this.chooseType = 'attendance'
-    //   this.showData()
-    // } else {
-    //   this.data.forEach(ele => {
-    //     ele.accessTimeList = [{ startTime: '00:00', endTime: '00:00', canAdd: true }]
-    //   })
-    // }
+    this.groupId = this.$route.query.id ? this.$route.query.id.toString() : ''
+    if (this.groupId) {
+      this.check = true
+      this.attendanceGroupDetail_()
+    }
   },
   async mounted() {
     this.getShiftManage_()
   },
   methods: {
-    ...mapActions('home', ['addAccess', 'getShiftManage', 'updateAccess', 'attendanceGroupDetail']),
+    ...mapActions('home', ['addAttendanceGroup', 'getShiftManage', 'updateAttendanceGroup', 'attendanceGroupDetail']),
     // 列表
     async getShiftManage_() {
       this.pageList.schoolCode = this.userInfo.schoolCode
@@ -249,13 +237,17 @@ export default {
     },
     // 获取详情
     async attendanceGroupDetail_() {
-      const res = await this.attendanceGroupDetail({ id: this.groupId })
-      this.recordList = res.data.list
+      const res = await this.attendanceGroupDetail({ groupId: this.groupId })
+      this.showData(res.data)
     },
     // 获取下发记录
     getRecordList(record) {
       this.bussCode = record.deviceSn
       this.recordTag = true
+    },
+    // 解绑设备
+    delRecord(record) {
+      this.groupList = this.groupList.filter(list => list.deviceSn !== record.deviceSn)
     },
     add(type, id) {
       this.state = type
@@ -271,6 +263,7 @@ export default {
       }
       this.visible = true
     },
+    // 更换班次
     changeClass(record) {
       if (this.state) {
         this.clockList.push(record)
@@ -279,6 +272,7 @@ export default {
       }
       this.$refs.changeClass.reset()
     },
+    // 不用打卡日期
     noClock(record) {
       this.unClockList.push(record)
       this.$refs.noClock.reset()
@@ -287,6 +281,7 @@ export default {
     async showData(value) {
       if (!value) return
       this.detailData = value
+      this.holidayFlag = value.holidayFlag
       this.groupName = value.groupName
       this.groupList = value.controllerGroups
       this.groupList.map(ele => {
@@ -295,22 +290,23 @@ export default {
         ele.status = ele.inOrOut === '1'
         ele.inOrOut = ele.inOrOut === '1'
       })
-      this.data.forEach(ele => {
-        ele.accessTimeList = [{ startTime: '00:00', endTime: '00:00', canAdd: true }]
-      })
-      value.rules.forEach(item => {
+      value.rules.forEach((item, index) => {
         this.selectedRowKeys.push(parseInt(item.dayName))
-        if (item.dayName === '1') {
-          this.data[6].accessTimeList[0] = { startTime: item.startTime, endTime: item.endTime, canAdd: true }
-        } else {
-          this.data[parseInt(item.dayName) - 2].accessTimeList[0] = {
-            startTime: item.startTime,
-            endTime: item.endTime,
-            canAdd: true
-          }
+        this.data[index].accessTimeList = item
+        this.data[index].accessTimeList.name = item.shiftName
+      })
+      this.clockList = value.specialSignInDayRuleDtos.map(ele => {
+        return {
+          ...ele,
+          current: this.$tools.getDate(ele.dayTime, 1)
         }
       })
-      console.log(this.selectedRowKeys)
+      this.unClockList = value.noSignInDayRuleDtos.map(ele => {
+        return {
+          ...ele,
+          current: ele.startDate === ele.endDate ? this.$tools.getDate(ele.startDate, 1) : `${this.$tools.getDate(ele.startDate, 1)}~${this.$tools.getDate(ele.endDate, 1)}`
+        }
+      })
     },
     // 添加测温设备
     addGroup(value) {
@@ -321,36 +317,19 @@ export default {
           }
         })
       })
-      console.log(this.groupList)
       this.$nextTick(() => {
         this.groupList = value
       })
     },
     // 考勤日期选择
     onSelectChange(selectedRowKeys) {
-      console.log('selectedRowKeys changed: ', selectedRowKeys)
       this.selectedRowKeys = selectedRowKeys
     },
     cancle() {
       const path = '/teacherAccessSet'
       this.$router.push({ path })
     },
-    async submitForm (values) {
-      values.listType = '1'
-      values.sysSourceCode = localStorage.getItem('appCode')
-      values.sysSourceName = localStorage.getItem('appName')
-      await this.addList({
-        ...this.userInfo,
-        ...this.choosePeople,
-        ...values
-      })
-      this.$message.success('操作成功')
-      this.blackForm = false
-      this.$refs.blackForm.confirmLoading = false
-      this.$tools.goNext(() => {
-        this.showTableList()
-      })
-    },
+    // 特殊日期的删除
     del(type, record) {
       this[type] = this[type].filter(list => list !== record)
     },
@@ -359,10 +338,6 @@ export default {
       e.preventDefault()
       this.form.validateFields((err, values) => {
         if (!err) {
-          console.log(values)
-          console.log(this.data)
-          console.log(this.groupList)
-          console.log(this.selectedRowKeys)
           if (this.selectedRowKeys.length === 0) {
             this.$message.warning('请勾选考勤时间')
             return
@@ -385,22 +360,22 @@ export default {
           weeks.forEach(ele => {
             rules.push({
               dayName: ele.key,
-              startTime: ele.accessTimeList[0].startTime ? ele.accessTimeList[0].startTime : '00:00',
-              endTime: ele.accessTimeList[0].endTime ? ele.accessTimeList[0].endTime : '00:00'
+              ruleTimeDtoList: ele.accessTimeList.ruleTimeDtoList,
+              shiftCode: ele.accessTimeList.code,
+              shiftName: ele.accessTimeList.name
             })
           })
           let result = true
-          console.log(rules)
           rules.forEach(eve => {
+            console.log('eve', eve)
             if (
-              parseInt(eve.startTime.split(':')[0]) * 60 + parseInt(eve.startTime.split(':')[1]) >
-              parseInt(eve.endTime.split(':')[0]) * 60 + parseInt(eve.endTime.split(':')[1])
+              !eve.ruleTimeDtoList
             ) {
               result = false
             }
           })
           if (!result) {
-            this.$message.warning('考勤开始时间不能晚于结束时间')
+            this.$message.warning('请选择班次')
             return
           }
           const deviceGroups = []
@@ -413,19 +388,36 @@ export default {
               type: ele.deviceType
             })
           })
+          const specialClockDayRules = []
+          this.clockList.forEach(ele => {
+            specialClockDayRules.push({
+              dayTime: ele.current,
+              ruleTimeDtoList: ele.ruleTimeDtoList,
+              shiftCode: ele.code
+            })
+          })
+          const noClockDayRules = []
+          this.unClockList.forEach(ele => {
+            noClockDayRules.push({
+              startDate: ele.current.indexOf('~') === -1 ? ele.current : ele.current.slice('~')[0],
+              endDate: ele.current.indexOf('~') === -1 ? ele.current : ele.current.slice('~')[1]
+            })
+          })
           const req = {
+            holidayFlag: values.holidayFlag ? '1' : '0',
             deviceGroups,
             groupName: values.name,
             rules,
+            specialClockDayRules,
+            noClockDayRules,
             schoolCode: this.userInfo.schoolCode,
-            type: this.type === 'teacher' ? 1 : 2
+            type: 1
           }
-          console.log(req)
           this.loading = true
-          const path = this.type === '/teacherAccessSet'
+          const path = '/teacherAccessSet'
           if (this.groupId) {
             req.id = this.groupId
-            this.updateAccess(req)
+            this.updateAttendanceGroup(req)
               .then(res => {
                 this.$message.success('编辑成功')
                 this.$tools.goNext(() => {
@@ -437,7 +429,7 @@ export default {
                 this.loading = false
               })
           } else {
-            this.addAccess(req)
+            this.addAttendanceGroup(req)
               .then(res => {
                 this.$message.success('添加成功')
                 this.$tools.goNext(() => {
@@ -462,7 +454,7 @@ export default {
   padding-top: 20px;
   overflow: auto;
   .table {
-    max-height: 300px;
+    max-height: 350px;
     overflow: auto;
   }
   .action {

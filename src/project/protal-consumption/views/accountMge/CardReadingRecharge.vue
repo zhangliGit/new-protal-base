@@ -1,12 +1,13 @@
 <template>
   <div class="cardReader page-layout qui-fx-ver">
-    <show-dialog
-      ref="form"
-      v-if="isShow"
-      @submit="submitForm"
+    <a-modal
       title="充值"
       v-model="isShow"
       width="800px"
+      height="500px"
+      @cancel="cancle"
+      :maskClosable="false"
+      :destroyOnClose="true"
     >
       <div class="recharge-item">
         <a-row class="u-padd-10">
@@ -19,7 +20,7 @@
         </a-row>
         <a-row class="u-padd-10">
           <a-col :span="4" class="u-tx-r">身份：</a-col>
-          <a-col :span="20">{{ cardInfo.userType === '2' ? '教职工' : '学生' }}</a-col>
+          <a-col :span="20">{{ datamap(cardInfo.userType, userTypeList) }}</a-col>
         </a-row>
         <a-row class="u-padd-10">
           <a-col :span="4" class="u-tx-r">学号/工号：</a-col>
@@ -27,13 +28,17 @@
         </a-row>
         <a-row class="u-padd-10">
           <a-col :span="4" class="u-tx-r">账户状态：</a-col>
-          <a-col :span="20">{{ cardInfo.status === '0' ? '未开户' : '已开户' }}</a-col>
+          <a-col :span="20">{{ datamap(cardInfo.status, accountTypeList) }}</a-col>
         </a-row>
-        <a-row class="u-padd-10">
+        <a-row class="u-padd-10" v-if="!sureTag">
           <a-col :span="4" class="u-tx-r">账户余额：</a-col>
           <a-col :span="20">{{ cardInfo.balance }}</a-col>
         </a-row>
-        <a-row type="flex" align="middle" class="u-padd-10">
+        <a-row class="u-padd-10" v-else>
+          <a-col :span="4" class="u-tx-r">账户余额：</a-col>
+          <a-col :span="20">{{ cardInfo.balance + cardInfo.rechargeAmount }}</a-col>
+        </a-row>
+        <a-row type="flex" align="middle" class="u-padd-10" v-if="!sureTag">
           <a-col :span="4" class="u-tx-r">充值金额：</a-col>
           <a-col :span="20">
             <a-input
@@ -45,7 +50,15 @@
             <span class="u-mar-l">到账：{{ cardInfo.rechargeAmount }}元</span>
           </a-col>
         </a-row>
-        <a-row>
+        <a-row class="u-padd-10" v-if="sureTag">
+          <a-col :span="4" class="u-tx-r">充值金额：</a-col>
+          <a-col :span="20">{{ cardInfo.rechargeAmount }}</a-col>
+        </a-row>
+        <a-row class="u-padd-10" v-if="sureTag">
+          <a-col :span="4" class="u-tx-r">充值时间：</a-col>
+          <a-col :span="20">{{ new Date() | getDate(1) }}</a-col>
+        </a-row>
+        <a-row v-if="!sureTag">
           <a-col :span="4" class="u-tx-r"></a-col>
           <a-col :span="20">
             <ul class="money-num u-fx">
@@ -58,18 +71,21 @@
             </ul>
           </a-col>
         </a-row>
-        <a-row type="flex" align="middle" class="u-padd-10">
-          <a-col :span="4" class="u-tx-r">备注：</a-col>
-          <a-col :span="20">
-            <a-input v-model="cardInfo.remark" style="width: 300px" placeholder="请输入备注" />
-          </a-col>
-        </a-row>
-        <a-alert message="请确认核对收到一致的现金金额" banner />
+        <a-alert v-if="!sureTag" message="请确认核对收到一致的现金金额" banner />
+        <a-alert v-else message="请确认本次充值是否无误，可在10秒内撤销本次充值操作" banner />
       </div>
-    </show-dialog>
+      <template slot="footer" v-if="!sureTag">
+        <a-button key="submit" type="primary" @click="submit">确定</a-button>
+      </template>
+      <template slot="footer" v-else>
+        <a-button key="back" @click="cancle">撤销</a-button>
+        <a-button key="submit" type="primary" :loading="loading" @click="submitForm">关闭({{ sureTime }}S)</a-button>
+      </template>
+    </a-modal>
     <div class="qui-fx-ac">
-      <div @click="showDialog">请将卡放置在发卡器上识别</div>
+      <div>请将卡放置在发卡器上识别</div>
       <a-input
+        @keyup.enter="showDialog"
         v-model="cardNumber"
         style="width: 300px; margin-left: 10px"
         placeholder="您也可以输入卡号按Enter键进行充值"
@@ -89,7 +105,6 @@ import { mapState, mapActions } from 'vuex'
 import SearchForm from '@c/SearchForm'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
-import ShowDialog from '@c/ShowDialog'
 const searchLabel = [
   {
     value: 'rangeTime', // 日期区间
@@ -159,8 +174,7 @@ export default {
   components: {
     SearchForm,
     TableList,
-    PageNum,
-    ShowDialog
+    PageNum
   },
   data() {
     return {
@@ -184,19 +198,52 @@ export default {
         page: 1,
         size: 20
       },
-      total: 0
+      total: 0,
+      userTypeList: [],
+      accountTypeList: [],
+      sureTag: false,
+      sureTime: 10,
+      loading: false
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
-  mounted() {
+  created() {
+    this._getDictList('user_type', this.userTypeList)
+    this._getDictList('ecard_account_status', this.accountTypeList)
     this._getRechargeList()
   },
   methods: {
-    ...mapActions('home', ['getRechargeList', 'getUserInfoByCard', 'addRecharge']),
-    showDialog() {
-      this._getUserInfoByCard()
+    ...mapActions('home', ['getRechargeList', 'getUserInfoByCard', 'addRecharge', 'getDictList']),
+    /* *
+     * @description 获取卡状态字典 type:字典类型，text:字段值
+     */
+    datamap(data, list) {
+      return list.filter((ele) => ele.key === data).length > 0 ? list.filter((ele) => ele.key === data)[0].val : ''
+    },
+    async _getDictList(type, list) {
+      const res = await this.getDictList({
+        pageNum: 1,
+        pageSize: 100,
+        dictType: type
+      })
+      res.rows.forEach((ele) => {
+        list.push({
+          key: ele.dictValue,
+          val: ele.dictLabel
+        })
+      })
+    },
+    /**
+     * @description 通过卡号查询人员信息
+     */
+    async showDialog() {
+      if (!this.cardNumber) {
+        return
+      }
+      const res = await this.getUserInfoByCard(this.cardNumber)
+      this.cardInfo = res.data
       this.isShow = true
     },
     searchForm(value) {
@@ -212,13 +259,6 @@ export default {
       this.current = index
     },
     /**
-     * @description 通过卡号查询人员信息
-     */
-    async _getUserInfoByCard() {
-      const res = await this.getUserInfoByCard(this.cardNumber)
-      this.cardInfo = res.data
-    },
-    /**
      * @description 查询充值记录
      */
     async _getRechargeList() {
@@ -231,33 +271,50 @@ export default {
       this.userList = res.rows
     },
     /**
-     * @description 提交充值记录
+     * @description 提交充值
      */
-    async submitForm() {
+    async submit() {
       if (!this.cardInfo.rechargeAmount || this.cardInfo.rechargeAmount === 0) {
         this.$message.warning('请输入充值金额')
         return
       }
+      this.sureTag = true
+      this.setInterval = setInterval(() => {
+        if (this.sureTime === 0) {
+          this.submitForm()
+        } else {
+          this.sureTime--
+        }
+      }, 1000)
+    },
+    /**
+     * @description 撤销充值
+     */
+    cancle() {
+      clearInterval(this.setInterval)
+      this.sureTime = 10
+      this.sureTag = false
+    },
+    /**
+     * @description 确认提交充值
+     */
+    async submitForm() {
+      clearInterval(this.setInterval)
+      this.sureTime = 10
       try {
-        this.$refs.form.loading = true
-        const { id, remark, rechargeAmount } = this.cardInfo
+        this.loading = true
         await this.addRecharge({
-          id,
-          isReturnBalance: '',
-          isReturnDeposit: '',
-          rechargeAmount,
-          remark,
-          returnBalance: 0,
-          returnDeposit: 0,
-          subsidyAmount: 0
+          ...this.cardInfo
         })
         this.$message.success('充值成功')
-        this.isShow = false
         this.$tools.goNext(() => {
+          this.sureTag = false
+          this.isShow = false
+          this.loading = false
           this._getRechargeList()
         })
       } catch (err) {
-        this.$refs.form.loading = false
+        this.loading = false
       }
     }
   }

@@ -477,12 +477,7 @@ export default {
   }
 }
 </script>
-<style lang="less">
-.ant-collapse-extra {
-  float: left !important;
-  margin-right: 10px;
-}
-</style>
+
 <style lang="less" scoped>
 .area-add {
   padding: 20px;
@@ -523,5 +518,9 @@ export default {
 }
 .ant-checkbox-group {
   width: 100%;
+}
+/deep/ .ant-collapse-extra {
+  float: left !important;
+  margin-right: 10px;
 }
 </style>

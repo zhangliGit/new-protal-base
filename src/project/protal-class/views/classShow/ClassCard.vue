@@ -80,7 +80,7 @@ export default {
   methods: {
     ...mapActions('home', ['getClassMotto', 'addClassMotto', 'delFile']),
     delUpload(value) {
-      this.delFile(value.id || this.fileList[0].photoId)
+      // this.delFile(value.id || this.fileList[0].photoId)
       this.flag = false
       this.$nextTick(() => {
         this.flag = true

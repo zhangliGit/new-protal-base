@@ -242,7 +242,7 @@ module.exports = {
       },
       // 电子班牌
       '/zq_news': {
-        // target: 'http://192.168.1.241:11005/', // 张琦-信息发布
+        // target: 'http://192.168.2.241:11005/', // 张琦-信息发布
         target: 'http://192.168.2.242:11011/',
         changeOrigin: true,
         pathRewrite: {
@@ -250,8 +250,8 @@ module.exports = {
         }
       },
       '/zk_news': {
-        // target: 'http://192.168.1.241:11005/', // 张坤-信息发布
-        target: 'http://192.168.1.23:11011/',
+        target: 'http://192.168.2.242:11011/', // 张坤-信息发布
+        // target: 'http://192.168.1.23:11011/',
         changeOrigin: true,
         pathRewrite: {
           '^/zk_news': ''
@@ -337,7 +337,7 @@ module.exports = {
         }
       },
       '/zx_center': {
-        target: 'http://192.168.2.147:11002/', // 王选章-平台人员统计
+        target: 'http://192.168.2.242:11002/', // 王选章-平台人员统计
         changeOrigin: true,
         pathRewrite: {
           '^/zx_center': ''
