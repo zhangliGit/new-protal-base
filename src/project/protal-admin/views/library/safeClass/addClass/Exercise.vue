@@ -70,8 +70,8 @@
 </template>
 
 <script>
-import { exerciseColumns, exerciseListColumns } from '../../../assets/js/tableColumns'
-import { exerciseSearchLabel } from '../../../assets/js/searchLabel'
+import { exerciseColumns, exerciseListColumns } from '../../../../assets/js/tableColumns'
+import { exerciseSearchLabel } from '../../../../assets/js/searchLabel'
 import PageNum from '@c/PageNum'
 import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
@@ -82,7 +82,7 @@ export default {
     TableList,
     SearchForm,
     PageNum,
-    exerciseList: () => import('./exerciseList')
+    exerciseList: () => import('./ExerciseList')
   },
   data() {
     return {

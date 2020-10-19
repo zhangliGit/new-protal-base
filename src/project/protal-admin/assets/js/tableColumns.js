@@ -1,4 +1,4 @@
-// import Tools from '@u/tools'
+import Tools from '@u/tools'
 // 运营端
 // 安全知识
 export const KnowledgeColumns = [
@@ -153,6 +153,11 @@ export const exerciseListColumns = [
   {
     title: '习题内容',
     dataIndex: 'content',
+    width: '10%'
+  },
+  {
+    title: '习题类型',
+    dataIndex: 'topicType',
     width: '10%',
     customRender: text => {
       if (text === '1') {
@@ -163,13 +168,8 @@ export const exerciseListColumns = [
     }
   },
   {
-    title: '习题类型',
-    dataIndex: 'topicType',
-    width: '10%'
-  },
-  {
     title: '习题难易程度',
-    dataIndex: 'degreeDifficulty',
+    dataIndex: 'difficultyDegree',
     width: '10%',
     customRender: text => {
       if (text === '1') {
@@ -193,6 +193,97 @@ export const exerciseListColumns = [
     scopedSlots: {
       customRender: 'fraction'
     }
+  },
+  {
+    title: '操作',
+    width: '15%',
+    scopedSlots: {
+      customRender: 'action'
+    }
+  }
+]
+// 安全课堂-习题列表页
+export const exercisePageListColumns = [
+  {
+    title: '序号',
+    width: '50px',
+    scopedSlots: {
+      customRender: 'index'
+    }
+  },
+  {
+    title: '习题内容',
+    dataIndex: 'content',
+    width: '100px'
+  },
+  {
+    title: '资源类型',
+    dataIndex: 'resourceType'
+  },
+  {
+    title: '习题类型',
+    dataIndex: 'exercisesType'
+  },
+  {
+    title: '难易程度',
+    dataIndex: 'difficultyDegree'
+  },
+  {
+    title: '答案数量',
+    dataIndex: 'answerCount'
+  },
+  {
+    title: '习题预设分数',
+    dataIndex: 'fraction'
+  },
+  {
+    title: '是否为安全测题',
+    dataIndex: 'hasEvaluation'
+  },
+  {
+    title: '操作',
+    width: '15%',
+    scopedSlots: {
+      customRender: 'action'
+    }
+  }
+]
+// 安全课堂-课堂资源
+export const resourcesPageListColumns = [
+  {
+    title: '序号',
+    width: '80px',
+    scopedSlots: {
+      customRender: 'index'
+    }
+  },
+  {
+    title: '资源名称',
+    dataIndex: 'name',
+    width: '100px'
+  },
+  {
+    title: '资源类型',
+    dataIndex: 'resourceType'
+  },
+  {
+    title: '发布人',
+    dataIndex: 'publishName'
+  },
+  {
+    title: '发布时间',
+    dataIndex: 'createTime',
+    customRender: text => {
+      return Tools.getDate(text)
+    }
+  },
+  {
+    title: '文件类型',
+    dataIndex: 'docType'
+  },
+  {
+    title: '文件大小',
+    dataIndex: 'docSize'
   },
   {
     title: '操作',
