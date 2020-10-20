@@ -25,7 +25,7 @@ const baseData2Api = {
   getInfoSelect: '/chargeItemInfo/info#getUrl', // 收费项详细
   // 报表统计-班级汇总统计
   downClassList: '/classCollectStat/getClassStatExcel#export', // 导出
-  getClassList: '/classCollectStat/page#post', // 班级汇总统计列表
+  getclassCollectList: '/classCollectStat/page#post', // 班级汇总统计列表
   // 报表统计-收费日统计
   downdayBillList: '/dayBillStat/getDayBillStatExcel#export', // 导出
   getdayBillList: '/dayBillStat/page#post', // 收费日统计列表
@@ -50,8 +50,20 @@ const baseData2Api = {
 
 }
 const baseData1Api = {
-  getSchoolYear: '/schoolYearSemester/list#postForm' // 查询学年列表
+  getSchoolYear: '/schoolYearSemester/list#postForm', // 查询学年列表
+  // 年级管理
+  getGradeList: '/grade/manage/list#postForm', // 查询年级列表
 
+  // 班级管理
+  getClassList: '/classManage/list#post', // 查询班级列表
+  getStudentList: '/userinfo/student/user/queryStudentInfoList#post' // 获取所有学生
+
+}
+const userApi = {
+  getStudentSum: '/student/class/getStudentCountByCode#post' // 查询班级和年级总人数
+}
+for (const val in userApi) {
+  userApi[val] = `${hostEnv.zx_center}${userApi[val]}`
 }
 for (const val in baseData2Api) {
   baseData2Api[val] = `${hostEnv.wxz_pay}${baseData2Api[val]}`
@@ -61,6 +73,8 @@ for (const val in baseData1Api) {
 }
 const baseDataApi = {
   ...baseData1Api,
-  ...baseData2Api
+  ...baseData2Api,
+  ...userApi
+
 }
 export default baseDataApi

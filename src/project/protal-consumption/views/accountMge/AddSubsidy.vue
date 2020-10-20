@@ -110,7 +110,7 @@
 
       <a-form-item label="发放时间">
         <a-radio-group :disabled="readOnlyTag" v-decorator="['grantStatus', { initialValue: detail.grantStatus }]">
-          <a-radio value="1">立即方法</a-radio>
+          <a-radio value="1">立即发放</a-radio>
           <a-radio value="0">稍后发放</a-radio>
         </a-radio-group>
       </a-form-item>
@@ -164,7 +164,6 @@ export default {
       handler(newVal, oldVal) {
         this.detail.grantNumber = newVal.length + this.grantNumber
         this.detail.grantTotalBalance = this.detail.grantNumber * this.detail.grantBalance
-        console.log(this.detail.grantTotalBalance)
       },
       deep: true
     }
@@ -308,8 +307,6 @@ export default {
               return el.userCode
             })
           }
-          console.log(this.classList)
-          console.log(res.data)
           if (this.classList.length > 0) {
             res.data.map(el => {
               const index = this.classList.findIndex(list => { return list.userCode === el.userCode })
@@ -318,7 +315,6 @@ export default {
               }
             })
           }
-          console.log(this.classList)
           this.detail.grantNumber = this.grantNumber + this.classList.length
           this.detail.grantTotalBalance = this.detail.grantNumber * this.detail.grantBalance
         })
@@ -503,12 +499,12 @@ export default {
             params.stuClass = []
           } else if (clazzCode === gradeCode) {
             params.stuClass.push({
-              'gradeCode': gradeCode
+              gradeCode: gradeCode
             })
           } else {
             params.stuClass.push({
-              'classCodes': clazzCode,
-              'gradeCode': gradeCode
+              classCodes: clazzCode,
+              gradeCode: gradeCode
             })
           } */
           if (clazz.split('/')[0] === 'schoolYear') {

@@ -64,6 +64,7 @@
           </a-form-item>
           <a-form-item label="适用学段" v-bind="formItemLayout">
             <a-select
+              mode="multiple"
               v-decorator="[
                 'section',
                 { initialValue: cardInfo.fileTypeId, rules: [{ required: true, message: '请选择文件类型' }] },
@@ -88,20 +89,6 @@
               placeholder="请填写简介"
               :rows="4" />
           </a-form-item>
-          <!-- <a-form-item
-            label="内容详情："
-            v-bind="formItemLayout"
-            :style="{ textAlign: 'center' }"
-            required
-          >
-            <quill-editor
-              v-model="cardInfo.des"
-              ref="myQuillEditor"
-              :options="quillOption"
-              @focus="onEditorFocus($event)"
-              @change="onEditorChange($event)"
-            ></quill-editor>
-          </a-form-item> -->
         </a-form>
       </a-form>
       <!-- </div> -->
@@ -119,7 +106,7 @@ import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 import UploadMulti from '@c/UploadMulti'
-import quillConfig from '../../../assets/js/quill-config'
+import quillConfig from '../../../../assets/js/quill-config'
 import { mapState, mapActions } from 'vuex'
 import moment from 'moment'
 export default {
@@ -326,33 +313,34 @@ export default {
       .step-fist{
         width: 169px;
         height: 38px;
-        background: url('../../../assets/img/Tab1_weixuan.png') no-repeat ;
+
+        background: url('../../../../assets/img/Tab1_weixuan.png') no-repeat ;
         background-size: 169px, 50px;
         &.active{
           color: #fff;
-          background: url('../../../assets/img/Tab1_xuanzhong.png') no-repeat ;
+          background: url('../../../../assets/img/Tab1_xuanzhong.png') no-repeat ;
           background-size: 169px, 50px;
         }
       }
       .step{
         width: 169px;
         height: 38px;
-        background: url('../../../assets/img/Tab2_weixuan.png') no-repeat ;
+        background: url('../../../../assets/img/Tab2_weixuan.png') no-repeat ;
         background-size: 169px, 50px;
         &.active{
           color: #fff;
-          background: url('../../../assets/img/Tab2_xuanzhong.png') no-repeat ;
+          background: url('../../../../assets/img/Tab2_xuanzhong.png') no-repeat ;
           background-size: 169px, 50px;
         }
       }
       .step-end{
         width: 169px;
         height: 38px;
-        background: url('../../../assets/img/Tab3_weixuan.png') no-repeat ;
+        background: url('../../../../assets/img/Tab3_weixuan.png') no-repeat ;
         background-size: 169px, 50px;
         &.active{
           color: #fff;
-          background: url('../../../assets/img/Tab3_xuanzhong.png') no-repeat ;
+          background: url('../../../../assets/img/Tab3_xuanzhong.png') no-repeat ;
           background-size: 169px, 50px;
         }
       }

@@ -91,8 +91,8 @@ export default {
       },
       recordList: [],
       chartHeight: '',
-      xDate: [],
-      feverData: []
+      xData: [],
+      yData: []
     }
   },
   computed: {
@@ -106,10 +106,6 @@ export default {
     this.showList()
     this.init()
     this.getChargeCurveList()
-    for (var i = 0; i < 14; i++) {
-      this.xDate.unshift(moment(new Date(new Date().setDate(new Date().getDate() - i))).format('MM-DD'))
-      this.feverData.unshift(0)
-    }
   },
   methods: {
     ...mapActions('home', ['getChargeBasic', 'getChargeCurve', 'getChargeMoney', 'getchargeTaskList']),
@@ -175,47 +171,42 @@ export default {
       return R
     },
     async getChargeCurveList() {
-      const res = await this.getChargeCurve(this.userInfo.schoolCode)
-      if (res.data) {
-        let i
-        res.data.forEach(ele => {
-          this.xDate.filter((item, index) => {
-            if (item === moment(ele.statDate).format('YYYY-MM-DD')) {
-              i = index
-            }
-          })
-          this.feverData[i] = ele.paidMoneySum
+      for (var i = 0; i < 30; i++) {
+        this.xData.unshift(moment(new Date(new Date().setDate(new Date().getDate() - i))).format('YYYY-MM-DD'))
+        this.yData.unshift({
+          countNum: 0,
+          amountNum: 0,
+          dayStr: moment(new Date(new Date().setDate(new Date().getDate() - i))).format('YYYY-MM-DD')
         })
       }
-      this.initHeatChart('heatId', this.feverData, this.xDate)
+      const res = await this.getChargeCurve(this.userInfo.schoolCode)
+      if (res.data) {
+        res.data.forEach(ele => {
+          const index = this.xData.findIndex(list => {
+            return list === moment(ele.statDate).format('YYYY-MM-DD')
+          })
+          if (index !== -1) {
+            this.yData[index].countNum = ele.paidSum
+            this.yData[index].amountNum = ele.paidMoneySum
+            this.yData[index].dayStr = ele.statDate
+          }
+        })
+      }
+      this.xData = this.xData.map(ele => {
+        return ele.substring(ele.length - 5)
+      })
+      this.initHeatChart('heatId', this.yData, this.xDate)
     },
-    initHeatChart(id, feverData, xDate) {
+    initHeatChart(id, yData, xDate) {
       Highcharts.chart(id, {
-        chart: {
-          type: 'area'
-        },
         credits: {
-          enabled: false
+          enabled: false // 禁用版权信息
         },
         title: {
-          text: ''
-        },
-        chart: {
-          backgroundColor: null,
-          type: 'areaspline'
-        },
-        plotOptions: {
-          areaspline: {
-            dataLabels: {
-              enabled: true,
-              color: '#666',
-              allowOverlap: false
-            }
+          text: '',
+          style: {
+            color: '#666'
           }
-        },
-        xAxis: {
-          allowDecimals: false,
-          categories: xDate
         },
         yAxis: {
           gridLineColor: '#eee',
@@ -235,31 +226,58 @@ export default {
             }
           }
         },
-        tooltip: {
-          pointFormat: '缴费金额<b>{point.y:,.0f}</b>元'
+        chart: {
+          backgroundColor: null,
+          type: 'areaspline'
         },
         plotOptions: {
-          area: {
-            pointStart: 0,
-            marker: {
-              enabled: false,
-              symbol: 'circle',
-              radius: 2,
-              states: {
-                hover: {
-                  enabled: true
-                }
-              }
+          areaspline: {
+            dataLabels: {
+              enabled: true,
+              color: '#666',
+              allowOverlap: false
             }
           }
         },
+        xAxis: {
+          labels: {
+            style: {
+              color: '#666'
+            }
+          },
+          splitLine: {
+            show: true
+          },
+          categories: this.xData,
+          crosshair: true
+        },
         series: [
           {
-            name: '收费动态图',
+            name: '缴费金额',
+            data: this.yData.map(ele => {
+              return ele.amountNum
+            })
+          },
+          {
+            name: '缴费帐单数',
             color: '#8988E2',
-            data: feverData
+            data: this.yData.map(ele => {
+              return ele.countNum
+            })
           }
-        ]
+        ],
+        legend: {
+          enabled: false
+        },
+        tooltip: {
+          shared: true,
+          useHTML: true,
+          headerFormat: '<small>{point.key}</small><table>',
+          pointFormat:
+            '<tr><td style="color: {series.color}">{series.name}：</td>' +
+            '<td style="text-align: right"><b>{point.y}</b></td></tr>',
+          footerFormat: '</table>'
+        }
       })
     },
     GetPercent(num, total) {

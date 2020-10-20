@@ -19,7 +19,7 @@
         >
           <template slot="action" slot-scope="text, record">
             <div class="qui-fx">
-              <div>{{ record.accessTimeList.shiftCode ? `${record.accessTimeList.name}班次：` : '休息' }}</div>
+              <div>{{ record.accessTimeList.name ? `${record.accessTimeList.name}班次：` : '休息' }}</div>
               <div class="u-mar-r20" v-for="(ele, i) in record.accessTimeList.ruleTimeDtoList" :key="i">
                 {{ ele.startTime }} ~ {{ ele.endTime }}
               </div>
@@ -256,10 +256,12 @@ export default {
         this.$refs.changeClass.chooseList = type === 2 ? [id.id] : []
         this.$refs.changeClass.defaultValue = type === 2 ? moment(id.current).format('YYYY-MM-DD HH:mm:ss') : ''
         this.show = false
+        this.$refs.changeClass.title = '必须打卡的日期'
       } else {
         this.show = true
         this.$refs.changeClass.chooseList = JSON.stringify(this.data[id].accessTimeList) === '{}' ? [] : [this.data[id].accessTimeList.id]
         this.classId = id
+        this.$refs.changeClass.title = '更改班次'
       }
       this.visible = true
     },
@@ -293,6 +295,7 @@ export default {
       value.rules.forEach((item, index) => {
         this.selectedRowKeys.push(parseInt(item.dayName))
         this.data[index].accessTimeList = item
+        this.data[index].accessTimeList.name = item.shiftName
       })
       this.clockList = value.specialSignInDayRuleDtos.map(ele => {
         return {
@@ -316,7 +319,6 @@ export default {
           }
         })
       })
-      console.log(this.groupList)
       this.$nextTick(() => {
         this.groupList = value
       })

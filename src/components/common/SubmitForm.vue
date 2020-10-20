@@ -94,9 +94,11 @@
               }
             ]"
           >
-            <a-radio-button :value="list.key" v-for="(list, ind) in item.list" :key="ind">
-              {{ list.val }}
-            </a-radio-button>
+            <a-radio-button
+              :value="list.key"
+              v-for="(list, ind) in item.list"
+              :key="ind"
+            >{{ list.val }}</a-radio-button>
           </a-radio-group>
         </a-form-item>
         <!--复选框-->
@@ -140,9 +142,11 @@
             ]"
             :placeholder="item.placeholder"
           >
-            <a-select-option v-for="(item2, index2) in item.list" :value="item2.key" :key="index2">
-              {{ item2.val }}
-            </a-select-option>
+            <a-select-option
+              v-for="(item2, index2) in item.list"
+              :value="item2.key"
+              :key="index2"
+            >{{ item2.val }}</a-select-option>
           </a-select>
         </a-form-item>
         <!--上传图片-->

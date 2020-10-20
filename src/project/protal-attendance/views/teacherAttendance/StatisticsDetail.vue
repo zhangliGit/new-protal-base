@@ -169,7 +169,7 @@ export default {
     }
   },
   created() {
-    console.log(this.$route.query.earlyCount)
+    console.log(this.$route.query.count)
     this.attendanceState = this.$route.query.count
   },
   async mounted () {
