@@ -1,6 +1,6 @@
 <template>
   <div class="addTask page-layout qui-fx-ver">
-    <a-form :form="form">
+    <a-form :form="form" :style="{ maxHeight: maxHeight, overflow: 'auto' }">
       <a-form-item label="任务名称：" v-bind="formItemLayout">
         <a-input
           v-decorator="[
@@ -47,10 +47,26 @@
           <a-col :span="5">{{ this.receivable == '' ? '0' : this.receivable }}元 </a-col>
         </a-row>
       </a-form-item>
-      <a-form-item label="收费对象" v-bind="formItemLayout" required>
+      <a-form-item label="班级" v-bind="formItemLayout">
+        <a-tree-select
+          placeholder="请选择班级"
+          :treeData="treeData"
+          :value="value"
+          :disabled="readOnlyTag"
+          @change="onChange"
+          treeCheckable
+          :treeCheckStrictly="false"
+          :treeDefaultExpandAll="false"
+          labelInValue
+          :loadData="onLoadData"
+          :dropdownStyle="{ 'max-height': '400px', overflow: 'auto' }"
+          :show-checked-strategy="SHOW_PARENT"
+        />
+      </a-form-item>
+      <a-form-item label="收费对象" v-bind="formItemLayout">
         <div class="choose-input" @click="teacherSelect">
-          <div class="p" v-if="chooseTeachersDeatil.length === 0">请点击选择收费对象</div>
-          <template v-for="tag in chooseTeachersDeatil">
+          <div class="p" v-if="classList.length === 0">请点击选择收费对象</div>
+          <template v-for="tag in classList">
             <a-tag
               color="purple"
               @click.stop.prevent
@@ -62,6 +78,9 @@
           </template>
         </div>
       </a-form-item>
+      <a-form-item label="收费人数" v-bind="formItemLayout">
+        <span class="ant-form-text">{{ this.grantNumber }}人</span>
+      </a-form-item>
       <a-form-item :wrapper-col="{ span: 15, offset: 3 }">
         <a-button style="margin-right:50px;" @click="cancle">取消</a-button>
         <a-button type="primary" :loading="loading" @click="handleSubmit">保存</a-button>
@@ -70,10 +89,12 @@
     <choose-student
       ref="chooseUser"
       is-check
+      chooseType="pay"
       v-if="userTag"
       v-model="userTag"
       @submit="chooseUser"
       title="选择学生"
+      :classList="classList"
     ></choose-student>
     <add-charge ref="addCharge" :title="title" @getList="getCharge"></add-charge>
   </div>
@@ -84,6 +105,9 @@ import { mapState, mapActions } from 'vuex'
 import ChooseStudent from '@c/ChooseStudent'
 import TableList from '@c/TableList'
 import AddCharge from './AddCharge'
+import { TreeSelect } from 'ant-design-vue'
+const SHOW_PARENT = TreeSelect.SHOW_PARENT
+
 const columns = [
   {
     title: '序号',
@@ -137,7 +161,7 @@ export default {
       },
       loading: false,
       userTag: false,
-      chooseTeachersDeatil: [],
+      classList: [],
       recordList: [],
       columns,
       title: '新增',
@@ -151,7 +175,13 @@ export default {
       chargeObject: {
         chargeGrades: []
       },
-      getYearList: []
+      getYearList: [],
+      treeData: [],
+      value: [],
+      readOnlyTag: false,
+      SHOW_PARENT,
+      maxHeight: 0,
+      grantNumber: 0
     }
   },
   created() {},
@@ -167,16 +197,31 @@ export default {
       this.totalMoney = this.sum(array)
       this.receivable = this.totalMoney
       this.amount = ''
+    },
+    classList: {
+      handler(newVal, oldVal) {
+        this.grantNumber = newVal.length + this.grantNumber
+      },
+      deep: true
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
+    this.maxHeight = window.screen.height - 280 + 'px'
     this.getSchoolYearId()
+    this.initMenu()
   },
   methods: {
-    ...mapActions('home', ['addChargetask', 'getSchoolYear']),
+    ...mapActions('home', [
+      'addChargetask',
+      'getSchoolYear',
+      'getGradeList',
+      'getStudentSum',
+      'getTeacherSum',
+      'getClassList'
+    ]),
     getCharge(item) {
       this.recordList = item
     },
@@ -195,12 +240,12 @@ export default {
       this.userTag = true
     },
     userClose(removedTag) {
-      this.chooseTeachersDeatil = this.chooseTeachersDeatil.filter(tag => tag !== removedTag)
+      this.classList = this.classList.filter(tag => tag !== removedTag)
     },
     chooseUser(values) {
       console.log(values)
       this.$refs.chooseUser.reset()
-      this.chooseTeachersDeatil = values
+      this.classList = values
       this.chargeObject.schoolYearId = values[0].schoolYearId
       this.chargeObject.schoolYearName = this.getYearList[0].schoolYear
       this.chargeObject.chargeGrades = []
@@ -228,10 +273,150 @@ export default {
       this.$refs.addCharge.totalPrice = ''
       this.$refs.addCharge.addVisible = true
     },
+    // tree节点的选中
+    onChange(value) {
+      console.log(value)
+      this.value = value
+      if (value.length === 0) {
+        this.grantNumber = 0
+        this.grantNumber = this.classList.length
+      } else {
+        let studentCounts = []
+        value.map(el => {
+          const clazz = el.value.split('=')[0]
+          const grade = el.value.split('=')[1]
+          const clazzCode = clazz.split('/')[1]
+          const gradeCode = grade.split('?')[1]
+          if (clazz.split('/')[0] === 'schoolYear') {
+            studentCounts = []
+          } else if (clazzCode === gradeCode) {
+            studentCounts.push({
+              gradeCode: gradeCode
+            })
+          } else {
+            studentCounts.push({
+              classCodes: clazzCode,
+              gradeCode: gradeCode
+            })
+          }
+        })
+        const req = {
+          schoolCode: this.userInfo.schoolCode,
+          schoolYearId: this.schoolYear,
+          studentCounts: studentCounts
+        }
+        this.getStudentSum(req).then(res => {
+          this.grantNumber = res.data
+          this.grantNumber = this.grantNumber + this.classList.length
+        })
+      }
+    },
+    async initMenu() {
+      const req = {
+        schoolCode: this.userInfo.schoolCode
+      }
+      const res = await this.getSchoolYear(req)
+      if (res.data.list.length === 0) return
+      this.gradeList = res.data.list.filter(item => {
+        return item.semester === '下学期'
+      })
+      if (res.data.list[0].semester === '上学期') {
+        this.gradeList.unshift({
+          id: res.data.list[0].id,
+          semester: res.data.list[0].semester,
+          schoolYear: res.data.list[0].schoolYear,
+          value: res.data.list[0].id,
+          key: res.data.list[0].id
+        })
+      }
+      this.schoolYear = this.gradeList[0].id
+      this.treeData = [
+        {
+          title: this.gradeList[0].schoolYear + '学年',
+          code: this.gradeList[0].id,
+          schoolYearId: this.gradeList[0].id,
+          value: 'schoolYear' + '/' + this.gradeList[0].id + '=' + this.gradeList[0].schoolYear,
+          key: 'schoolYear' + '/' + this.gradeList[0].id + '=' + this.gradeList[0].schoolYear
+        }
+      ]
+      this.defaultSelectedKeys = [this.gradeList[0].id]
+      this.onLoadData({
+        dataRef: {
+          schoolYearId: this.treeData[0].code
+        }
+      })
+    },
+    async onLoadData(treeNode) {
+      return new Promise(resolve => {
+        if (treeNode.dataRef.children) {
+          resolve()
+          return
+        }
+        const req = {
+          schoolCode: this.userInfo.schoolCode
+        }
+        this.getGradeList(req).then(res => {
+          treeNode.dataRef.children = res.data.list.map(item => {
+            return {
+              title: item.name,
+              schoolYearId: treeNode.dataRef.schoolYearId,
+              isLeaf: false,
+              gradeCode: item.code,
+              value: 'gradeCode' + '/' + item.code + '=' + 'gradeCode' + '?' + item.code,
+              key: 'gradeCode' + '/' + item.code + '=' + 'gradeCode' + '?' + item.code
+            }
+          })
+          treeNode.dataRef.children.forEach(item => {
+            const data = {
+              schoolCode: this.userInfo.schoolCode,
+              schoolYearId: treeNode.dataRef.schoolYearId,
+              gradeCode: item.gradeCode
+            }
+            this.getClassList(data).then(res => {
+              item.children = res.data.list.map(ele => {
+                return {
+                  title: ele.className,
+                  schoolYearId: item.schoolYearId,
+                  gradeCode: item.gradeCode,
+                  classCode: ele.classCode,
+                  value: 'classCode' + '/' + ele.classCode + '=' + 'gradeCode' + '?' + item.gradeCode,
+                  key: 'classCode' + '/' + ele.classCode + '=' + 'gradeCode' + '?' + item.gradeCode,
+                  isLeaf: true
+                }
+              })
+              this.treeData = [...this.treeData]
+            })
+          })
+          this.treeData = [...this.treeData]
+          resolve()
+        })
+      })
+    },
+    // 深层递归
+    newOrgData(data) {
+      data.forEach(item => {
+        item.children = item.orgChilds || null
+        item.title = item.name
+        item.key = item.code
+        item.value = item.code
+        if (item.orgChilds && item.orgChilds.length > 0) {
+          this.newOrgData(item.orgChilds)
+        }
+      })
+      return data
+    },
     handleSubmit(e) {
       e.preventDefault()
       this.form.validateFields((err, values) => {
         if (!err) {
+          if (this.recordList.length === 0) {
+            this.$message.warning('请选择收费项!')
+            return
+          }
+          if (this.classList.length === 0) {
+            this.$message.warning('请选择收费对象!')
+            return
+          }
           values.endTime = moment(values.endTime).format('YYYY-MM-DD HH:mm:ss')
           const req = {
             schoolCode: this.userInfo.schoolCode,

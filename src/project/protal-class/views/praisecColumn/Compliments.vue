@@ -136,7 +136,7 @@ const formData = [
     type: 'input',
     label: '表扬语',
     max: 5,
-    placeholder: '请输入表扬语'
+    placeholder: '请输入表扬语，最大长度为5个字符'
   },
   {
     value: 'category',

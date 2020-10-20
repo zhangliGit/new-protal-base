@@ -62,7 +62,7 @@ const columns = [
   {
     title: '创建时间',
     dataIndex: 'createTime',
-    width: '10%',
+    width: '15%',
     customRender: text => {
       return $tools.getDate(text)
     }
@@ -70,7 +70,7 @@ const columns = [
   {
     title: '截止时间',
     dataIndex: 'cutOffTime',
-    width: '10%',
+    width: '15%',
     customRender: text => {
       return $tools.getDate(text)
     }
