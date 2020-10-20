@@ -263,7 +263,7 @@ export default {
           this.teacherList.forEach(el => {
             this.userList.push(el.userCode)
           })
-          if (adType === '1') {
+          if (adType === 1) {
             const req = {
               schoolCode: this.userInfo.schoolCode,
               createBy: this.userInfo.userName,

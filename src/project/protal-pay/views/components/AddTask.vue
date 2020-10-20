@@ -1,6 +1,6 @@
 <template>
   <div class="addTask page-layout qui-fx-ver">
-    <a-form :form="form" :style="{ maxHeight: maxHeight, overflow: 'auto' }">
+    <a-form :form="form">
       <a-form-item label="任务名称：" v-bind="formItemLayout">
         <a-input
           v-decorator="[
@@ -24,16 +24,23 @@
       </a-form-item>
       <a-form-item label="收费项" v-bind="formItemLayout" required>
         <a-button icon="plus" class="add-btn" @click="add">添加</a-button>
-        <table-list isZoom :columns="columns" :table-list="recordList">
-          <template v-slot:actions="action">
-            <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm.stop="deleteList(action.record)">
+        <a-table
+          :bordered="true"
+          :scroll-h="400"
+          :columns="columns"
+          :data-source="recordList"
+          :pagination="false"
+          class="table"
+        >
+          <template slot="action" slot-scope="text, record">
+            <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm.stop="deleteList(record)">
               <template slot="title">您确定删除吗?</template>
               <a-tooltip placement="topLeft" title="删除">
                 <a-button size="small" class="del-action-btn" icon="delete"></a-button>
               </a-tooltip>
             </a-popconfirm>
           </template>
-        </table-list>
+        </a-table>
         <a-row>
           <a-col :span="2" :offset="17"> 共计：</a-col>
           <a-col :span="5">{{ this.totalMoney == '' ? '0' : this.totalMoney }}元 </a-col>
@@ -81,6 +88,7 @@
       <a-form-item label="收费人数" v-bind="formItemLayout">
         <span class="ant-form-text">{{ this.grantNumber }}人</span>
       </a-form-item>
+      <div class="u-type-warning-disabled" style="padding-left: 10%;">*下班时间发起收费会获得更高缴费率哦！</div>
       <a-form-item :wrapper-col="{ span: 15, offset: 3 }">
         <a-button style="margin-right:50px;" @click="cancle">取消</a-button>
         <a-button type="primary" :loading="loading" @click="handleSubmit">保存</a-button>
@@ -180,7 +188,6 @@ export default {
       value: [],
       readOnlyTag: false,
       SHOW_PARENT,
-      maxHeight: 0,
       grantNumber: 0
     }
   },
@@ -209,7 +216,6 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
-    this.maxHeight = window.screen.height - 280 + 'px'
     this.getSchoolYearId()
     this.initMenu()
   },
@@ -252,17 +258,16 @@ export default {
       values.forEach(item => {
         this.chargeObject.chargeGrades.push({
           gradeCode: item.gradeCode,
-          gradeName: item.gradeName,
-          chargeClasses: []
+          gradeName: item.gradeName
         })
-        this.chargeObject.chargeGrades.forEach(ele => {
-          ele.chargeClasses.push({
-            classCode: item.classCode,
-            className: item.className,
-            userCodes: []
-          })
-          ele.chargeClasses[0].userCodes.push(item.userName)
-        })
+        // this.chargeObject.chargeGrades.forEach(ele => {
+        //   ele.chargeClasses.push({
+        //     classCode: item.classCode,
+        //     className: item.className,
+        //     userCodes: []
+        //   })
+        //   ele.chargeClasses[0].userCodes.push(item.userName)
+        // })
       })
       console.log(this.chargeObject)
     },
@@ -282,11 +287,33 @@ export default {
         this.grantNumber = this.classList.length
       } else {
         let studentCounts = []
+        this.chargeObject.schoolYearId = this.getYearList[0].id
+        this.chargeObject.schoolYearName = this.getYearList[0].schoolYear
+        this.chargeObject.chargeGrades = []
         value.map(el => {
           const clazz = el.value.split('=')[0]
           const grade = el.value.split('=')[1]
+          const cname = el.value.split('=')[2]
+          const gname = el.value.split('=')[3]
           const clazzCode = clazz.split('/')[1]
           const gradeCode = grade.split('?')[1]
+          const gradeName = gname.split(',')[1]
+          const className = cname.split('*')[1]
+          console.log(clazz, grade, cname, gname)
+          this.chargeObject.chargeGrades.push({
+            gradeCode: gradeCode,
+            gradeName: gradeName,
+            chargeClasses: []
+          })
+          this.chargeObject.chargeGrades.forEach(ele => {
+            ele.chargeClasses.push({
+              classCode: clazzCode,
+              className: className,
+              userCodes: []
+            })
+          })
+          console.log(this.chargeObject)
+          return
           if (clazz.split('/')[0] === 'schoolYear') {
             studentCounts = []
           } else if (clazzCode === gradeCode) {
@@ -362,8 +389,31 @@ export default {
               schoolYearId: treeNode.dataRef.schoolYearId,
               isLeaf: false,
               gradeCode: item.code,
-              value: 'gradeCode' + '/' + item.code + '=' + 'gradeCode' + '?' + item.code,
-              key: 'gradeCode' + '/' + item.code + '=' + 'gradeCode' + '?' + item.code
+              gradeName: item.name,
+              value:
+                'gradeCode' +
+                '/' +
+                item.code +
+                '=' +
+                'gradeCode' +
+                '?' +
+                item.code +
+                '=' +
+                'gradeName' +
+                '?' +
+                item.name,
+              key:
+                'gradeCode' +
+                '/' +
+                item.code +
+                '=' +
+                'gradeCode' +
+                '?' +
+                item.code +
+                '=' +
+                'gradeName' +
+                '*' +
+                item.name
             }
           })
           treeNode.dataRef.children.forEach(item => {
@@ -379,8 +429,38 @@ export default {
                   schoolYearId: item.schoolYearId,
                   gradeCode: item.gradeCode,
                   classCode: ele.classCode,
-                  value: 'classCode' + '/' + ele.classCode + '=' + 'gradeCode' + '?' + item.gradeCode,
-                  key: 'classCode' + '/' + ele.classCode + '=' + 'gradeCode' + '?' + item.gradeCode,
+                  value:
+                    'classCode' +
+                    '/' +
+                    ele.classCode +
+                    '=' +
+                    'gradeCode' +
+                    '?' +
+                    item.gradeCode +
+                    '=' +
+                    'className' +
+                    '*' +
+                    ele.className +
+                    '=' +
+                    'gradeName' +
+                    ',' +
+                    item.gradeName,
+                  key:
+                    'classCode' +
+                    '/' +
+                    ele.classCode +
+                    '=' +
+                    'gradeCode' +
+                    '?' +
+                    item.gradeCode +
+                    '=' +
+                    'className' +
+                    '*' +
+                    ele.className +
+                    '=' +
+                    'gradeName' +
+                    ',' +
+                    item.gradeName,
                   isLeaf: true
                 }
               })
@@ -456,6 +536,15 @@ export default {
 }
 </script>
 <style lang="less" scoped>
+.addTask {
+  background: #fff;
+  padding-top: 20px;
+  overflow: auto;
+  .table {
+    max-height: 300px;
+    overflow: auto;
+  }
+}
 .choose-input {
   border: 1px solid @bor-color;
   border-radius: @radius;
@@ -468,10 +557,5 @@ export default {
     line-height: 30px;
     color: @dark-color;
   }
-}
-.addTask {
-  background: #fff;
-  padding-top: 20px;
-  overflow: auto;
 }
 </style>
