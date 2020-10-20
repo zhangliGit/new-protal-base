@@ -63,7 +63,7 @@ import { quillEditor } from 'vue-quill-editor'
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
-import quillConfig from '../../../assets/js/quill-config'
+import quillConfig from '../../../../assets/js/quill-config'
 import UploadMulti from '@c/UploadMulti'
 import { mapState, mapActions } from 'vuex'
 export default {

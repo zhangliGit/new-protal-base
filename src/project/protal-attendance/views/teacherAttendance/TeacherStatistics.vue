@@ -9,25 +9,25 @@
       </search-form>
       <table-list :page-list="pageList" :columns="columns" :table-list="recordList">
         <template v-slot:other1="record">
-          <a-tag @click="detail(1, record.record,'normalCount')" color="#71d5a1">{{ record.record.normalCount }}</a-tag>
+          <a-tag @click="detail(1, record.record,'5')" color="#71d5a1">{{ record.record.normalCount }}</a-tag>
         </template>
         <template v-slot:other2="record">
-          <a-tag @click="detail(1, record.record,'lateCount')" color="#ff9900">{{ record.record.lateCount }}</a-tag>
+          <a-tag @click="detail(1, record.record,'1')" color="#ff9900">{{ record.record.lateCount }}</a-tag>
         </template>
         <template v-slot:other3="record">
-          <a-tag @click="detail(1, record.record,'earlyCount')" color="#ff9900">{{ record.record.earlyCount }}</a-tag>
+          <a-tag @click="detail(1, record.record,'2')" color="#ff9900">{{ record.record.earlyCount }}</a-tag>
         </template>
         <template v-slot:other4="record">
-          <a-tag @click="detail(1, record.record,'noRecord')" color="#fab6b6">{{ record.record.noRecord }}</a-tag>
+          <a-tag @click="detail(1, record.record,'7')" color="#fab6b6">{{ record.record.noRecord }}</a-tag>
         </template>
         <template v-slot:other5="record">
-          <a-tag @click="detail(1, record.record,'onNoRecordCount')" color="#fab6b6">{{ record.record.onNoRecordCount }}</a-tag>
+          <a-tag @click="detail(1, record.record,'3')" color="#fab6b6">{{ record.record.onNoRecordCount }}</a-tag>
         </template>
         <template v-slot:other6="record">
-          <a-tag @click="detail(1, record.record,'leaveCount')" color="#ccc">{{ record.record.leaveCount }}</a-tag>
+          <a-tag @click="detail(1, record.record,'4')" color="#ccc">{{ record.record.leaveCount }}</a-tag>
         </template>
         <template v-slot:totalNums="record">
-          <a-tag @click="detail(1, record.record,'offNoRecordCount')" color="#fab6b6">{{ record.record.offNoRecordCount }}</a-tag>
+          <a-tag @click="detail(1, record.record,'6')" color="#fab6b6">{{ record.record.offNoRecordCount }}</a-tag>
         </template>
         <template v-slot:actions="action">
           <div>
@@ -151,7 +151,10 @@ export default {
         endDay: this.searchList.endDay
       }
       if (type) {
-        req.count = record[string]
+        // req.count = record[string]
+        req.count = string
+      } else {
+        req.count = '5'
       }
       this.$router.push({
         path: '/teacherStatistics/detail',

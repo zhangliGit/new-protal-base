@@ -25,6 +25,7 @@
                 rules: [{ required: true, message: '请填写资源名称' }]
               }
             ]"
+            placeholder="请填写课堂类型"
             :options="options"
           />
         </a-form-item>
@@ -86,7 +87,7 @@ import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 import UploadMulti from '@c/UploadMulti'
-import quillConfig from '../../../assets/js/quill-config'
+import quillConfig from '../../../../assets/js/quill-config'
 import { mapState, mapActions } from 'vuex'
 export default {
   name: 'Info',
@@ -118,7 +119,6 @@ export default {
           count: '4'
         }
       ],
-      userList: {}, // 资源类型
       options: [], // 资源树
       appForm: {},
       firstData: [],

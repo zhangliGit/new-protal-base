@@ -5,6 +5,7 @@
       v-model="isShow"
       width="800px"
       height="500px"
+      @cancel="cancle"
       :maskClosable="false"
       :destroyOnClose="true"
     >

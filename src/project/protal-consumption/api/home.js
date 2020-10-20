@@ -28,7 +28,14 @@ const homeApi = {
   addRule: '/consumeRule#post', // 新增消费规则
   getRuleList: '/consumeRule/list#get', // 消费规则列表查询
   editRule: '/consumeRule#putJson', // 修改消费规则
-  delRule: '/consumeRule#delWithQuery' // 删除消费规则
+  delRule: '/consumeRule#delWithQuery', // 删除消费规则
+
+  getDayStatistics: '/businessdayStatistics/list#get', // 营业日统计
+  exportDayStatistics: '/businessdayStatistics/export#export', // 营业日统计导出
+  getMonthStatistics: '/businessdayStatistics/listByMouth#get', // 营业月统计
+  exportMonthStatistics: '/businessdayStatistics/exportByMouth#export', // 营业月统计导出
+  getStallStatistics: '/deviceStatistics/list#get', // 档口营业统计
+  exportStallStatistics: '/deviceStatistics/export#export' // 档口营业统计导出
 }
 const baseDataApi = {
   // 场地管理

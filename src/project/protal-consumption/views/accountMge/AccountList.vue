@@ -212,9 +212,11 @@ export default {
      * @description 账户详情
      */
     toDetail(record) {
-      window.localStorage.setItem('accountInfo', JSON.stringify(record))
       this.$router.push({
-        path: '/accountList/accountDetails'
+        path: '/accountList/accountDetails',
+        query: {
+          id: record.id
+        }
       })
     },
     /**

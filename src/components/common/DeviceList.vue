@@ -21,8 +21,12 @@
       :data-source="tableList"
       :pagination="false"
     >
-      <template slot="action" slot-scope="text, record">
+      <template v-if="show" slot="action" slot-scope="text, record">
         <a-tag @click="getRecordList(record)" color="#87d068">下发记录</a-tag>
+      </template>
+      <template v-if="attendance" slot="action" slot-scope="text, record">
+        <a-tag @click="delRecord(record)" color="#f50">解绑</a-tag>
+        <a-tag v-if="check" @click="getRecordList(record)" color="#87d068">下发记录</a-tag>
       </template>
       <template slot="index" slot-scope="text, record, index">{{ index | getPageIndex(pageList) }}</template>
     </a-table>
@@ -80,6 +84,18 @@ export default {
           size: 200
         }
       }
+    },
+    show: {
+      type: Boolean,
+      default: true
+    },
+    attendance: {
+      type: Boolean,
+      default: false
+    },
+    check: {
+      type: Boolean,
+      default: false
     }
   },
   filters: {
@@ -105,6 +121,10 @@ export default {
   methods: {
     getRecordList(record) {
       this.$emit('getRecordList', record)
+    },
+    // 解绑
+    delRecord(record) {
+      this.$emit('delRecord', record)
     },
     // 表单回填
     async showData() {

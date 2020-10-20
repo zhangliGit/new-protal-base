@@ -1,14 +1,14 @@
 <template>
   <div class="Danger page-layout bg-fff u-padd-10">
-    <a-tabs default-active-key="1" class="a-tab" @change="callback">
+    <a-tabs default-active-key="3" class="a-tab" @change="callback">
       <a-tab-pane key="1" tab="安全课堂">
         <safe-class-item></safe-class-item>
       </a-tab-pane>
       <a-tab-pane key="2" tab="课堂习题" force-render>
-        <!-- <danger-supervision></danger-supervision> -->
+        <safety-exercises></safety-exercises>
       </a-tab-pane>
       <a-tab-pane key="3" tab="课堂资源" force-render>
-        <!-- <danger-supervision></danger-supervision> -->
+        <class-resources></class-resources>
       </a-tab-pane>
     </a-tabs>
   </div>
@@ -18,9 +18,9 @@
 export default {
   name: 'Danger',
   components: {
-    SafeClassItem: () => import('./SafeClassItem')
-    // DangerSupervision: () => import('./DangerSupervision')
-    // DangerSupervision: () => import('./DangerSupervision')
+    SafeClassItem: () => import('./SafeClassItem'),
+    safetyExercises: () => import('./SafetyExercises'),
+    classResources: () => import('./ClassResources')
   },
   data() {
     return {}

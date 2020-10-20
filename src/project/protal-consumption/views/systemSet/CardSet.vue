@@ -9,14 +9,14 @@
       @radioChange="radioChange"
     ></submit-form>
     <no-data msg="暂无数据" v-if="dataList.length === 0">
-      <div slot="btn">
+      <!-- <div slot="btn">
         <a-button type="primary" @click="add(0)"> <a-icon type="plus" />添加 </a-button>
-      </div>
+      </div> -->
     </no-data>
     <div v-else class="qui-fx qui-fx-ver qui-fx-f1">
-      <div class="top-btn-group qui-fx">
+      <!-- <div class="top-btn-group qui-fx">
         <a-button type="primary" @click="add(0)"> <a-icon type="plus" />添加 </a-button>
-      </div>
+      </div> -->
       <table-list :page-list="pageList" :columns="columns" :table-list="dataList">
         <template v-slot:other1="other1">
           <div>
@@ -28,12 +28,12 @@
           <a-tooltip placement="topLeft" title="编辑">
             <a-button size="small" class="edit-action-btn" icon="form" @click.stop="add(1, action.record)"></a-button>
           </a-tooltip>
-          <a-popconfirm v-if="action.record.userType !== '1' && action.record.userType !== '2'" placement="left" okText="确定" cancelText="取消" @confirm="del(action.record)">
+          <!-- <a-popconfirm v-if="action.record.userType !== '1' && action.record.userType !== '2'" placement="left" okText="确定" cancelText="取消" @confirm="del(action.record)">
             <template slot="title">您确定删除吗?</template>
             <a-tooltip placement="topLeft" title="删除">
               <a-button size="small" class="del-action-btn" icon="delete"></a-button>
             </a-tooltip>
-          </a-popconfirm>
+          </a-popconfirm> -->
         </template>
       </table-list>
       <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>

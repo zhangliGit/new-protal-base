@@ -39,11 +39,11 @@ const libraryApi = {
   ecsDownload: '/class/exercises/download#get', // 课堂习题-模板下载
   ecsExport: '/class/exercises/export#post', // 课堂习题-导出
   ecsImport: '/class/exercises/import#post', // 课堂习题-导入
-  ecsInfo: '/class/exercises/info#get', // 课堂习题-详情
+  ecsInfo: '/class/exercises/info#getUrl', // 课堂习题-详情
   ecsModify: '/class/exercises/modify#post', // 课堂习题-修改
   ecsPage: '/class/exercises/page#post', // 课堂习题-分页条件查询
   ecsRemoveAll: '/class/exercises/remove#post', // 课堂习题-批量删除
-  ecsRemove: '/class/exercises/remove#get', // 课堂习题-删除
+  ecsRemove: '/class/exercises/remove#getUrl', // 课堂习题-删除
 
   classroomInfo: '/class/info#get', // 安全课堂-详情
   claroomPublicList: '/class/page/great#post', // 安全课堂-分页条件查询-精品库

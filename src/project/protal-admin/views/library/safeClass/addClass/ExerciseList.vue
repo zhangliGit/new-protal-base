@@ -23,8 +23,8 @@
   </a-modal>
 </template>
 <script>
-import { exerciseListColumns } from '../../../assets/js/tableColumns'
-import { exerciseSearchLabel } from '../../../assets/js/searchLabel'
+import { exerciseListColumns } from '../../../../assets/js/tableColumns'
+import { exerciseSearchLabel } from '../../../../assets/js/searchLabel'
 import PageNum from '@c/PageNum'
 import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'

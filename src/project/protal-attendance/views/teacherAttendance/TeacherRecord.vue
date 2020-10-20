@@ -21,7 +21,7 @@
       <div class="qui-fx-f1" id="tableList">
         <a-table
           style="height: 400px"
-          :scroll="{ x: 'calc(700px + 50%)', y: this.$tools.setScroll('tableList') - 40 }"
+          :scroll="{ x: 100, y: this.$tools.setScroll('tableList') - 40 }"
           :columns="teacherRecord.columns"
           :data-source="recordList"
           bordered
@@ -72,7 +72,7 @@
                   :color="other3.noonOnState === '1' ? '#f5b111'
                     : other3.noonOnState === '4' ? '#2db7f5'
                       : other3.noonOnState === '5' ? '#87d068'
-                        :other3.noonOnState === '6' ? '#f50' :
+                        :other3.noonOnState === '3' ? '#f50' :
                           ''">{{ other3.noonOnState | onState }}</a-tag>
               </a-tooltip>
             </a-popconfirm>
@@ -87,7 +87,7 @@
                   :color="other4.noonOffState === '2' ? '#f5b111'
                     : other4.noonOffState === '4' ? '#2db7f5'
                       : other4.noonOffState === '5' ? '#87d068'
-                        :other4.noonOffState === '6' ? '#f50' :
+                        :other4.noonOffState === '3' ? '#f50' :
                           ''">{{ other4.noonOffState | onState }}</a-tag>
               </a-tooltip>
             </a-popconfirm>
@@ -160,10 +160,11 @@ export default {
     }
   },
   async mounted () {
+    console.log('this.$route.query.type',this.$route.query.type)
     if (this.$route.query.type) {
       this.teacherRecord.searchLabel[1].initValue = [moment(this.$route.query.date).format('YYYY-MM-DD'), moment(this.$route.query.date).format('YYYY-MM-DD')]
       const type = parseInt(this.$route.query.type) + 1
-      const state = this.$tools.attendanceState(this.$route.query.state)
+      const state = this.$tools.attendanceState(this.$route.query.state, type)
       this.teacherRecord.searchLabel[type].initValue = state
       this.searchList.startDay = moment(this.$route.query.date).format('YYYY-MM-DD')
       this.searchList.endDay = moment(this.$route.query.date).format('YYYY-MM-DD')
