@@ -118,7 +118,7 @@ module.exports = {
         }
       },
       '/ljj_user_center': {
-        target: 'http://192.168.1.76:11002/', // 柳继杰-局端基础数据
+        target: 'http://192.168.2.242:11002/', // 柳继杰-局端基础数据
         // target: 'http://192.168.2.242:11002/', // 柳继杰-
         changeOrigin: true,
         pathRewrite: {
@@ -259,7 +259,7 @@ module.exports = {
       },
       '/zq_schedule': {
         // target: 'http://192.168.1.241:11008/', // 张琦-课程表
-        target: 'http://192.168.1.193:11010/',
+        target: 'http://192.168.2.242:11010/',
         changeOrigin: true,
         pathRewrite: {
           '^/zq_schedule': ''
@@ -275,7 +275,7 @@ module.exports = {
       },
       '/zq_class': {
         // target: 'http://192.168.2.242:11009/', // 张琦-班牌管理
-        target: 'http://192.168.1.193:11009/',
+        target: 'http://192.168.2.242:11009/',
         changeOrigin: true,
         pathRewrite: {
           '^/zq_class': ''
@@ -283,7 +283,7 @@ module.exports = {
       },
       '/zk_class': {
         // target: 'http://192.168.2.242:11009/', // 张坤-班牌管理
-        target: 'http://192.168.1.193:11009/',
+        target: 'http://192.168.2.242:11009/',
         changeOrigin: true,
         pathRewrite: {
           '^/zk_class': ''

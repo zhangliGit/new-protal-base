@@ -14,6 +14,7 @@ const homeApi = {
 
   getMachineList: '/consumerMachine/list#get', // 消费机设备列表查询
   editMachine: '/consumerMachine#putJson', // 修改消费机
+  editMachineIsOpen: '/consumerMachine/editIsOpen#postQuery', // 启动关闭消费机
   getDetailMachine: '/consumerMachine#getUrl', // 消费机详情
 
   getStallList: '/windowManage/list#get', // 档口列表查询

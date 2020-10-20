@@ -85,7 +85,7 @@ export default {
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getMachineList', 'editMachine', 'addAuthor', 'unBindConsume']),
+    ...mapActions('home', ['getMachineList', 'editMachine', 'editMachineIsOpen', 'addAuthor', 'unBindConsume']),
     async showList() {
       const req = {
         pageNum: this.pageList.page,
@@ -113,7 +113,7 @@ export default {
         id: record.id,
         isOpen: value ? '1' : '0'
       }
-      await this.editMachine(req)
+      await this.editMachineIsOpen(req)
       this.$message.success('操作成功')
       this.$tools.goNext(() => {
         this.showList()

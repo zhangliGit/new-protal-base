@@ -1,5 +1,5 @@
 <template>
-  <div class="qui-fx-f1" :style="{'minHeight': minHeight + 'px'}">
+  <div class="qui-fx-f1" :style="{ minHeight: minHeight + 'px' }">
     <div
       id="tableList"
       :style="{
@@ -11,11 +11,11 @@
       }"
     >
       <a-table
-        :style="{'height': minHeight + 'px'}"
+        :style="{ height: minHeight + 'px' }"
         :scroll="{ y: scrollH || this.$tools.setScroll('tableList') }"
         :customRow="customRow"
         :pagination="false"
-        :rowKey="record => record.id"
+        :rowKey="(record) => record.id"
         :rowSelection="selectObj"
         :columns="columns"
         :dataSource="tableList"
@@ -23,18 +23,26 @@
         <template v-if="isIndex" slot="index" slot-scope="text, record, index">{{
           index | getPageIndex(pageList)
         }}</template>
-        <template
-          slot="number"
-          slot-scope="text, record, index"
-        >
-          <div :style="[{'color': (record.validDate && (record.validDate - (new Date().getTime()) < 0)) ? 'red' : (record.validDate && (record.validDate - (new Date()).getTime() - 1000*60*60*24*30 < 0)) ? 'orange' : 'black'}]">
+        <template slot="number" slot-scope="text, record, index">
+          <div
+            :style="[
+              {
+                color:
+                  record.validDate && record.validDate - new Date().getTime() < 0
+                    ? 'red'
+                    : record.validDate && record.validDate - new Date().getTime() - 1000 * 60 * 60 * 24 * 30 < 0
+                    ? 'orange'
+                    : 'black'
+              }
+            ]"
+          >
             {{ index | getPageIndex(pageList) }}
           </div>
         </template>
         <template slot="photoPic" slot-scope="text">
           <a-popover placement="left" v-if="isZoom">
             <template slot="content">
-              <img :src="text" style="max-width: 200px; max-height: 220px; display: block; " alt />
+              <img :src="text" style="max-width: 200px; max-height: 220px; display: block" alt />
             </template>
             <img
               :src="text || noImg"
@@ -52,7 +60,7 @@
         <template slot="snapPic" slot-scope="text">
           <a-popover placement="left" v-if="isZoom">
             <template slot="content">
-              <img :src="text || noImg" style="max-width: 200px; max-height: 220px; display: block;" alt />
+              <img :src="text || noImg" style="max-width: 200px; max-height: 220px; display: block" alt />
             </template>
             <img
               :src="text || noImg"
@@ -203,7 +211,12 @@ export default {
         onSelectAll: this.onSelectAll,
         selectedRowKeys: this.selectedRowKeys,
         onSelect: this.selectChange,
-        onChange: this.onSelectChange
+        onChange: this.onSelectChange,
+        getCheckboxProps: (record) => ({
+          props: {
+            disabled: record.disabled
+          }
+        })
       }
     }
   },
@@ -214,7 +227,7 @@ export default {
   },
   methods: {
     onSelectAll(type, selectedRows, changeRows) {
-      const data = changeRows.map(item => {
+      const data = changeRows.map((item) => {
         return {
           id: item.id,
           userName: item.userName,
@@ -225,20 +238,22 @@ export default {
     },
     // 点击单行表格
     customRow(record, index) {
-      return {
-        on: {
-          click: () => {
-            if (this.isRadio) {
-              this.selectedRowKeys = [record.id]
-              this.$emit('clickRow', record, true)
-            } else if (this.isCheck) {
-              const index = this.selectedRowKeys.indexOf(record.id)
-              if (index > -1) {
-                this.selectedRowKeys.splice(index, 1)
-                this.$emit('clickRow', record, false)
-              } else {
-                this.selectedRowKeys.push(record.id)
+      if (!record.disabled) {
+        return {
+          on: {
+            click: () => {
+              if (this.isRadio) {
+                this.selectedRowKeys = [record.id]
                 this.$emit('clickRow', record, true)
+              } else if (this.isCheck) {
+                const index = this.selectedRowKeys.indexOf(record.id)
+                if (index > -1) {
+                  this.selectedRowKeys.splice(index, 1)
+                  this.$emit('clickRow', record, false)
+                } else {
+                  this.selectedRowKeys.push(record.id)
+                  this.$emit('clickRow', record, true)
+                }
               }
             }
           }
