@@ -261,9 +261,9 @@ export default {
 
 .bottom {
   position: fixed;
-  bottom: 10px;
+  bottom: 15px;
   height: 258px;
-  width: calc(100% - 272px);
+  width: calc(100% - 30px);
   background: url('../assets/img/dbct.png') no-repeat center;
   background-size: 100% 100%;
 }
