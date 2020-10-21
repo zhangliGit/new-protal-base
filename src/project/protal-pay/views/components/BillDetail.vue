@@ -20,27 +20,27 @@
       </div>
     </div>
     <div slot="tabBarExtraContent" class=" detail-show">
-        <div class="title top-title mar-b10 mar-t10">
-          收费项信息
-        </div>
+      <div class="title top-title mar-b10 mar-t10">
+        收费项信息
+      </div>
     </div>
     <div style="height: 200px;">
       <table-list is-zoom :page-list="pageList" :columns="columns" :table-list="recordList"> </table-list>
     </div>
     <div slot="tabBarExtraContent" class=" detail-show">
-        <div class="title top-title mar-b10 mar-t10">
-          操作信息
+      <div class="title top-title mar-b10 mar-t10">
+        操作信息
+      </div>
+      <template>
+        <div class="u-padd-20">
+          <a-timeline>
+            <a-timeline-item v-for="(item, index) in OpeList" :key="index"
+              >{{ item.opeTime | getDate(1) }}
+              <div>{{ $tools.opeType(item.opeType) }}</div>
+            </a-timeline-item>
+          </a-timeline>
         </div>
-        <template>
-          <div class="u-padd-20">
-            <a-timeline >
-              <a-timeline-item v-for="(item, index) in OpeList" :key="index"
-                >{{ item.opeTime | getDate(1) }}
-                <div>{{ $tools.opeType(item.opeType) }}</div>
-              </a-timeline-item>
-            </a-timeline>
-          </div>
-        </template>
+      </template>
     </div>
     <sub-form
       ref="subForm"
@@ -268,7 +268,7 @@ export default {
         billNum: this.$route.query.billNum
       }
       this.confirmPayBill(req)
-        .then((res) => {
+        .then(res => {
           this.formStatus = false
           this.$message.success('收款成功')
           this.$tools.goNext(() => {
@@ -305,8 +305,7 @@ export default {
 <style lang="less" scoped>
 .bill-detail {
   height: 100%;
-      padding: 20px;
-
+  padding: 20px;
 }
 .detail-show {
   background-color: #fff;
@@ -316,7 +315,7 @@ export default {
     color: @main-color;
     padding: 10px;
   }
-   .top-title{
+  .top-title {
     background-color: #ececec;
   }
   .mar-top {

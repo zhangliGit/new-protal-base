@@ -116,7 +116,7 @@ const columns = [
     title: '性别',
     dataIndex: 'sex',
     width: '10%',
-    customRender: (text) => {
+    customRender: text => {
       return parseInt(text) === 1 ? '男' : '女'
     }
   },
@@ -221,7 +221,7 @@ export default {
         }
       })
       const users = res.data
-      users.forEach((item) => {
+      users.forEach(item => {
         this.chooseList.push(item.userCode)
         this.totalList.push({
           id: item.userCode,
@@ -233,7 +233,17 @@ export default {
     } else if (this.chooseType === 'door') {
       this.getDoorTotal(1)
     } else if (this.chooseType === 'class') {
-      this.classList.forEach((item) => {
+      this.classList.forEach(item => {
+        this.chooseList.push(item.userCode)
+        this.totalList.push({
+          id: item.userCode,
+          userCode: item.userCode,
+          userName: item.userName
+        })
+      })
+      this.getStudentList(true)
+    } else if (this.chooseType === 'pay') {
+      this.classList.forEach(item => {
         this.chooseList.push(item.userCode)
         this.totalList.push({
           id: item.userCode,
@@ -251,7 +261,7 @@ export default {
         }
       })
       const users = res.data
-      users.forEach((item) => {
+      users.forEach(item => {
         this.chooseList.push(item.userCode)
         this.totalList.push({
           id: item.userCode,
@@ -280,7 +290,7 @@ export default {
       columns,
       userList: [],
       totalList: [],
-      schoolYear:''
+      schoolYear: ''
     }
   },
   methods: {
@@ -297,7 +307,7 @@ export default {
         }
       })
       const users = res.data.list
-      users.forEach((item) => {
+      users.forEach(item => {
         this.chooseList.push(item.userCode)
         this.totalList.push({
           id: item.userCode,
@@ -342,7 +352,7 @@ export default {
           ...this.pageList
         }
       })
-      this.userList = res.data.list.map((item) => {
+      this.userList = res.data.list.map(item => {
         return {
           ...item,
           id: type ? item.userCode : item.id
@@ -365,8 +375,8 @@ export default {
       if (type) {
         this.totalList = this.totalList.concat(item)
       } else {
-        item.forEach((item) => {
-          const index = this.totalList.findIndex((list) => {
+        item.forEach(item => {
+          const index = this.totalList.findIndex(list => {
             return list.id === item.id
           })
           this.totalList.splice(index, 1)
@@ -388,13 +398,13 @@ export default {
             className: item.className,
             gradeCode: item.gradeCode,
             gradeName: item.gradeName,
-            schoolYearId: item.schoolYearId,
+            schoolYearId: item.schoolYearId
           })
         } else {
           this.totalList = [item]
         }
       } else {
-        const index = this.totalList.findIndex((list) => list.id === item.id)
+        const index = this.totalList.findIndex(list => list.id === item.id)
         this.totalList.splice(index, 1)
       }
     },

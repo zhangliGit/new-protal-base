@@ -27,8 +27,8 @@
       </a-form-item>
       <a-form-item label="收费对象" v-bind="formItemLayout" required>
         <div class="choose-input" @click="teacherSelect">
-          <div class="p" v-if="chooseTeachersDeatil.length === 0">请点击选择收费对象</div>
-          <template v-for="tag in chooseTeachersDeatil">
+          <div class="p" v-if="classList.length === 0">请点击选择收费对象</div>
+          <template v-for="tag in classList">
             <a-tag
               color="purple"
               @click.stop.prevent
@@ -44,10 +44,12 @@
     <choose-student
       ref="chooseUser"
       is-check
+      chooseType="pay"
       v-if="userTag"
       v-model="userTag"
       @submit="chooseUser"
       title="选择学生"
+      :classList="classList"
     ></choose-student>
   </a-modal>
 </template>
@@ -98,7 +100,7 @@ export default {
       form: this.$form.createForm(this),
       loading: false,
       userTag: false,
-      chooseTeachersDeatil: [],
+      classList: [],
       recordList: [],
       columns,
       formItemLayout: {
@@ -163,11 +165,11 @@ export default {
       this.userTag = true
     },
     userClose(removedTag) {
-      this.chooseTeachersDeatil = this.chooseTeachersDeatil.filter(tag => tag !== removedTag)
+      this.classList = this.classList.filter(tag => tag !== removedTag)
     },
     chooseUser(values) {
       this.$refs.chooseUser.reset()
-      this.chooseTeachersDeatil = values
+      this.classList = values
       this.chargeObject.schoolYearId = values[0].schoolYearId
       this.chargeObject.schoolYearName = values[0].schoolYear
       values.forEach(item => {
@@ -192,6 +194,14 @@ export default {
       e.preventDefault()
       this.form.validateFields((err, values) => {
         if (!err) {
+          if (this.recordList.length === 0) {
+            this.$message.warning('请选择收费项!')
+            return
+          }
+          if (this.classList.length === 0) {
+            this.$message.warning('请选择收费对象!')
+            return
+          }
           const req = {
             schoolCode: this.userInfo.schoolCode,
             preMoney: this.amount,
