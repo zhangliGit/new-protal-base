@@ -207,7 +207,7 @@ export default {
     },
     classList: {
       handler(newVal, oldVal) {
-        this.grantNumber = newVal.length + this.grantNumber
+        this.grantNumber = newVal.length
       },
       deep: true
     }
@@ -258,16 +258,21 @@ export default {
       values.forEach(item => {
         this.chargeObject.chargeGrades.push({
           gradeCode: item.gradeCode,
-          gradeName: item.gradeName
+          gradeName: item.gradeName,
+          chargeClasses: []
         })
-        // this.chargeObject.chargeGrades.forEach(ele => {
-        //   ele.chargeClasses.push({
-        //     classCode: item.classCode,
-        //     className: item.className,
-        //     userCodes: []
-        //   })
-        //   ele.chargeClasses[0].userCodes.push(item.userName)
-        // })
+        this.chargeObject.chargeGrades.forEach(ele => {
+          if (item.gradeCode === ele.gradeCode) {
+            ele.chargeClasses.push({
+              classCode: item.classCode,
+              className: item.className,
+              userCodes: []
+            })
+            ele.chargeClasses.forEach(list => {
+              list.userCodes.push(item.userCode)
+            })
+          }
+        })
       })
       console.log(this.chargeObject)
     },
@@ -313,7 +318,6 @@ export default {
             })
           })
           console.log(this.chargeObject)
-          return
           if (clazz.split('/')[0] === 'schoolYear') {
             studentCounts = []
           } else if (clazzCode === gradeCode) {

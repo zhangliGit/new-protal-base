@@ -40,6 +40,8 @@ const Tools = {
       return time.substr(0, 19)
     } else if (type === 6) {
       return time.substr(0, 16)
+    } else if (type === 7) {
+      return time.substring(11, 16)
     } else {
       return time
     }

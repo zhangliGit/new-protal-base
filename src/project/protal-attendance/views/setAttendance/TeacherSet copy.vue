@@ -216,8 +216,7 @@ export default {
       show: false,
       holidayFlag: ['1'],
       check: false,
-      chooseRecord: {},
-      count: 0
+      chooseRecord: {}
     }
   },
   created() {
@@ -254,12 +253,14 @@ export default {
       this.groupList = this.groupList.filter(list => list.deviceSn !== record.deviceSn)
     },
     add(type, record) {
+      console.log('this.data[id].accessTimeList', record)
       this.state = type
       if (type) {
+        this.$refs.changeClass.chooseList = type === 2 ? [record.id] : []
         this.$refs.changeClass.defaultValue = type === 2 ? moment(record.current).format('YYYY-MM-DD HH:mm:ss') : ''
         this.$refs.changeClass.current = type === 2 ? record.current : ''
-        this.$refs.changeClass.chooseList = type === 2 ? [record.classId ? record.classId : record.id] : []
-        this.$refs.changeClass.totalList = type === 2 ? { ...record, id: record.classId ? record.classId : record.id } : {}
+        this.$refs.changeClass.chooseList = type === 2 ? [record.classId] : []
+        this.$refs.changeClass.totalList = type === 2 ? { ...record, id: record.classId } : {}
         this.chooseRecord = type === 2 ? record : {}
         this.show = false
         this.$refs.changeClass.title = '必须打卡的日期'
@@ -277,28 +278,23 @@ export default {
     // 更换班次
     changeClass(record) {
       if (this.state === 1) {
-        const { count, clockList } = this
-        const newData = {
-          key: count,
-          ...record
-        }
-        this.clockList = [...clockList, newData]
-        this.count = count + 1
+        this.clockList.push(record)
       } else if (this.state === 2) {
+        console.log('record', record)
+        console.log('chooseRecord', this.chooseRecord)
         for (var i = 0; i < this.clockList.length; i++) {
-          if (this.clockList[i].key === this.chooseRecord.key) {
+          if (this.clockList[i].shiftCode === this.chooseRecord.shiftCode) {
             this.clockList[i].classId = record.id
             this.clockList[i].current = record.current
             this.clockList[i].code = record.code
             this.clockList[i].name = record.name
-            this.clockList[i].id = record.id
-            this.clockList[i].ruleTimeDtoList = record.ruleTimeDtoList
-            this.clockList[i].key = this.chooseRecord.key
+            this.clockList[i] = record
           }
         }
       } else {
         this.data[this.classId].accessTimeList = record
       }
+      console.log('this.clockList', this.clockList)
       this.$refs.changeClass.reset()
     },
     // 不用打卡日期
@@ -331,17 +327,14 @@ export default {
           this.data[parseInt(item.dayName) - 2].accessTimeList.code = item.shiftCode
         }
       })
-      this.clockList = value.specialSignInDayRuleDtos.map((ele, index) => {
+      this.clockList = value.specialSignInDayRuleDtos.map(ele => {
         return {
-          id: ele.classId,
+          ...ele,
           name: ele.shiftName,
           code: ele.shiftCode,
-          current: this.$tools.getDate(ele.dayTime, 1),
-          key: index,
-          ruleTimeDtoList: ele.ruleTimeDtoList
+          current: this.$tools.getDate(ele.dayTime, 1)
         }
       })
-      this.count = this.clockList.length
       this.unClockList = value.noSignInDayRuleDtos.map(ele => {
         return {
           ...ele,
@@ -442,8 +435,8 @@ export default {
           const noClockDayRules = []
           this.unClockList.forEach(ele => {
             noClockDayRules.push({
-              startDate: ele.current.indexOf('~') > -1 ? ele.current.split('~')[0] : ele.current,
-              endDate: ele.current.indexOf('~') > -1 ? ele.current.split('~')[1] : ele.current
+              startDate: ele.current.indexOf('~') === -1 ? ele.current : ele.current.slice('~')[0],
+              endDate: ele.current.indexOf('~') === -1 ? ele.current : ele.current.slice('~')[1]
             })
           })
           const req = {
