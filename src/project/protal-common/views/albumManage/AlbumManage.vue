@@ -139,7 +139,7 @@ export default {
       const res = await this.getAlbumList({
         schoolCode: this.userInfo.schoolCode
       })
-      this.albumList = res.data.list
+      this.albumList = res.data
     },
     async useTo(item) {
       this.albumCode = item.albumCode
