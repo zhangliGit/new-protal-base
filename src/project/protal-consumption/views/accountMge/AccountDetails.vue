@@ -2,9 +2,64 @@
   <div class="account-details page-layout qui-fx-ver">
     <a-modal
       width="600px"
+      v-if="ruleTag"
+      v-model="ruleTag"
+      @ok="ruleEdit"
+      title="编辑消费规则"
+      :maskClosable="false"
+      @cancel="ruleCancle"
+      :destroyOnClose="true"
+    >
+      <a-row class="u-padd-10">
+        <a-col :span="5" class="u-tx-r">每日消费限额：</a-col>
+        <a-col :span="19">
+          <a-input
+            type="number"
+            :min="1"
+            v-model="detail.everydayConsume"
+            placeholder="请输入每日消费限额"
+          />
+        </a-col>
+      </a-row>
+      <a-row class="u-padd-10">
+        <a-col :span="5" class="u-tx-r">单次消费限额：</a-col>
+        <a-col :span="19">
+          <a-input
+            type="number"
+            :min="1"
+            v-model="detail.singleConsume"
+            placeholder="请输入单次消费限额"
+          />
+        </a-col>
+      </a-row>
+      <a-row class="u-padd-10">
+        <a-col :span="5" class="u-tx-r">优惠类型：</a-col>
+        <a-col :span="19">
+          <a-radio-group v-model="detail.preferType" @change="rulechange">
+            <a-radio value="0">无优惠</a-radio>
+            <a-radio value="1">折扣</a-radio>
+            <a-radio value="2">减免</a-radio>
+          </a-radio-group>
+        </a-col>
+      </a-row>
+      <a-row v-if="detail.preferType === '1'" class="u-padd-10">
+        <a-col :span="5" class="u-tx-r">折扣比例：</a-col>
+        <a-col :span="19">
+          <a-input type="number" v-model="detail.discount" placeholder="请输入折扣比例" />
+        </a-col>
+      </a-row>
+      <a-row v-if="detail.preferType === '2'" class="u-padd-10">
+        <a-col :span="5" class="u-tx-r">减免金额：</a-col>
+        <a-col :span="19">
+          <a-input v-model="detail.remit" placeholder="请输入减免金额" />
+        </a-col>
+      </a-row>
+    </a-modal>
+    <a-modal
+      width="600px"
+      ref="modal"
       v-if="cardTag"
       v-model="cardTag"
-      @submit="cardSubmit"
       :title="cardTitle"
       :maskClosable="false"
       @cancel="cancle"
@@ -56,23 +111,23 @@
         <a-row class="u-padd-10">
           <a-col :span="5" class="u-tx-r">优惠类型：</a-col>
           <a-col :span="19">
-            <a-radio-group v-model="detail.consumeRule.preferType">
+            <a-radio-group v-model="detail.preferType">
               <a-radio value="0">无优惠</a-radio>
               <a-radio value="1">折扣</a-radio>
               <a-radio value="2">减免</a-radio>
             </a-radio-group>
           </a-col>
         </a-row>
-        <a-row v-if="detail.consumeRule.preferType === '1'" class="u-padd-10">
+        <a-row v-if="detail.preferType === '1'" class="u-padd-10">
           <a-col :span="5" class="u-tx-r">折扣比例：</a-col>
           <a-col :span="19">
-            <a-input type="number" v-model="detail.consumeRule.discount" placeholder="请输入折扣比例" />
+            <a-input type="number" v-model="detail.discount" placeholder="请输入折扣比例" />
           </a-col>
         </a-row>
-        <a-row v-if="detail.consumeRule.preferType === '2'" class="u-padd-10">
+        <a-row v-if="detail.preferType === '2'" class="u-padd-10">
           <a-col :span="5" class="u-tx-r">减免金额：</a-col>
           <a-col :span="19">
-            <a-input v-model="detail.consumeRule.remit" placeholder="请输入减免金额" />
+            <a-input v-model="detail.remit" placeholder="请输入减免金额" />
           </a-col>
         </a-row>
         <a-row class="u-padd-10">
@@ -157,6 +212,34 @@
           <a-col :span="20">{{ detail.subsidyAmount }}</a-col>
         </a-row>
       </div>
+      <div v-if="tag === 4">
+        <a-row class="u-padd-10">
+          <a-col :span="4" class="u-tx-r">账户余额：</a-col>
+          <a-col :span="20">{{ detail.balance }}</a-col>
+        </a-row>
+        <a-row class="u-padd-10">
+          <a-col :span="4" class="u-tx-r">押金：</a-col>
+          <a-col :span="20">{{ detail.deposit }}</a-col>
+        </a-row>
+        <a-row class="u-padd-10">
+          <a-col :span="5" class="u-tx-r">余额退还：</a-col>
+          <a-col :span="19">
+            <a-radio-group v-model="isReturnBalance">
+              <a-radio value="1">退余额（可退{{ detail.canReturn }}）</a-radio>
+              <a-radio value="2">不退余额</a-radio>
+            </a-radio-group>
+          </a-col>
+        </a-row>
+        <a-row class="u-padd-10">
+          <a-col :span="5" class="u-tx-r">押金退还：</a-col>
+          <a-col :span="19">
+            <a-radio-group v-model="isReturnDeposit">
+              <a-radio value="1">退押金（可退{{ detail.deposit }}）</a-radio>
+              <a-radio value="2">不退押金</a-radio>
+            </a-radio-group>
+          </a-col>
+        </a-row>
+      </div>
       <div v-if="tag === 3|| tag === 5 || tag === 6">
         <a-row class="u-padd-10">
           <a-col :span="4" class="u-tx-r">账户余额：</a-col>
@@ -173,22 +256,6 @@
           <a-textarea v-model="recordRemark" placeholder="请输入备注" allow-clear />
         </a-col>
       </a-row>
-      <!-- <a-row class="u-padd-10">
-        <a-col :span="6" class="u-tx-r">押金：</a-col>
-        <a-col :span="16">
-          <a-input
-            :readonly="detail.cardStatus !== '0'"
-            v-model="detail.deposit"
-            placeholder="请输入押金"
-          />
-        </a-col>
-      </a-row>
-      <a-row class="u-padd-10">
-        <a-col :span="6" class="u-tx-r">备注：</a-col>
-        <a-col :span="16">
-          <a-textarea v-model="recordRemark" placeholder="请输入备注" allow-clear />
-        </a-col>
-      </a-row> -->
       <a-row class="u-padd-10" v-if="tipMsg">
         <a-col :span="0" class="u-tx-r"></a-col>
         <a-col :span="24">
@@ -229,6 +296,34 @@
                 <a-col class="mar-b10 qui-fx-jc" :span="8">状态 : {{ datamap(detail.status, accountTypeList) }}</a-col>
                 <a-col class="mar-b10 qui-fx-jc" :span="8">开户时间 : {{ detail.createTime }}</a-col>
                 <a-col class="mar-b10 qui-fx-jc" :span="8">押金 : {{ detail.deposit }}</a-col>
+              </a-row>
+            </div>
+          </a-col>
+        </a-row>
+      </div>
+    </crad>
+    <crad class="crad">
+      <div slot="title" class="u-fx-ac u-fx-jsb">
+        <div>消费规则</div>
+        <div>
+          <a-button @click="ruleTag = true" class="add-btn" v-if="detail.cardStatus !== '0'">编辑</a-button>
+        </div>
+      </div>
+      <div slot="content">
+        <a-row class="qui-fx-jsa page-layout qui-fx-ac padd-t10">
+          <a-col :span="2" class="padd-t10"></a-col>
+          <a-col :span="20" class="padd-t10">
+            <div class="qui-fx-ver">
+              <a-row class="padd-l10">
+                <a-col class="mar-b10 qui-fx-jc" :span="8">每日消费限额 : {{ detail.everydayConsume }}</a-col>
+                <a-col
+                  class="mar-b10 qui-fx-jc"
+                  :span="8"
+                >单次消费限额 : {{ detail.singleConsume }}</a-col>
+                <a-col class="mar-b10 qui-fx-jc" :span="8">优惠 :
+                  {{ detail.preferType === '2' ? '减免' : detail.preferType === '1' ? '折扣' : '无优惠' }}
+                  {{ detail.preferType === '2' ? detail.consumeRule.remit : detail.preferType === '1' ? detail.discount + '折' : '' }}
+                </a-col>
               </a-row>
             </div>
           </a-col>
@@ -291,6 +386,7 @@ export default {
       detail: {},
       columns,
       cardTag: false,
+      ruleTag: false,
       recordRemark: '',
       tipMsg: '',
       sureTag: false,
@@ -301,6 +397,8 @@ export default {
       current: -1,
       moneyTotal: [50, 100, 200, 500],
       totalMoney: 0,
+      isReturnBalance: '1',
+      isReturnDeposit: '1',
       needSure: true,
       actionType: ['开户', '充值', '补助', '冻结', '余额清零', '销户', '解冻'],
       tag: 0 // 操作类别 0:开户，1:充值，2:补助，3 :冻结，4：余额清零，5：销户,6:解冻
@@ -334,7 +432,7 @@ export default {
     ]
   },
   methods: {
-    ...mapActions('home', ['getAccountDetail', 'addOpenAccount', 'addRecharge', 'accountSubsidy', 'accountFrozen', 'accountThaw', 'accountCancel']),
+    ...mapActions('home', ['getAccountDetail', 'editAccount', 'addOpenAccount', 'addRecharge', 'accountSubsidy', 'accountFrozen', 'accountThaw', 'accountClear', 'accountCancel', 'getReturnBalance']),
     datamap(data, list) {
       return list.filter((ele) => ele.key === data).length > 0 ? list.filter((ele) => ele.key === data)[0].val : ''
     },
@@ -345,11 +443,7 @@ export default {
     /**
      * @description 账户操作 包括 0:开户，1:充值，2:补助，3 :冻结，4：余额清零，5：销户,6:解冻
      */
-    showCard(tag) {
-      this.cardTag = true
-      this.cardTitle = this.actionType[tag]
-      this.btnText = '确定' + this.actionType[tag]
-      this.tag = tag
+    async showCard(tag) {
       if (tag === 0) {
         this.actionFun = 'addOpenAccount'
         this.needSure = false
@@ -367,9 +461,11 @@ export default {
         this.actionFun = 'accountFrozen'
         this.tipMsg = '冻结后，账户资金将无法使用'
       } else if (tag === 4) {
+        await this._getReturnBalance()
         this.needSure = false
-        this.actionFun = 'openCard'
+        this.actionFun = 'accountClear'
         this.tipMsg = '清除账户余额及押金'
+        this._getReturnBalance()
       } else if (tag === 5) {
         this.needSure = false
         this.actionFun = 'accountCancel'
@@ -379,6 +475,17 @@ export default {
         this.actionFun = 'accountThaw'
         this.tipMsg = ''
       }
+      this.cardTag = true
+      this.cardTitle = this.actionType[tag]
+      this.btnText = '确定' + this.actionType[tag]
+      this.tag = tag
+    },
+    /**
+     * @description 获取可退余额
+     */
+    async _getReturnBalance() {
+      const res = await this.getReturnBalance(this.detail.id)
+      this.detail.canReturn = res.data
     },
     /**
      * @description 手动切换金额
@@ -444,7 +551,7 @@ export default {
         this.$message.warning('请先完成余额清零操作')
         return
       }
-      if ((this.tag === 3 || this.tag === 5) && this.recordRemark === '') {
+      if ((this.tag === 3 || this.tag === 5 || this.tag === 4) && this.recordRemark === '') {
         this.$message.warning('请输入备注')
         return
       }
@@ -453,8 +560,12 @@ export default {
         const req = {
           ...this.detail
         }
-        if (this.tag === 2 || this.tag === 3) {
+        if (this.tag === 2 || this.tag === 3 || this.tag === 4) {
           req.remark = this.recordRemark
+        }
+        if (this.tag === 4) {
+          req.isReturnBalance = this.isReturnBalance
+          req.isReturnDeposit = this.isReturnDeposit
         }
         await this[this.actionFun](req)
         this.$message.success(`${this.cardTitle}成功`)
@@ -469,40 +580,39 @@ export default {
         this.loading = false
       }
     },
-    async cardSubmit() {
-      if (this.tag === 2) {
-        if (!this.newCardNo) {
-          this.$message.warning('请输入新卡号')
-          return
-        }
-      }
-      if (this.tag === 4) {
-        if (!this.detail.cardNo) {
-          this.$message.warning('请输入卡号')
-          return
-        }
-      }
-      if (!this.recordRemark) {
-        this.$message.warning('请输入备注')
+    /**
+     * @description 编辑消费规则
+     */
+    rulechange() {
+      this.detail.remit = ''
+      this.detail.discount = ''
+    },
+    async ruleEdit() {
+      if (!this.detail.everydayConsume) {
+        this.$message.warning('请输入每日消费限额')
         return
       }
-      this.$refs.cardForm.loading = true
-      try {
-        await this[this.actionFun]({
-          accountId: this.detail.id,
-          cardNo: this.detail.cardNo,
-          depositAmount: this.detail.deposit,
-          newCardNo: this.newCardNo,
-          recordRemark: this.recordRemark
-        })
-        this.$message.success('操作成功')
-        this.cardTag = false
-        this.$tools.goNext(() => {
-          this.$router.back()
-        })
-      } catch (err) {
-        this.$refs.cardForm.loading = false
+      if (!this.detail.singleConsume) {
+        this.$message.warning('请输入单次消费限额')
+        return
       }
+      if (this.detail.preferType === '2' && !this.detail.remit) {
+        this.$message.warning('请输入减免金额')
+        return
+      }
+      if (this.detail.preferType === '1' && !this.detail.discount) {
+        this.$message.warning('请输入折扣比例')
+        return
+      }
+      await this.editAccount(this.detail)
+      this.$message.success('操作成功')
+      this.ruleTag = false
+      this.$tools.goNext(() => {
+        this._showDetail()
+      })
+    },
+    ruleCancle() {
+      this._showDetail()
     }
   }
 }

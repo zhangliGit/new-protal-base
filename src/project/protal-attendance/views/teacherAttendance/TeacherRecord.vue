@@ -10,7 +10,7 @@
     </a-modal> -->
     <org-tree @select="select"></org-tree>
     <div class="qui-fx-f1 qui-fx-ver">
-      <search-form isReset @search-form="searchForm" :search-label="teacherRecord.searchLabel">
+      <search-form isReset @search-btn="searchBtn" @search-form="searchForm" :search-label="teacherRecord.searchLabel">
         <!-- <div slot="left">
           <a-button icon="export" class="export-all-btn" @click="exportTag = true">批量导出</a-button>
         </div> -->
@@ -33,7 +33,7 @@
               index | getPageIndex(pageList)
             }}</template>
           <template v-slot:other1="other1">
-            <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="change('morningOnState',other1.id)">
+            <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="change('morningOnState',other1.id,other1.morningOnState)">
               <template slot="title">
                 确定要将该状态修改为正常吗?
               </template>
@@ -48,7 +48,7 @@
             </a-popconfirm>
           </template>
           <template v-slot:other2="other2">
-            <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="change('morningOffState',other2.id)">
+            <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="change('morningOffState',other2.id, other2.morningOffState)">
               <template slot="title">
                 确定要将该状态修改为正常吗?
               </template>
@@ -63,7 +63,7 @@
             </a-popconfirm>
           </template>
           <template v-slot:other3="other3">
-            <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="change('noonOnState',other3.id)">
+            <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="change('noonOnState',other3.id, other3.noonOnState)">
               <template slot="title">
                 确定要将该状态修改为正常吗?
               </template>
@@ -78,7 +78,7 @@
             </a-popconfirm>
           </template>
           <template v-slot:other4="other4">
-            <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="change('noonOffState',other4.id)">
+            <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="change('noonOffState',other4.id, other4.noonOffState)">
               <template slot="title">
                 确定要将该状态修改为正常吗?
               </template>
@@ -105,7 +105,7 @@
 import { mapState, mapActions } from 'vuex'
 import hostEnv from '@config/host-env'
 import OrgTree from '@c/OrgTree'
-import SearchForm from '@c/SearchForm'
+import SearchForm from '../../component/SearchForm'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
 import RecordDetail from './RecordDetail'
@@ -160,35 +160,36 @@ export default {
     }
   },
   async mounted () {
-    console.log('this.$route.query.type',this.$route.query.type)
     if (this.$route.query.type) {
       this.teacherRecord.searchLabel[1].initValue = [moment(this.$route.query.date).format('YYYY-MM-DD'), moment(this.$route.query.date).format('YYYY-MM-DD')]
-      const type = parseInt(this.$route.query.type) + 1
-      const state = this.$tools.attendanceState(this.$route.query.state, type)
-      this.teacherRecord.searchLabel[type].initValue = state
       this.searchList.startDay = moment(this.$route.query.date).format('YYYY-MM-DD')
       this.searchList.endDay = moment(this.$route.query.date).format('YYYY-MM-DD')
-      console.log(parseInt(this.$route.query.type))
-      if (parseInt(this.$route.query.type) === 1) {
-        this.searchList.morningOnState = state
+      const type = parseInt(this.$route.query.type)
+      const title = this.$route.query.state
+      if (type === 1) {
+        this.searchList.morningOnState = title === '正常' ? '5' : title === '迟到' ? '1' : title === '缺卡' ? '3' : ''
+        this.teacherRecord.searchLabel[2].initValue = title === '正常' ? '5' : title === '迟到' ? '1' : title === '缺卡' ? '3' : ''
         this.teacherRecord.searchLabel[3].initValue = ''
         this.teacherRecord.searchLabel[4].initValue = ''
         this.teacherRecord.searchLabel[5].initValue = ''
-      } else if (parseInt(this.$route.query.type) === 2) {
-        this.searchList.morningOffState = state
+      } else if (type === 2) {
+        this.searchList.morningOffState = title === '正常' ? '5' : title === '迟到' ? '2' : title === '缺卡' ? '3' : ''
+        this.teacherRecord.searchLabel[3].initValue = title === '正常' ? '5' : title === '迟到' ? '2' : title === '缺卡' ? '3' : ''
         this.teacherRecord.searchLabel[2].initValue = ''
         this.teacherRecord.searchLabel[4].initValue = ''
         this.teacherRecord.searchLabel[5].initValue = ''
-      } else if (parseInt(this.$route.query.type) === 3) {
-        this.searchList.noonOnState = state
-        this.teacherRecord.searchLabel[3].initValue = ''
+      } else if (type === 3) {
+        this.searchList.noonOnState = title === '正常' ? '5' : title === '迟到' ? '1' : title === '缺卡' ? '3' : ''
+        this.teacherRecord.searchLabel[4].initValue = title === '正常' ? '5' : title === '迟到' ? '1' : title === '缺卡' ? '3' : ''
         this.teacherRecord.searchLabel[2].initValue = ''
+        this.teacherRecord.searchLabel[3].initValue = ''
         this.teacherRecord.searchLabel[5].initValue = ''
-      } else if (parseInt(this.$route.query.type) === 4) {
-        this.searchList.noonOffState = state
-        this.teacherRecord.searchLabel[4].initValue = ''
-        this.teacherRecord.searchLabel[3].initValue = ''
+      } else if (type === 4) {
+        this.searchList.noonOffState = title === '正常' ? '5' : title === '迟到' ? '2' : title === '缺卡' ? '3' : ''
+        this.teacherRecord.searchLabel[5].initValue = title === '正常' ? '5' : title === '迟到' ? '2' : title === '缺卡' ? '3' : ''
         this.teacherRecord.searchLabel[2].initValue = ''
+        this.teacherRecord.searchLabel[3].initValue = ''
+        this.teacherRecord.searchLabel[4].initValue = ''
       }
     }
     this.searchList.schoolCode = this.userInfo.schoolCode
@@ -203,9 +204,24 @@ export default {
       this.exportTime = dateString
     },
     exportClick() {
-      const url = `${hostEnv.ljj_attendance}/teacher/static/record/list/download?schoolCode=${this.userInfo.schoolCode}&startDay=${this.searchList.startDay}&endDay=${this.searchList.endDay}&onStatue=${this.searchList.onStatue}&offStatue=${this.searchList.offStatue}&orgCode=${this.searchList.orgCode}&searchKey=${this.searchList.searchKey}`
-      console.log(url)
-      window.open(url)
+      var url = `${hostEnv.ljj_attendance}/teacher/static/record/list/download`
+      var xhr = new XMLHttpRequest()
+      xhr.open('POST', url, true) // 也可以使用POST方式，根据接口
+      xhr.responseType = 'blob'
+      xhr.onload = function () {
+        if (this.status === 200) {
+          var content = this.response
+          var aTag = document.createElement('a')
+          var blob = new Blob([content])
+          var headerName = xhr.getResponseHeader('Content-disposition')
+          var fileName = decodeURIComponent(headerName).substring(20)
+          aTag.download = fileName
+          aTag.href = URL.createObjectURL(blob)
+          aTag.click()
+          URL.revokeObjectURL(blob)
+        }
+      }
+      xhr.send(JSON.stringify(this.searchList))
     },
     // exportFile () {
     //   if (!this.exportTime) {
@@ -232,11 +248,25 @@ export default {
       this.showList()
     },
     searchForm (values) {
+      console.log('values', values)
       this.pageList.page = 1
       this.pageList.size = 20
       this.searchList.startDay = values.rangeTime[0]
       this.searchList.endDay = values.rangeTime[1]
       this.searchList = Object.assign(this.searchList, values)
+      this.showList()
+    },
+    searchBtn() {
+      this.searchList = {}
+      this.teacherRecord.searchLabel[0].initValue = ''
+      this.teacherRecord.searchLabel[1].initValue = ''
+      this.teacherRecord.searchLabel[2].initValue = ''
+      this.teacherRecord.searchLabel[3].initValue = ''
+      this.teacherRecord.searchLabel[4].initValue = ''
+      this.teacherRecord.searchLabel[5].initValue = ''
+      this.searchList.schoolCode = this.userInfo.schoolCode
+      this.pageList.page = 1
+      this.pageList.size = 20
       this.showList()
     },
     checkDetial (record) {
@@ -248,7 +278,11 @@ export default {
       this.$refs.recordChange.recordId = record.id
       this.$refs.recordChange.dialogTag = true
     },
-    change(string, id) {
+    change(string, id, state) {
+      if (state === '' || state === '5') {
+        this.$message.warning('不能修改')
+        return
+      }
       const req = {
         optName: this.userInfo.userName,
         recordId: id,

@@ -18,23 +18,23 @@
           <span class="ant-form-text">未开户</span>
         </a-form-item>
         <a-form-item label="每日消费限额">
-          <a-input disabled v-model="detail.consumeRule.everydayConsume" placeholder="请输入每日消费限额" />
+          <a-input v-model="detail.consumeRule.everydayConsume" placeholder="请输入每日消费限额" />
         </a-form-item>
         <a-form-item label="单次消费限额">
-          <a-input disabled v-model="detail.consumeRule.singleConsume" placeholder="请输入单次消费限额" />
+          <a-input v-model="detail.consumeRule.singleConsume" placeholder="请输入单次消费限额" />
         </a-form-item>
         <a-form-item label="优惠类型">
-          <a-radio-group disabled v-model="detail.consumeRule.preferType">
+          <a-radio-group v-model="detail.consumeRule.preferType">
             <a-radio value="0">无优惠</a-radio>
             <a-radio value="1">折扣</a-radio>
             <a-radio value="2">减免</a-radio>
           </a-radio-group>
         </a-form-item>
         <a-form-item v-if="detail.consumeRule.preferType === '1'" label="折扣比例">
-          <a-input disabled v-model="detail.consumeRule.discount" placeholder="请输入折扣比例" />
+          <a-input v-model="detail.consumeRule.discount" placeholder="请输入折扣比例" />
         </a-form-item>
         <a-form-item v-if="detail.consumeRule.preferType === '2'" label="减免金额">
-          <a-input disabled v-model="detail.consumeRule.remit" placeholder="请输入减免金额" />
+          <a-input v-model="detail.consumeRule.remit" placeholder="请输入减免金额" />
         </a-form-item>
         <a-form-item label="账户余额">
           <span class="ant-form-text">{{ detail.balance }}</span>
@@ -59,6 +59,10 @@ export default {
       type: Boolean
     },
     userCode: {
+      type: String,
+      default: ''
+    },
+    userType: {
       type: String,
       default: ''
     }
@@ -93,13 +97,18 @@ export default {
     this._getOpenAccount()
   },
   methods: {
-    ...mapActions('home', ['getOpenAccount', 'addOpenAccount']),
+    ...mapActions('home', ['getOpenAccount', 'addOpenAccount', 'getTeaOpenAccount']),
     /**
      * @description 查询开户人信息
      */
     async _getOpenAccount() {
       try {
-        const res = await this.getOpenAccount(this.userCode)
+        let res = null
+        if (this.userType === '1') {
+          res = await this.getOpenAccount(this.userCode)
+        } else if (this.userType === '2') {
+          res = await this.getTeaOpenAccount(this.userCode)
+        }
         this.detail = res.data
       } catch (err) {
         this.$emit('hide')

@@ -62,9 +62,13 @@ export default {
     onExpand() {},
     // 点击节点
     select(obj, tree) {
-      console.log('1111111',obj, tree.selectedNodes[0].data.props)
+      console.log(obj)
+      if (obj.length === 0) {
+        return
+      }
+      console.log('1111111', obj, tree.selectedNodes[0].data.props)
       const gradeIds = []
-      this.gradeList.forEach(el => {
+      this.gradeList.forEach((el) => {
         return gradeIds.push(el.gradeId)
       })
       if (gradeIds.indexOf(obj[0]) === -1) {
@@ -79,7 +83,7 @@ export default {
         title: tree.selectedNodes[0].data.props.title,
         gradeCode: tree.selectedNodes[0].data.props.gradeCode,
         classCode: tree.selectedNodes[0].data.props.classCode,
-        isNewYear: tree.selectedNodes[0].data.props.schoolYearId === this.schoolYear,
+        isNewYear: tree.selectedNodes[0].data.props.schoolYearId === this.schoolYear
       }
       console.log(selectObj)
       this.$emit('select', selectObj)
@@ -98,7 +102,7 @@ export default {
       } else {
         this.noData = false
       }
-      this.gradeList = res.data.list.filter(item => {
+      this.gradeList = res.data.list.filter((item) => {
         return item.semester === '下学期'
       })
       if (res.data.list[0].semester === '上学期') {
@@ -115,7 +119,7 @@ export default {
         title: this.gradeList[0].schoolYear,
         gradeCode: this.gradeList[0].gradeCode,
         classCode: this.gradeList[0].classCode,
-        isNewYear: true,
+        isNewYear: true
       }
       this.defaultSelectedKeys = [this.gradeList[0].id]
       if (this.isOnlyNewSchoolYear) {
@@ -124,11 +128,11 @@ export default {
             title: this.gradeList[0].schoolYear + '学年',
             code: this.gradeList[0].id,
             key: this.gradeList[0].id,
-            schoolYearId: this.gradeList[0].id,
+            schoolYearId: this.gradeList[0].id
           }
         ]
       } else {
-        this.treeData = this.gradeList.map(item => {
+        this.treeData = this.gradeList.map((item) => {
           return {
             title: item.schoolYear + '学年',
             code: item.id,
@@ -140,7 +144,7 @@ export default {
       this.$emit('select', selectObj)
     },
     async onLoadData(treeNode) {
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         if (treeNode.dataRef.children) {
           resolve()
           return
@@ -153,16 +157,16 @@ export default {
             url: `${hostEnv.lz_user_center}/grade/manage/list`,
             params: req
           })
-          .then(res => {
-            treeNode.dataRef.children = res.data.list.map(item => {
+          .then((res) => {
+            treeNode.dataRef.children = res.data.list.map((item) => {
               return {
                 title: item.name,
                 schoolYearId: treeNode.dataRef.schoolYearId,
                 isLeaf: this.isChoose,
-                gradeCode: item.code,
+                gradeCode: item.code
               }
             })
-            treeNode.dataRef.children.forEach(item => {
+            treeNode.dataRef.children.forEach((item) => {
               const data = {
                 schoolCode: this.schoolCode,
                 schoolYearId: treeNode.dataRef.schoolYearId,
@@ -173,14 +177,14 @@ export default {
                   url: `${hostEnv.lz_user_center}/classManage/list`,
                   params: data
                 })
-                .then(res => {
-                  item.children = res.data.list.map(ele => {
+                .then((res) => {
+                  item.children = res.data.list.map((ele) => {
                     return {
                       title: ele.className,
                       schoolYearId: item.schoolYearId,
                       gradeCode: item.gradeCode,
                       classCode: ele.classCode,
-                      isLeaf: true,
+                      isLeaf: true
                     }
                   })
                   this.treeData = [...this.treeData]
