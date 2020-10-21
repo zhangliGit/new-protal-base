@@ -331,7 +331,7 @@ export default {
           this.data[parseInt(item.dayName) - 2].accessTimeList.code = item.shiftCode
         }
       })
-      this.clockList = value.specialSignInDayRuleDtos.map((ele,index) => {
+      this.clockList = value.specialSignInDayRuleDtos.map((ele, index) => {
         return {
           id: ele.classId,
           name: ele.shiftName,
@@ -442,8 +442,8 @@ export default {
           const noClockDayRules = []
           this.unClockList.forEach(ele => {
             noClockDayRules.push({
-              startDate: ele.current.indexOf('~') === -1 ? ele.current : ele.current.slice('~')[0],
-              endDate: ele.current.indexOf('~') === -1 ? ele.current : ele.current.slice('~')[1]
+              startDate: ele.current.indexOf('~') > -1 ? ele.current.split('~')[0] : ele.current,
+              endDate: ele.current.indexOf('~') > -1 ? ele.current.split('~')[1] : ele.current
             })
           })
           const req = {
