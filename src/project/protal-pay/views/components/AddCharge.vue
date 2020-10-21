@@ -126,7 +126,7 @@ export default {
     }
   },
   mounted() {
-    this.showList()
+    // this.showList()
   },
   methods: {
     ...mapActions('home', ['getSelect']),
