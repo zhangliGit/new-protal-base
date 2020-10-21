@@ -34,6 +34,10 @@ export default {
           url: 'protal-login'
         },
         {
+          name: '小程序管理后台',
+          url: 'protal-wechart'
+        },
+        {
           name: '运维端',
           url: 'protal-admin'
         },

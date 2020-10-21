@@ -5,14 +5,15 @@
       v-for="(pic, index) in fileList"
       :key="pic.id"
       class="qui-fx qui-fx-ac-jc mar-t10"
-      :style="{position: 'relative', marginRight: '10px', backgroundColor: '#fff', padding: '18px', border: '1px dashed #ccc', height: fileInfo.h || 120 + 'px', width: fileInfo.w || 120 + 'px'}">
+      :style="{position: 'relative', marginRight: '10px', backgroundColor: '#fff', padding: '18px', border: '1px dashed #ccc', height: fileInfo.h || 120 + 'px', width: fileInfo.w || 120 + 'px'}"
+    >
       <div @mouseleave="showTip()" class="showTip qui-fx-ac-jc" v-if="currentIndex === index">
         <div>
           <a-icon type="eye" @click="show(pic)"></a-icon>
           <a-icon type="delete" @click="del(pic)"></a-icon>
         </div>
       </div>
-      <img :src="pic.url" style="width: 80px; height: 80px" alt="">
+      <img :src="pic.url" style="width: 80px; height: 80px" alt />
     </div>
     <a-upload
       :multiple="false"
@@ -23,8 +24,14 @@
       :beforeUpload="beforeUpload"
       :customRequest="customRequest"
     >
-      <div v-if="fileList.length < length" :style="{height: fileInfo.h || 120 + 'px', width: fileInfo.w || 120 + 'px'}" class="qui-fx-ac-jc">
-        <div><a-icon style="font-size: 20px" :type="uploadTag ? 'loading' : 'plus'" /></div>
+      <div
+        v-if="fileList.length < length"
+        :style="{height: fileInfo.h || 120 + 'px', width: fileInfo.w || 120 + 'px'}"
+        class="qui-fx-ac-jc"
+      >
+        <div>
+          <a-icon style="font-size: 20px" :type="uploadTag ? 'loading' : 'plus'" />
+        </div>
         <div class="ant-upload-text">{{ fileInfo.tip }}</div>
       </div>
     </a-upload>
@@ -70,7 +77,7 @@ export default {
       }
     }
   },
-  data () {
+  data() {
     return {
       reqUrl: '',
       previewVisible: false,
@@ -79,36 +86,33 @@ export default {
       currentIndex: -1
     }
   },
-  mounted () {
-  },
+  mounted() {},
   computed: {
-    ...mapState('home', [
-      'schoolCode'
-    ]),
+    ...mapState('home', ['schoolCode']),
     fileList: {
-      get () {
+      get() {
         return this.value
       },
-      set (val) {
+      set(val) {
         this.$emit('input', val)
       }
     }
   },
   methods: {
-    showTip (index = -1) {
+    showTip(index = -1) {
       this.currentIndex = index
     },
-    show (file) {
+    show(file) {
       this.previewVisible = true
       this.previewImage = file.url
     },
-    del (file) {
+    del(file) {
       const index = this.fileList.findIndex(item => {
         return item.uid === file.uid
       })
       this.fileList.splice(index, 1)
     },
-    beforeUpload (file) {
+    beforeUpload(file) {
       const isJpg = file.type === 'image/jpeg'
       const isPng = file.type === 'image/png'
       if (!isJpg && !isPng) {
@@ -121,34 +125,35 @@ export default {
       }
       return (isJpg || isPng) && isLt1M
     },
-    async customRequest (data) {
+    async customRequest(data) {
       const reader = new FileReader()
       reader.readAsDataURL(data.file)
       reader.onload = () => {
         const base64 = reader.result.split(',')[1]
         try {
-          $ajax.postForm({
-            url: `${hostEnv.hpb_face}/facePhoto`,
-            params: {
-              userCode: Math.floor(Math.random() * 100000),
-              file: base64
-            }
-          }).then(res => {
-            console.log(this.fileList)
-            if (!res.data.result) {
-              this.$message.warning(res.message)
-              return
-            }
-            console.log(res.data.url)
-            this.fileList.push({
-              uid: Math.floor(Math.random() * 100000),
-              url: res.data.url,
-              status: 'done'
+          $ajax
+            .postForm({
+              url: `${hostEnv.hpb_face}/facePhoto`,
+              params: {
+                userCode: Math.floor(Math.random() * 100000),
+                file: base64
+              }
             })
-            this.uploadTag = false
-          })
-        } catch (err) {
-        }
+            .then(res => {
+              console.log(this.fileList)
+              if (!res.data.result) {
+                this.$message.warning(res.message)
+                return
+              }
+              console.log(res.data.url)
+              this.fileList.push({
+                uid: Math.floor(Math.random() * 100000),
+                url: res.data.url,
+                status: 'done'
+              })
+              this.uploadTag = false
+            })
+        } catch (err) {}
         const prom = new Promise((resolve, reject) => {})
         prom.abort = () => {}
         return prom
@@ -158,23 +163,23 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-  /deep/ .ant-upload.ant-upload-select-picture-card > .ant-upload {
-    padding: 0px !important;
+/deep/ .ant-upload.ant-upload-select-picture-card > .ant-upload {
+  padding: 0px !important;
+}
+.showTip {
+  position: absolute;
+  z-index: 9;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  i {
+    cursor: pointer;
+    color: #fff;
+    padding: 0 8px;
+    font-size: 18px;
   }
-  .showTip {
-    position: absolute;
-    z-index: 9;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,.5);
-    i {
-      cursor: pointer;
-      color:#fff;
-      padding: 0 8px;
-      font-size: 18px;
-    }
-  }
-  .upload-file{
-    flex-wrap: wrap;
-  }
+}
+.upload-file {
+  flex-wrap: wrap;
+}
 </style>
