@@ -6,6 +6,7 @@
         isReset
         ref="searchForm"
         @search-form="searchForm"
+        @search-btn="searchBtn"
         :search-label="searchLabel">
         <div slot="left">
           <a-button icon="export" class="export-btn" @click="exportClick">导出</a-button>
@@ -41,7 +42,7 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 import GradeTree from '@c/GradeTree'
-import SearchForm from '@c/SearchForm'
+import SearchForm from '../../component/SearchForm'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
 import RecordDetail from './RecordDetail'
@@ -148,7 +149,8 @@ export default {
       },
       total: 0,
       columns,
-      recordList: []
+      recordList: [],
+      schoolYearId: ''
     }
   },
   computed: {
@@ -164,9 +166,6 @@ export default {
       const type = parseInt(this.$route.query.type) + 1
       const state = this.$tools.attendanceState(this.$route.query.state, type)
       this.searchLabel[type].initValue = state
-      if (parseInt(this.$route.query.type) === 2 && this.$route.query.state === '迟到') {
-        this.searchLabel[type].initValue = '2'
-      }
       if (type === 2) {
         this.searchList.onStatue = state
         this.searchList.offStatue = ''
@@ -175,6 +174,11 @@ export default {
         this.searchList.onStatue = ''
         this.searchList.offStatue = state
         this.searchLabel[2].initValue = ''
+        if (parseInt(this.$route.query.type) === 2 && this.$route.query.state === '迟到') {
+          this.searchLabel[type].initValue = '2'
+          this.searchList.onStatue = ''
+          this.searchList.offStatue = '2'
+        }
       }
     }
     this.searchList.schoolCode = this.userInfo.schoolCode
@@ -206,6 +210,7 @@ export default {
       this.searchList.schoolYearId = item.schoolYearId
       this.searchList.gradeCode = item.gradeCode
       this.searchList.classCode = item.classCode
+      this.schoolYearId = item.schoolYearId
       this.showList()
     },
     searchForm (values) {
@@ -214,6 +219,18 @@ export default {
       this.searchList.startDay = values.rangeTime[0]
       this.searchList.endDay = values.rangeTime[1]
       this.searchList = Object.assign(this.searchList, values)
+      this.showList()
+    },
+    searchBtn() {
+      this.searchList = {}
+      this.searchLabel[0].initValue = ''
+      this.searchLabel[1].initValue = ''
+      this.searchLabel[2].initValue = ''
+      this.searchLabel[3].initValue = ''
+      this.searchList.schoolCode = this.userInfo.schoolCode
+      this.searchList.schoolYearId = this.schoolYearId
+      this.pageList.page = 1
+      this.pageList.size = 20
       this.showList()
     },
     checkDetail (record) {

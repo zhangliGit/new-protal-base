@@ -42,7 +42,7 @@ const teacherRecord = {
         title: '时间',
         dataIndex: 'morningOnRealTime',
         customRender: text => {
-          return text ? $tools.getDate(text, 1) : ''
+          return text ? $tools.getDate(text, 7) : ''
         },
         width: 120
       },
@@ -67,7 +67,7 @@ const teacherRecord = {
         title: '时间',
         dataIndex: 'morningOffRealTime',
         customRender: text => {
-          return text ? $tools.getDate(text, 1) : ''
+          return text ? $tools.getDate(text, 7) : ''
         },
         width: 120
       },
@@ -92,7 +92,7 @@ const teacherRecord = {
         title: '时间',
         dataIndex: 'noonOnRealTime',
         customRender: text => {
-          return text ? $tools.getDate(text, 1) : ''
+          return text ? $tools.getDate(text, 7) : ''
         },
         width: 120
       },
@@ -117,7 +117,7 @@ const teacherRecord = {
         title: '时间',
         dataIndex: 'noonOffRealTime',
         customRender: text => {
-          return text ? $tools.getDate(text, 1) : ''
+          return text ? $tools.getDate(text, 7) : ''
         },
         width: 80
       },
@@ -188,7 +188,7 @@ const teacherRecord = {
           val: '正常'
         },
         {
-          key: '1',
+          key: '2',
           val: '早退'
         },
         {
@@ -244,7 +244,7 @@ const teacherRecord = {
           val: '正常'
         },
         {
-          key: '1',
+          key: '2',
           val: '早退'
         },
         {
