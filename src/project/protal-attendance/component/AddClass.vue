@@ -206,6 +206,11 @@ export default {
                 arr.push(1)
               }
             }
+            if (index !== 0) {
+              if (this.data[index].startTime <= this.data[index - 1].endTime) {
+                arr.push(1)
+              }
+            }
           })
           if (arr.indexOf(1) > -1) {
             this.$message.warning('请填写正确的时间')
