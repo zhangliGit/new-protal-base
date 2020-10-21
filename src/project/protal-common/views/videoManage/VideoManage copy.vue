@@ -9,14 +9,7 @@
       :form-data="formData"
     >
       <div v-if="!editTag" slot="upload" class="qui-fx qui-fx-ac">
-        <upload-video
-          :maxSize="500"
-          @onUploadProgress="onUploadProgress"
-          :length="1"
-          v-model="videoList"
-          :percent="uploadPercent"
-          :schoolCode="userInfo.schoolCode"
-        ></upload-video>
+        <upload-video fileName="multipartFile" :length="1" v-model="videoList" :percent="uploadPercent"></upload-video>
       </div>
     </submit-form>
     <choose-bind
@@ -44,7 +37,7 @@
     <no-data msg="暂无数据" v-if="dataList.length === 0"></no-data>
     <div v-else class="qui-fx-ver u-fx-f1">
       <div class="u-auto" :style="{ height: scrollH + 'px' }">
-        <div class="notice-card qui-fx" v-for="(item, i) in dataList" :key="i" style="position: relative">
+        <div class="notice-card qui-fx" v-for="(item, i) in dataList" :key="i" style="position: relative;">
           <div class="pic qui-fx-f1 qui-fx-ver qui-fx-jsb">
             <div class="notice-img qui-fx-ac-jc">
               <video
@@ -63,10 +56,15 @@
                   <a-button size="small" class="edit-action-btn" icon="form" @click.stop="add(1, item)"></a-button>
                 </a-tooltip>
                 <a-tooltip placement="topLeft" title="删除">
-                  <a-button size="small" class="del-action-btn" icon="delete" @click.stop="delClick(item)"></a-button>
+                  <a-button
+                    size="small"
+                    class="del-action-btn"
+                    icon="delete"
+                    @click.stop="delClick(item)"
+                  ></a-button>
                 </a-tooltip>
                 <a-dropdown>
-                  <a class="ant-dropdown-link" @click="(e) => e.preventDefault()">
+                  <a class="ant-dropdown-link" @click="e => e.preventDefault()">
                     更多
                     <a-icon type="down" />
                   </a>
@@ -99,6 +97,8 @@ import PageNum from '@c/PageNum'
 import UploadVideo from '../../component/UploadVideo'
 import ChooseBind from '../../component/ChooseBind'
 import ChooseClasscard from '../../component/ChooseClasscard'
+import hostEnv from '@config/host-env'
+import axios from 'axios'
 const formData = [
   {
     value: 'fileName',
@@ -161,8 +161,7 @@ export default {
       'getRelationData',
       'getFullDevice',
       'addRelationData',
-      'setFullShow',
-      'addVideo'
+      'setFullShow'
     ]),
     async showList() {
       this.pageList.schoolCode = this.userInfo.schoolCode
@@ -171,7 +170,7 @@ export default {
       this.total = res.data.total
     },
     controls(e, id) {
-      this.dataList.forEach((el) => {
+      this.dataList.forEach(el => {
         if (id !== el.id) {
           this.$refs[el.id][0].pause()
         }
@@ -227,19 +226,13 @@ export default {
     },
     delClick(record) {
       this.$tools.delTip('确认要删除该视频吗?', () => {
-        this.deleteVideo(record.id).then((res) => {
+        this.deleteVideo(record.id).then(res => {
           this.$message.success('删除成功')
           this.$tools.goNext(() => {
             this.showList()
           })
         })
       })
-    },
-    onUploadProgress(value) {
-      this.uploadPercent = value
-      if (value === 100) {
-        this.$message.success('上传成功')
-      }
     },
     async submitForm(values) {
       if (this.editTag) {
@@ -259,27 +252,75 @@ export default {
           this.$refs.form.error()
           return
         }
-        console.log(this.videoList)
-        await this.addVideo({
-          videoName: values.fileName,
-          videoUrl: this.videoList[0].url,
-          schoolCode: this.userInfo.schoolCode,
-          fileType: 'mp4'
-        })
-        this.$message.success('上传成功')
-        this.$tools.goNext(() => {
-          this.videoList = []
-          this.$refs.form.reset()
-          this.showList()
-        })
+        const formData = new FormData()
+        formData.append('multipartFile', this.videoList[0])
+        this.source = axios.CancelToken.source()
+        const loading = this.$message.loading(`上传中...`, 0)
+        const _this = this
+        axios({
+          method: 'post',
+          url: `${hostEnv.zk_news}/school/media/uploadFile?schoolCode=${this.userInfo.schoolCode}&videoName=${values.fileName}`,
+          data: formData,
+          timeout: 30000,
+          cancelToken: this.source.token,
+          onUploadProgress(progressEvent) {
+            // 上传进度条事件
+            if (progressEvent.lengthComputable) {
+              const loaded = progressEvent.loaded
+              const total = progressEvent.total
+              _this.uploadPercent = Math.floor((loaded / total) * 100) > 1 ? Math.floor((loaded / total) * 100) : 1
+            }
+          }
+        }).then(
+          res => {
+            this.$message.success('上传成功')
+            this.$tools.goNext(() => {
+              this.videoList = []
+              this.$refs.form.reset()
+              this.showList()
+            })
+          },
+          rej => {
+            // 上传失败
+            setTimeout(loading, 0)
+            if (rej.message === 'cancel upload') {
+              // 取消上传
+              this.$message.warning('取消上传')
+            } else {
+              // 其他上传失败报错
+              this.$message.error('上传失败')
+            }
+            this.videoList = []
+            this.$refs.form.reset()
+          }
+        )
+        /*  $ajax
+          .post({
+            url: `${hostEnv.zk_news}/school/media/uploadFile?schoolCode=${this.userInfo.schoolCode}&videoName=${values.fileName}`,
+            params: formData
+          })
+          .then(() => {
+            this.$message.success('上传成功')
+            this.$tools.goNext(() => {
+              this.videoList = []
+              this.$refs.form.reset()
+              this.showList()
+            })
+          })
+          .catch(() => {
+            this.$refs.form.error()
+          }) */
       }
     },
     closeModal() {
-      this.$tools.closeUpload()
+      if (this.source) {
+        this.source.cancel('cancel upload')
+        this.videoList = []
+      }
     },
     async fullSubmit(value, formData) {
       await this.setFullShow({
-        deviceIdList: value.map((el) => {
+        deviceIdList: value.map(el => {
           return el.id
         }),
         isAll: 0,
@@ -296,7 +337,7 @@ export default {
     },
     async bindSubmit(value) {
       await this.addRelationData({
-        classList: value.classList.map((el) => {
+        classList: value.classList.map(el => {
           return {
             classCode: el.classCode,
             className: el.className,
@@ -308,7 +349,7 @@ export default {
             id: el.userId || undefined
           }
         }),
-        teacherList: value.teaList.map((el) => {
+        teacherList: value.teaList.map(el => {
           return {
             userCode: el.userCode,
             userName: el.userName,
@@ -317,7 +358,7 @@ export default {
             id: el.userId || undefined
           }
         }),
-        deviceList: value.deviceList.map((el) => {
+        deviceList: value.deviceList.map(el => {
           return {
             deviceIp: el.deviceIp,
             deviceName: el.deviceName,
@@ -373,7 +414,7 @@ export default {
 .u-mar-l5 {
   margin-left: 5px;
 }
-.ant-dropdown-link {
+.ant-dropdown-link{
   width: 45px;
 }
 </style>

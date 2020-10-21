@@ -253,6 +253,8 @@ export default {
         schoolYearId: this.classInfo.schoolYearId,
         classCode: this.classInfo.classCode,
         gradeCode: this.classInfo.gradeCode,
+        className: this.classInfo.clazzName,
+        gradeName: this.classInfo.gradeName,
         photoUrl: this.fileList.length > 0 ? this.fileList[0].url : '',
         photoId: this.fileList.length > 0 ? this.fileList[0].id : '',
         createUsercode: this.loginType.userCode,
