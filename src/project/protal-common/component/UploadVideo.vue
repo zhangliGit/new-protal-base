@@ -7,7 +7,7 @@
       :remove="handleRemove"
       :beforeUpload="beforeUpload"
     >
-      <div v-if="fileList.length < length" class="qui-fx-ac-jc">
+      <div v-if="fileList.length < length && !uploadTag" class="qui-fx-ac-jc">
         <a-button type="primary">
           <a-icon type="upload" />上传视频
         </a-button>
@@ -19,7 +19,7 @@
         '0%': '#2979ff',
         '100%': '#19be6b',
       }"
-      v-if="percent > 0 && percent <= 100"
+      v-if="percent > 0 && percent < 100"
       :percent="percent"
       status="active"
     />
@@ -50,10 +50,16 @@ export default {
     fileName: {
       type: String,
       default: 'fileList'
+    },
+    schoolCode: {
+      type: String,
+      default: ''
     }
   },
   data() {
-    return {}
+    return {
+      uploadTag: false
+    }
   },
   mounted() {},
   computed: {
@@ -68,10 +74,14 @@ export default {
   },
   methods: {
     handleRemove(file) {
-      const index = this.fileList.indexOf(file)
-      const newFileList = this.fileList.slice()
-      newFileList.splice(index, 1)
-      this.fileList = newFileList
+      if (this.uploadTag) {
+        this.$tools.closeUpload()
+        this.$emit('onUploadProgress', 0)
+        return
+      }
+      const index = this.fileList.findIndex(list => list.file.uid === file.uid)
+      console.log(index)
+      this.fileList.splice(index, 1)
     },
     beforeUpload(file) {
       const isLt100M = file.size / 1024 / 1024 < this.maxSize
@@ -84,7 +94,23 @@ export default {
         this.$message.error('请上传mp4格式的视频文件')
         return false
       }
-      this.fileList = [...this.fileList, file]
+      console.log(this.schoolCode)
+      const fileType = file.name.split('.')[1]
+      this.uploadTag = true
+      this.$tools.ossUpload(this.schoolCode, file, fileType, res => {
+        console.log(res)
+        this.uploadTag = false
+        if (res.code === 200) {
+          this.fileList = [...this.fileList, {
+            file,
+            ...res.data
+          }]
+        } else {
+          this.$message.error(res.data)
+        }
+      }, uploadPercent => {
+        this.$emit('onUploadProgress', uploadPercent)
+      })
       return false
     }
   }

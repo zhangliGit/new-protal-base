@@ -89,6 +89,7 @@ const formData = [
     type: 'input',
     label: '相册名称',
     placeholder: '请输入相册名称,不超过10字符',
+    required: true,
     max: 10
   }
 ]
