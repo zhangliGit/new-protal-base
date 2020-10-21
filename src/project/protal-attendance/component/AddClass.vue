@@ -32,6 +32,7 @@
                 <template>
                   {{ record.title }}
                   <a-time-picker
+                    :allowClear="false"
                     format="HH:mm"
                     :disabledHours="val => getDisabledHours(val, record.id, 'time')"
                     :disabledMinutes="val => getDisabledMinutes(val, record.id, 'time')"
@@ -45,6 +46,7 @@
               <div class="action qui-fx-jsa qui-fx-ac">
                 <template>
                   <a-time-picker
+                    :allowClear="false"
                     format="HH:mm"
                     :defaultValue="moment(record.startTime, 'HH:mm')"
                     :disabledHours="val => getDisabledHours(val, record.id, 'startTime')"
@@ -53,6 +55,7 @@
                   />
                   <span>至</span>
                   <a-time-picker
+                    :allowClear="false"
                     format="HH:mm"
                     :disabledHours="val => getDisabledHours(val, record.id, 'endTime')"
                     :disabledMinutes="val => getDisabledMinutes(val, record.id, 'endTime')"

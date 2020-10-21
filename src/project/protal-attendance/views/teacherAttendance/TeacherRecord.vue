@@ -72,7 +72,7 @@
                   :color="other3.noonOnState === '1' ? '#f5b111'
                     : other3.noonOnState === '4' ? '#2db7f5'
                       : other3.noonOnState === '5' ? '#87d068'
-                        :other3.noonOnState === '6' ? '#f50' :
+                        :other3.noonOnState === '3' ? '#f50' :
                           ''">{{ other3.noonOnState | onState }}</a-tag>
               </a-tooltip>
             </a-popconfirm>
@@ -87,7 +87,7 @@
                   :color="other4.noonOffState === '2' ? '#f5b111'
                     : other4.noonOffState === '4' ? '#2db7f5'
                       : other4.noonOffState === '5' ? '#87d068'
-                        :other4.noonOffState === '6' ? '#f50' :
+                        :other4.noonOffState === '3' ? '#f50' :
                           ''">{{ other4.noonOffState | onState }}</a-tag>
               </a-tooltip>
             </a-popconfirm>

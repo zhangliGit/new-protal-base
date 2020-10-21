@@ -11,18 +11,18 @@
     <div class="choose-user qui-fx">
       <div class="qui-fx-ver qui-fx-f1">
         <a-tabs v-model="activeKey" @change="tabChange">
-          <a-tab-pane tab="学生" key="1" class="choose-user">
+          <a-tab-pane tab="学生" key="1" class="">
             <div class="qui-fx-f1">
               <search-form isReset @search-form="classSearch" :search-label="searchLabel"></search-form>
             </div>
             <div class="qui-fx">
-              <div class="org-box">
+              <div class="org-box u-auto">
                 <grade-tree @select="classSelect"></grade-tree>
               </div>
               <div class="qui-fx-ver qui-fx-f1">
                 <table-list
-                  :minHeight="500"
-                  :scroll-h="450"
+                  :minHeight="460"
+                  :scroll-h="430"
                   is-radio
                   :page-list="pageList"
                   v-model="classChooseList"
@@ -34,21 +34,30 @@
                     v-slot:other2="record"
                   >{{ record.record.gradeName }}{{ record.record.className }}</template>
                 </table-list>
+                <page-num
+                  :jumper="false"
+                  v-model="pageList"
+                  :mar-top="20"
+                  :mar-bot="0"
+                  size="small"
+                  :total="total"
+                  @change-page="showList('class')"
+                ></page-num>
               </div>
             </div>
           </a-tab-pane>
-          <a-tab-pane tab="教职工" key="2" class="choose-user">
+          <a-tab-pane tab="教职工" key="2" class="">
             <div class="qui-fx-f1">
               <search-form isReset @search-form="teaSearch" :search-label="searchLabel"></search-form>
             </div>
             <div class="qui-fx">
-              <div class="org-box">
+              <div class="org-box u-auto">
                 <org-tree @select="teaSelect" @defaultCode="defaultCode"></org-tree>
               </div>
-              <div class="qui-fx-ver qui-fx-f1">
+              <div class="qui-fx-f1">
                 <table-list
-                  :minHeight="500"
-                  :scroll-h="450"
+                  :minHeight="460"
+                  :scroll-h="430"
                   is-radio
                   :page-list="pageList"
                   v-model="teaChooseList"
@@ -56,10 +65,16 @@
                   @clickRow="clickRow"
                   :table-list="teaTableList"
                 >
-                  <template
-                    v-slot:other2="record"
-                  >{{ record.record.gradeName }}{{ record.record.className }}</template>
                 </table-list>
+                <page-num
+                  :jumper="false"
+                  v-model="pageList"
+                  :mar-top="20"
+                  :mar-bot="0"
+                  size="small"
+                  :total="total"
+                  @change-page="showList('teachers')"
+                ></page-num>
               </div>
             </div>
           </a-tab-pane>
@@ -70,6 +85,7 @@
 </template>
 
 <script>
+import PageNum from '@c/PageNum'
 import GradeTree from '@c/GradeTree'
 import OrgTree from '@c/OrgTree'
 import SearchForm from '@c/SearchForm'
@@ -169,7 +185,8 @@ export default {
     TableList,
     SearchForm,
     GradeTree,
-    OrgTree
+    OrgTree,
+    PageNum
   },
   props: {
     isCheck: {
@@ -215,8 +232,9 @@ export default {
       teaChooseList: [],
       pageList: {
         page: 1,
-        size: 999999
+        size: 20
       },
+      total: 0,
       searchLabel,
       columns1,
       columns2,
@@ -246,29 +264,31 @@ export default {
     },
     async showList(type) {
       if (type === 'class') {
-        const res = await $ajax.post({
-          url: `${hostEnv.lz_user_center}/userinfo/student/user/queryStudentInfoList`,
+        const res = await $ajax.get({
+          url: `${hostEnv.hzz_ecard}/accountInfo/listStudent`,
           params: {
             gradeId: this.gradeCode,
             classId: this.classCode,
             keyword: this.keyword,
             schoolYearId: this.schoolYearId,
-            schoolCode: this.userInfo.schoolCode,
-            ...this.pageList
+            ...this.pageList,
+            flag: '0'
           }
         })
-        this.classTableList = res.data.list
+        this.total = res.total
+        this.classTableList = res.rows
       } else if (type === 'teachers') {
-        const res = await $ajax.post({
-          url: `${hostEnv.lz_user_center}/userinfo/teacher/user/queryTeacherInfo`,
+        const res = await $ajax.get({
+          url: `${hostEnv.hzz_ecard}/accountInfo/listTeacher`,
           params: {
             orgCode: this.orgCode,
             keyword: this.keyword,
-            schoolCode: this.userInfo.schoolCode,
-            ...this.pageList
+            ...this.pageList,
+            flag: '0'
           }
         })
-        this.teaTableList = res.data.list.map(item => {
+        this.total = res.total
+        this.teaTableList = res.rows.map(item => {
           return {
             ...item,
             id: item.userCode
@@ -328,12 +348,12 @@ export default {
 .choose-user {
   height: 600px;
   .org-box {
-    width: 200px;
+    width: 250px;
   }
   .user-box {
     border: 1px #f5f5f5 solid;
     margin-left: 15px;
-    width: 280px;
+    width: 250px;
     .title {
       padding: 0 10px;
       background-color: #f5f5f5;

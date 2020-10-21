@@ -1,6 +1,13 @@
 <template>
   <div class="account-list page-layout qui-fx-ver">
-    <open-card v-if="isOpen" v-model="isOpen" ref="cardForm" :user-code="userCode" @hide="hide"></open-card>
+    <open-card
+      v-if="isOpen"
+      v-model="isOpen"
+      ref="cardForm"
+      :user-code="userCode"
+      @hide="hide"
+      :userType="userType"
+    ></open-card>
     <choose-user @submit="chooseUser" title="请选择用户" v-model="userTag"></choose-user>
     <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
       <div slot="left">
@@ -41,7 +48,7 @@
         <a-col :span="10" :gutter="2">2.上传填写好的开户信息Excel文件</a-col>
         <a-col :span="10">
           <a-upload
-            style="width: 300px;"
+            style="width: 300px"
             class="qui-fx-ac"
             :multiple="false"
             :showUploadList="true"
@@ -128,6 +135,7 @@ export default {
   },
   data() {
     return {
+      userType: '1',
       fileList: [],
       fileUrl: '',
       userCode: '',
@@ -227,6 +235,7 @@ export default {
       this.userTag = false
       this.isOpen = true
       this.userCode = user.userCode
+      this.userType = user.userType
     },
     hide() {
       this.userTag = true
@@ -289,25 +298,27 @@ export default {
         method: 'post',
         url: `${hostEnv.hzz_ecard}/accountInfo/importData?operator=${this.userInfo.userCode}`,
         data: formData
-      }).then(res => {
-        console.log(res)
-        Modal.success({
-          content: res.data.msg,
-          onOk: () => {
-            this.fileList = []
-            this._getAccountList()
-          }
-        })
-        this.$refs.modal.visible = false
-      }).catch(err => {
-        console.log(err.response.data.message)
-        Modal.error({
-          content: err.response.data.message,
-          onOk: () => {
-            this.fileList = []
-          }
-        })
       })
+        .then((res) => {
+          console.log(res)
+          Modal.success({
+            content: res.data.msg,
+            onOk: () => {
+              this.fileList = []
+              this._getAccountList()
+            }
+          })
+          this.$refs.modal.visible = false
+        })
+        .catch((err) => {
+          console.log(err.response.data.message)
+          Modal.error({
+            content: err.response.data.message,
+            onOk: () => {
+              this.fileList = []
+            }
+          })
+        })
     },
     async onFocus(value) {
       this.classesList = []
@@ -316,7 +327,7 @@ export default {
       }
       const res = await this.getGradeData(req)
       this.classesList = res.data.list
-      this.classesList.forEach(el => {
+      this.classesList.forEach((el) => {
         el.label = el.name
         el.value = el.code
         el.isLeaf = false

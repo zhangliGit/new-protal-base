@@ -1,7 +1,7 @@
 <template>
   <a-modal
     width="800px"
-    title="更改班次"
+    :title="title"
     v-model="status"
     @ok="submitOk"
     :maskClosable="false"
@@ -113,7 +113,8 @@ export default {
       totalList: {},
       recordList: [],
       current: '',
-      defaultValue: ''
+      defaultValue: '',
+      title: ''
     }
   },
   methods: {

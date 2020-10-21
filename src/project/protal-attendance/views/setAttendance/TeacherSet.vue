@@ -256,10 +256,12 @@ export default {
         this.$refs.changeClass.chooseList = type === 2 ? [id.id] : []
         this.$refs.changeClass.defaultValue = type === 2 ? moment(id.current).format('YYYY-MM-DD HH:mm:ss') : ''
         this.show = false
+        this.$refs.changeClass.title = '必须打卡的日期'
       } else {
         this.show = true
         this.$refs.changeClass.chooseList = JSON.stringify(this.data[id].accessTimeList) === '{}' ? [] : [this.data[id].accessTimeList.id]
         this.classId = id
+        this.$refs.changeClass.title = '更改班次'
       }
       this.visible = true
     },

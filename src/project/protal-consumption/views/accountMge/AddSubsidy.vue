@@ -6,6 +6,8 @@
       v-if="teacherTag"
       v-model="teacherTag"
       @submit="chooseUser"
+      :chooseorgList="value"
+      :teacherList="classList"
       title="选择教职工"
     >
     </choose-user>
@@ -15,23 +17,28 @@
       v-if="studentTag"
       v-model="studentTag"
       @submit="chooseStudent"
-      title="添加学生">
-    </choose-student>
-    <a-form
-      id="components-form-demo-validate-other"
-      :form="form"
-      v-bind="formItemLayout"
-      @submit="handleSubmit"
+      :chooseClassList="value"
+      :studentList="classList"
+      title="添加学生"
     >
+    </choose-student>
+    <a-form id="components-form-demo-validate-other" :form="form" v-bind="formItemLayout" @submit="handleSubmit">
       <a-form-item label="补助名称">
         <a-input
           :disabled="readOnlyTag"
           @change="setSubsidyName"
-          v-decorator="['subsidyName', { initialValue: detail.subsidyName, rules: [{ required: true, message: '请输入补助名称!' }] }]"
+          v-decorator="[
+            'subsidyName',
+            { initialValue: detail.subsidyName, rules: [{ required: true, message: '请输入补助名称!' }] }
+          ]"
         />
       </a-form-item>
       <a-form-item label="发放对象">
-        <a-radio-group :disabled="readOnlyTag" @change="change" v-decorator="['userType', { initialValue: detail.userType }]">
+        <a-radio-group
+          :disabled="readOnlyTag"
+          @change="change"
+          v-decorator="['userType', { initialValue: detail.userType }]"
+        >
           <a-radio value="2">教职工</a-radio>
           <a-radio value="1">学生</a-radio>
         </a-radio-group>
@@ -40,13 +47,14 @@
         <a-tree-select
           placeholder="请选择组织机构"
           :treeData="treeData"
-          :value="value"
+          :disabled="readOnlyTag"
+          v-model="value"
           @change="onChange"
           treeCheckable
           :treeCheckStrictly="false"
           :treeDefaultExpandAll="false"
           labelInValue
-          :dropdownStyle="{'max-height': '400px', 'overflow': 'auto'}"
+          :dropdownStyle="{ 'max-height': '400px', overflow: 'auto' }"
           :show-checked-strategy="SHOW_PARENT"
         />
       </a-form-item>
@@ -54,7 +62,7 @@
         <a-tree-select
           placeholder="请选择班级"
           :treeData="treeData"
-          :value="value"
+          v-model="value"
           :disabled="readOnlyTag"
           @change="onChange"
           treeCheckable
@@ -62,18 +70,18 @@
           :treeDefaultExpandAll="false"
           labelInValue
           :loadData="onLoadData"
-          :dropdownStyle="{'max-height': '400px', 'overflow': 'auto'}"
+          :dropdownStyle="{ 'max-height': '400px', overflow: 'auto' }"
           :show-checked-strategy="SHOW_PARENT"
         />
       </a-form-item>
       <a-form-item label="人员" v-bind="formItemLayout">
         <div>
           <template v-for="tag in classList">
-            <a-tag :key="tag.id" :closable="true" @close="() => classClose(tag)">
+            <a-tag :key="tag.id" :closable="!readOnlyTag" @close="() => classClose(tag)">
               {{ tag.userName }}
             </a-tag>
           </template>
-          <a-tag @click="add" style="background: #fff; borderStyle: dashed;">
+          <a-tag v-if="!readOnlyTag" @click="add" style="background: #fff; borderstyle: dashed">
             <a-icon type="plus" />添加
           </a-tag>
         </div>
@@ -87,7 +95,10 @@
           :min="0"
           :max="99999"
           :disabled="readOnlyTag"
-          v-decorator="['grantBalance', { initialValue: detail.grantBalance, rules: [{ required: true, message: '请输入发放金额!' }] }]"
+          v-decorator="[
+            'grantBalance',
+            { initialValue: detail.grantBalance, rules: [{ required: true, message: '请输入发放金额!' }] }
+          ]"
           addon-before="￥"
           addon-after="RMB"
           @change="setTotal"
@@ -99,7 +110,7 @@
 
       <a-form-item label="发放时间">
         <a-radio-group :disabled="readOnlyTag" v-decorator="['grantStatus', { initialValue: detail.grantStatus }]">
-          <a-radio value="1">立即方法</a-radio>
+          <a-radio value="1">立即发放</a-radio>
           <a-radio value="0">稍后发放</a-radio>
         </a-radio-group>
       </a-form-item>
@@ -112,8 +123,8 @@
   </div>
 </template>
 <script>
-import ChooseUser from '@c/ChooseUser'
-import ChooseStudent from '@c/ChooseStudent'
+import ChooseUser from '../../component/ChooseTeacher'
+import ChooseStudent from '../../component/ChooseStudent'
 import { mapState, mapActions } from 'vuex'
 import { TreeSelect } from 'ant-design-vue'
 const SHOW_PARENT = TreeSelect.SHOW_PARENT
@@ -150,10 +161,9 @@ export default {
   },
   watch: {
     classList: {
-      handler (newVal, oldVal) {
+      handler(newVal, oldVal) {
         this.detail.grantNumber = newVal.length + this.grantNumber
         this.detail.grantTotalBalance = this.detail.grantNumber * this.detail.grantBalance
-        console.log(this.detail.grantTotalBalance)
       },
       deep: true
     }
@@ -164,29 +174,84 @@ export default {
   beforeCreate() {
     this.form = this.$form.createForm(this, { name: 'validate_other' })
   },
-  mounted() {
+  async mounted() {
     this.type = this.$route.query.type
     if (this.type === 'edit' || this.type === 'detail') {
       this.showDetail()
-      if (this.detail.userType === '1') {
-        this.getSchoolInfo()
-      } else if (this.detail.userType === '2') {
-        this.initMenu()
-      }
       this.readOnlyTag = this.type === 'detail'
     } else {
       this.getSchoolInfo()
     }
   },
   methods: {
-    ...mapActions('home', ['getOrgBySchool', 'getSchoolYear', 'getGradeList', 'getStudentSum', 'getTeacherSum',
-      'getClassList', 'grantSubsidy', 'saveSubsidy', 'getSubsidyDetail']),
+    ...mapActions('home', [
+      'getOrgBySchool',
+      'getSchoolYear',
+      'getGradeList',
+      'getStudentSum',
+      'getTeacherSum',
+      'getClassList',
+      'grantSubsidy',
+      'saveSubsidy',
+      'getSubsidyDetail',
+      'getTeacherAccountList',
+      'getSubsidyPerNum'
+    ]),
     /**
      * @description 补助详情
      */
     async showDetail() {
       const res = await this.getSubsidyDetail(this.$route.query.id)
       this.detail = res.data
+      this.value = res.data.userOrgList
+      if (this.detail.userType === '1') {
+        await this.initMenu()
+      } else if (this.detail.userType === '2') {
+        await this.getSchoolInfo()
+      }
+      if (res.data.userOrgList.length === 0) {
+        this.classList = res.data.userInfoList
+      } else {
+        const req = {
+          userType: this.detail.userType
+        }
+        if (this.detail.userType === '1') {
+          let studentCounts = []
+          this.value.map((el) => {
+            const clazz = el.value.split('=')[0]
+            const grade = el.value.split('=')[1]
+            const clazzCode = clazz.split('/')[1]
+            const gradeCode = grade.split('?')[1]
+            if (clazz.split('/')[0] === 'schoolYear') {
+              studentCounts = [`${this.schoolYear},null,null`]
+            } else if (clazzCode === gradeCode) {
+              studentCounts.push(`${this.schoolYear},${gradeCode},null`)
+            } else {
+              studentCounts.push(`${this.schoolYear},${gradeCode},${clazzCode}`)
+            }
+          })
+          req.stuClass = studentCounts
+        } else {
+          req.teaOrg = this.value.map((el) => {
+            return el.value
+          })
+        }
+        this.getSubsidyPerNum(req).then((result) => {
+          this.grantNumber = result.data.length
+          res.data.userInfoList.forEach((ele) => {
+            const index = result.data
+              .map((el) => {
+                return el.userCode
+              })
+              .findIndex((list) => {
+                return list === ele.userCode
+              })
+            if (index === -1) {
+              this.classList.push(ele)
+            }
+          })
+        })
+      }
     },
     /**
      * @description 计算总发放金额
@@ -199,7 +264,7 @@ export default {
       this.detail.subsidyName = event.target.value
     },
     // tree节点的选中
-    onChange (value) {
+    onChange(value) {
       console.log(value)
       this.value = value
       if (value.length === 0) {
@@ -207,71 +272,70 @@ export default {
         this.detail.grantNumber = this.classList.length
         this.detail.grantTotalBalance = this.detail.grantNumber * this.detail.grantBalance
       } else {
+        const req = {
+          userType: this.detail.userType
+        }
         if (this.detail.userType === '1') {
           let studentCounts = []
-          value.map(el => {
+          value.map((el) => {
             const clazz = el.value.split('=')[0]
             const grade = el.value.split('=')[1]
             const clazzCode = clazz.split('/')[1]
             const gradeCode = grade.split('?')[1]
             if (clazz.split('/')[0] === 'schoolYear') {
-              studentCounts = []
+              studentCounts = [`${this.schoolYear},null,null`]
             } else if (clazzCode === gradeCode) {
-              studentCounts.push({
-                'gradeCode': gradeCode
-              })
+              studentCounts.push(`${this.schoolYear},${gradeCode},null`)
             } else {
-              studentCounts.push({
-                'classCodes': clazzCode,
-                'gradeCode': gradeCode
-              })
+              studentCounts.push(`${this.schoolYear},${gradeCode},${clazzCode}`)
             }
           })
-          const req = {
-            schoolCode: this.userInfo.schoolCode,
-            schoolYearId: this.schoolYear,
-            studentCounts: studentCounts
-          }
-          this.getStudentSum(req).then(res => {
-            this.grantNumber = res.data
-            this.detail.grantNumber = this.grantNumber + this.classList.length
-            this.detail.grantTotalBalance = this.detail.grantNumber * this.detail.grantBalance
-          })
+          req.stuClass = studentCounts
         } else {
-          const orgCodes = []
-          value.map(el => {
-            orgCodes.push(el.value)
-          })
-          const req = {
-            schoolCode: this.userInfo.schoolCode,
-            organCodes: orgCodes
-          }
-          this.getTeacherSum(req).then(res => {
-            this.grantNumber = res.data
-            this.detail.grantNumber = this.grantNumber + this.classList.length
-            this.detail.grantTotalBalance = this.detail.grantNumber * this.detail.grantBalance
+          req.teaOrg = value.map((el) => {
+            return el.value
           })
         }
+        this.getSubsidyPerNum(req).then((res) => {
+          this.grantNumber = res.data.length
+          if (this.detail.userType === '1') {
+            this.classStuList = res.data.map((el) => {
+              return el.userCode
+            })
+          } else {
+            this.orgTeaList = res.data.map((el) => {
+              return el.userCode
+            })
+          }
+          if (this.classList.length > 0) {
+            res.data.map(el => {
+              const index = this.classList.findIndex(list => { return list.userCode === el.userCode })
+              if (index !== -1) {
+                this.classList.splice(index, 1)
+              }
+            })
+          }
+          this.detail.grantNumber = this.grantNumber + this.classList.length
+          this.detail.grantTotalBalance = this.detail.grantNumber * this.detail.grantBalance
+        })
       }
     },
+    // 修改发放对象
     change(e) {
       this.grantNumber = 0
       this.detail.grantNumber = 0
       this.detail.userType = e.target.value
+      this.value = []
+      this.treeData = []
+      this.classList = []
       if (e.target.value === '2') {
-        this.value = []
-        this.treeData = []
-        this.classList = []
         this.getSchoolInfo()
       } else {
-        this.value = []
-        this.treeData = []
-        this.classList = []
         this.initMenu()
       }
     },
     // 获取学校信息
-    async getSchoolInfo () {
+    async getSchoolInfo() {
       const res = await this.getOrgBySchool(this.userInfo.schoolCode)
       if (res.data === null || res.data.length === 0) {
         this.noData = true
@@ -283,13 +347,13 @@ export default {
       this.defaultKey = [data[0].key]
       this.treeData = data
     },
-    async initMenu () {
+    async initMenu() {
       const req = {
         schoolCode: this.userInfo.schoolCode
       }
       const res = await this.getSchoolYear(req)
       if (res.data.list.length === 0) return
-      this.gradeList = res.data.list.filter(item => {
+      this.gradeList = res.data.list.filter((item) => {
         return item.semester === '下学期'
       })
       if (res.data.list[0].semester === '上学期') {
@@ -318,7 +382,7 @@ export default {
         }
       })
     },
-    async onLoadData (treeNode) {
+    async onLoadData(treeNode) {
       return new Promise((resolve) => {
         if (treeNode.dataRef.children) {
           resolve()
@@ -327,8 +391,8 @@ export default {
         const req = {
           schoolCode: this.userInfo.schoolCode
         }
-        this.getGradeList(req).then(res => {
-          treeNode.dataRef.children = res.data.list.map(item => {
+        this.getGradeList(req).then((res) => {
+          treeNode.dataRef.children = res.data.list.map((item) => {
             return {
               title: item.name,
               schoolYearId: treeNode.dataRef.schoolYearId,
@@ -338,16 +402,16 @@ export default {
               key: 'gradeCode' + '/' + item.code + '=' + 'gradeCode' + '?' + item.code
             }
           })
-          treeNode.dataRef.children.forEach(item => {
+          treeNode.dataRef.children.forEach((item) => {
             const data = {
               schoolCode: this.userInfo.schoolCode,
               schoolYearId: treeNode.dataRef.schoolYearId,
               gradeCode: item.gradeCode
             }
-            this.getClassList(data).then(res => {
-              item.children = res.data.list.map(ele => {
+            this.getClassList(data).then((res) => {
+              item.children = res.data.list.map((ele) => {
                 return {
-                  title: ele.className,
+                  title: ele.gradeName + ele.className,
                   schoolYearId: item.schoolYearId,
                   gradeCode: item.gradeCode,
                   classCode: ele.classCode,
@@ -365,8 +429,8 @@ export default {
       })
     },
     // 深层递归
-    newOrgData (data) {
-      data.forEach(item => {
+    newOrgData(data) {
+      data.forEach((item) => {
         item.children = item.orgChilds || null
         item.title = item.name
         item.key = item.code
@@ -377,7 +441,7 @@ export default {
       })
       return data
     },
-    add() {
+    async add() {
       if (this.detail.userType === '2') {
         this.teacherTag = true
       } else {
@@ -393,7 +457,7 @@ export default {
       this.$refs.chooseStudent.reset()
     },
     classClose(removedTag) {
-      this.classList = this.classList.filter(tag => tag !== removedTag)
+      this.classList = this.classList.filter((tag) => tag !== removedTag)
     },
     /**
      * @description 发送补助
@@ -411,7 +475,7 @@ export default {
       }
       this.loading = true
       const params = {
-        accounts: this.classList.map(ele => {
+        accounts: this.classList.map((ele) => {
           return ele.userCode
         }),
         grantBalance: this.detail.grantBalance,
@@ -421,33 +485,42 @@ export default {
         id: this.type === 'edit' ? this.detail.id : '',
         subsidyName: this.detail.subsidyName,
         schoolCode: this.userInfo.schoolCode,
-        userType: this.detail.userType
+        userType: this.detail.userType,
+        stuClass: [],
+        userOrgList: this.value
       }
       if (this.detail.userType === '1') {
-        this.value.map(el => {
+        this.value.map((el) => {
           const clazz = el.value.split('=')[0]
           const grade = el.value.split('=')[1]
           const clazzCode = clazz.split('/')[1]
           const gradeCode = grade.split('?')[1]
-          if (clazz.split('/')[0] === 'schoolYear') {
+          /* if (clazz.split('/')[0] === 'schoolYear') {
             params.stuClass = []
           } else if (clazzCode === gradeCode) {
             params.stuClass.push({
-              'gradeCode': gradeCode
+              gradeCode: gradeCode
             })
           } else {
             params.stuClass.push({
-              'classCodes': clazzCode,
-              'gradeCode': gradeCode
+              classCodes: clazzCode,
+              gradeCode: gradeCode
             })
+          } */
+          if (clazz.split('/')[0] === 'schoolYear') {
+            params.stuClass = [`${this.schoolYear},null,null`]
+          } else if (clazzCode === gradeCode) {
+            params.stuClass.push(`${this.schoolYear},${gradeCode},null`)
+          } else {
+            params.stuClass.push(`${this.schoolYear},${gradeCode},${clazzCode}`)
           }
         })
+        params.accounts = params.accounts.concat(this.classStuList)
       } else if (this.detail.userType === '2') {
-        params.teaOrg = this.value.map(el => {
-          return {
-            'teacherCode': el.value
-          }
+        params.teaOrg = this.value.map((el) => {
+          return el.value
         })
+        params.accounts = params.accounts.concat(this.orgTeaList)
       }
       let actFun = ''
       if (parseInt(this.grantInfo.grantStatus) === 1) {
@@ -459,7 +532,7 @@ export default {
       }
       try {
         await this[actFun](params)
-        this.$message.success('发送成功')
+        this.$message.success('发放成功')
         this.$tools.goNext(() => {
           this.loading = false
           this.$router.back()
