@@ -93,8 +93,8 @@ export default {
     },
     async delUpload(value) {
       console.log(value)
-      await this.delFile(value.recordId || value.id)
-      await this.deleNewspaper(value.recordId)
+      // await this.delFile(value.recordId || value.id)
+      await this.deleNewspaper(value.recordId || value.id)
       this.$message.success('删除成功')
       this.$tools.goNext(() => {
         this.showList()
