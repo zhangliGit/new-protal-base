@@ -36,6 +36,7 @@ const zkApi = {
   getCover: '/school/album/photo/getCoverBySchoolCode#getUrl', // 查询轮播图
   setCover: '/school/album/photo/setUpRotation#get', // 设置轮播图
 
+  addVideo: '/school/media/uploadFile#postQuery', // 上传视频
   getVideoList: '/school/media/list#get', // 查询视频列表
   editVideo: '/school/media/update#post', // 更新视频
   deleteVideo: '/school/media/delete#delWithQuery', // 删除视频

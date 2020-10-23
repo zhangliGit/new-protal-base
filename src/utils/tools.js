@@ -119,7 +119,7 @@ const Tools = {
     event.target.src = img || autoImg
   },
   // oss图片上传 code:学生code file: 上传文件或base64 fileType: 文件类型，base64时传jpg
-  ossUpload(code, file, fileType = 'jpg', callback) {
+  ossUpload(code, file, fileType = 'jpg', callback, callbackProgress) {
     const _self = this
     axios.get(`http://canpointlive.com:8090/ossApi/oss-policy?schoolCode=${code}&fileType=${fileType}`).then(res => {
       const aliyunOssToken = res.data.data
@@ -131,6 +131,7 @@ const Tools = {
       formData.append('callback', aliyunOssToken.callback)
       formData.append('Signature', aliyunOssToken.signature) // 签名
       const _file = typeof file === 'object' ? file : _self.dataURLToBlob(file)
+      console.log(typeof file)
       formData.append('file', _file)
       formData.append('success_action_status', 200) // 成功后返回的操作码
       axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
@@ -142,7 +143,47 @@ const Tools = {
         .catch(() => {
           callback()
         })
+      _self.source = axios.CancelToken.source()
+      axios({
+        method: 'post',
+        url: '/oss_upload',
+        data: formData,
+        cancelToken: this.source.token,
+        timeout: 300000,
+        onUploadProgress(progressEvent) {
+          // 上传进度条事件
+          if (progressEvent.lengthComputable) {
+            const loaded = progressEvent.loaded
+            const total = progressEvent.total
+            callbackProgress(Math.floor((loaded / total) * 100) > 1 ? Math.floor((loaded / total) * 100) : 1)
+          }
+        }
+      }).then(
+        res => {
+          const result = {
+            code: 200,
+            msg: '上传成功',
+            data: res.data.data
+          }
+          callback(result)
+        },
+        rej => {
+          // 上传失败
+          const result = {
+            code: 400,
+            msg: '上传失败',
+            data: rej.message
+          }
+          callback(result)
+        }
+      )
     })
+  },
+  // 取消上传
+  closeUpload() {
+    if (this.source) {
+      this.source.cancel('取消上传')
+    }
   },
   color(text) {
     if (text === 1) {

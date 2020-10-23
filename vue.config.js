@@ -250,8 +250,8 @@ module.exports = {
         }
       },
       '/zk_news': {
-        target: 'http://192.168.2.242:11011/', // 张坤-信息发布
-        // target: 'http://192.168.1.23:11011/',
+        // target: 'http://192.168.2.242:11011/', // 张坤-信息发布
+        target: 'http://192.168.1.193:11011/',
         changeOrigin: true,
         pathRewrite: {
           '^/zk_news': ''
@@ -275,7 +275,7 @@ module.exports = {
       },
       '/zq_class': {
         // target: 'http://192.168.2.242:11009/', // 张琦-班牌管理
-        target: 'http://192.168.2.242:11009/',
+        target: 'http://192.168.1.193:11009/',
         changeOrigin: true,
         pathRewrite: {
           '^/zq_class': ''
@@ -283,7 +283,7 @@ module.exports = {
       },
       '/zk_class': {
         // target: 'http://192.168.2.242:11009/', // 张坤-班牌管理
-        target: 'http://192.168.2.242:11009/',
+        target: 'http://192.168.1.193:11009/',
         changeOrigin: true,
         pathRewrite: {
           '^/zk_class': ''
