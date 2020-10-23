@@ -249,32 +249,29 @@ export default {
       this.classList = this.classList.filter(tag => tag !== removedTag)
     },
     chooseUser(values) {
-      console.log(values)
+      // console.log(values)
       this.$refs.chooseUser.reset()
       this.classList = values
       this.chargeObject.schoolYearId = values[0].schoolYearId
       this.chargeObject.schoolYearName = this.getYearList[0].schoolYear
-      this.chargeObject.chargeGrades = []
-      values.forEach(item => {
-        this.chargeObject.chargeGrades.push({
-          gradeCode: item.gradeCode,
-          gradeName: item.gradeName,
-          chargeClasses: []
-        })
-        this.chargeObject.chargeGrades.forEach(ele => {
-          if (item.gradeCode === ele.gradeCode) {
-            ele.chargeClasses.push({
-              classCode: item.classCode,
-              className: item.className,
-              userCodes: []
-            })
-            ele.chargeClasses.forEach(list => {
-              list.userCodes.push(item.userCode)
-            })
-          }
+      this.chargeObject.chargeGrades = values.map(el => {
+        return {
+          chargeClasses: [],
+          gradeCode: el.gradeCode,
+          gradeName: el.gradeName,
+          classCode: el.classCode,
+          className: el.className,
+          userCode: el.userCode
+        }
+      })
+      this.chargeObject.chargeGrades.forEach(item => {
+        item.chargeClasses.push({
+          classCode: item.classCode,
+          className: item.className,
+          userCodes: [item.userCode]
         })
       })
-      console.log(this.chargeObject)
+      // console.log(this.chargeObject)
     },
     add() {
       this.title = '新增'
@@ -294,7 +291,6 @@ export default {
         let studentCounts = []
         this.chargeObject.schoolYearId = this.getYearList[0].id
         this.chargeObject.schoolYearName = this.getYearList[0].schoolYear
-        this.chargeObject.chargeGrades = []
         value.map(el => {
           const clazz = el.value.split('=')[0]
           const grade = el.value.split('=')[1]
@@ -304,13 +300,14 @@ export default {
           const gradeCode = grade.split('?')[1]
           const gradeName = gname.split(',')[1]
           const className = cname.split('*')[1]
-          console.log(clazz, grade, cname, gname)
+          this.chargeObject.chargeGrades = []
           this.chargeObject.chargeGrades.push({
             gradeCode: gradeCode,
             gradeName: gradeName,
             chargeClasses: []
           })
           this.chargeObject.chargeGrades.forEach(ele => {
+            ele.chargeClasses = []
             ele.chargeClasses.push({
               classCode: clazzCode,
               className: className,
@@ -497,7 +494,7 @@ export default {
             this.$message.warning('请选择收费项!')
             return
           }
-          if (this.classList.length === 0) {
+          if (this.classList.length === 0 && this.value.length === 0) {
             this.$message.warning('请选择收费对象!')
             return
           }
@@ -510,7 +507,7 @@ export default {
             createUserCode: this.userInfo.userCode,
             createUserName: this.userInfo.userName,
             preMoney: this.amount,
-            taskMoney: this.receivable,
+            taskMoney: this.totalMoney,
             chargeObject: this.chargeObject
           }
           this.addChargetask(req).then(res => {
