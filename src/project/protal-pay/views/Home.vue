@@ -174,21 +174,22 @@ export default {
       for (var i = 0; i < 30; i++) {
         this.xData.unshift(moment(new Date(new Date().setDate(new Date().getDate() - i))).format('YYYY-MM-DD'))
         this.yData.unshift({
-          countNum: 0,
-          amountNum: 0,
-          dayStr: moment(new Date(new Date().setDate(new Date().getDate() - i))).format('YYYY-MM-DD')
+          paidSum: 0,
+          paidMoneySum: 0,
+          statDate: moment(new Date(new Date().setDate(new Date().getDate() - i))).format('YYYY-MM-DD')
         })
       }
       const res = await this.getChargeCurve(this.userInfo.schoolCode)
       if (res.data) {
         res.data.forEach(ele => {
+          console.log(ele.paidMoneySum)
           const index = this.xData.findIndex(list => {
             return list === moment(ele.statDate).format('YYYY-MM-DD')
           })
           if (index !== -1) {
-            this.yData[index].countNum = ele.paidSum
-            this.yData[index].amountNum = ele.paidMoneySum
-            this.yData[index].dayStr = ele.statDate
+            this.yData[index].paidSum = ele.paidSum
+            this.yData[index].paidMoneySum = Number(ele.paidMoneySum)
+            this.yData[index].statDate = ele.statDate
           }
         })
       }
@@ -200,7 +201,7 @@ export default {
     initHeatChart(id, yData, xDate) {
       Highcharts.chart(id, {
         credits: {
-          enabled: false // 禁用版权信息
+          enabled: false
         },
         title: {
           text: '',
@@ -254,15 +255,16 @@ export default {
         series: [
           {
             name: '缴费金额',
+            color: '#8988E2',
             data: this.yData.map(ele => {
-              return ele.amountNum
+              return ele.paidMoneySum
             })
           },
           {
-            name: '缴费帐单数',
+            name: '缴费单数',
             color: '#8988E2',
             data: this.yData.map(ele => {
-              return ele.countNum
+              return ele.paidSum
             })
           }
         ],
