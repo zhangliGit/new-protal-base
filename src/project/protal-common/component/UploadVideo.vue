@@ -98,6 +98,9 @@ export default {
       const fileType = file.name.split('.')[1]
       this.uploadTag = true
       this.$tools.ossUpload(this.schoolCode, file, fileType, res => {
+        if (!res) {
+          return
+        }
         console.log(res)
         this.uploadTag = false
         if (res.code === 200) {

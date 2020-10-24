@@ -135,14 +135,6 @@ const Tools = {
       formData.append('file', _file)
       formData.append('success_action_status', 200) // 成功后返回的操作码
       axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
-      axios
-        .post('/oss_upload', formData)
-        .then(function (res) {
-          callback(res.data.data)
-        })
-        .catch(() => {
-          callback()
-        })
       _self.source = axios.CancelToken.source()
       axios({
         method: 'post',
