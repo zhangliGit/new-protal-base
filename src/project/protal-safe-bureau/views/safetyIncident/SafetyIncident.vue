@@ -64,7 +64,8 @@ export default {
       formStatus: false,
       searchList: {},
       detailId: '',
-      type: ''
+      type: '',
+      schoolCodes: []
     }
   },
   computed: {
@@ -82,7 +83,7 @@ export default {
       'reportAccident'
     ]),
     async showList() {
-      this.searchList.schoolCode = this.userInfo.schoolCode
+      this.searchList.schoolCode = this.schoolCodes
       this.searchList = Object.assign(this.searchList, this.pageList)
       const res = await this.getAccident(this.searchList)
       this.findList = res.data.records

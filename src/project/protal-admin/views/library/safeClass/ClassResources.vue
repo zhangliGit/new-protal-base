@@ -14,15 +14,17 @@
       :columns="resourcesPageListColumns"
       :table-list="findList">
       <template v-slot:actions="action">
-        <a-tooltip v-if="action.record.state==='0'" placement="topLeft" title="编辑">
+        <a-tooltip placement="topLeft" title="编辑">
           <a-button size="small" class="edit-action-btn" icon="form" @click="add(1,action.record)"></a-button>
         </a-tooltip>
+        <a-tooltip placement="topLeft" title="下载">
+          <a-button size="small" class="download-action-btn" icon="download" @click="download(action.record)"></a-button>
+        </a-tooltip>
         <a-popconfirm
-          v-if="action.record.state==='0'"
           placement="topLeft"
           ok-text="确定"
           cancel-text="取消"
-          @confirm="delTask(action.record)">
+          @confirm="delResources(action.record)">
           <template slot="title">
             确定删除该任务吗？
           </template>
@@ -33,10 +35,12 @@
       </template>
     </table-list>
     <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
+    <canvas width="500" height="500" id="canvas"></canvas>
   </div>
 </template>
 <script>
-// import hostEnv from '@config/host-env'
+import html2canvas from 'html2canvas'
+import hostEnv from '@config/host-env'
 import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
@@ -44,7 +48,7 @@ import SearchForm from '@c/SearchForm'
 import { resourcesPageSearchLabel } from '../../../assets/js/searchLabel.js'
 import { resourcesPageListColumns } from '../../../assets/js/tableColumns'
 export default {
-  name: 'SafetyExercises',
+  name: 'ClassResources',
   components: {
     TableList,
     PageNum,
@@ -67,11 +71,11 @@ export default {
   computed: {
     ...mapState('home', ['userInfo', 'eduCode'])
   },
-  mounted() {
+  created() {
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['pageResource', 'removeTask', 'removeTaskAll']),
+    ...mapActions('home', ['pageResource', 'delResource']),
     async showList() {
       const req = {
         source: '1',
@@ -89,26 +93,33 @@ export default {
       this.showList()
     },
     selectAll() {},
-    async delTask(record) {
-      await this.removeTask(record.id)
+    async delResources(record) {
+      await this.delResource(record.id)
       this.showList()
     },
-    async delTaskAll() {
-      this.chooseList.filter(v => v === '1')
-      if (this.chooseList.length <= 0) return
-      const that = this
-      this.$confirm({
-        title: '提示',
-        content: '确定删除该任务吗?',
-        onOk () {
-          that.removeTaskAll(that.chooseList).then(res => {
-            that.$message.success('操作成功')
-            that.showList()
-          })
-        },
-        onCancel () {
-        }
-      })
+    // 下载图片
+    downloadImg(url) {
+      const canvas = document.getElementById('canvas')
+      const aLink = document.createElement('a')
+      aLink.download = '下载图片'
+      aLink.href = canvas.toDataURL(url)
+      aLink.dispatchEvent(new MouseEvent('click', {}))
+    },
+    // 不跳转下载
+    download(record) {
+      const url = record.resourceUrl
+      const reg = /\.(gif|jpg|jpeg|png|GIF|JPEG|JPG|PNG)$/
+      const isImg = reg.test(url)
+      if (isImg) {
+        this.downloadImg(url)
+      } else {
+        var a = document.createElement('a')
+        a.id = 'expertFile'
+        a.href = url
+        document.body.append(a)
+        a.click()
+        document.getElementById('expertFile').remove()
+      }
     },
     add(type, record) {
       this.$router.push({
@@ -119,7 +130,6 @@ export default {
         }
       })
     }
-
   }
 }
 </script>

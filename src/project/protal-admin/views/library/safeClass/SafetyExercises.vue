@@ -3,21 +3,18 @@
     <search-form is-reset @search-form="searchForm" :search-label="exrcisesPageSearchLabel">
       <div slot="right">
         <a-button icon="del" class="add-action-btn u-mar-l10" @click="delAll">批量删除</a-button>
-        <!-- <a-button icon="del" class="add-action-btn " @click="importExerci">导入</a-button> -->
         <a-button icon="del" class="add-action-btn " @click="downTemplate">下载模板</a-button>
         <a-button icon="plus" class="add-action-btn " @click="add(0)">添加习题</a-button>
         <a-button icon="del" class="add-action-btn " @click="exportExerci">导出</a-button>
         <a-upload
           style="width: 50px;"
-
           :multiple="false"
-          :showUploadList="true"
           name="file"
-          :fileList="fileList"
-          :withCredentials="true"
           :customRequest="customRequest"
-          :beforeUpload="beforeUpload"
+          :showUploadList="false"
         >
+          <!-- :showUploadList="true" -->
+          <!-- :fileList="fileList" -->
           <!-- accept=".xls" -->
           <!-- :data="{ fileType: 'xls' }" -->
           <a-button type="primary">导入</a-button>
@@ -28,7 +25,6 @@
       is-check
       is-zoom
       v-model="chooseList"
-      @selectAll="selectAll"
       :page-list="pageList"
       :columns="exercisePageListColumns"
       :table-list="findList">
@@ -87,7 +83,7 @@ export default {
   computed: {
     ...mapState('home', ['userInfo', 'eduCode'])
   },
-  mounted() {
+  created() {
     this.showList()
   },
   methods: {
@@ -123,26 +119,38 @@ export default {
         source: '1'
       }
       if (this.chooseList.length === 0) {
-        window.location.href = `${hostEnv.lz_safe}/class/exercises/export`
+        this.ecsImport(req)
       } else {
-        const req1 = {
-          ...req,
-          ids: this.chooseList
-        }
-        window.location.href = `${hostEnv.lz_safe}/class/exercises/export`
+        this.ecsImport({ ...req, ids: this.chooseList })
       }
-      // const res = await this.ecsExport(req)
-      // console.log(res)
+    },
+    // 导出调接口
+    ecsImport(req) {
+      var url = `${hostEnv.lz_safe}/class/exercises/export`
+      var xhr = new XMLHttpRequest()
+      xhr.open('POST', url, true) // 也可以使用POST方式，根据接口
+      xhr.responseType = 'blob'
+      xhr.onload = function () {
+        if (this.status === 200) {
+          var content = this.response
+          var aTag = document.createElement('a')
+          var blob = new Blob([content])
+          var headerName = xhr.getResponseHeader('Content-disposition')
+          var fileName = decodeURIComponent(headerName).substring(20)
+          aTag.download = fileName
+          aTag.href = URL.createObjectURL(blob)
+          aTag.click()
+          URL.revokeObjectURL(blob)
+        }
+      }
+      xhr.send(JSON.stringify(req))
     },
     // 下载模板
     async downTemplate() {
       window.location.href = `${hostEnv.lz_safe}/class/exercises/download`
-      // const res = await this.ecsDownload()
-      // window.open(res)
     },
     // 导入文件
     beforeUpload(file) {
-      console.log(file)
       const isZip = file.type === 'application/vnd.ms-excel'
       if (!isZip) {
         this.$message.error('请上传格式为xls的文件')
@@ -154,37 +162,15 @@ export default {
       this.resList = []
       const formData = new FormData()
       formData.append('file', data.file)
+      formData.append('code', this.userInfo.schoolCode)
+      formData.append('source', '1')
       this.fileList = [data.file]
       this.saveFile(formData)
     },
-    saveFile(formData) {
-      axios({
-        method: 'post',
-        url: `${hostEnv.hzz_ecard}/accountInfo/importData?operator=${this.userInfo.userCode}`,
-        data: formData
-      }).then(res => {
-        if (res.data.code === 200) {
-          console.log(res.data.data)
-          if (typeof res.data.data === 'string') {
-            this.$message.error(res.data.data)
-            return
-          }
-          this.$refs.importResult.addVisible = true
-          this.bindObj = res.data.data
-          this.bindObj.failData.map((ele, i) => {
-            ele.id = i
-          })
-          this.fileList = []
-        } else {
-          this.$message.error(res.data.message)
-          this.fileList = []
-        }
-      })
+    async saveFile(formData) {
+      await this.ecsImport(formData)
+      this.$message.success('导入成功')
     },
-    async importExerci() {
-      // await this.ecsImport(record.id)
-    },
-    selectAll() {},
     async delTask(record) {
       await this.ecsRemove(record.id)
       this.showList()

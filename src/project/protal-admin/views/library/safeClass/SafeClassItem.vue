@@ -16,7 +16,6 @@
             is-check
             is-zoom
             v-model="chooseList"
-            @selectAll="selectAll"
             :page-list="pageList"
             :columns="safeClassItemColumns"
             :table-list="findList">
@@ -100,7 +99,7 @@ const columnsUrl = [
   }
 ]
 export default {
-  name: 'TaskRecord',
+  name: 'SafeClassItem',
   components: {
     TableList,
     PageNum,
@@ -109,17 +108,21 @@ export default {
   },
   data() {
     return {
-      columnsUrl,
-      visible: false,
       categoryId: '', // 树选择的id
       safeClassItemColumns,
       safeClassItemLabel,
+      findList: [],
+      chooseList: [], // 当有选择项时，被选中的项，返回每项的唯一id
+      searchList: {},
       total: 0,
       treeData: [],
       pageList: {
         page: 1,
         size: 20
       },
+      // 使用统计
+      visible: false,
+      columnsUrl,
       statisticsPageList: {
         page: 1,
         size: 5
@@ -127,16 +130,13 @@ export default {
       statisticsData: {
         // record: [],
         // total: '20'
-      },
-      findList: [],
-      chooseList: [], // 当有选择项时，被选中的项，返回每项的唯一id
-      searchList: {}
+      }
     }
   },
   computed: {
     ...mapState('home', ['userInfo', 'eduCode'])
   },
-  async mounted() {
+  async created() {
     this.categoryId = ''
     await this._treeView()
     await this.showList()
@@ -162,7 +162,6 @@ export default {
       this.searchList = values
       this.showList()
     },
-    selectAll() {},
     async delBatch(record) {
       await this.claroomRemove(record.id)
       this.showList()
@@ -197,10 +196,10 @@ export default {
       this.categoryId = id
       this.showList()
     },
-    // 查看预览
+    // 查看课堂详情
     preview(record) {
       this.$router.push({
-        path: '/library/preview',
+        path: '/safeClass/previewClass',
         query: {
           id: record ? record.id : ''
         }
@@ -223,7 +222,7 @@ export default {
       this.statisticsData = res1.data
       this._pageStatistics()
     },
-    // table
+    // 统计数据分页table
     async  _pageStatistics() {
       const req = {
         ...this.statisticsPageList,

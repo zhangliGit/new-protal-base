@@ -18,7 +18,7 @@
           </a-col>
         </a-row>
         <info v-if="stepsActive==='1'" :id="id" ref="info" ></info>
-        <lesson-plan v-if="stepsActive==='2'" :id="id" ref=" lessonPlan"></lesson-plan>
+        <lesson-plan v-if="stepsActive==='2'" :id="id" ref="lessonPlan"></lesson-plan>
         <exercise v-if="stepsActive==='3'" :id="id" ref="exercise" ></exercise>
         <resources v-if="stepsActive==='4'" :id="id" ref="resources" ></resources>
       </div>
@@ -100,31 +100,34 @@ export default {
       'firstCategory'
 
     ]),
-    isActive(count) {
+    isActive(count, id) {
+      // 保存信息改变路由参数
+      if (id) {
+        this.$router.push({ query: { id: id } })
+      }
       // 课堂信息的时候判断是否有通过校验到下一步
       if (this.stepsActive === '1' && count > '1') {
         const a = this.$refs.info.submitOk()
-        // 校验通过
-        if (a) {
-          this.stepsActive = count
-          this.steps.forEach(element => {
-            if (element.count === count) {
-              element.active = true
-            } else {
-              element.active = false
-            }
-          })
-        }
-      } else {
-        this.stepsActive = count
-        this.steps.forEach(element => {
-          if (element.count === count) {
-            element.active = true
-          } else {
-            element.active = false
-          }
-        })
+        if (!a) return
       }
+      // if (count === '2') {
+      //   this.$refs.info.save()
+      // } else if (count === '3') {
+      //   this.$refs.info.save()
+      //   this.$refs.lessonPlan.submitOk()
+      // } else if (count === '4') {
+      //   this.$refs.info.save()
+      //   this.$refs.lessonPlan.submitOk()
+      //   this.$refs.exercise.submitOk()
+      // }
+      this.stepsActive = count
+      this.steps.forEach(element => {
+        if (element.count === count) {
+          element.active = true
+        } else {
+          element.active = false
+        }
+      })
     },
     previous() {
       this.stepsActive++

@@ -20,6 +20,7 @@
       listType="picture-card"
       class="avatar-uploader mar-t10"
       :showUploadList="false"
+
       :beforeUpload="beforeUpload"
       :customRequest="customRequest"
     >
