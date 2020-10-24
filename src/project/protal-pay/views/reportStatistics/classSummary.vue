@@ -94,13 +94,13 @@ export default {
     this.getSchoolYearId()
   },
   methods: {
-    ...mapActions('home', ['downdayBillList', 'getClassList', 'getSchoolYear']),
+    ...mapActions('home', ['downdayBillList', 'getclassCollectList', 'getSchoolYear']),
     async showList(searchObj = {}) {
       this.searchList.pageNum = this.pageList.page
       this.searchList.pageSize = this.pageList.size
       this.searchList.schoolCode = this.userInfo.schoolCode
       this.searchList = Object.assign(this.searchList, searchObj)
-      const res = await this.getClassList(this.searchList)
+      const res = await this.getclassCollectList(this.searchList)
       this.recordList = res.data.records
       this.total = res.data.total
     },

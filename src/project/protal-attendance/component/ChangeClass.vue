@@ -1,7 +1,7 @@
 <template>
   <a-modal
     width="800px"
-    title="更改班次"
+    :title="title"
     v-model="status"
     @ok="submitOk"
     :maskClosable="false"
@@ -108,12 +108,12 @@ export default {
         page: 1,
         size: 9999
       },
-      total: 0,
       columns,
       totalList: {},
       recordList: [],
       current: '',
-      defaultValue: ''
+      defaultValue: '',
+      title: ''
     }
   },
   methods: {
@@ -125,7 +125,7 @@ export default {
       this.searchList = Object.assign(this.searchList, this.pageList)
       const res = await this.getStudentStatistics(this.searchList)
       this.recordList = res.data.list
-      this.total = res.data.total
+      this.chooseList = [ res.data.list[0].id ]
     },
     searchForm (values) {
       this.pageList.page = 1
@@ -142,12 +142,15 @@ export default {
       this.$emit('input', false)
     },
     onChange(date, dateString) {
-      console.log(date, dateString)
       this.current = dateString
     },
     submitOk() {
       if (!this.show && this.current === '') {
         this.$message.warning('请选择日期')
+        return
+      }
+      if (!this.show && !this.totalList.code) {
+        this.$message.warning('请选择班次')
         return
       }
       this.confirmLoading = true

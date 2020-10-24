@@ -20,7 +20,7 @@
         <a-col :span="6" class="u-tx-r">卡号：</a-col>
         <a-col :span="16">
           <a-input
-            :readonly="detail.cardStatus !== '0'"
+            :readonly="detail.cardInfo.status !== '0'"
             v-model="detail.cardNo"
             placeholder="请输入卡号"
           />
@@ -44,13 +44,13 @@
       </a-row>
       <a-row class="u-padd-10">
         <a-col :span="6" class="u-tx-r">卡状态：</a-col>
-        <a-col :span="16">{{ datamap(detail.cardStatus, cardTypeList) }}</a-col>
+        <a-col :span="16">{{ datamap(detail.cardInfo.status, cardTypeList) }}</a-col>
       </a-row>
       <a-row class="u-padd-10">
         <a-col :span="6" class="u-tx-r">账户余额：</a-col>
         <a-col :span="16">
           <a-input
-            :readonly="detail.cardStatus !== '0'"
+            :readonly="detail.cardInfo.status !== '0'"
             v-model="detail.balance"
             placeholder="请输入账户余额"
           />
@@ -60,7 +60,7 @@
         <a-col :span="6" class="u-tx-r">押金：</a-col>
         <a-col :span="16">
           <a-input
-            :readonly="detail.cardStatus !== '0'"
+            :readonly="detail.cardInfo.status !== '0'"
             v-model="detail.deposit"
             placeholder="请输入押金"
           />
@@ -90,19 +90,19 @@
     </show-dialog>
     <detail-show :detail-info="detailInfo" :title="detailTitle" :photoSrc="detail.photoUrl">
       <div>
-        <a-button @click="showCard(0)" v-if="detail.cardStatus === '1'" class="add-btn">挂失</a-button>
-        <a-button @click="showCard(1)" v-if="detail.cardStatus === '2'" class="export-btn">解挂</a-button>
+        <a-button @click="showCard(0)" v-if="detail.cardInfo.status === '1'" class="add-btn">挂失</a-button>
+        <a-button @click="showCard(1)" v-if="detail.cardInfo.status === '2'" class="export-btn">解挂</a-button>
         <a-button
           @click="showCard(2)"
-          v-if="detail.cardStatus === '1' || detail.cardStatus === '2'"
+          v-if="detail.cardInfo.status === '1' || detail.cardInfo.status === '2'"
           class="export-all-btn"
         >换卡</a-button>
         <a-button
           @click="showCard(3)"
-          v-if="detail.cardStatus === '1' || detail.cardStatus === '2'"
+          v-if="detail.cardInfo.status === '1' || detail.cardInfo.status === '2'"
           class="del-btn"
         >退卡</a-button>
-        <a-button @click="showCard(4)" v-if="detail.cardStatus === '0'" class="add-btn">开卡</a-button>
+        <a-button @click="showCard(4)" v-if="detail.cardInfo.status === '0'" class="add-btn">开卡</a-button>
       </div>
     </detail-show>
     <crad class="crad">
@@ -130,7 +130,7 @@
       <div slot="title" class="u-fx-ac u-fx-jsb">
         <div>卡片信息</div>
         <div>
-          <a-button @click="seeHistory" class="add-btn" v-if="detail.cardStatus !== '0'">查看历史卡片</a-button>
+          <a-button @click="seeHistory" class="add-btn" v-if="detail.cardInfo.status !== '0'">查看历史卡片</a-button>
         </div>
       </div>
       <div slot="content">
@@ -143,7 +143,7 @@
                 <a-col
                   class="mar-b10 qui-fx-jc"
                   :span="8"
-                >状态 : {{ datamap(detail.cardStatus, cardTypeList) }}</a-col>
+                >状态 : {{ datamap(detail.cardInfo.status, cardTypeList) }}</a-col>
                 <a-col class="mar-b10 qui-fx-jc" :span="8">发卡时间 : {{ detail.openTime }}</a-col>
               </a-row>
             </div>
@@ -237,8 +237,9 @@ export default {
   computed: {
     ...mapState('home', ['userInfo'])
   },
-  mounted() {
-    this.detail = JSON.parse(window.localStorage.getItem('cardInfo'))
+  async mounted() {
+    await this._showDetail()
+    // this.detail = JSON.parse(window.localStorage.getItem('cardInfo'))
     this.userTypeList = JSON.parse(window.localStorage.getItem('user_type'))
     this.cardTypeList = JSON.parse(window.localStorage.getItem('card_status'))
     this.accountTypeList = JSON.parse(window.localStorage.getItem('ecard_account_status'))
@@ -268,9 +269,13 @@ export default {
     }
   },
   methods: {
-    ...mapActions('home', ['getCardInfoList', 'lossCard', 'unlockCard', 'changeCard', 'returnCard', 'openCard']),
+    ...mapActions('home', ['getCardInfoList', 'getCardInfoDetail', 'lossCard', 'unlockCard', 'changeCard', 'returnCard', 'openCard']),
     datamap(data, list) {
       return list.filter((ele) => ele.key === data).length > 0 ? list.filter((ele) => ele.key === data)[0].val : ''
+    },
+    async _showDetail() {
+      const res = await this.getCardInfoDetail(this.$route.query.id)
+      this.detail = res.data
     },
     /**
      * @description 获取历史卡片信息
@@ -341,7 +346,7 @@ export default {
         this.$message.success('操作成功')
         this.cardTag = false
         this.$tools.goNext(() => {
-          this.$router.back()
+          this._showDetail()
         })
       } catch (err) {
         this.$refs.cardForm.loading = false

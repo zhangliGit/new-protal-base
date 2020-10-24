@@ -133,15 +133,7 @@ export default {
       this.targetType = String(this.targetType).split(',')
     },
     msgChange(checkedValues) {
-      this.msgType = []
-      checkedValues.forEach(item => {
-        this.msgType.push({
-          msgType: item,
-          schoolCode: this.userInfo.schoolCode,
-          warnDay: item == '2' ? this.warnDay : '0'
-        })
-      })
-      console.log(this.msgType)
+      this.msgType = checkedValues
     },
     informChange(checkedValues) {
       this.informType = checkedValues
@@ -151,7 +143,13 @@ export default {
     },
     handleSubmit() {
       const req = {
-        msgTypeSettings: this.msgType,
+        msgTypeSettings: this.msgType.map(el => {
+          return {
+            msgType: el,
+            schoolCode: this.userInfo.schoolCode,
+            warnDay: el == '2' ? this.warnDay : '0'
+          }
+        }),
         noticeTypeCodes: this.informType,
         noticeUserCodes: this.targetType,
         schoolCode: this.userInfo.schoolCode

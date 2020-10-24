@@ -28,7 +28,7 @@
         <a-col class="detail-row" :span="2">缴费进度: </a-col>
         <a-col class="detail-row" :span="16"
           ><a-progress
-            :percent="Number(GetPercent(this.detailList.paidMoneySum, this.detailList.unpaidMoneySum))"
+            :percent="Number(GetPercent(this.detailList.paidMoneySum, this.detailList.billMoneySum))"
             strokeColor="#9698d6"
           />
         </a-col>

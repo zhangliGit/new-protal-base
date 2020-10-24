@@ -61,7 +61,7 @@ const columns = [
     dataIndex: 'grantTime',
     width: '20%',
     customRender: text => {
-      return Tools.getDate(text)
+      return text ? Tools.getDate(text) : '--'
     }
   }
 ]

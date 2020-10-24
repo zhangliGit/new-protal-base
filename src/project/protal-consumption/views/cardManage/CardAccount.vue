@@ -164,7 +164,7 @@ export default {
     },
     toDetail(record, name) {
       window.localStorage.setItem('cardInfo', JSON.stringify(record))
-      this.$router.push({ name, query: { name } })
+      this.$router.push({ name, query: { id: record.id } })
     }
   }
 }

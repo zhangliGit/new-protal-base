@@ -27,8 +27,8 @@
       </a-form-item>
       <a-form-item label="收费对象" v-bind="formItemLayout" required>
         <div class="choose-input" @click="teacherSelect">
-          <div class="p" v-if="chooseTeachersDeatil.length === 0">请点击选择收费对象</div>
-          <template v-for="tag in chooseTeachersDeatil">
+          <div class="p" v-if="classList.length === 0">请点击选择收费对象</div>
+          <template v-for="tag in classList">
             <a-tag
               color="purple"
               @click.stop.prevent
@@ -44,10 +44,12 @@
     <choose-student
       ref="chooseUser"
       is-check
+      chooseType="pay"
       v-if="userTag"
       v-model="userTag"
       @submit="chooseUser"
       title="选择学生"
+      :classList="classList"
     ></choose-student>
   </a-modal>
 </template>
@@ -98,7 +100,7 @@ export default {
       form: this.$form.createForm(this),
       loading: false,
       userTag: false,
-      chooseTeachersDeatil: [],
+      classList: [],
       recordList: [],
       columns,
       formItemLayout: {
@@ -114,7 +116,8 @@ export default {
       addVisible: false,
       isView: false,
       isLoad: false,
-      detailList: {}
+      detailList: {},
+      getYearList: []
     }
   },
   props: {
@@ -127,8 +130,8 @@ export default {
       default: ''
     },
     popTaskId: {
-      type: String,
-      default: ''
+      type: Number,
+      default: 0
     }
   },
   created() {},
@@ -142,9 +145,10 @@ export default {
   },
   mounted() {
     this.init()
+    this.getSchoolYearId()
   },
   methods: {
-    ...mapActions('home', ['addChargetask', 'getCharge', 'addBillInfo', 'getchargeTaskInfo']),
+    ...mapActions('home', ['addChargetask', 'getCharge', 'addBillInfo', 'getchargeTaskInfo', 'getSchoolYear']),
     async init() {
       const res = await this.getCharge(this.popTaskCode)
       const tas = await this.getchargeTaskInfo(this.popTaskId)
@@ -163,41 +167,56 @@ export default {
       this.userTag = true
     },
     userClose(removedTag) {
-      this.chooseTeachersDeatil = this.chooseTeachersDeatil.filter(tag => tag !== removedTag)
+      this.classList = this.classList.filter(tag => tag !== removedTag)
     },
     chooseUser(values) {
       this.$refs.chooseUser.reset()
-      this.chooseTeachersDeatil = values
+      this.classList = values
       this.chargeObject.schoolYearId = values[0].schoolYearId
-      this.chargeObject.schoolYearName = values[0].schoolYear
-      values.forEach(item => {
-        this.chargeObject.chargeGrades.push({
-          gradeCode: item.gradeCode,
-          gradeName: item.gradeName,
-          chargeClasses: []
-        })
-        this.chargeObject.chargeGrades.forEach(ele => {
-          ele.chargeClasses.push({
-            classCode: item.classCode,
-            className: item.className,
-            userCodes: []
-          })
-          ele.chargeClasses.forEach(list => {
-            list.userCodes.push(item.userCode)
-          })
+      this.chargeObject.schoolYearName = this.getYearList[0].schoolYear
+      this.chargeObject.chargeGrades = values.map(el => {
+        return {
+          chargeClasses: [],
+          gradeCode: el.gradeCode,
+          gradeName: el.gradeName,
+          classCode: el.classCode,
+          className: el.className,
+          userCode: el.userCode
+        }
+      })
+      this.chargeObject.chargeGrades.forEach(item => {
+        item.chargeClasses.push({
+          classCode: item.classCode,
+          className: item.className,
+          userCodes: [item.userCode]
         })
       })
+    },
+    async getSchoolYearId() {
+      const req = {
+        schoolCode: this.userInfo.schoolCode
+      }
+      const res = await this.getSchoolYear(req)
+      this.getYearList = res.data.list
     },
     addSubmit(e) {
       e.preventDefault()
       this.form.validateFields((err, values) => {
         if (!err) {
+          if (this.recordList.length === 0) {
+            this.$message.warning('请选择收费项!')
+            return
+          }
+          if (this.classList.length === 0) {
+            this.$message.warning('请选择收费对象!')
+            return
+          }
           const req = {
             schoolCode: this.userInfo.schoolCode,
             preMoney: this.amount,
             taskCode: this.detailList.taskCode,
             taskName: this.detailList.billMoneySum,
-            taskMoney: this.receivable,
+            taskMoney: this.totalMoney,
             itemVOList: this.recordList,
             chargeObject: this.chargeObject,
             cutOffTime: this.detailList.cutOffTime

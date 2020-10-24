@@ -10,6 +10,7 @@ const cardApi = {
   cardRecordExport: '/cardRecord/export#export', // 导出卡操作记录
   getCardList: '/accountInfo/cardAccountlist#get', // 查询卡片信息列表
   getCardInfoList: '/cardInfo/list#get', // 查询卡信息列表
+  getCardInfoDetail: '/cardInfo/cardAccountinfo#getUrl', // 查询卡信息
   openCard: '/cardInfo/openCard#post', // 开卡
   lossCard: '/cardInfo/lossCard#post', // 卡挂失
   unlockCard: '/cardInfo/unlockCard#post', // 卡解挂

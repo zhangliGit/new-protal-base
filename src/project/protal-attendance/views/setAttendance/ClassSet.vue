@@ -127,6 +127,7 @@ export default {
         const res = await this.shiftManageDetail({ id: id })
         this.classObg = res.data
         this.$refs.addClass.name = this.classObg.name
+        this.$refs.addClass.classId = id
         this.classObg.list.forEach((el, index) => {
           this.$refs.addClass.data[index].time = el.workTime
           this.$refs.addClass.data[index].startTime = el.startTime
@@ -134,6 +135,7 @@ export default {
           this.$refs.addClass.data[index].checked = el.hasValid === '1'
         })
       } else {
+        this.$refs.addClass.classId = ''
         this.$refs.addClass.name = ''
         this.$refs.addClass.data = this.$refs.addClass.data.map(el => {
           return {
