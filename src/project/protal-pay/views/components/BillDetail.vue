@@ -34,8 +34,10 @@
       <template>
         <div class="u-padd-20">
           <a-timeline>
-            <a-timeline-item v-for="(item, index) in OpeList" :key="index"
-              >{{ item.opeTime | getDate(1) }}
+            <a-timeline-item
+              v-for="(item, index) in OpeList"
+              :key="index"
+            >{{ item.opeTime | getDate(1) }}
               <div>{{ $tools.opeType(item.opeType) }}</div>
             </a-timeline-item>
           </a-timeline>

@@ -47,7 +47,13 @@
       </template>
     </table-list>
     <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
-    <a-drawer title="关联学校列表" :width="720" placement="right" :closable="true" @close="onClose" :visible="visible">
+    <a-drawer
+      title="关联学校列表"
+      :width="720"
+      placement="right"
+      :closable="true"
+      @close="onClose"
+      :visible="visible">
       <div v-if="visible" class="qui-fx-ver" style="height: 650px">
         <table-list overFlow :page-list="schoolList" :columns="schoolColumns" :table-list="schoolData"></table-list>
         <page-num v-model="schoolList" :total="schoolTotal" @change-page="schoolApply"></page-num>

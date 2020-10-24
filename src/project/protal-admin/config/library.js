@@ -82,6 +82,24 @@ const library = {
         title: '添加课堂资源',
         isHide: true
       }
+    },
+    {
+      path: '/safeClass/previewClass',
+      name: 'previewClass',
+      component: () => import('../views/library/safeClass/PreviewClass.vue'),
+      meta: {
+        title: '查看课堂详情',
+        isHide: true
+      }
+    },
+    {
+      path: '/safeClass/classPageList',
+      name: 'classPageList',
+      component: () => import('../views/library/safeClass/ClassPageList.vue'),
+      meta: {
+        title: '安全课堂',
+        isHide: true
+      }
     }
   ]
 }
