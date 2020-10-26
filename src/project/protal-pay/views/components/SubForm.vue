@@ -148,7 +148,7 @@ export default {
     this.getSchoolYearId()
   },
   methods: {
-    ...mapActions('home', ['addChargetask', 'getCharge', 'addBillInfo', 'getchargeTaskInfo', 'getSchoolYear']),
+    ...mapActions('home', ['getCharge', 'addBillInfo', 'getchargeTaskInfo', 'getSchoolYear']),
     async init() {
       const res = await this.getCharge(this.popTaskCode)
       const tas = await this.getchargeTaskInfo(this.popTaskId)

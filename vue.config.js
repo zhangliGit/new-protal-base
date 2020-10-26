@@ -313,7 +313,7 @@ module.exports = {
         }
       },
       '/cl_oa': {
-        target: 'http://192.168.2.242:11009/',
+        target: 'http://192.168.2.242:11014/',
         // target: 'http://192.168.1.23:11009/',
         changeOrigin: true,
         pathRewrite: {

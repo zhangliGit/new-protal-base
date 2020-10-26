@@ -117,7 +117,6 @@ export default {
     ...mapActions('home', ['addCount', 'updateCount']),
     moment,
     disabledDate(current) {
-      // Can not select days before today and today
       return current && current < moment().endOf('day')
     },
     addTag() {
@@ -157,6 +156,8 @@ export default {
             schoolCode: this.userInfo.schoolCode,
             schoolYearId: this.classList[0].schoolYearId,
             classCodes: this.classCodeList,
+            createUsername: this.userInfo.userCode,
+            createUsercode: this.userInfo.userName,
             ...values
           }
           if (this.title === '编辑倒数日') {
