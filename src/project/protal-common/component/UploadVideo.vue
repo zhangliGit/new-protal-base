@@ -98,9 +98,13 @@ export default {
       const fileType = file.name.split('.')[1]
       this.uploadTag = true
       this.$tools.ossUpload(this.schoolCode, file, fileType, res => {
+        if (!res) {
+          return
+        }
         console.log(res)
         this.uploadTag = false
         if (res.code === 200) {
+          this.$emit('onUploadProgress', 100)
           this.fileList = [...this.fileList, {
             file,
             ...res.data
@@ -109,7 +113,8 @@ export default {
           this.$message.error(res.data)
         }
       }, uploadPercent => {
-        this.$emit('onUploadProgress', uploadPercent)
+        this.uploadPercent = uploadPercent === 100 ? 99 : uploadPercent
+        this.$emit('onUploadProgress', this.uploadPercent)
       })
       return false
     }

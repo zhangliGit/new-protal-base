@@ -104,6 +104,14 @@ export default {
         {
           name: '双重预防',
           url: 'protal-prevent'
+        },
+        {
+          name: '安全教育-局端',
+          url: 'protal-library-bureau'
+        },
+        {
+          name: '安全教育-校端',
+          url: 'protal-library-school'
         }
       ]
     }

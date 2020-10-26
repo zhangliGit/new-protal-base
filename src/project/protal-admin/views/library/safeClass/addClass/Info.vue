@@ -15,7 +15,6 @@
             placeholder="请填写课堂名称"
           />
         </a-form-item>
-        {{ cardInfo.resourceType }}
         <a-form-item label="课堂类型" v-bind="formItemLayout">
           <a-cascader
             v-decorator="[
@@ -43,7 +42,6 @@
             </a-col>
           </a-row>
         </a-form-item>
-        <!-- :default-value="['a1', 'b2']" -->
         <a-form-item label="适用学段" v-bind="formItemLayout">
           <a-select
             mode="multiple"
@@ -64,7 +62,7 @@
             v-decorator="[
               'des',
               {
-                initialValue: cardInfo.name,
+                initialValue: cardInfo.des,
                 rules: [{ required: true, message: '请填写简介' }]
               }
             ]"
@@ -97,28 +95,6 @@ export default {
   },
   data() {
     return {
-      steps: [
-        {
-          name: '课堂信息',
-          active: true,
-          count: '1'
-        },
-        {
-          name: '课堂教案',
-          active: false,
-          count: '2'
-        },
-        {
-          name: '课堂习题',
-          active: false,
-          count: '3'
-        },
-        {
-          name: '课堂resources',
-          active: false,
-          count: '4'
-        }
-      ],
       options: [], // 资源树
       appForm: {},
       firstData: [],
@@ -136,12 +112,7 @@ export default {
       form: this.$form.createForm(this),
       cardInfo: {
         thumbnailUrl: []
-      },
-      isEdit: false,
-      url: '',
-      show: true,
-      flag: false,
-      docName: ''
+      }
     }
   },
   computed: {
@@ -149,7 +120,7 @@ export default {
   },
   watch: {
   },
-  async mounted() {
+  async created() {
     this.id = this.$route.query.id
     await this._treeView()
     if (this.id) {
@@ -161,9 +132,7 @@ export default {
       'addClass',
       'classSearchBasic',
       'classModifyBasic',
-      'treeView',
-      'firstCategory',
-      'secondCategory'
+      'treeView'
     ]),
     // 获取资源树
     async _treeView() {
@@ -189,7 +158,7 @@ export default {
       this.cardInfo = {
         ...res.data,
         thumbnailUrl: [{ url: res.data.thumbnailUrl }],
-        resourceType: [`${res.data.categoryId}+${res.data.categoryName}`, `${res.data.libId}+${res.data.libName}`]
+        resourceType: [`${res.data.libId}+${res.data.libName}`, `${res.data.categoryId}+${res.data.categoryName}`]
       }
     },
     cancel() {
@@ -197,21 +166,20 @@ export default {
     },
     // 保存
     async save(e) {
-      e.preventDefault()
+      // e.preventDefault()
       this.form.validateFields((error, values) => {
         this.isLoad = false
         if (!error) {
           if (this.cardInfo.thumbnailUrl.length === 0) return this.$message.success('封面图不能为空')
-          if (!this.cardInfo.des) return this.$message.success('内容详情不能为空')
           this.isLoad = true
           const req = {
-            categoryId: values.resourceType[0].split('+')[0],
-            categoryName: values.resourceType[0].split('+')[1],
-            des: this.cardInfo.des,
+            libId: Number(values.resourceType[0].split('+')[0]),
+            libName: values.resourceType[0].split('+')[1],
+            categoryId: Number(values.resourceType[1].split('+')[0]),
+            categoryName: values.resourceType[1].split('+')[1],
+            des: values.des,
             eduCode: '',
             sections: values.sections,
-            libId: values.resourceType[1].split('+')[0],
-            libName: values.resourceType[1].split('+')[1],
             name: values.name,
             schoolCode: this.userInfo.schoolCode,
             schoolName: this.userInfo.schoolName,
@@ -222,7 +190,7 @@ export default {
             this.classModifyBasic({ ...req, id: this.id })
               .then((res) => {
                 this.$message.success('操作成功')
-                this.$parent.stepsActive = '2'
+                this.$parent.isActive('2')
               })
               .catch((res) => {
                 this.isLoad = false
@@ -231,7 +199,7 @@ export default {
             this.addClass(req)
               .then((res) => {
                 this.$message.success('操作成功')
-                this.$parent.stepsActive = '2'
+                this.$parent.isActive('2', res.data)
               })
               .catch((res) => {
                 this.isLoad = false
@@ -245,7 +213,6 @@ export default {
       let pass = false
       // e.preventDefault()
       this.form.validateFields((error, values) => {
-        console.log(values)
         if (!error) {
           if (this.cardInfo.thumbnailUrl.length === 0) return this.$message.success('封面图不能为空')
           pass = true
@@ -257,7 +224,4 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-.info {
-  // border: 1px solid red;
-}
 </style>

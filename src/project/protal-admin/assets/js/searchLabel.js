@@ -1,7 +1,7 @@
 // import Tools from '@u/tools'
 // 安全教育
 // 安全知识
-export const KnowledgeSearchLabel = [
+export const knowledgeSearchLabel = [
   {
     value: 'fileType', // 表单属性
     type: 'select', // 表单类型
@@ -37,7 +37,7 @@ export const KnowledgeSearchLabel = [
   }
 ]
 // 安全课堂
-export const SafeClassItemLabel = [
+export const safeClassItemLabel = [
   {
     value: 'section', // 表单属性
     type: 'select', // 表单类型
@@ -79,10 +79,19 @@ export const SafeClassItemLabel = [
 // 安全课堂绑定习题列表
 export const exerciseSearchLabel = [
   {
-    value: 'name', // 表单属性
+    value: 'content', // 表单属性
     type: 'input', // 表单类型
     label: '搜索', // 表单label值
     placeholder: '请输入习题内容' // 表单默认值(非必选字段)
+  }
+]
+// 安全课堂绑定资源列表
+export const resourcesSearchLabel = [
+  {
+    value: 'name', // 表单属性
+    type: 'input', // 表单类型
+    label: '搜索', // 表单label值
+    placeholder: '请输入资源名称' // 表单默认值(非必选字段)
   }
 ]
 // 安全习题列表
