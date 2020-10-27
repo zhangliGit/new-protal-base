@@ -130,7 +130,7 @@
                     <div class="comt u-bg-color u-padd-10 u-fx-jsb">
                       <div class="left u-padd-l10">
                         <div class="name u-main-color">{{ item.name }}</div>
-                        <div class="size u-font-01 u-tips-color">{{ item.docSize }}</div>
+                        <div class="size u-font-01 u-tips-color">{{ item.docSize | dosizeformat }}</div>
                       </div>
                       <div class="rigth u-fx u-padd-r10">
                         <div class="see_icon u-mar-r10" @click="down(0,item.resourceUrl)">查看
