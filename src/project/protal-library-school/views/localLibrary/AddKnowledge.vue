@@ -121,6 +121,8 @@ export default {
   watch: {
   },
   async created() {
+    this.eduCode = ''
+    this.getEducode()
     this.id = this.$route.query.id
     await this._treeView()
     if (this.id) {
@@ -132,10 +134,15 @@ export default {
       'treeView',
       'klgInfoEidt',
       'klgModify',
-      'addKlg'
-      // 'secondCategory',
+      'addKlg',
+      'getEduCode'
     ]),
     moment,
+    // 获取教育局code
+    async getEducode() {
+      const res = await this.getEduCode({ schoolCode: this.userInfo.schoolCode })
+      this.eduCode = res.data.schoolCode
+    },
     // 获取资源树
     async _treeView() {
       const res = await this.treeView()
@@ -204,7 +211,7 @@ export default {
             categoryId: values.resourceType[1].split('+')[0],
             categoryName: values.resourceType[1].split('+')[1],
             des: this.cardInfo.des,
-            eduCode: this.userInfo.schoolCode,
+            eduCode: this.eduCode,
             fileTypeId: values.fileTypeId,
             name: values.name,
             publisherName: this.userInfo.userName,

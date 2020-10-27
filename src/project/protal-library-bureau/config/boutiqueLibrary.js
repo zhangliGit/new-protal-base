@@ -5,7 +5,7 @@ const boutique = {
   name: 'boutiqueLibrary',
   component: RouteView,
   meta: {
-    title: '精品资源库'
+    title: '校精品资源库'
   },
   children: [
     {

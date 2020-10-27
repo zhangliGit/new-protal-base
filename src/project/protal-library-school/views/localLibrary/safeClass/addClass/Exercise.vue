@@ -140,8 +140,6 @@ export default {
     },
     // 子组件选择的习题
     sonSelected(record) {
-      console.log(this.findList)
-      console.log(record)
       if (this.findList.length === 0) {
         this.findList = this.findList.concat(record)
       } else {
@@ -190,7 +188,7 @@ export default {
     // 完成
     carryOut() {
       this.submitOk().then(el => {
-        this.$router.go(-1)
+         this.$router.push('/safeClassLocal')
       })
     },
     // 下一步
@@ -201,6 +199,7 @@ export default {
     },
     // 提交
     async submitOk(e) {
+      if (this.findList.length === 0) return this.$message.error('请添加习题')
       return new Promise((resolve, reject) => {
         const req = {
           classId: Number(this.id),

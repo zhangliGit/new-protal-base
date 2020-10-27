@@ -37,7 +37,7 @@ export const knowledgeSearchLabel = [
   }
 ]
 // 安全课堂
-export const SafeClassItemLabel = [
+export const safeClassItemLabel = [
   {
     value: 'section', // 表单属性
     type: 'select', // 表单类型

@@ -154,7 +154,7 @@ export default {
       this.$tools.ossUpload(this.userInfo.schoolCode, data.file, type, this.callBack)
     },
     callBack(value) {
-      // this.uploadFile = value.url
+     value = value.data
       this.fileList = [{
         docSize: this.docSize,
         docType: this.docType,
