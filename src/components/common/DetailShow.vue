@@ -12,7 +12,7 @@
       </div>
       <div class="u-fx-f1">
         <a-row>
-          <a-col v-for="(item, index) in detailInfo" :key="index" class="detail-row" :span="12">
+          <a-col v-for="(item, index) in detailInfo" :key="index" class="detail-row" :span="col">
             {{ item.key }}:
             <span>{{ item.val }}</span>
           </a-col>
@@ -39,6 +39,10 @@ export default {
     title: {
       type: String,
       default: '基本信息'
+    },
+    col: {
+      type: Number,
+      default: 12
     }
   }
 }

@@ -104,6 +104,10 @@ export default {
         {
           name: '双重预防',
           url: 'protal-prevent'
+        },
+        {
+          name: '高教版基础数据',
+          url: 'protal-high-school'
         }
       ]
     }

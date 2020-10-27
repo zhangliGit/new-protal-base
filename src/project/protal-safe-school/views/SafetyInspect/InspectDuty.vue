@@ -31,19 +31,31 @@
         </a-popconfirm>
       </template>
       <template v-slot:other1="other1">
-        <div :id="other1.record.id"></div>
+        <div :id="other1.record.id" style="width:120px;height:120px;" @click.stop="mapClick(other1)"></div>
       </template>
       <template v-slot:other2="other2">
-        <a-tag color="cyan" @click="check(other2.record)">{{ other2.record.patrolPointNum }}</a-tag>
+        <a-tag color="cyan" @click.stop="pointClick(other2.record)">{{ other2.record.patrolPointNum }}</a-tag>
       </template>
     </table-list>
     <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
     <a-modal
-      :visible="visible"
+      title="值班轨迹"
+      :visible="mapVisible"
       :footer="null"
       centered
-      @cancel="visible = false"
-      :bodyStyle="bodyStyle"
+      @cancel="mapVisible = false"
+      width="1200px"
+      :destroyOnClose="true"
+    >
+      <div>
+        <div id="container" style="width:1160px;height:600px;"></div>
+      </div>
+    </a-modal>
+    <a-modal
+      :visible="pointVisible"
+      :footer="null"
+      centered
+      @cancel="pointVisible = false"
       width="660px"
       :destroyOnClose="true"
       title="巡查点详情"
@@ -54,7 +66,6 @@
 </template>
 
 <script>
-import maps from 'qqmap'
 import { mapState, mapActions } from 'vuex'
 import SearchForm from '@c/SearchForm'
 import TableList from '@c/TableList'
@@ -78,11 +89,13 @@ export default {
       searchList: {},
       dutyList: [],
       chooseList: [],
-      visible: false,
+      pointVisible: false,
       bodyStyle: {
         padding: 0
       },
-      inspectList: []
+      inspectList: [],
+      map: null,
+      mapVisible: false
     }
   },
   computed: {
@@ -99,36 +112,57 @@ export default {
       const res = await this.getDuty(this.searchList)
       this.dutyList = res.data.records
       this.total = res.data.total
-      res.data.records.map((el, index) => {
+      res.data.records.forEach((el, index) => {
         if (el.track.length > 0) {
-          el.map = new maps.maps.Map(document.getElementById(el.id), {
-            center: new maps.maps.LatLng(),
-            zoom: 16
-          })
-          const arr = el.track.map((item) => {
-            return new maps.maps.LatLng(item.latitude, item.longitude)
-          })
-          let polyline = new maps.maps.Polyline({
-            path: arr,
-            strokeColor: '#3385ff',
-            strokeWeight: 4,
-            map: el.map
+          setTimeout(() => {
+            el.map = new qq.maps.Map(document.getElementById(el.id), {
+              center: new qq.maps.LatLng(el.track[0].latitude, el.track[0].longitude),
+              zoom: 16
+            })
+            const arr = el.track.map((item) => {
+              return new qq.maps.LatLng(item.latitude, item.longitude)
+            })
+            const polyline = new qq.maps.Polyline({
+              path: arr,
+              strokeColor: '#3385ff',
+              strokeWeight: 4,
+              map: el.map
+            })
           })
         }
       })
     },
+    mapClick(record) {
+      console.log('rerer',record)
+      this.mapVisible = true
+      setTimeout(() => {
+        this.map = new qq.maps.Map(document.getElementById('container'), {
+          center: new qq.maps.LatLng(record.record.track[0].latitude, record.record.track[0].longitude),
+          zoom: 16
+        })
+        const arr = record.record.track.map((item) => {
+          return new qq.maps.LatLng(item.latitude, item.longitude)
+        })
+        const polyline = new qq.maps.Polyline({
+          path: arr,
+          strokeColor: '#3385ff',
+          strokeWeight: 4,
+          map: this.map
+        })
+      })
+    },
     searchForm(values) {
-      this.searchList.reportTimeFrom = values.rangeTime[0]
-      this.searchList.reportTimeTo = values.rangeTime[1]
+      this.searchList.reportTimeFrom = values.time[0] ? `${values.time[0]} 00:00:00` : ''
+      this.searchList.reportTimeTo = values.time[1] ? `${values.time[1]} 23:59:59` : ''
       this.searchList = Object.assign(this.searchList, values)
       this.pageList.page = 1
       this.pageList.size = 20
       this.showList()
     },
-    async check(record) {
+    async pointClick(record) {
       const res = await this.getDutyPoint(record.id)
-      this.inspectList = res.data.records
-      this.visible = true
+      this.inspectList = res.data
+      this.pointVisible = true
     },
     goDetail(record) {
       this.$router.push({
