@@ -47,7 +47,7 @@ const testMunuList = getState('menuList', [])
 const newData = [
   {
     id: 999,
-    name: '招生迎新系统',
+    name: '招生迎新管理',
     parentId: null,
     orderNum: 2,
     url: '/oabgxt',
