@@ -100,6 +100,9 @@ import classMessage from '../../assets/img/class-message.png'
 import classPraise from '../../assets/img/class-praise.png'
 import classSchedule from '../../assets/img/class-schedule.png'
 import classShow from '../../assets/img/class-show.png'
+import classStudent from '../../assets/img/class-student.png'
+import classTeacher from '../../assets/img/class-teacher.png'
+// import classTemperature from '../../assets/img/class-temperature.png'
 export default {
   name: 'AddWelcome',
   components: {
@@ -211,7 +214,31 @@ export default {
           x: 200,
           y: 200,
           name: 'ClassInfo'
-        }
+        },
+        {
+          key: '10',
+          title: '班级学生',
+          img: classStudent,
+          x: 200,
+          y: 200,
+          name: 'ClassStudent'
+        },
+        {
+          key: '11',
+          title: '任课教师',
+          img: classTeacher,
+          x: 200,
+          y: 200,
+          name: 'ClassTeacher'
+        }/* ,
+        {
+          key: '12',
+          title: '测温记录',
+          img: classTemperature,
+          x: 200,
+          y: 200,
+          name: 'CeWen'
+        } */
       ]
     }
   },

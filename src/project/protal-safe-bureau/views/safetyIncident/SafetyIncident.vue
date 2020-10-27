@@ -64,14 +64,18 @@ export default {
       formStatus: false,
       searchList: {},
       detailId: '',
-      type: ''
+      type: '',
+      schoolCodes: []
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
+  async created() {
+    await this.getUnderSchools()
+    await this.showList()
+  },
   mounted() {
-    this.showList()
   },
   methods: {
     ...mapActions('home', [
@@ -79,10 +83,24 @@ export default {
       'delDanger',
       'assignDanger',
       'transferDanger',
-      'reportAccident'
+      'reportAccident',
+      'underSchoolList'
     ]),
+    // 根据教育局查所有学校
+    async getUnderSchools() {
+      const req = {
+        eduCode: this.userInfo.schoolCode,
+        areas: [],
+        keyWord: '',
+        page: 1,
+        schoolStage: '',
+        size: 20
+      }
+      const res = await this.underSchoolList(req)
+      this.schoolCodes = res.data.list.map(v => v.schoolCode)
+    },
     async showList() {
-      this.searchList.schoolCode = this.userInfo.schoolCode
+      this.searchList.schoolCodeList = this.schoolCodes
       this.searchList = Object.assign(this.searchList, this.pageList)
       const res = await this.getAccident(this.searchList)
       this.findList = res.data.records
@@ -125,7 +143,7 @@ export default {
     },
     goDetail(record) {
       this.$router.push({
-        path: '/safetyIncident/specialDetail',
+        path: '/safetyIncident/accidentDetail',
         query: {
           id: record.id,
           state: record.state

@@ -1,5 +1,5 @@
 <template>
-  <div class="bill-detail page-layout qui-fx-ver">
+  <div class="bill-detail page-layout qui-fx-ver" :style="{ maxHeight: maxHeight, overflow: 'auto' }">
     <submit-form
       ref="form"
       @submit-form="submitForm"
@@ -11,7 +11,7 @@
       <div class="qui-fx">
         <detail-show :detail-info="detailInfo" :title="infoTitle" style="width: 74%;"></detail-show>
         <div class="mar-top">
-          <!-- <a-button icon="plus" class="add-btn mar-l10">编辑重发</a-button> -->
+          <!-- <a-button icon="plus" class="add-btn">编辑重发</a-button> -->
           <a-button icon="export" class="export-btn">打印收据</a-button>
           <a-button icon="export" class="export-btn" @click="changeTime">确认收款</a-button>
           <a-button icon="export" class="export-all-btn" @click.stop="deleteList(0)">催缴</a-button>
@@ -42,13 +42,6 @@
         </div>
       </template>
     </div>
-    <sub-form
-      ref="subForm"
-      :title="title"
-      :popTaskCode="popTaskCode"
-      :popTaskId="popTaskId"
-      @update="showList"
-    ></sub-form>
   </div>
 </template>
 <script>
@@ -57,7 +50,6 @@ import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
 import SubmitForm from '@c/SubmitForm'
 import Tools from '@u/tools'
-import SubForm from '../components/SubForm'
 import DetailShow from '../components/DetailShow'
 const formData = [
   {
@@ -134,7 +126,6 @@ export default {
     TableList,
     PageNum,
     SubmitForm,
-    SubForm,
     DetailShow
   },
   data() {
@@ -188,7 +179,7 @@ export default {
           val: ''
         },
         {
-          key: '学号',
+          key: '学生ID',
           val: ''
         },
         {
@@ -210,7 +201,9 @@ export default {
       ],
       infoTitle: '基础信息',
       OpeList: [],
-      payMoney: ''
+      payMoney: '',
+      maxHeight: 0,
+      Status: ''
     }
   },
   computed: {
@@ -218,6 +211,7 @@ export default {
   },
   created() {},
   mounted() {
+    this.maxHeight = window.screen.height - 230 + 'px'
     this.showClassDetail()
     this.showList()
   },
@@ -234,7 +228,7 @@ export default {
       const res = await this.getbillDetail(this.$route.query.id)
       this.detailInfo[0].val = res.data.billNum
       this.detailInfo[1].val = res.data.billName
-      this.detailInfo[2].val = res.data.billStatus
+      this.detailInfo[2].val = this.$tools.billStatu(res.data.billStatus)
       this.detailInfo[3].val = res.data.billMoney
       this.detailInfo[4].val = res.data.preMoney
       this.detailInfo[5].val = res.data.recMoney
@@ -245,6 +239,7 @@ export default {
       this.detailInfo[10].val = res.data.createTime
       this.detailInfo[11].val = res.data.cutOffTime
       this.payMoney = res.data.recMoney
+      this.Status = res.data.billStatus
     },
 
     async showList() {
@@ -253,8 +248,11 @@ export default {
       this.recordList = res.data
       this.OpeList = ope.data
     },
-    //任务延期
     changeTime() {
+      if (this.Status === '2') {
+        this.$message.warning('该账单已缴费')
+        return
+      }
       this.formData = this.formData
       this.formStatus = true
     },
@@ -279,8 +277,15 @@ export default {
           this.$refs.form.error()
         })
     },
-    //账单批量关闭，催缴
     async deleteList(type) {
+      if (this.Status === '2') {
+        this.$message.warning('该账单已缴费')
+        return
+      }
+      if (this.Status === '3') {
+        this.$message.warning('该账单已关闭')
+        return
+      }
       if (type) {
         await this.shutDownBill([this.$route.query.id])
         this.$message.success('关闭成功')
@@ -294,10 +299,6 @@ export default {
           this.showList()
         })
       }
-    },
-    modify() {
-      this.title = '新增账单'
-      this.$refs.subForm.addVisible = true
     }
   }
 }

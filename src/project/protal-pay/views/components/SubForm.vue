@@ -116,7 +116,8 @@ export default {
       addVisible: false,
       isView: false,
       isLoad: false,
-      detailList: {}
+      detailList: {},
+      getYearList: []
     }
   },
   props: {
@@ -129,8 +130,8 @@ export default {
       default: ''
     },
     popTaskId: {
-      type: String,
-      default: ''
+      type: Number,
+      default: 0
     }
   },
   created() {},
@@ -144,9 +145,10 @@ export default {
   },
   mounted() {
     this.init()
+    this.getSchoolYearId()
   },
   methods: {
-    ...mapActions('home', ['addChargetask', 'getCharge', 'addBillInfo', 'getchargeTaskInfo']),
+    ...mapActions('home', ['getCharge', 'addBillInfo', 'getchargeTaskInfo', 'getSchoolYear']),
     async init() {
       const res = await this.getCharge(this.popTaskCode)
       const tas = await this.getchargeTaskInfo(this.popTaskId)
@@ -171,24 +173,31 @@ export default {
       this.$refs.chooseUser.reset()
       this.classList = values
       this.chargeObject.schoolYearId = values[0].schoolYearId
-      this.chargeObject.schoolYearName = values[0].schoolYear
-      values.forEach(item => {
-        this.chargeObject.chargeGrades.push({
-          gradeCode: item.gradeCode,
-          gradeName: item.gradeName,
-          chargeClasses: []
-        })
-        this.chargeObject.chargeGrades.forEach(ele => {
-          ele.chargeClasses.push({
-            classCode: item.classCode,
-            className: item.className,
-            userCodes: []
-          })
-          ele.chargeClasses.forEach(list => {
-            list.userCodes.push(item.userCode)
-          })
+      this.chargeObject.schoolYearName = this.getYearList[0].schoolYear
+      this.chargeObject.chargeGrades = values.map(el => {
+        return {
+          chargeClasses: [],
+          gradeCode: el.gradeCode,
+          gradeName: el.gradeName,
+          classCode: el.classCode,
+          className: el.className,
+          userCode: el.userCode
+        }
+      })
+      this.chargeObject.chargeGrades.forEach(item => {
+        item.chargeClasses.push({
+          classCode: item.classCode,
+          className: item.className,
+          userCodes: [item.userCode]
         })
       })
+    },
+    async getSchoolYearId() {
+      const req = {
+        schoolCode: this.userInfo.schoolCode
+      }
+      const res = await this.getSchoolYear(req)
+      this.getYearList = res.data.list
     },
     addSubmit(e) {
       e.preventDefault()
@@ -207,7 +216,7 @@ export default {
             preMoney: this.amount,
             taskCode: this.detailList.taskCode,
             taskName: this.detailList.billMoneySum,
-            taskMoney: this.receivable,
+            taskMoney: this.totalMoney,
             itemVOList: this.recordList,
             chargeObject: this.chargeObject,
             cutOffTime: this.detailList.cutOffTime

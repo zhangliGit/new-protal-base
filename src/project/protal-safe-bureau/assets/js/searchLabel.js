@@ -208,9 +208,6 @@ export const taskSearchLabel = [
 // 安全事故
 export const IncidentSearchLabel = [
   {
-    value: 'accidentStatus', // 表单属性
-    type: 'select', // 表单类型
-    label: '事故状态', // 表单label值
     list: [
       {
         key: '',
@@ -222,24 +219,21 @@ export const IncidentSearchLabel = [
       },
       {
         key: '2',
-        val: '新处理'
+        val: '处理中'
       },
       {
         key: '3',
         val: '已结案'
       }
-    ]
+    ],
+    value: 'accidentStatus',
+    type: 'select',
+    label: '事故状态'
   },
   {
-    value: 'schoolName', // 表单属性
-    type: 'input', // 表单类型
-    label: '学校名称', // 表单label值
-    placeholder: '请输入学校名称' // 表单默认值(非必选字段)
-  },
-  {
-    value: 'rangeTime', // 表单属性
-    type: 'rangeTime', // 表单类型
-    label: '事故时间' // 表单label值
+    value: 'rangeTime',
+    type: 'rangeTime',
+    label: '事故时间'
   }
 ]
 // 安全任务

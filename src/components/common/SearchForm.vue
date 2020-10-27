@@ -31,7 +31,7 @@
                       :key="index1"
                     >
                       {{
-                      list.val
+                        list.val
                       }}
                     </a-select-option>
                   </a-select>
@@ -60,7 +60,7 @@
                     :key="index2"
                   >
                     {{
-                    item2.val
+                      item2.val
                     }}
                   </a-select-option>
                 </a-select>

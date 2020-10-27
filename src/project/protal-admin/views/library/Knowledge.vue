@@ -6,9 +6,9 @@
           <grade-tree @select="select" :treeData="treeData"></grade-tree>
         </div>
         <div class="right qui-fx-ver qui-fx-f1" style="padding-right: 10px">
-          <search-form is-reset @search-form="searchForm" :search-label="KnowledgeSearchLabel">
+          <search-form is-reset @search-form="searchForm" :search-label="knowledgeSearchLabel">
             <div slot="right">
-              <a-button icon="del" class="add-action-btn u-mar-l20" @click="delBatchAll">批量删除</a-button>
+              <a-button type="danger" class=" u-mar-l20" @click="delBatchAll">批量删除</a-button>
               <a-button icon="plus" class="add-action-btn u-mar-l20" @click="add(0)">添加安全知识</a-button>
             </div>
           </search-form>
@@ -16,9 +16,8 @@
             is-check
             is-zoom
             v-model="chooseList"
-            @selectAll="selectAll"
             :page-list="pageList"
-            :columns="KnowledgeColumns"
+            :columns="knowledgeColumns"
             :table-list="findList">
             <template v-slot:actions="action">
               <a-tooltip placement="topLeft" title="查看">
@@ -73,8 +72,8 @@ import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
 import SearchForm from '@c/SearchForm'
-import { KnowledgeSearchLabel } from '../../assets/js/searchLabel.js'
-import { KnowledgeColumns } from '../../assets/js/tableColumns'
+import { knowledgeSearchLabel } from '../../assets/js/searchLabel.js'
+import { knowledgeColumns } from '../../assets/js/tableColumns'
 import GradeTree from './GradeTree'
 const columnsUrl = [
   {
@@ -100,7 +99,7 @@ const columnsUrl = [
   }
 ]
 export default {
-  name: 'TaskRecord',
+  name: 'Knowledge',
   components: {
     TableList,
     PageNum,
@@ -112,14 +111,18 @@ export default {
       columnsUrl,
       visible: false,
       categoryId: '', // 树选择的id
-      KnowledgeColumns,
-      KnowledgeSearchLabel,
+      knowledgeColumns,
+      knowledgeSearchLabel,
       total: 0,
       treeData: [],
       pageList: {
         page: 1,
         size: 20
       },
+      chooseList: [], // 当有选择项时，被选中的项，返回每项的唯一id
+      findList: [],
+      searchList: {},
+      // 使用统计弹框
       statisticsPageList: {
         page: 1,
         size: 5
@@ -127,16 +130,13 @@ export default {
       statisticsData: {
         // record: [],
         // total: '20'
-      },
-      findList: [],
-      chooseList: [], // 当有选择项时，被选中的项，返回每项的唯一id
-      searchList: {}
+      }
     }
   },
   computed: {
-    ...mapState('home', ['userInfo', 'eduCode'])
+    ...mapState('home', ['userInfo'])
   },
-  async mounted() {
+  async created() {
     this.categoryId = ''
     await this._treeView()
     await this.showList()
@@ -155,14 +155,12 @@ export default {
     },
     async _treeView() {
       const res = await this.treeView()
-      // this.categoryId = res.data[0].id
       this.treeData = res.data
     },
     searchForm(values) {
       this.searchList = values
       this.showList()
     },
-    selectAll() {},
     async delBatch(record) {
       await this.batchRemove(record.id)
       this.showList()
@@ -212,7 +210,7 @@ export default {
       this.StatisticsId = record.id
       this.getStatisticsData(record.id)
     },
-    // 获取查看统计数据
+    // 获取查看统计数据 总数，最近一次记录数据
     async getStatisticsData(id) {
       const req = {
         'id': id,
@@ -223,7 +221,7 @@ export default {
       this.statisticsData = res1.data
       this._pageStatistics()
     },
-    // table
+    // 获取查看统计数据分页table数据
     async  _pageStatistics() {
       const req = {
         ...this.statisticsPageList,

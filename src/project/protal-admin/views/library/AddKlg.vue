@@ -1,7 +1,7 @@
 <template>
-  <div class="task-add page-layout qui-fx-ver">
+  <div class="klg-add page-layout qui-fx-ver">
     <div class="content pos-box bg-fff">
-      <div class="u-padd-10 u-padd-l20 ">
+      <div class="u-padd-10 u-padd-l20 u-padd-t40">
         <a-form :form="form">
           <a-form-item label="资源名称：" v-bind="formItemLayout">
             <a-input
@@ -24,6 +24,7 @@
                   rules: [{ required: true, message: '请填写资源名称' }]
                 }
               ]"
+              placeholder="请填写资源类型"
               :options="options"
             />
           </a-form-item>
@@ -89,17 +90,15 @@ import quillConfig from '../../assets/js/quill-config'
 import { mapState, mapActions } from 'vuex'
 import moment from 'moment'
 export default {
-  name: 'AddTask',
+  name: 'AddKlg',
   components: {
     quillEditor,
     UploadMulti
   },
   data() {
-    this.type = this.$route.query.type + ''
     return {
-      appForm: {},
+      form: this.$form.createForm(this),
       options: [], // 资源树
-      firstData: [],
       quillOption: quillConfig,
       formItemLayout: {
         labelCol: { span: 6 },
@@ -111,16 +110,9 @@ export default {
         w: 120 // 宽度
       },
       isLoad: false,
-      form: this.$form.createForm(this),
       cardInfo: {
-        taskType: '1',
         thumbnailUrl: []
-      },
-      isEdit: false,
-      url: '',
-      show: true,
-      flag: false,
-      docName: ''
+      }
     }
   },
   computed: {
@@ -128,9 +120,8 @@ export default {
   },
   watch: {
   },
-  async mounted() {
+  async created() {
     this.id = this.$route.query.id
-    // await this._firstCategory()
     await this._treeView()
     if (this.id) {
       this.showDetail()
@@ -139,11 +130,10 @@ export default {
   methods: {
     ...mapActions('home', [
       'treeView',
-      'firstCategory',
-      'secondCategory',
       'klgInfoEidt',
       'klgModify',
       'addKlg'
+      // 'secondCategory',
     ]),
     moment,
     // 获取资源树
@@ -164,21 +154,6 @@ export default {
         }
       })
     },
-    // 资源类型获取一级分类
-    // async _firstCategory() {
-    //   const res = await this.firstCategory()
-    //   this.firstData = res.data.map(res => {
-    //     return {
-    //       label: res.name,
-    //       value: `${res.id}+${res.name}`,
-    //       isLeaf: false
-    //     }
-    //   })
-    // },
-    // onChange(value, selectedOptions) {
-    //   console.log(value)
-    //   console.log(selectedOptions)
-    // },
     // // 资源类型加载二级分类
     // async loadData(selectedOptions) {
     //   console.log(selectedOptions)
@@ -200,7 +175,7 @@ export default {
       this.cardInfo = {
         ...res.data,
         thumbnailUrl: [{ url: res.data.thumbnailUrl }],
-        resourceType: [`${res.data.categoryId}+${res.data.categoryName}`, `${res.data.libId}+${res.data.libName}`]
+        resourceType: [`${res.data.libId}+${res.data.libName}`, `${res.data.categoryId}+${res.data.categoryName}`]
       }
     },
     // 富文本编辑器方法
@@ -224,13 +199,13 @@ export default {
           if (!this.cardInfo.des) return this.$message.success('内容详情不能为空')
           this.isLoad = true
           const req = {
-            categoryId: values.resourceType[0].split('+')[0],
-            categoryName: values.resourceType[0].split('+')[1],
+            libId: values.resourceType[0].split('+')[0],
+            libName: values.resourceType[0].split('+')[1],
+            categoryId: values.resourceType[1].split('+')[0],
+            categoryName: values.resourceType[1].split('+')[1],
             des: this.cardInfo.des,
             eduCode: '',
             fileTypeId: values.fileTypeId,
-            libId: values.resourceType[1].split('+')[0],
-            libName: values.resourceType[1].split('+')[1],
             name: values.name,
             publisherName: this.userInfo.userName,
             schoolCode: this.userInfo.schoolCode,
@@ -268,7 +243,7 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-.task-add {
+.klg-add {
   background-color: #f5f5fb;
   .content {
     height: calc(100% - 10px);

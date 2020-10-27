@@ -131,7 +131,7 @@ const Tools = {
       formData.append('callback', aliyunOssToken.callback)
       formData.append('Signature', aliyunOssToken.signature) // 签名
       const _file = typeof file === 'object' ? file : _self.dataURLToBlob(file)
-      console.log(typeof file)
+      // console.log(typeof file)
       formData.append('file', _file)
       formData.append('success_action_status', 200) // 成功后返回的操作码
       axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
@@ -147,7 +147,7 @@ const Tools = {
           if (progressEvent.lengthComputable) {
             const loaded = progressEvent.loaded
             const total = progressEvent.total
-            callbackProgress(Math.floor((loaded / total) * 100) > 1 ? Math.floor((loaded / total) * 100) : 1)
+            callbackProgress && callbackProgress(Math.floor((loaded / total) * 100) > 1 ? Math.floor((loaded / total) * 100) : 1)
           }
         }
       }).then(
@@ -281,6 +281,18 @@ const Tools = {
       return '创建'
     } else {
       return '催缴'
+    }
+  },
+  billStatu(text) {
+    text = parseInt(text)
+    if (text === 1) {
+      return '待缴费'
+    } else if (text === 2) {
+      return '已缴费'
+    } else if (text === 3) {
+      return '账单关闭'
+    } else if (text === 4) {
+      return '逾时'
     }
   },
   stateTypeColor(text) {
