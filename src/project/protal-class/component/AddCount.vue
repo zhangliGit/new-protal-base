@@ -147,7 +147,7 @@ export default {
           }
           this.isLoad = true
           values.id = this.title === '编辑倒数日' ? this.id : ''
-          values.endTime = moment(values.endTime).format('YYYY-MM-DD HH:mm:ss')
+          values.endTime = moment(values.endTime).format('YYYY-MM-DD')
           this.classCodeList = []
           this.classList.forEach(el => {
             this.classCodeList.push(el.classCode)
