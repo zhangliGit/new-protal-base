@@ -402,6 +402,13 @@ module.exports = {
         pathRewrite: {
           '^/hzz_ecard': ''
         }
+      },
+      '/wxz_notice': {
+        target: 'http://192.168.1.123:18090/', // 王选章-通知公告
+        changeOrigin: true,
+        pathRewrite: {
+          '^/wxz_notice': ''
+        }
       }
     }
   },

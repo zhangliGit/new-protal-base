@@ -10,6 +10,7 @@ require('colors')
 modulesDir.forEach(file => {
   projectList.push(file.split('/')[file.split('/').length - 1])
 })
+console.log(projectList)
 if (process.env.NODE_ENV === 'production') {
   if (projectList.indexOf(buildModule) === -1) {
     console.log(`请您输入正确的打包模块: ${JSON.stringify(projectList)}`.red)

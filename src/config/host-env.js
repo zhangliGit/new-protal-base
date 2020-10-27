@@ -40,6 +40,7 @@ let zk_news = ''
 let ljj_people = ''
 let img_download = ''
 let hzz_ecard = ''
+let wxz_notice = ''
 if (ConfigEnv === 'test') {
   wxz_control = '/wxz_control'
   zk_school = '/zk_school'
@@ -80,6 +81,7 @@ if (ConfigEnv === 'test') {
   ljj_people = '/ljj_people'
   img_download = '/img_download'
   hzz_ecard = '/hzz_ecard'
+  wxz_notice = '/wxz_notice'
 } else if (ConfigEnv === 'prod') {
   wxz_control = '/wxz_control'
   zk_school = '/zk_school'
@@ -120,6 +122,7 @@ if (ConfigEnv === 'test') {
   ljj_people = '/ljj_people'
   img_download = '/img_download'
   hzz_ecard = '/hzz_ecard'
+  wxz_notice = '/wxz_notice'
 } else {
   wxz_control = '/wxz_control'
   zk_school = '/zk_school'
@@ -160,6 +163,7 @@ if (ConfigEnv === 'test') {
   ljj_people = '/ljj_people'
   img_download = '/img_download'
   hzz_ecard = '/hzz_ecard'
+  wxz_notice = '/wxz_notice'
 }
 
 export default {
@@ -201,5 +205,6 @@ export default {
   zk_news,
   ljj_people,
   img_download,
-  hzz_ecard
+  hzz_ecard,
+  wxz_notice
 }

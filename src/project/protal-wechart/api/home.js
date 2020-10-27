@@ -5,8 +5,13 @@
 
 import hostEnv from '@config/host-env'
 
-const Api = {}
-for (const val in Api) {
-  Api[val] = `${hostEnv.zk_oa}${Api[val]}`
+const noticeApi = {
+  getTemplateList: '/noticeTemplateInfo/page#post', // 获取模板列表
+  delTemplate: '/noticeTemplateInfo/remove#getUrl', // 删除模板信息
+  addTemplate: '/noticeTemplateInfo/add#post', // 添加模板信息
+  modifyTemplate: '/noticeTemplateInfo/modify#post' // 修改模板信息
 }
-export default Api
+for (const val in noticeApi) {
+  noticeApi[val] = `${hostEnv.wxz_notice}${noticeApi[val]}`
+}
+export default noticeApi
