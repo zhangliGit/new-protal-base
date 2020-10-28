@@ -140,8 +140,11 @@ export default {
     },
     // 子组件选择的习题
     sonSelected(record) {
+<<<<<<< HEAD
       console.log(this.findList)
       console.log(record)
+=======
+>>>>>>> 8b329c2d398082eb42e30b90ec8ab85b65474074
       if (this.findList.length === 0) {
         this.findList = this.findList.concat(record)
       } else {
@@ -189,12 +192,22 @@ export default {
     },
     // 完成
     carryOut() {
+<<<<<<< HEAD
       this.submitOk().then(el => {
         this.$router.go(-1)
+=======
+      // if (this.findList.length === 0) return this.$message.error('请添加习题')
+      this.submitOk().then(el => {
+        this.$router.push('/safeClassLocal')
+>>>>>>> 8b329c2d398082eb42e30b90ec8ab85b65474074
       })
     },
     // 下一步
     nextStep() {
+<<<<<<< HEAD
+=======
+      // if (this.findList.length === 0) return this.$message.error('请添加习题')
+>>>>>>> 8b329c2d398082eb42e30b90ec8ab85b65474074
       this.submitOk().then(el => {
         this.$parent.isActive('4')
       })

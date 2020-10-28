@@ -122,6 +122,11 @@ export default {
   },
   async created() {
     this.id = this.$route.query.id
+<<<<<<< HEAD
+=======
+    this.eduCode = ''
+    this.getEducode()
+>>>>>>> 8b329c2d398082eb42e30b90ec8ab85b65474074
     await this._treeView()
     if (this.id) {
       this.showDetail()
@@ -132,12 +137,26 @@ export default {
       'addClass',
       'classSearchBasic',
       'classModifyBasic',
+<<<<<<< HEAD
       'treeView'
     ]),
     // 获取资源树
     async _treeView() {
       const res = await this.treeView()
       console.log(res)
+=======
+      'treeView',
+      'getEduCode'
+    ]),
+    // 获取教育局code
+    async getEducode() {
+      const res = await this.getEduCode({ schoolCode: this.userInfo.schoolCode })
+      this.eduCode = res.data.schoolCode
+    },
+    // 获取资源树
+    async _treeView() {
+      const res = await this.treeView()
+>>>>>>> 8b329c2d398082eb42e30b90ec8ab85b65474074
       this.options = res.data.map(res => {
         return {
           label: res.categoryName,
@@ -178,7 +197,11 @@ export default {
             categoryId: Number(values.resourceType[1].split('+')[0]),
             categoryName: values.resourceType[1].split('+')[1],
             des: values.des,
+<<<<<<< HEAD
             eduCode: this.userInfo.schoolCode,
+=======
+            eduCode: this.eduCode,
+>>>>>>> 8b329c2d398082eb42e30b90ec8ab85b65474074
             sections: values.sections,
             name: values.name,
             schoolCode: this.userInfo.schoolCode,

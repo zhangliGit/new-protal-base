@@ -26,6 +26,10 @@
   </div>
 </template>
 <script>
+<<<<<<< HEAD
+=======
+
+>>>>>>> 8b329c2d398082eb42e30b90ec8ab85b65474074
 import { mapState, mapActions } from 'vuex'
 import moment from 'moment'
 export default {

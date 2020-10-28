@@ -111,7 +111,11 @@ export default {
       const that = this
       this.$confirm({
         title: '提示',
+<<<<<<< HEAD
         content: '确定批量删除选中的习题吗?',
+=======
+        content: '确定批量删除选中的资源吗?',
+>>>>>>> 8b329c2d398082eb42e30b90ec8ab85b65474074
         onOk () {
           that.findList = that.findList.filter(v => !that.chooseList.includes(v.id))
         },

@@ -177,7 +177,11 @@ export default {
     // 完成
     carryOut() {
       this.submitOk().then(el => {
+<<<<<<< HEAD
         this.$router.go(-1)
+=======
+        this.$router.push('/safeClass')
+>>>>>>> 8b329c2d398082eb42e30b90ec8ab85b65474074
       })
     },
     // 下一步

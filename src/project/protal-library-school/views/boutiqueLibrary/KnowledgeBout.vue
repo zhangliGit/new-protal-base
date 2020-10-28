@@ -24,7 +24,11 @@
               <a-popconfirm
                 placement="topLeft"
                 ok-text="确定"
+<<<<<<< HEAD
                 cancel-text="取消加精"
+=======
+                cancel-text="加精"
+>>>>>>> 8b329c2d398082eb42e30b90ec8ab85b65474074
                 @confirm="refining(action.record)">
                 <template slot="title">
                   确定取消该安全知识的精品状态吗？
@@ -129,6 +133,11 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   async  created() {
+<<<<<<< HEAD
+=======
+    this.eduCode = ''
+    this.getEducode()
+>>>>>>> 8b329c2d398082eb42e30b90ec8ab85b65474074
     const newColumnsArr = JSON.parse(JSON.stringify(knowledgeColumns))
     newColumnsArr.splice(5, 0, { title: '机构来源', dataIndex: 'sourceUnit', width: '10%' })
     this.knowledgeColumns = newColumnsArr
@@ -146,14 +155,29 @@ export default {
       'treeView',
       'statistics',
       'pageStatistics',
+<<<<<<< HEAD
       'cancelBoutique'
     ]),
+=======
+      'cancelBoutique',
+      'getEduCode'
+    ]),
+    // 获取教育局code
+    async getEducode() {
+      const res = await this.getEduCode({ schoolCode: this.userInfo.schoolCode })
+      this.eduCode = res.data.schoolCode
+    },
+>>>>>>> 8b329c2d398082eb42e30b90ec8ab85b65474074
     async showList() {
       const req = {
         categoryId: this.categoryId,
         ...this.pageList,
         ...this.searchList,
+<<<<<<< HEAD
         eduCode: this.userInfo.schoolCode
+=======
+        eduCode: this.eduCode
+>>>>>>> 8b329c2d398082eb42e30b90ec8ab85b65474074
       }
       const res = await this.klgGreatList(req)
       this.findList = res.data.records

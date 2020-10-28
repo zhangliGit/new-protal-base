@@ -6,7 +6,10 @@
           <grade-tree @select="select" :treeData="treeData"></grade-tree>
         </div>
         <div class="right qui-fx-ver qui-fx-f1" style="padding-right: 10px">
+<<<<<<< HEAD
           知识
+=======
+>>>>>>> 8b329c2d398082eb42e30b90ec8ab85b65474074
           <search-form is-reset @search-form="searchForm" :search-label="knowledgeSearchLabel">
             <div slot="right">
               <a-button type="danger" class=" u-mar-l20" @click="delBatchAll">批量删除</a-button>

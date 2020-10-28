@@ -162,8 +162,8 @@ export default {
   },
   methods: {
     ...mapActions('home', ['addInspect', 'addSpeDanger', 'specialTaskDetail', 'updateInspect', 'getGroupDetail', 'modifySpecial']),
-     changeActivekey(key) {
-      console.log(key);
+    changeActivekey(key) {
+      console.log(key)
     },
     async showDetail() {
       const res = await this.specialTaskDetail(this.detailId)

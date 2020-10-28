@@ -31,6 +31,7 @@
               @change="change"
               :disabled="isEdit"
             >
+
               <a-radio-button value="1">一次性计划</a-radio-button>
               <a-radio-button value="2">周任务</a-radio-button>
               <a-radio-button value="3">月任务</a-radio-button>
@@ -88,7 +89,14 @@
           >
             <a-range-picker
               :disabled-date="disabledDate"
-              v-decorator="['data', {initialValue: [moment(new Date(), 'YYYY-MM-DD'), moment( new Date(), 'YYYY-MM-DD')], rules: [{ required: 'required', message: '请选择时间' }]}]"
+              v-decorator="['data',
+                            {
+                              initialValue:
+                                [moment(cardInfo.startTime ? new Date(cardInfo.startTime) : new Date(), 'YYYY-MM-DD'),
+                                 moment(cardInfo.endTime ? new Date(cardInfo.endTime) :new Date(), 'YYYY-MM-DD')],
+                              rules: [{ required: 'required', message: '请选择时间' }]
+                            }
+              ]"
             />
           </a-form-item>
           <a-form-item
@@ -292,7 +300,6 @@ export default {
     NoData
   },
   data() {
-    this.type = this.$route.query.type + ''
     return {
       list: [
         {
@@ -367,11 +374,12 @@ export default {
     this.url = `${hostEnv.zx_subject}/file/upload/doc`
     this.params.schoolCode = this.userInfo.schoolCode
     this.detailId = this.$route.query.id
+    this.type = this.$route.query.type + ''
     this.times = [{ key: 0 }]
     this.title = this.url === 'safe' ? '护导队伍' : '巡查人员'
     if (this.detailId) {
       this.showDetail()
-      this.isEdit = this.detailType !== 3
+      this.isEdit = this.type === '1'
     } else {
       this.isEdit = false
     }
@@ -392,7 +400,7 @@ export default {
     disabledDate(current) {
       // console.log( moment().endOf('day'))
       // Can not select days before today and today
-      return current && current <= moment().endOf('day');
+      return current && current <= moment().endOf('day')
     },
     // 获取详情
     async showDetail() {
@@ -635,7 +643,7 @@ export default {
           }
         }
         values.dateNums = dateNums
-        if (this.cardInfo.taskType !== '1' && values.dateNums === '') {
+        if (this.cardInfo.taskType !== '1' && values.dateNums.length === 0) {
           this.$message.warning('请选择任务时间')
           return false
         }

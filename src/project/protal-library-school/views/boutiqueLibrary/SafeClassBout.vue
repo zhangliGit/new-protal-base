@@ -165,22 +165,53 @@ export default {
     }
   },
   computed: {
+<<<<<<< HEAD
     ...mapState('home', ['userInfo', 'eduCode'])
+=======
+    ...mapState('home', ['userInfo'])
+>>>>>>> 8b329c2d398082eb42e30b90ec8ab85b65474074
   },
   async mounted() {
     const newColumnsArr = JSON.parse(JSON.stringify(safeClassItemColumns))
     newColumnsArr.splice(5, 0, { title: '机构来源', dataIndex: 'schoolName', width: '10%' })
     this.safeClassItemColumns = newColumnsArr
     this.categoryId = ''
+<<<<<<< HEAD
+=======
+    this.eduCode = ''
+    this.getEducode()
+>>>>>>> 8b329c2d398082eb42e30b90ec8ab85b65474074
     await this._treeView()
     await this.showList()
   },
   methods: {
+<<<<<<< HEAD
     ...mapActions('home', ['claroomGreatList', 'claroomRemove', 'claroomRemoves', 'treeView', 'statistics', 'pageStatistics', 'classCancelbou']),
     async showList() {
       const req = {
         categoryId: this.categoryId,
         eduCode: this.userInfo.schoolCode,
+=======
+    ...mapActions('home', [
+      'claroomGreatList',
+      'claroomRemove',
+      'claroomRemoves',
+      'treeView',
+      'statistics',
+      'pageStatistics',
+      'classCancelbou',
+      'getEduCode'
+    ]),
+    // 获取教育局code
+    async getEducode() {
+      const res = await this.getEduCode({ schoolCode: this.userInfo.schoolCode })
+      this.eduCode = res.data.schoolCode
+    },
+    async showList() {
+      const req = {
+        categoryId: this.categoryId,
+        eduCode: this.eduCode,
+>>>>>>> 8b329c2d398082eb42e30b90ec8ab85b65474074
         ...this.pageList,
         ...this.searchList
       }
@@ -190,7 +221,10 @@ export default {
     },
     async _treeView() {
       const res = await this.treeView()
+<<<<<<< HEAD
       // this.categoryId = res.data[0].id
+=======
+>>>>>>> 8b329c2d398082eb42e30b90ec8ab85b65474074
       this.treeData = res.data
     },
     searchForm(values) {

@@ -250,8 +250,8 @@ module.exports = {
         }
       },
       '/zk_news': {
-        target: 'http://192.168.2.242:11011/', // 张坤-信息发布
-        // target: 'http://192.168.1.23:11011/',
+        // target: 'http://192.168.2.242:11011/', // 张坤-信息发布
+        target: 'http://192.168.2.242:11011/',
         changeOrigin: true,
         pathRewrite: {
           '^/zk_news': ''
@@ -298,7 +298,8 @@ module.exports = {
         }
       },
       '/ljj_admin': {
-        target: 'http://192.168.2.242:10050/', // 柳继杰-局端模块
+        // target: 'http://192.168.2.242:10050/', // 柳继杰-局端模块
+        target: 'http://192.168.1.76:8092/', // 柳继杰-局端模块
         changeOrigin: true,
         pathRewrite: {
           '^/ljj_admin': ''
@@ -313,7 +314,7 @@ module.exports = {
         }
       },
       '/cl_oa': {
-        target: 'http://192.168.2.242:11009/',
+        target: 'http://192.168.2.242:11014/',
         // target: 'http://192.168.1.23:11009/',
         changeOrigin: true,
         pathRewrite: {
