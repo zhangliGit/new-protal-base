@@ -7,7 +7,7 @@
       </div>
     </div>
     <div class="u-fx-ac">
-      <div class="user-pic">
+      <div class="user-pic" v-if="photoSrc">
         <img :src="photoSrc" alt />
       </div>
       <div class="u-fx-f1">
