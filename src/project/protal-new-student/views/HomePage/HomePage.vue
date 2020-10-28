@@ -136,11 +136,10 @@ export default {
   box-sizing: border-box;
 }
 .stu-overview {
-  display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
+  overflow: hidden;
 
   .view-item {
+    float: left;
     display: flex;
     box-sizing: border-box;
     flex-direction: column;
@@ -149,7 +148,7 @@ export default {
     width: 240px;
     height: 120px;
     margin-right: 30px;
-    margin-bottom: 40px;
+    margin-bottom: 30px;
     padding: 10px 0;
     font-size: 16px;
     border: 1px solid #ccc;
