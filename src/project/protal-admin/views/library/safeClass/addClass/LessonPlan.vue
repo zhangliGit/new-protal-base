@@ -177,7 +177,7 @@ export default {
     // 完成
     carryOut() {
       this.submitOk().then(el => {
-        this.$router.go(-1)
+        this.$router.push('/safeClass')
       })
     },
     // 下一步

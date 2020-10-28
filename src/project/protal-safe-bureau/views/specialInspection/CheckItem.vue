@@ -79,8 +79,6 @@ export default {
   },
   mounted() {
     this.showList()
-    // this.getUserList()
-    // this.getDangerList()
   },
   methods: {
     ...mapActions('home', ['getItemPageList', 'delItem']),

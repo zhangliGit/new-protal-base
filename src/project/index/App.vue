@@ -110,6 +110,10 @@ export default {
           url: 'protal-prevent'
         },
         {
+          name: '高教版基础数据',
+          url: 'protal-high-school'
+        },
+        {
           name: '安全教育-局端',
           url: 'protal-library-bureau'
         },

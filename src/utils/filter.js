@@ -376,6 +376,27 @@ const filters = {
     } else if (text === 6) {
       return '副园级'
     }
+  },
+  majorState: val => {
+    if (val === '1') {
+      return '未开始'
+    } else if (val === '2') {
+      return '使用中'
+    } else {
+      return '已结束'
+    }
+  },
+  dosizeformat(text) {
+    text = Number(text)
+    if (text < 1024) {
+      return `${text}B`
+    } else if (text < (1024 * 1024)) {
+      return `${parseInt(text / 1024)}K`
+    } else if (text < (1024 * 1024 * 1024)) {
+      return `${parseInt(text / (1024 * 1024))}M`
+    } else if (text < (1024 * 1024 * 1024 * 1024)) {
+      return `${parseInt(text / (1024 * 1024 * 1024))}G`
+    }
   }
 }
 

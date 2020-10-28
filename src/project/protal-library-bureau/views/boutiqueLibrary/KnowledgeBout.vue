@@ -24,7 +24,7 @@
               <a-popconfirm
                 placement="topLeft"
                 ok-text="确定"
-                cancel-text="取消加精"
+                cancel-text="加精"
                 @confirm="refining(action.record)">
                 <template slot="title">
                   确定取消该安全知识的精品状态吗？

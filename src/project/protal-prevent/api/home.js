@@ -34,7 +34,9 @@ const homeApi = {
   riskAccount: '/riskAssessment/manage/page#post', // 风险管控台账分页查询
   modifyRiskAccount: '/riskAssessment/manage/modify#post', // 风险管控台账修改频次
   riskChart: '/riskAssessment/chart#getUrl', // 风险等级比较图
-  riskUpload: '/riskNoticeCard/upload#post' // 风险告知卡上传图片
+  riskUpload: '/riskNoticeCard/upload#post', // 风险告知卡上传图片
+  mostRiskCard: '/riskAnnouncement/page#post', // 分页查看重大风险公告
+  mostRiskUpload: '/riskAnnouncement/upload#post' // 重大风险公告上传图片
 
 }
 for (const val in homeApi) {
