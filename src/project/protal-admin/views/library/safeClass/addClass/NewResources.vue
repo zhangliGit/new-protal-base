@@ -165,7 +165,7 @@ export default {
       const { name, size, type } = data.file
       this.docName = name
       this.docSize = size
-      this.docType = type
+      this.docType = type.split('/')[1]
       this.$tools.ossUpload(this.userInfo.schoolCode, data.file, type, this.callBack)
     },
     callBack(value) {

@@ -187,19 +187,22 @@ export default {
     },
     // 完成
     carryOut() {
+      // if (this.findList.length === 0) return this.$message.error('请添加习题')
       this.submitOk().then(el => {
+        console.log(el)
         this.$router.push('/safeClass')
       })
     },
     // 下一步
     nextStep() {
+      // if (this.findList.length === 0) return this.$message.error('请添加习题')
       this.submitOk().then(el => {
+        console.log(el)
         this.$parent.isActive('4')
       })
     },
     // 提交
     async submitOk(e) {
-      if (this.findList.length === 0) return this.$message.error('请添加习题')
       return new Promise((resolve, reject) => {
         const req = {
           classId: Number(this.id),

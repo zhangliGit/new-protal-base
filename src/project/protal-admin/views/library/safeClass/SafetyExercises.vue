@@ -57,7 +57,6 @@ import PageNum from '@c/PageNum'
 import SearchForm from '@c/SearchForm'
 import { exrcisesPageSearchLabel } from '../../../assets/js/searchLabel.js'
 import { exercisePageListColumns } from '../../../assets/js/tableColumns'
-import axios from 'axios'
 export default {
   name: 'SafetyExercises',
   components: {

@@ -188,7 +188,7 @@ export default {
     // 完成
     carryOut() {
       this.submitOk().then(el => {
-         this.$router.push('/safeClassLocal')
+        this.$router.push('/safeClassLocal')
       })
     },
     // 下一步
@@ -199,7 +199,7 @@ export default {
     },
     // 提交
     async submitOk(e) {
-      if (this.findList.length === 0) return this.$message.error('请添加习题')
+      // if (this.findList.length === 0) return this.$message.error('请添加习题')
       return new Promise((resolve, reject) => {
         const req = {
           classId: Number(this.id),
