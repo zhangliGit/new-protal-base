@@ -217,6 +217,8 @@ export default {
       }
       const req = {
         albumId: this.id,
+        createUsercode: this.userInfo.userCode,
+        createUsername: this.userInfo.userName,
         photoSrcList: this.fileList.map(item => {
           return item.url
         })

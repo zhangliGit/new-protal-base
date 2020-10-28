@@ -298,7 +298,8 @@ module.exports = {
         }
       },
       '/ljj_admin': {
-        target: 'http://192.168.2.242:10050/', // 柳继杰-局端模块
+        // target: 'http://192.168.2.242:10050/', // 柳继杰-局端模块
+        target: 'http://192.168.1.76:8092/', // 柳继杰-局端模块
         changeOrigin: true,
         pathRewrite: {
           '^/ljj_admin': ''

@@ -121,6 +121,7 @@ export default {
         this.isLoad = false
         if (!error) {
           if (this.fileList.length === 0) {
+            
             this.$message.warning('请上传图片')
             return
           }
