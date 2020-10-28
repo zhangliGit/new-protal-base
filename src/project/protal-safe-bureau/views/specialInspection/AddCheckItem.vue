@@ -106,34 +106,34 @@ export default {
         return
       }
       this.form.validateFields((error, values) => {
-        if (this.normalList.length === 0) return this.$message.warning('检查指标内容不能为空')
-        const isEmpty = this.normalList.every(v => !v.standardList)
-        if (isEmpty) return this.$message.warning('请完善检查指标内容')
-        values.standardList = this.normalList.map(v => v.standardList)
-        values.schoolCode = this.userInfo.schoolCode
-        if (this.type === 0) {
-          this.addItem(values)
-            .then(res => {
-              this.$message.success('操作成功')
-              this.$refs.modal.close()
-              this.$parent.showList()
-            })
-            .catch(res => {
-              this.isLoad = false
-            })
-        } else {
-          values.id = this.detailId
-          this.eidtModity(values)
-            .then(res => {
-              this.$message.success('操作成功')
-              this.$parent.showList()
-              this.$refs.modal.close()
-            })
-            .catch(res => {
-              this.isLoad = false
-            })
-        }
         if (!error) {
+          if (this.normalList.length === 0) return this.$message.warning('检查指标内容不能为空')
+          const isEmpty = this.normalList.every(v => v.standardList)
+          if (!isEmpty) return this.$message.warning('请完善检查指标内容')
+          values.standardList = this.normalList.map(v => v.standardList)
+          values.schoolCode = this.userInfo.schoolCode
+          if (this.type === 0) {
+            this.addItem(values)
+              .then(res => {
+                this.$message.success('操作成功')
+                this.$refs.modal.close()
+                this.$parent.showList()
+              })
+              .catch(res => {
+                this.isLoad = false
+              })
+          } else {
+            values.id = this.detailId
+            this.eidtModity(values)
+              .then(res => {
+                this.$message.success('操作成功')
+                this.$parent.showList()
+                this.$refs.modal.close()
+              })
+              .catch(res => {
+                this.isLoad = false
+              })
+          }
         }
       })
     },

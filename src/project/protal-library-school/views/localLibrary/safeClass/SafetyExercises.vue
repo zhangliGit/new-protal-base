@@ -81,7 +81,7 @@ export default {
     }
   },
   computed: {
-    ...mapState('home', ['userInfo', 'eduCode'])
+    ...mapState('home', ['userInfo'])
   },
   created() {
     this.showList()

@@ -140,8 +140,6 @@ export default {
     },
     // 子组件选择的习题
     sonSelected(record) {
-      console.log(this.findList)
-      console.log(record)
       if (this.findList.length === 0) {
         this.findList = this.findList.concat(record)
       } else {
@@ -189,13 +187,17 @@ export default {
     },
     // 完成
     carryOut() {
+      // if (this.findList.length === 0) return this.$message.error('请添加习题')
       this.submitOk().then(el => {
-        this.$router.go(-1)
+        console.log(el)
+        this.$router.push('/safeClass')
       })
     },
     // 下一步
     nextStep() {
+      // if (this.findList.length === 0) return this.$message.error('请添加习题')
       this.submitOk().then(el => {
+        console.log(el)
         this.$parent.isActive('4')
       })
     },

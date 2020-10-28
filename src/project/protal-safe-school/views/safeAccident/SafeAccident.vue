@@ -87,8 +87,8 @@ export default {
     searchForm(values) {
       this.pageList.page = 1
       this.pageList.size = 20
-      this.searchList.queryTimeFrom = values.rangeTime ? `${values.rangeTime[0]} 00:00:00` : ''
-      this.searchList.queryTimeTo = values.rangeTime ? `${values.rangeTime[1]} 23:59:59` : ''
+      this.searchList.startDate = values.rangeTime ? `${values.rangeTime[0]} 00:00:00` : ''
+      this.searchList.endDate = values.rangeTime ? `${values.rangeTime[1]} 23:59:59` : ''
       this.searchList = Object.assign(this.searchList, values)
       this.showList()
     },

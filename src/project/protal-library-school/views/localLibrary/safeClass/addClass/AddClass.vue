@@ -102,7 +102,7 @@ export default {
     isActive(count, id) {
       // 保存信息改变路由参数
       if (id) {
-        this.$router.push({ query: { id: id } })
+        this.$router.replace({ query: { id: id } })
       }
       // 课堂信息的时候判断是否有通过校验到下一步
       if (this.stepsActive === '1' && count > '1') {

@@ -1,5 +1,5 @@
 <template>
-  <div class="page-layout bg-fff qui-fx-ver">
+  <div class="page-layout bg-fff qui-fx-ver u-padd">
     <div class="qui-fx-f1" id="tableList">
       <a-table
         style="height: 400px"
@@ -23,7 +23,7 @@
                   :other1.riskLevel === '4' ? '#0084ff' :
                     ''">{{ other1.riskLevel | levelType }}</a-tag>
         </template>
-          <template v-slot:other3="other3">
+        <template v-slot:other3="other3">
           <a-tag
             :color="other3.riskLevel === '1' ? '#ff5454'
               : other3.riskLevel === '2' ? '#f5772d'

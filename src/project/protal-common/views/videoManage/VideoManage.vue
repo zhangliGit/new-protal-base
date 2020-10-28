@@ -264,7 +264,9 @@ export default {
           videoName: values.fileName,
           videoUrl: this.videoList[0].url,
           schoolCode: this.userInfo.schoolCode,
-          fileType: 'mp4'
+          fileType: 'mp4',
+          createUsercode: this.userInfo.userCode,
+          createUsername: this.userInfo.userName
         })
         this.$message.success('上传成功')
         this.$tools.goNext(() => {

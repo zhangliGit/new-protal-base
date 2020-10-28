@@ -177,7 +177,9 @@ export default {
       if (this.type === 0) {
         this.addNewAlbum({
           ...values,
-          schoolCode: this.userInfo.schoolCode
+          schoolCode: this.userInfo.schoolCode,
+          createUsercode: this.userInfo.userCode,
+          createUsername: this.userInfo.userName
         }).then(() => {
           this.$message.success('新建成功')
           this.$tools.goNext(() => {
@@ -188,7 +190,9 @@ export default {
         this.editAlbum({
           ...values,
           id: this.id,
-          schoolCode: this.userInfo.schoolCode
+          schoolCode: this.userInfo.schoolCode,
+          createUsercode: this.userInfo.userCode,
+          createUsername: this.userInfo.userName
         }).then(() => {
           this.$message.success('编辑成功')
           this.$tools.goNext(() => {

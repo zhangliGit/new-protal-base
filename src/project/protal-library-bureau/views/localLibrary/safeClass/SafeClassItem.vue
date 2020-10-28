@@ -155,7 +155,7 @@ export default {
     await this.showList()
   },
   methods: {
-    ...mapActions('home', ['claroomPublicList', 'claroomRemove', 'claroomRemoves', 'treeView', 'statistics', 'pageStatistics', 'classAddbou']),
+    ...mapActions('home', ['claroomLocalList', 'claroomRemove', 'claroomRemoves', 'treeView', 'statistics', 'pageStatistics', 'classAddbou']),
     async showList() {
       const req = {
         categoryId: this.categoryId,
@@ -163,7 +163,7 @@ export default {
         ...this.pageList,
         ...this.searchList
       }
-      const res = await this.claroomPublicList(req)
+      const res = await this.claroomLocalList(req)
       this.findList = res.data.records
       this.total = res.data.total
     },
