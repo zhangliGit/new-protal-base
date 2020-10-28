@@ -21,13 +21,13 @@
         </div>
       </a-form-item>
       <a-form-item :label-col="{ span: 3 }" :wrapper-col="{ span: 21 }" label="选择表扬语" required>
-        <a-checkbox-group @change="onChange"  v-model="value">
-              <span v-for="item in batchList" :key="item.id">
-                <a-checkbox :value="`${item.id}`" :disabled="item.disabled">
-                  {{ item.label }}
-                </a-checkbox>
-              </span>
-          </a-checkbox-group>
+        <a-checkbox-group @change="onChange" v-model="value">
+          <span v-for="item in batchList" :key="item.id">
+            <a-checkbox :value="`${item.id}`" :disabled="item.disabled">
+              {{ item.label }}
+            </a-checkbox>
+          </span>
+        </a-checkbox-group>
       </a-form-item>
     </a-form>
     <choose-student
@@ -74,10 +74,10 @@ export default {
         label: ''
       },
       isView: false,
-       batchList: [],
+      batchList: [],
       labelList: [],
       value: [],
-      getList:[]
+      getList: []
     }
   },
   computed: {
@@ -89,26 +89,26 @@ export default {
   methods: {
     ...mapActions('home', ['addsetPraise', 'updatesetPraise', 'praiseList']),
     onChange(checkedValues) {
-         this.labelList=[]
-      this.getList=checkedValues
-         this.batchList.forEach(item => {
-           this.getList.forEach(el => {
-          if(item.id==el){
+      this.labelList = []
+      this.getList = checkedValues
+      this.batchList.forEach(item => {
+        this.getList.forEach(el => {
+          if (item.id == el) {
             this.labelList.push(item.label)
           }
         })
-        })
-      if(this.value.length >= 3){
+      })
+      if (this.value.length >= 3) {
         this.batchList.forEach(el => {
-          el.disabled = this.value.indexOf(el.id.toString()) == -1?true:false
+          el.disabled = this.value.indexOf(el.id.toString()) == -1 ? true : false
         })
-      }else{
+      } else {
         this.batchList.forEach(el => {
-          if(el.disabled){
+          if (el.disabled) {
             el.disabled = false
           }
         })
-      }  
+      }
     },
     addTag() {
       this.userTag = true
@@ -119,13 +119,13 @@ export default {
         ...this.pageList
       }
       const res = await this.praiseList(req)
-      this.batchList = res.data.list.filter((item) => item.category === 2)
-      this.batchList.forEach(el=>{
-        this.$set(el,'disabled',false)
+      this.batchList = res.data.list.filter(item => item.category === 2)
+      this.batchList.forEach(el => {
+        this.$set(el, 'disabled', false)
       })
     },
     classClose(removedTag) {
-      this.classList = this.classList.filter((tag) => tag !== removedTag)
+      this.classList = this.classList.filter(tag => tag !== removedTag)
     },
     chooseUser(values) {
       this.classList = values
@@ -142,7 +142,7 @@ export default {
           this.isLoad = true
           const req = {
             labelList: this.labelList,
-            praiseList: this.classList.map((el) => {
+            praiseList: this.classList.map(el => {
               return {
                 category: 2,
                 praiseNamePhoto: el.photoUrl,
@@ -160,15 +160,16 @@ export default {
             })
           }
           this.addsetPraise(req)
-            .then((res) => {
+            .then(res => {
               this.addVisible = false
               this.isLoad = false
+              this.batchList = []
               this.$message.success('操作成功')
               this.$tools.goNext(() => {
                 this.$emit('update')
               })
             })
-            .catch((res) => {
+            .catch(res => {
               this.isLoad = false
             })
         }
