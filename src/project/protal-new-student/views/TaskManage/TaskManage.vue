@@ -1,8 +1,10 @@
 <template>
   <div class="home page-layout qui-fx-ver">
+    <sub-form ref="form" @submit-form="submitForm" :title="title" v-model="formStatus" :form-data="formData">
+    </sub-form>
     <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
       <div slot="left">
-        <a-button icon="plus" class="add-btn" @click.stop="addTask('0')">添加</a-button>
+        <a-button icon="plus" class="add-btn" @click.stop="addTask">添加</a-button>
       </div>
     </search-form>
     <table-list isZoom :page-list="pageList" :columns="columns" :table-list="taskList">
@@ -16,9 +18,7 @@
           ></a-button>
         </a-tooltip>
         <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="deleteList(action.record)">
-          <template slot="title">
-            确定删除吗?
-          </template>
+          <template slot="title"> 确定删除吗? </template>
           <a-tooltip placement="topLeft" title="删除">
             <a-button size="small" class="del-action-btn" icon="delete"></a-button>
           </a-tooltip>
@@ -35,6 +35,7 @@ import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
 import SearchForm from '@c/SearchForm'
+import SubForm from '@c/SubmitForm'
 // import Tools from '@u/tools'
 const columns = [
   {
@@ -135,16 +136,46 @@ const searchLabel = [
     label: '状态'
   }
 ]
+const formData = [
+  {
+    value: 'taskName',
+    initValue: '',
+    type: 'input',
+    label: '任务名称',
+    placeholder: '请输入任务名称'
+  },
+  {
+    value: 'admissionTime',
+    initValue: [new Date().getFullYear()],
+    list: [
+      { key: new Date().getFullYear() + 1, val: new Date().getFullYear() + 1 },
+      { key: new Date().getFullYear(), val: new Date().getFullYear() },
+      { key: new Date().getFullYear() - 1, val: new Date().getFullYear() - 1 }
+    ],
+    type: 'select',
+    label: '年级',
+    placeholder: '请选择年级'
+  },
+  {
+    value: 'endTime',
+    type: 'singleTime',
+    label: '招生截止日期'
+  }
+]
 export default {
   name: 'TaskManage',
   components: {
     SearchForm,
     PageNum,
     TableList,
-    SignRecord
+    SignRecord,
+    SubForm
   },
   data() {
     return {
+      title: '添加任务',
+      formStatus: false,
+      formData,
       columns,
       searchLabel,
       searchList: {},
@@ -168,14 +199,14 @@ export default {
   methods: {
     ...mapActions('home', ['getReserveList', 'delReserve']),
     async showList() {
-      const req = {
-        ...this.searchObj,
-        ...this.pageList,
-        schoolCode: this.userInfo.schoolCode,
-        type: '1'
-      }
-      const res = await this.getReserveList(req)
-      console.log(res)
+      // const req = {
+      //   ...this.searchObj,
+      //   ...this.pageList,
+      //   schoolCode: this.userInfo.schoolCode,
+      //   type: '1'
+      // }
+      // const res = await this.getReserveList(req)
+      // console.log(res)
       this.taskList = [
         {
           id: 1,
@@ -184,7 +215,8 @@ export default {
           subject: '软件技术',
           stuCount: 600,
           endTIime: '2020-12-30',
-          code: 'http://canpoint-photo.oss-cn-beijing.aliyuncs.com/47801/2020/10/19/base/76b5c10347bf4e5185331bb917b762cb.jpg'
+          code:
+            'http://canpoint-photo.oss-cn-beijing.aliyuncs.com/47801/2020/10/19/base/76b5c10347bf4e5185331bb917b762cb.jpg'
         }
       ]
       // this.taskList = res.data.list
@@ -203,15 +235,10 @@ export default {
       }
       this.showList()
     },
-    addTask(type, record) {
-      if (type !== '0') {
-        this.$router.push({ path: '/siteBooking/addTask', query: { id: record.id, type } })
-      } else {
-        this.$router.push({ path: '/siteBooking/addTask', query: { type } })
-      }
+    addTask() {
+      this.formStatus = true
     },
-    goDetail(record) {
-    },
+    goDetail(record) {},
     async deleteList(record) {
       await this.delReserve(record.id)
       this.$message.success('删除成功')
@@ -222,6 +249,9 @@ export default {
     showRecord(record) {
       this.signTag = true
       this.id = record.id
+    },
+    submitForm(values) {
+      console.log(values)
     }
   }
 }
