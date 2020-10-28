@@ -109,29 +109,11 @@ const newData = [
             remark: '',
             appCode: '',
             children: []
-          }
-        ]
-      },
-      {
-        id: 1232,
-        name: '新生管理',
-        parentId: null,
-        orderNum: 67,
-        url: '',
-        menuType: 2,
-        perms: '',
-        icon:
-          'http://canpoint-file.oss-cn-beijing.aliyuncs.com/CANPOINT/2020/08/18/base/b06bf6a9fcc2421e96e1d968ccb3f4e6.jpg',
-        plateformType: 2,
-        createTime: 1603416079000,
-        appId: 187,
-        remark: '',
-        appCode: '',
-        children: [
+          },
           {
-            id: 12219,
+            id: 22229,
             name: '新生申请',
-            parentId: 11791,
+            parentId: 1179,
             orderNum: 20,
             url: '/pc-protal/protal-new-student#/studentApply',
             menuType: 2,
@@ -148,15 +130,15 @@ const newData = [
         ]
       },
       {
-        id: 1233,
-        name: '系统设置',
+        id: 1232,
+        name: '迎新管理',
         parentId: null,
-        orderNum: 68,
+        orderNum: 67,
         url: '',
         menuType: 2,
         perms: '',
         icon:
-          'http://canpoint-file.oss-cn-beijing.aliyuncs.com/CANPOINT/2020/08/18/base/9b04e61999cf4f91be08e71ffa5d2528.jpg',
+          'http://canpoint-file.oss-cn-beijing.aliyuncs.com/CANPOINT/2020/08/18/base/b06bf6a9fcc2421e96e1d968ccb3f4e6.jpg',
         plateformType: 2,
         createTime: 1603416079000,
         appId: 187,
@@ -164,11 +146,11 @@ const newData = [
         appCode: '',
         children: [
           {
-            id: 122191,
-            name: '招生设置',
-            parentId: 11792,
+            id: 1221912,
+            name: '新生管理',
+            parentId: 1232,
             orderNum: 20,
-            url: '/pc-protal/protal-new-student#/setting',
+            url: '/pc-protal/protal-new-student#/studentManage',
             menuType: 2,
             perms: '',
             icon:
@@ -181,11 +163,11 @@ const newData = [
             children: []
           },
           {
-            id: 122192,
-            name: '消息设置',
-            parentId: 11793,
+            id: 12241912,
+            name: '新生分班',
+            parentId: 1232,
             orderNum: 20,
-            url: '/pc-protal/protal-new-student#/messageSetting',
+            url: '/pc-protal/protal-new-student#/studentClasses',
             menuType: 2,
             perms: '',
             icon:
@@ -198,6 +180,23 @@ const newData = [
             children: []
           }
         ]
+      },
+      {
+        id: 1233,
+        name: '设备管理',
+        parentId: null,
+        orderNum: 68,
+        url: '/pc-protal/protal-new-student#/deviceManage',
+        menuType: 2,
+        perms: '',
+        icon:
+          'http://canpoint-file.oss-cn-beijing.aliyuncs.com/CANPOINT/2020/08/18/base/9b04e61999cf4f91be08e71ffa5d2528.jpg',
+        plateformType: 2,
+        createTime: 1603416079000,
+        appId: 187,
+        remark: '',
+        appCode: '',
+        children: []
       }
     ]
   }

@@ -1,6 +1,11 @@
 <template>
   <div class="home-page page-layout qui-fx-ver">
-    <div class="des">11</div>
+    <div class="stu-overview">
+      <div class="view-item" v-for="item in viewList" :key="item.id">
+        <span>{{ item.title }}</span>
+        <span>{{ item.count }}</span>
+      </div>
+    </div>
     <div class="task-list">
       <div class="task-title">{{ title }}</div>
       <div class="task-table">
@@ -52,7 +57,7 @@ const columns = [
 ]
 
 export default {
-  name: 'SchoolActivity',
+  name: 'HomePage',
   components: {
     TableList
   },
@@ -86,7 +91,34 @@ export default {
         newCount: 2899,
         reportCount: 2000,
         hasPay: 1999
-      }
+      },
+      viewList: [
+        {
+          id: 'planCount',
+          title: '计划招生人数',
+          count: 3000
+        },
+        {
+          id: 'applyCount',
+          title: '申请人数',
+          count: 2990
+        },
+        {
+          id: 'newStuCount',
+          title: '迎新人数',
+          count: 2990
+        },
+        {
+          id: 'reportCount',
+          title: '报到人数',
+          count: 2900
+        },
+        {
+          id: 'hasPayCount',
+          title: '已缴费人数',
+          count: 2500
+        }
+      ]
     }
   },
   computed: {
@@ -103,8 +135,26 @@ export default {
   padding: 20px 40px;
   box-sizing: border-box;
 }
-.des {
-  height: 300px;
+.stu-overview {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+
+  .view-item {
+    display: flex;
+    box-sizing: border-box;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    width: 240px;
+    height: 120px;
+    margin-right: 30px;
+    margin-bottom: 40px;
+    padding: 10px 0;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
 }
 .task-list {
   border: 1px solid rgba(242, 242, 242, 1);

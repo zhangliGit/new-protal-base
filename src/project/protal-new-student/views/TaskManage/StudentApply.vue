@@ -1,5 +1,16 @@
 <template>
   <div class="home page-layout qui-fx-ver">
+    <poster v-model="showTag" :record="record"></poster>
+    <meet-record ref="form" @submit-form="submitForm" title="活动心得" v-model="editTag" :id="editId">
+    </meet-record>
+    <sign-record
+      title="签到统计"
+      type="activity"
+      ref="signRecord"
+      :id="id"
+      v-model="signTag"
+      v-if="signTag"
+    ></sign-record>
     <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
       <div slot="left">
         <a-button icon="plus" class="add-btn" @click.stop="addBooking('0')">发布</a-button>
@@ -7,7 +18,7 @@
     </search-form>
     <table-list :page-list="pageList" :columns="columns" :table-list="bookingList">
       <template v-slot:actions="action">
-        <a-tooltip placement="topLeft" title="查看" v-if="action.record.state !== '1'">
+        <a-tooltip placement="topLeft" title="查看" v-if="action.record.status !== '未使用'">
           <a-button
             size="small"
             class="detail-action-btn"
@@ -15,7 +26,7 @@
             @click.stop="addBooking('1', action.record)"
           ></a-button>
         </a-tooltip>
-        <a-tooltip placement="topLeft" title="编辑" v-if="action.record.state === '1'">
+        <a-tooltip placement="topLeft" title="编辑" v-if="action.record.status === '未使用'">
           <a-button
             size="small"
             class="edit-action-btn"
@@ -23,25 +34,33 @@
             @click.stop="addBooking('2', action.record)"
           ></a-button>
         </a-tooltip>
-        <a-tooltip placement="topLeft" title="下载报名单">
+        <!-- <a-tooltip placement="topLeft" title="活动心得" v-if="action.record.status !== '未使用'">
+          <a-button
+            size="small"
+            class="copy-action-btn"
+            icon="edit"
+            @click.stop="editMeeting(action.record)"
+          ></a-button>
+        </a-tooltip> -->
+        <a-tooltip placement="topLeft" title="查看海报">
           <a-button
             size="small"
             class="play-action-btn"
-            icon="download"
-            @click.stop="downLoad(action.record)"
+            icon="export"
+            @click.stop="showPoster(action.record)"
           ></a-button>
         </a-tooltip>
-        <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="deleteList(action.record)" v-if="action.record.state === '1' || action.record.status === '3'">
+        <!-- <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="deleteList(action.record)" v-if="action.record.status !== '使用中'">
           <template slot="title">
             确定删除吗?
           </template>
           <a-tooltip placement="topLeft" title="删除">
             <a-button size="small" class="del-action-btn" icon="delete"></a-button>
           </a-tooltip>
-        </a-popconfirm>
+        </a-popconfirm> -->
       </template>
       <template v-slot:other3="other3">
-        <span>{{ other3.record.startTime | getDate(5) }} - {{ other3.record.endTime | getDate(5) }}</span>
+        <span>{{ other3.record.reserveDate | gmtToDate('date') }} {{ other3.record.startTime }}-{{ other3.record.endTime }}</span>
       </template>
       <template v-slot:other4="other4">
         <a-popover>
@@ -52,13 +71,13 @@
         </a-popover>
       </template>
       <template v-slot:other2="other2">
-        <span v-if="other2.record.openSign === '1'">{{ other2.record.stopDatetime | getDate(5) }}</span>
+        <a-tag v-if="other2.record.openSign === '1'" color="green" @click="showRecord(other2.record)">{{ other2.record.signNum }} / {{ other2.record.totalNum }}</a-tag>
         <span v-else>--</span>
       </template>
       <template v-slot:other1="other1">
         <a-tag
-          :color="other1.record.state === '2' ? '#87d068' : other1.record.state === '1' ? '#2db7f5' : 'purple'"
-        >{{ other1.record.state === '2' ? '进行中' : other1.record.state === '1' ? '未开始' : '已结束' }}</a-tag>
+          :color="other1.record.status === '使用中' ? '#87d068' : other1.record.status === '未使用' ? '#2db7f5' : 'purple'"
+        >{{ other1.record.status === '使用中' ? '进行中' : other1.record.status === '未使用' ? '未开始' : '已结束' }}</a-tag>
       </template>
     </table-list>
     <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
@@ -66,12 +85,15 @@
 </template>
 
 <script>
+import Poster from '../../component/siteBooking/Poster'
+import MeetRecord from '../../component/siteBooking/MeetRecord'
+import UploadMulti from '@c/UploadFace'
+import SignRecord from '../../component/siteBooking/SignRecord'
 import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
 import SearchForm from '@c/SearchForm'
 import Tools from '@u/tools'
-import hostEnv from '@config/host-env'
 const columns = [
   {
     title: '序号',
@@ -86,17 +108,17 @@ const columns = [
     width: '10%'
   },
   {
+    title: '活动地点',
+    dataIndex: 'placeName',
+    width: '10%'
+  },
+  {
     title: '活动时间',
-    dataIndex: 'startTime',
+    dataIndex: 'reserveDate',
     width: '10%',
     scopedSlots: {
       customRender: 'other3'
     }
-  },
-  {
-    title: '活动地点',
-    dataIndex: 'placeName',
-    width: '10%'
   },
   {
     title: '活动内容',
@@ -105,14 +127,6 @@ const columns = [
     ellipsis: true,
     scopedSlots: {
       customRender: 'other4'
-    }
-  },
-  {
-    title: '报名截止时间',
-    dataIndex: 'stopDatetime',
-    width: '10%',
-    scopedSlots: {
-      customRender: 'other2'
     }
   },
   {
@@ -126,6 +140,14 @@ const columns = [
     width: '10%',
     scopedSlots: {
       customRender: 'other1'
+    }
+  },
+  {
+    title: '签到统计',
+    dataIndex: 'openSign',
+    width: '10%',
+    scopedSlots: {
+      customRender: 'other2'
     }
   },
   {
@@ -164,7 +186,7 @@ const searchLabel = [
         val: '已结束'
       }
     ],
-    value: 'state',
+    value: 'status',
     type: 'select',
     label: '活动状态'
   },
@@ -176,11 +198,15 @@ const searchLabel = [
   }
 ]
 export default {
-  name: 'SchoolActivity',
+  name: 'PublishActivity',
   components: {
     SearchForm,
+    UploadMulti,
+    MeetRecord,
     PageNum,
-    TableList
+    TableList,
+    SignRecord,
+    Poster
   },
   data() {
     return {
@@ -195,7 +221,13 @@ export default {
       total: 0,
       bookingList: [],
       title: '活动发布',
-      searchObj: {}
+      signTag: false,
+      editTag: false,
+      showTag: false,
+      searchObj: {},
+      record: {},
+      id: 0,
+      editId: 0
     }
   },
   computed: {
@@ -205,14 +237,15 @@ export default {
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getSchoolActivityList', 'schoolActivityDetail', 'delSchoolActivity']),
+    ...mapActions('home', ['getReserveList', 'delReserve', 'addMeetRecord', 'getMeetRecordById']),
     async showList() {
       const req = {
         ...this.searchObj,
         ...this.pageList,
-        schoolCode: this.userInfo.schoolCode
+        schoolCode: this.userInfo.schoolCode,
+        type: '3'
       }
-      const res = await this.getSchoolActivityList(req)
+      const res = await this.getReserveList(req)
       this.bookingList = res.data.list
       this.bookingList.map(el => {
         el.placeName = el.placeName.replace(/,/g, '-')
@@ -222,29 +255,40 @@ export default {
     searchForm(values) {
       console.log(values)
       this.searchObj = {
-        startTime: values.rangeTime ? new Date(values.rangeTime[0]) : undefined,
-        endTime: values.rangeTime ? new Date(values.rangeTime[1]) : undefined,
-        state: values.state,
+        startDate: values.rangeTime ? values.rangeTime[0] : undefined,
+        endDate: values.rangeTime ? values.rangeTime[1] : undefined,
+        status: values.status,
         description: values.description
       }
       this.showList()
     },
     addBooking(type, record) {
       if (type !== '0') {
-        this.$router.push({ path: '/schoolActivity/addSchoolActivity', query: { id: record.id, type } })
+        this.$router.push({ path: '/activityBooking/addActivityBooking', query: { id: record.id, type } })
       } else {
-        this.$router.push({ path: '/schoolActivity/addSchoolActivity', query: { type } })
+        this.$router.push({ path: '/activityBooking/addActivityBooking', query: { type } })
       }
     },
+    goDetail(record) {
+    },
     async deleteList(record) {
-      await this.delSchoolActivity(record.id)
+      await this.delReserve(record.id)
       this.$message.success('删除成功')
       this.$tools.goNext(() => {
         this.showList()
       })
     },
-    downLoad(record) {
-      window.location.href = `${hostEnv.zk_oa}/school/activity/sign/up/downloadActivitySignUp?activityId=${record.id}`
+    showRecord(record) {
+      this.id = record.id
+      this.signTag = true
+    },
+    editMeeting(record) {
+      this.editId = record.id
+      this.editTag = true
+    },
+    showPoster(record) {
+      this.record = record
+      this.showTag = true
     },
     async submitForm(values) {
       console.log(values)
