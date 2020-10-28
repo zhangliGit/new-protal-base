@@ -1,56 +1,28 @@
 <template>
   <div class="home page-layout qui-fx-ver">
-    <sign-record
-      title="签到统计"
-      type="site"
-      ref="signRecord"
-      :id="id"
-      v-model="signTag"
-      v-if="signTag"
-    ></sign-record>
     <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
       <div slot="left">
-        <a-button icon="plus" class="add-btn" @click.stop="addBooking('0')">预订</a-button>
+        <a-button icon="plus" class="add-btn" @click.stop="addTask('0')">添加</a-button>
       </div>
     </search-form>
-    <table-list :page-list="pageList" :columns="columns" :table-list="bookingList">
+    <table-list isZoom :page-list="pageList" :columns="columns" :table-list="taskList">
       <template v-slot:actions="action">
-        <a-tooltip placement="topLeft" title="查看" v-if="action.record.status !== '未使用'">
+        <a-tooltip placement="topLeft" title="查看">
           <a-button
             size="small"
             class="detail-action-btn"
             icon="ellipsis"
-            @click.stop="addBooking('1', action.record)"
+            @click.stop="addTask('1', action.record)"
           ></a-button>
         </a-tooltip>
-        <a-tooltip placement="topLeft" title="编辑" v-if="action.record.status === '未使用'">
-          <a-button
-            size="small"
-            class="edit-action-btn"
-            icon="form"
-            @click.stop="addBooking('2', action.record)"
-          ></a-button>
-        </a-tooltip>
-        <!-- <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="deleteList(action.record)" v-if="action.record.status !== '使用中'">
+        <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="deleteList(action.record)">
           <template slot="title">
             确定删除吗?
           </template>
           <a-tooltip placement="topLeft" title="删除">
             <a-button size="small" class="del-action-btn" icon="delete"></a-button>
           </a-tooltip>
-        </a-popconfirm> -->
-      </template>
-      <template v-slot:other3="other3">
-        <span>{{ other3.record.reserveDate | gmtToDate('date') }} {{ other3.record.startTime }}-{{ other3.record.endTime }}</span>
-      </template>
-      <template v-slot:other2="other2">
-        <a-tag v-if="other2.record.openSign === '1'" color="green" @click="showRecord(other2.record)">{{ other2.record.signNum }} / {{ other2.record.totalNum }}</a-tag>
-        <span v-else>--</span>
-      </template>
-      <template v-slot:other1="other1">
-        <a-tag
-          :color="other1.record.status === '使用中' ? '#87d068' : other1.record.status === '未使用' ? '#2db7f5' : 'purple'"
-        >{{ other1.record.status }}</a-tag>
+        </a-popconfirm>
       </template>
     </table-list>
     <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
@@ -63,7 +35,7 @@ import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
 import SearchForm from '@c/SearchForm'
-import Tools from '@u/tools'
+// import Tools from '@u/tools'
 const columns = [
   {
     title: '序号',
@@ -73,65 +45,41 @@ const columns = [
     }
   },
   {
-    title: '场地',
-    dataIndex: 'placeName',
+    title: '任务名称',
+    dataIndex: 'taskName',
+    width: '20%'
+  },
+  {
+    title: '年级',
+    dataIndex: 'grade',
     width: '10%'
   },
   {
-    title: '预订时间',
-    dataIndex: 'reserveDate',
-    width: '20%',
-    scopedSlots: {
-      customRender: 'other3'
-    }
+    title: '招生专业',
+    dataIndex: 'subject',
+    width: '15%'
   },
   {
-    title: '预订说明',
-    dataIndex: 'description',
+    title: '招生人数',
+    dataIndex: 'stuCount',
     width: '10%'
   },
   {
-    title: '预订人',
-    dataIndex: 'createName',
-    width: '10%'
+    title: '截止时间',
+    dataIndex: 'endTIime',
+    width: '20%'
   },
   {
-    title: '场地类型',
-    dataIndex: 'placeType',
-    width: '8%',
-    customRender: text => {
-      if (text === '100') {
-        return '教室'
-      } else if (text === '101') {
-        return '宿舍'
-      } else if (text === '102') {
-        return '食堂'
-      } else if (text === '103') {
-        return '出入口'
-      } else if (text === '104') {
-        return '其它'
-      }
-    }
-  },
-  {
-    title: '使用状态',
-    dataIndex: 'status',
-    width: '10%',
+    title: '二维码',
+    dataIndex: 'code',
+    width: '15%',
     scopedSlots: {
-      customRender: 'other1'
-    }
-  },
-  {
-    title: '签到统计',
-    dataIndex: 'openSign',
-    width: '10%',
-    scopedSlots: {
-      customRender: 'other2'
+      customRender: 'codePic'
     }
   },
   {
     title: '操作',
-    width: '14%',
+    width: '10%',
     scopedSlots: {
       customRender: 'action'
     }
@@ -139,12 +87,10 @@ const columns = [
 ]
 const searchLabel = [
   {
-    value: 'rangeTime',
-    type: 'rangeTime',
-    label: '预订日期',
-    customRender: text => {
-      return Tools.getDate(text)
-    }
+    value: 'taskName',
+    type: 'input',
+    label: '任务名称',
+    placeholder: '请输入任务名称'
   },
   {
     list: [
@@ -154,30 +100,43 @@ const searchLabel = [
       },
       {
         key: '1',
-        val: '未使用'
+        val: '2020-2021'
       },
       {
         key: '2',
-        val: '使用中'
+        val: '2019-2020'
       },
       {
         key: '3',
-        val: '已结束'
+        val: '2018-2019'
+      }
+    ],
+    value: 'grade',
+    type: 'select',
+    label: '学年'
+  },
+  {
+    list: [
+      {
+        key: '',
+        val: '全部'
+      },
+      {
+        key: '1',
+        val: '已发布'
+      },
+      {
+        key: '2',
+        val: '草稿'
       }
     ],
     value: 'status',
     type: 'select',
-    label: '使用状态'
-  },
-  {
-    value: 'description',
-    type: 'input',
-    label: '预订说明',
-    placeholder: '请输入预订说明'
+    label: '状态'
   }
 ]
 export default {
-  name: 'SiteBooking',
+  name: 'TaskManage',
   components: {
     SearchForm,
     PageNum,
@@ -194,8 +153,7 @@ export default {
         size: 20
       },
       total: 0,
-      bookingList: [],
-      title: '添加预订',
+      taskList: [],
       signTag: false,
       searchObj: {},
       id: 0
@@ -217,11 +175,23 @@ export default {
         type: '1'
       }
       const res = await this.getReserveList(req)
-      this.bookingList = res.data.list
-      this.bookingList.map(el => {
-        el.placeName = el.placeName.replace(/,/g, '-')
-      })
-      this.total = res.data.total
+      console.log(res)
+      this.taskList = [
+        {
+          id: 1,
+          taskName: '武汉职业技术学院2020-2021软件技术专业招生计划',
+          grade: '2020级',
+          subject: '软件技术',
+          stuCount: 600,
+          endTIime: '2020-12-30',
+          code: 'http://canpoint-photo.oss-cn-beijing.aliyuncs.com/47801/2020/10/19/base/76b5c10347bf4e5185331bb917b762cb.jpg'
+        }
+      ]
+      // this.taskList = res.data.list
+      // this.taskList.map(el => {
+      //   el.placeName = el.placeName.replace(/,/g, '-')
+      // })
+      // this.total = res.data.total
     },
     searchForm(values) {
       console.log(values)
@@ -233,11 +203,11 @@ export default {
       }
       this.showList()
     },
-    addBooking(type, record) {
+    addTask(type, record) {
       if (type !== '0') {
-        this.$router.push({ path: '/siteBooking/addBooking', query: { id: record.id, type } })
+        this.$router.push({ path: '/siteBooking/addTask', query: { id: record.id, type } })
       } else {
-        this.$router.push({ path: '/siteBooking/addBooking', query: { type } })
+        this.$router.push({ path: '/siteBooking/addTask', query: { type } })
       }
     },
     goDetail(record) {

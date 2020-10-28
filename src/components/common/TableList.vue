@@ -31,8 +31,8 @@
                   record.validDate && record.validDate - new Date().getTime() < 0
                     ? 'red'
                     : record.validDate && record.validDate - new Date().getTime() - 1000 * 60 * 60 * 24 * 30 < 0
-                    ? 'orange'
-                    : 'black'
+                      ? 'orange'
+                      : 'black'
               }
             ]"
           >
@@ -61,6 +61,36 @@
           <a-popover placement="left" v-if="isZoom">
             <template slot="content">
               <img :src="text || noImg" style="max-width: 200px; max-height: 220px; display: block" alt />
+            </template>
+            <img
+              :src="text || noImg"
+              :style="{ width: `${width}px`, height: `${height}px`, display: 'block', backgroundColor: '#eee' }"
+              alt
+            />
+          </a-popover>
+          <img
+            v-if="!isZoom"
+            :src="text || noImg"
+            :style="{ width: `${width}px`, height: `${height}px`, display: 'block', backgroundColor: '#eee' }"
+            alt
+          />
+        </template>
+        <template slot="codePic" slot-scope="text">
+          <a-popover placement="left" v-if="isZoom">
+            <template slot="content">
+              <img :src="text" style="width: 250px; height: 250px; display: block" alt />
+              <div
+                style="
+                  height: 30px;
+                  display: flex;
+                  color: #31a3ff;
+                  justify-content: space-around;
+                  align-items: flex-end;
+                "
+              >
+                <span @click="downLoadCode(text)" style="cursor: pointer">下载二维码</span>
+                <span @click="copyCodeUrl(text)" style="cursor: pointer">复制链接</span>
+              </div>
             </template>
             <img
               :src="text || noImg"
@@ -277,6 +307,19 @@ export default {
     // 点击复选框
     onSelectChange(record) {
       if (this.isCheck) this.selectedRowKeys = record
+    },
+    downLoadCode(url) {
+      console.log(url)
+    },
+    copyCodeUrl(url) {
+      const inputEle = document.createElement('input')
+      inputEle.value = url
+      inputEle.style.position = 'absolute'
+      inputEle.style.left = '-999px'
+      document.body.appendChild(inputEle)
+      inputEle.select()
+      document.execCommand('copy')
+      this.$message.success('复制成功！')
     }
   }
 }
