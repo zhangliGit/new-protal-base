@@ -95,7 +95,6 @@ export default {
   mounted () {
     this.reqUrl = this.fileInfo.url
     this.videoHeight = (document.body.clientHeight) * 0.8
-    console.log(this.fileInfo.h)
   },
   computed: {
     fileList: {

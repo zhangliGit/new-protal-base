@@ -1,9 +1,10 @@
 <template>
-  <div class="ResourIfication page-layout bg-fff u-padd-30">
-    <a-button type="primary" @click="addClass('0')">
+  <div class="resour-ification page-layout bg-fff u-padd-30">
+    <a-button class="u-mar-b10" type="primary" @click="addClass('0')">
       <a-icon type="plus" />添加分类
     </a-button>
     <a-table
+      bordered
       :columns="columns"
       :data-source="treeData"
       :rowKey="(record, index) => record.key"
@@ -11,8 +12,8 @@
       :scroll="{ y: 540 }"
     >
       <!-- :expandedRowKeys="expandedRowKeys" -->
-      <template slot="status" slot-scope="categoryName">
-        <a-icon type="down" />{{ categoryName }}
+      <template slot="categoryName" slot-scope="record">
+        <a-icon slot="icon" type="carry-out"/>{{ record.categoryName }}
       </template>
       <template slot="operating" slot-scope="record">
         <span class=" u-type-primary" v-if="!record.parentId" @click="addClass('1',record)" >添加子类</span>
@@ -48,7 +49,7 @@ const columns = [
   {
     title: '名字',
     key: 'categoryName',
-    dataIndex: 'categoryName',
+    // dataIndex: 'categoryName',
     scopedSlots: { customRender: 'categoryName' }
   },
 
@@ -174,4 +175,10 @@ export default {
 }
 </script>
 <style lang="less">
+@deep: ~'>>>';
+.resour-ification{
+  .ant-table-thead > tr > th{
+     background-color: #ecf5ff !important;
+   }
+}
 </style>

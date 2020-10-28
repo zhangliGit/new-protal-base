@@ -26,12 +26,14 @@
             </div>
           </template>
           <template slot="other1" slot-scope="text, record">
-            <a-tag color="#6882da" @click="add(0, record.id)">更改班次</a-tag>
+            <a-tag color="#6882da" @click="add(0, record)">更改班次</a-tag>
           </template>
         </a-table>
       </a-form-item>
       <a-form-item label="特殊日期" :label-col="{ span: 3 }" :wrapper-col="{ span: 18 }" :required="true">
-        <a-checkbox v-decorator="['holidayFlag', { initialValue: holidayFlag, }]" >法定节假日自动排休</a-checkbox>
+        <a-checkbox-group v-decorator="['holidayFlag', { initialValue: holidayFlag, }]" >
+          <a-checkbox value="1"> 法定节假日自动排休 </a-checkbox>
+        </a-checkbox-group>
         <div>
           <div>
             必须打卡的日期：<a-button size="small" class="add-action-btn" icon="plus" @click="add(1)">添加</a-button>
@@ -212,8 +214,10 @@ export default {
       classId: '',
       state: '',
       show: false,
-      holidayFlag: '1',
-      check: false
+      holidayFlag: ['1'],
+      check: false,
+      chooseRecord: {},
+      count: 0
     }
   },
   created() {
@@ -249,26 +253,49 @@ export default {
     delRecord(record) {
       this.groupList = this.groupList.filter(list => list.deviceSn !== record.deviceSn)
     },
-    add(type, id) {
+    add(type, record) {
       this.state = type
       if (type) {
-        console.log(id)
-        this.$refs.changeClass.chooseList = type === 2 ? [id.id] : []
-        this.$refs.changeClass.defaultValue = type === 2 ? moment(id.current).format('YYYY-MM-DD HH:mm:ss') : ''
+        this.$refs.changeClass.defaultValue = type === 2 ? moment(record.current).format('YYYY-MM-DD HH:mm:ss') : ''
+        this.$refs.changeClass.current = type === 2 ? record.current : ''
+        this.$refs.changeClass.chooseList = type === 2 ? [record.classId ? record.classId : record.id] : []
+        this.$refs.changeClass.totalList = type === 2 ? { ...record, id: record.classId ? record.classId : record.id } : {}
+        this.chooseRecord = type === 2 ? record : {}
         this.show = false
         this.$refs.changeClass.title = '必须打卡的日期'
       } else {
         this.show = true
-        this.$refs.changeClass.chooseList = JSON.stringify(this.data[id].accessTimeList) === '{}' ? [] : [this.data[id].accessTimeList.id]
-        this.classId = id
+        this.$refs.changeClass.chooseList =
+          JSON.stringify(this.data[record.id].accessTimeList) === '{}' ? []
+            : [this.data[record.id].accessTimeList.classId ? this.data[record.id].accessTimeList.classId : this.data[record.id].accessTimeList.id]
+        this.classId = record.id
         this.$refs.changeClass.title = '更改班次'
+        this.$refs.changeClass.totalList = record.accessTimeList
       }
       this.visible = true
     },
     // 更换班次
     changeClass(record) {
-      if (this.state) {
-        this.clockList.push(record)
+      if (this.state === 1) {
+        const { count, clockList } = this
+        const newData = {
+          key: count,
+          ...record
+        }
+        this.clockList = [...clockList, newData]
+        this.count = count + 1
+      } else if (this.state === 2) {
+        for (var i = 0; i < this.clockList.length; i++) {
+          if (this.clockList[i].key === this.chooseRecord.key) {
+            this.clockList[i].classId = record.id
+            this.clockList[i].current = record.current
+            this.clockList[i].code = record.code
+            this.clockList[i].name = record.name
+            this.clockList[i].id = record.id
+            this.clockList[i].ruleTimeDtoList = record.ruleTimeDtoList
+            this.clockList[i].key = this.chooseRecord.key
+          }
+        }
       } else {
         this.data[this.classId].accessTimeList = record
       }
@@ -283,7 +310,7 @@ export default {
     async showData(value) {
       if (!value) return
       this.detailData = value
-      this.holidayFlag = value.holidayFlag
+      this.holidayFlag = value.holidayFlag === '1' ? ['1'] : []
       this.groupName = value.groupName
       this.groupList = value.controllerGroups
       this.groupList.map(ele => {
@@ -294,21 +321,35 @@ export default {
       })
       value.rules.forEach((item, index) => {
         this.selectedRowKeys.push(parseInt(item.dayName))
-        this.data[index].accessTimeList = item
-        this.data[index].accessTimeList.name = item.shiftName
-      })
-      this.clockList = value.specialSignInDayRuleDtos.map(ele => {
-        return {
-          ...ele,
-          current: this.$tools.getDate(ele.dayTime, 1)
+        if (parseInt(item.dayName) === 1) {
+          this.data[6].accessTimeList = item
+          this.data[6].accessTimeList.name = item.shiftName
+          this.data[6].accessTimeList.code = item.shiftCode
+        } else {
+          this.data[parseInt(item.dayName) - 2].accessTimeList = item
+          this.data[parseInt(item.dayName) - 2].accessTimeList.name = item.shiftName
+          this.data[parseInt(item.dayName) - 2].accessTimeList.code = item.shiftCode
         }
       })
+      this.clockList = value.specialSignInDayRuleDtos.map((ele, index) => {
+        return {
+          id: ele.classId,
+          name: ele.shiftName,
+          code: ele.shiftCode,
+          current: this.$tools.getDate(ele.dayTime, 1),
+          key: index,
+          ruleTimeDtoList: ele.ruleTimeDtoList
+        }
+      })
+      this.count = this.clockList.length
       this.unClockList = value.noSignInDayRuleDtos.map(ele => {
         return {
           ...ele,
           current: ele.startDate === ele.endDate ? this.$tools.getDate(ele.startDate, 1) : `${this.$tools.getDate(ele.startDate, 1)}~${this.$tools.getDate(ele.endDate, 1)}`
         }
       })
+      console.log('edit,data', this.data)
+      console.log('edit,clockList', this.clockList)
     },
     // 添加测温设备
     addGroup(value) {
@@ -369,7 +410,6 @@ export default {
           })
           let result = true
           rules.forEach(eve => {
-            console.log('eve', eve)
             if (
               !eve.ruleTimeDtoList
             ) {
@@ -395,18 +435,19 @@ export default {
             specialClockDayRules.push({
               dayTime: ele.current,
               ruleTimeDtoList: ele.ruleTimeDtoList,
-              shiftCode: ele.code
+              shiftCode: ele.code,
+              shiftName: ele.name
             })
           })
           const noClockDayRules = []
           this.unClockList.forEach(ele => {
             noClockDayRules.push({
-              startDate: ele.current.indexOf('~') === -1 ? ele.current : ele.current.slice('~')[0],
-              endDate: ele.current.indexOf('~') === -1 ? ele.current : ele.current.slice('~')[1]
+              startDate: ele.current.indexOf('~') > -1 ? ele.current.split('~')[0] : ele.current,
+              endDate: ele.current.indexOf('~') > -1 ? ele.current.split('~')[1] : ele.current
             })
           })
           const req = {
-            holidayFlag: values.holidayFlag ? '1' : '0',
+            holidayFlag: values.holidayFlag.length > 0 ? '1' : '0',
             deviceGroups,
             groupName: values.name,
             rules,

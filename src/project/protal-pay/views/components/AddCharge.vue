@@ -94,8 +94,7 @@ export default {
       form: this.$form.createForm(this),
       formData: {
         itemName: '',
-        itemNum: '',
-        itemPrice: ''
+        itemNum: ''
       },
       isView: false,
       chargeList: [],
@@ -106,7 +105,6 @@ export default {
       isShow: true,
       isHide: false,
       orders: '',
-      itemPrice: '',
       type: 1,
       itemVOList: [],
       totalPrice: '',
@@ -118,11 +116,7 @@ export default {
   },
   watch: {
     orders(val) {
-      if (this.type === 1) {
-        this.totalPrice = Number(this.unitPrice) * Number(val)
-      } else if (this.type === 2) {
-        this.totalPrice = Number(this.itemPrice) * Number(val)
-      }
+      this.totalPrice = Number(this.unitPrice) * Number(val)
     }
   },
   mounted() {
@@ -130,22 +124,21 @@ export default {
   },
   methods: {
     ...mapActions('home', ['getSelect']),
-    change(e) {
-      this.unitPrice = ''
-      this.orders = ''
-      if (e.target.value === '1') {
-        this.isShow = true
-        this.isHide = false
-        this.type = 1
-      } else {
-        this.isShow = false
-        this.isHide = true
-        this.type = 2
-      }
-    },
+    // change(e) {
+    //   this.unitPrice = ''
+    //   this.orders = ''
+    //   if (e.target.value === '1') {
+    //     this.isShow = true
+    //     this.isHide = false
+    //     this.type = 1
+    //   } else {
+    //     this.isShow = false
+    //     this.isHide = true
+    //     this.type = 2
+    //   }
+    // },
     chooseCharge(value) {
       this.unitPrice = value.split('+')[2]
-      console.log(this.formData.unitPrice)
       this.itemCode = value.split('+')[1]
       this.itemName = value.split('+')[0]
     },

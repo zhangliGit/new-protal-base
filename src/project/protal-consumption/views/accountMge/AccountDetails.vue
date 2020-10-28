@@ -146,7 +146,7 @@
         </a-row>
         <a-row class="u-padd-10" v-else>
           <a-col :span="4" class="u-tx-r">账户余额：</a-col>
-          <a-col :span="20">{{ Number(detail.balance) + Number(detail.rechargeAmount) }}</a-col>
+          <a-col :span="20">{{ (Number(detail.balance) + Number(detail.rechargeAmount)).toFixed(2) }}</a-col>
         </a-row>
         <a-row type="flex" align="middle" class="u-padd-10" v-if="!sureTag">
           <a-col :span="4" class="u-tx-r">充值金额：</a-col>
@@ -193,7 +193,7 @@
         </a-row>
         <a-row class="u-padd-10" v-else>
           <a-col :span="4" class="u-tx-r">账户余额：</a-col>
-          <a-col :span="20">{{ Number(detail.balance) + Number(detail.subsidyAmount) }}</a-col>
+          <a-col :span="20">{{ (Number(detail.balance) + Number(detail.subsidyAmount)).toFixed(2) }}</a-col>
         </a-row>
         <a-row class="u-padd-10" v-if="!sureTag">
           <a-col :span="4" class="u-tx-r">补助金额：</a-col>
@@ -498,11 +498,11 @@ export default {
      * @description 提交充值
      */
     async submit() {
-      if (this.tag === 1 && (!this.detail.rechargeAmount || parseInt(this.detail.rechargeAmount) === 0)) {
+      if (this.tag === 1 && (!this.detail.rechargeAmount || Number(this.detail.rechargeAmount) === 0)) {
         this.$message.warning('请输入充值金额')
         return
       }
-      if (this.tag === 2 && (!this.detail.subsidyAmount || parseInt(this.detail.subsidyAmount) === 0)) {
+      if (this.tag === 2 && (!this.detail.subsidyAmount || Number(this.detail.subsidyAmount) === 0)) {
         this.$message.warning('请输入补助金额')
         return
       }

@@ -1,24 +1,30 @@
 <template>
-  <a-modal width="1000px" title="课堂习题列表" :footer="null" @cancel="close">
+  <a-modal
+    :destroyOnClose="true"
+    v-model="status"
+    width="1000px"
+    title="课堂资源列表"
+    :footer="null"
+    :confirmLoading="confirmLoading"
+    @cancel="close">
     <div class="qui-fx-ver statistic" >
       <search-form is-reset @search-form="searchForm" :search-label="exerciseSearchLabel">
         <div slot="left">
-          <a-button icon="del" class="add-action-btn u-mar-l20" @click="delBatchAll">批量添加</a-button>
+          <a-button icon="plus" class="add-action-btn u-mar-l20" @click="addAll">批量添加</a-button>
         </div>
       </search-form>
       <table-list
         is-check
         is-zoom
         v-model="chooseList"
-        @selectAll="selectAll"
         :page-list="pageList"
         :columns="exerciseListColumns"
         :table-list="tableList">
         <template v-slot:actions="action">
-          <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="add(action.record)">添加</a-button>
+          <a-button size="small" type="primary" class="add-action-btn" @click="add(action.record)">添加</a-button>
         </template>
       </table-list>
-      <page-num v-model="pageList" :total="total" @change-page="_pageStatistics"></page-num>
+      <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
     </div>
   </a-modal>
 </template>
@@ -30,22 +36,29 @@ import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import SearchForm from '@c/SearchForm'
 export default {
-  name: 'exerciseList',
+  name: 'ExerciseList',
   components: {
     TableList,
     SearchForm,
     PageNum
+  },
+  props: {
+    value: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
       chooseList: [], // 当有选择项时，被选中的项，返回每项的唯一id
       pageList: {
         page: 1,
-        size: 20
+        size: 5
       },
       total: 0,
       visible: true,
       isLoad: true,
+      confirmLoading: false,
       exerciseListColumns,
       exerciseSearchLabel,
       findList: [],
@@ -53,45 +66,63 @@ export default {
     }
   },
   computed: {
-    ...mapState('home', ['userInfo'])
+    ...mapState('home', ['userInfo']),
+    status: {
+      get() {
+        return this.value
+      },
+      set() {
+        this.$emit('input', false)
+      }
+    }
   },
   watch: {
   },
-  async mounted() {
-    // this.showList()
+  async created() {
+    this.showList()
   },
   methods: {
     ...mapActions('home', [
-      'ecsPage'
+      'ecsBindPage'
     ]),
-    close() {},
-    delBatchAll() {},
+    reset() {
+      this.confirmLoading = false
+      this.$emit('input', false)
+    },
+    close() {
+      this.$emit('closeModal')
+    },
+    error() {
+      this.confirmLoading = false
+    },
     async showList() {
       const req = {
+        source: '1',
         ...this.pageList,
-        ...this.searchList
+        ...this.searchList,
+        userCode: this.userInfo.userCode,
+        schoolCode: this.userInfo.schoolCode
       }
-      const res = await this.ecsPage(req)
+      const res = await this.ecsBindPage(req)
       this.tableList = res.data.records
       this.total = res.data.total
     },
-    // 提交
-    submitOk(e) {},
-    selectAll(){},
+    // 批量添加
+    addAll() {
+      if (this.chooseList.length === 0) return this.$message.info('请选中习题')
+      const recordArr = this.tableList.filter(v => this.chooseList.includes(v.id))
+      this.$parent.sonSelected(recordArr)
+      this.reset()
+    },
+    add(record) {
+      const recordArr = [record]
+      this.$parent.sonSelected(recordArr)
+      this.reset()
+    },
     // 弹框方法
     searchForm(values) {
       this.searchList = values
       this.showList()
-    },
-    async  _pageStatistics() {
-      const req = {
-        ...this.statisticsPageList,
-        'id': this.StatisticsId,
-        'schoolCode': this.userInfo.schoolCode,
-        'source': '1'
-      }
-      const res = await this.pageStatistics(req)
-      this.statisticsData = Object.assign({}, this.statisticsData, res.data)
     }
   }
 }

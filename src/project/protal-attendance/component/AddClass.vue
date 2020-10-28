@@ -196,6 +196,26 @@ export default {
       e.preventDefault()
       this.form.validateFields((err, values) => {
         if (!err) {
+          const arr = []
+          this.data.forEach((element, index) => {
+            if (element.time <= element.startTime || element.time >= element.endTime || element.startTime >= element.endTime) {
+              arr.push(1)
+            }
+            if (index < 3) {
+              if (this.data[index].time >= this.data[index + 1].time || this.data[index].startTime >= this.data[index + 1].startTime || this.data[index].endTime >= this.data[index + 1].endTime) {
+                arr.push(1)
+              }
+            }
+            if (index !== 0) {
+              if (this.data[index].startTime <= this.data[index - 1].endTime) {
+                arr.push(1)
+              }
+            }
+          })
+          if (arr.indexOf(1) > -1) {
+            this.$message.warning('请填写正确的时间')
+            return false
+          }
           const shiftRuleDtoList = this.data.map(el => {
             return {
               hasValid: el.checked ? '1' : '0',
@@ -247,170 +267,169 @@ export default {
     },
     // 限制小时
     getDisabledHours(val, id, string) {
-      if (string === 'startTime') {
-        const hours = []
-        const time = this.data[id].time.split(':')[0]
-        const endTime = this.data[id].endTime.split(':')[0]
-        const timeArr = time > 9 ? time : time[1]
-        const endTimeArr = endTime > 9 ? endTime : endTime[1]
-        for (let i = (parseInt(timeArr) + 1); i < 24; i++) {
-          hours.push(i)
-        }
-        if (id !== 0) {
-          const lastEndTime = this.data[id - 1].endTime.split(':')[0]
-          const lastEndTimeArr = lastEndTime > 9 ? lastEndTime : lastEndTime[1]
-          for (let k = 0; k < parseInt(lastEndTimeArr); k++) {
-            hours.push(k)
-          }
-        }
-        if (endTime !== '00') {
-          for (let j = parseInt(endTimeArr); j < 24; j++) {
-            hours.push(j)
-          }
-        }
-        return hours
-      }
-      // 大于上一个endTime 大于starttime 小于endtime
-      if (id !== 0 && string === 'time') {
-        const hours = []
-        const lastEndTime = this.data[id - 1].endTime
-        const startTime = this.data[id].startTime.split(':')[0]
-        const endTime = this.data[id].endTime.split(':')[0]
-        const lastEndTimeArr = lastEndTime > 9 ? lastEndTime : lastEndTime[1]
-        const startTimeArr = startTime > 9 ? startTime : startTime[1]
-        const endTimeArr = endTime > 9 ? endTime : endTime[1]
-        for (let i = 0; i < parseInt(lastEndTimeArr); i++) {
-          hours.push(i)
-        }
-        for (let k = 0; k < parseInt(startTimeArr); k++) {
-          hours.push(k)
-        }
-        if (endTime !== '00') {
-          for (let j = parseInt(endTimeArr); j < 24; j++) {
-            hours.push(j)
-          }
-        }
-        return hours
-      }
-      // 大于time和startime 小于下一个starttime
-      if (string === 'endTime') {
-        const hours = []
-        const time = this.data[id].time.split(':')[0]
-        const startTime = this.data[id].startTime.split(':')[0]
-        const timeArr = time > 9 ? time : time[1]
-        const startTimeArr = startTime > 9 ? startTime : startTime[1]
-        for (let i = 0; i < parseInt(timeArr); i++) {
-          hours.push(i)
-        }
-        for (let k = 0; k < parseInt(startTimeArr); k++) {
-          hours.push(k)
-        }
-        return hours
-      }
-      if (id === 0 && string !== 'endTime') {
-        return 0
-      } else {
-        const hours = []
-        const time = string === 'time' ? this.data[id - 1].time : string === 'startTime' ? this.data[id - 1].endTime : this.data[id].startTime
-        const timeArr = time.split(':')
-        for (var i = 0; i < parseInt(timeArr[0]); i++) {
-          hours.push(i)
-        }
-        return hours
-      }
+      // if (string === 'startTime') {
+      //   const hours = []
+      //   const time = this.data[id].time.split(':')[0]
+      //   const endTime = this.data[id].endTime.split(':')[0]
+      //   const timeArr = time > 9 ? time : time[1]
+      //   const endTimeArr = endTime > 9 ? endTime : endTime[1]
+      //   for (let i = (parseInt(timeArr) + 1); i < 24; i++) {
+      //     hours.push(i)
+      //   }
+      //   if (id !== 0) {
+      //     const lastEndTime = this.data[id - 1].endTime.split(':')[0]
+      //     const lastEndTimeArr = lastEndTime > 9 ? lastEndTime : lastEndTime[1]
+      //     for (let k = 0; k < parseInt(lastEndTimeArr); k++) {
+      //       hours.push(k)
+      //     }
+      //   }
+      //   if (endTime !== '00') {
+      //     for (let j = parseInt(endTimeArr); j < 24; j++) {
+      //       hours.push(j)
+      //     }
+      //   }
+      //   return hours
+      // }
+      // // 大于上一个endTime 大于starttime 小于endtime
+      // if (id !== 0 && string === 'time') {
+      //   const hours = []
+      //   const lastEndTime = this.data[id - 1].endTime
+      //   const startTime = this.data[id].startTime.split(':')[0]
+      //   const endTime = this.data[id].endTime.split(':')[0]
+      //   const lastEndTimeArr = lastEndTime > 9 ? lastEndTime : lastEndTime[1]
+      //   const startTimeArr = startTime > 9 ? startTime : startTime[1]
+      //   const endTimeArr = endTime > 9 ? endTime : endTime[1]
+      //   for (let i = 0; i < parseInt(lastEndTimeArr); i++) {
+      //     hours.push(i)
+      //   }
+      //   for (let k = 0; k < parseInt(startTimeArr); k++) {
+      //     hours.push(k)
+      //   }
+      //   if (endTime !== '00') {
+      //     for (let j = parseInt(endTimeArr); j < 24; j++) {
+      //       hours.push(j)
+      //     }
+      //   }
+      //   return hours
+      // }
+      // // 大于time和startime 小于下一个starttime
+      // if (string === 'endTime') {
+      //   const hours = []
+      //   const time = this.data[id].time.split(':')[0]
+      //   const startTime = this.data[id].startTime.split(':')[0]
+      //   const timeArr = time > 9 ? time : time[1]
+      //   const startTimeArr = startTime > 9 ? startTime : startTime[1]
+      //   for (let i = 0; i < parseInt(timeArr); i++) {
+      //     hours.push(i)
+      //   }
+      //   for (let k = 0; k < parseInt(startTimeArr); k++) {
+      //     hours.push(k)
+      //   }
+      //   return hours
+      // }
+      // if (id === 0 && string !== 'endTime') {
+      //   return 0
+      // } else {
+      //   const hours = []
+      //   const time = string === 'time' ? this.data[id - 1].time : string === 'startTime' ? this.data[id - 1].endTime : this.data[id].startTime
+      //   const timeArr = time.split(':')
+      //   for (var i = 0; i < parseInt(timeArr[0]); i++) {
+      //     hours.push(i)
+      //   }
+      //   return hours
+      // }
     },
     // 限制分钟
     getDisabledMinutes(selectedHour, id, string) {
-      console.log(selectedHour)
-      if (string === 'startTime') {
-        const hours = []
-        const time = this.data[id].time.split(':')
-        const endTime = this.data[id].endTime.split(':')
-        const timeArr = time[1] > 9 ? time[1] : time[1][1]
-        const endTimeArr = endTime[1] > 9 ? endTime[1] : endTime[1][1]
-        if (selectedHour === parseInt(time[0])) {
-          for (let i = (parseInt(timeArr) + 1); i < 60; i++) {
-            hours.push(i)
-          }
-        }
-        if (id !== 0) {
-          const lastEndTime = this.data[id - 1].endTime.split(':')
-          const lastEndTimeArr = lastEndTime[1] > 9 ? lastEndTime[1] : lastEndTime[1][1]
-          if (selectedHour === parseInt(lastEndTimeArr[0])) {
-            for (let k = 0; k < parseInt(lastEndTimeArr); k++) {
-              hours.push(k)
-            }
-          }
-        }
-        if (endTime[1] !== '00') {
-          if (selectedHour === parseInt(endTimeArr[0])) {
-            for (let j = parseInt(endTimeArr); j < 60; j++) {
-              hours.push(j)
-            }
-          }
-        }
-        return hours
-      }
-      // 大于上一个endTime 大于starttime 小于endtime
-      if (id !== 0 && string === 'time') {
-        const hours = []
-        const lastEndTime = this.data[id - 1].endTime.split(':')
-        const startTime = this.data[id].startTime.split(':')
-        const endTime = this.data[id].endTime.split(':')
-        const lastEndTimeArr = lastEndTime[1] > 9 ? lastEndTime[1] : lastEndTime[1][1]
-        const startTimeArr = startTime > 9 ? startTime[1] : startTime[1][1]
-        const endTimeArr = endTime > 9 ? endTime[1] : endTime[1][1]
-        if (selectedHour === parseInt(lastEndTimeArr[0])) {
-          for (let i = 0; i < parseInt(lastEndTimeArr); i++) {
-            hours.push(i)
-          }
-        }
-        if (selectedHour === parseInt(startTimeArr[0])) {
-          for (let k = 0; k < parseInt(startTimeArr); k++) {
-            hours.push(k)
-          }
-        }
-        if (selectedHour === parseInt(endTimeArr[0])) {
-          if (endTime[1] !== '00') {
-            for (let j = parseInt(endTimeArr); j < 60; j++) {
-              hours.push(j)
-            }
-          }
-        }
-        return hours
-      }
-      // 大于time和startime 小于下一个starttime
-      if (string === 'endTime') {
-        const hours = []
-        const time = this.data[id].time.split(':')
-        const startTime = this.data[id].startTime.split(':')
-        const timeArr = time[1] > 9 ? time[1] : time[1][1]
-        const startTimeArr = startTime[1] > 9 ? startTime[1] : startTime[1][1]
-        if (selectedHour === parseInt(timeArr[0])) {
-          for (let i = 0; i < parseInt(timeArr); i++) {
-            hours.push(i)
-          }
-        }
-        if (selectedHour === parseInt(startTimeArr[0])) {
-          for (let k = 0; k < parseInt(startTimeArr); k++) {
-            hours.push(k)
-          }
-        }
-        return hours
-      }
-      if (id === 0 && string !== 'endTime') {
-        return 0
-      } else {
-        const hours = []
-        const time = string === 'time' ? this.data[id - 1].time : string === 'startTime' ? this.data[id - 1].endTime : this.data[id].startTime
-        const timeArr = time.split(':')
-        if (selectedHour === parseInt(timeArr[0])) {
-          for (var i = 0; i < parseInt(timeArr[1]); i++) {
-            hours.push(i)
-          }
-        }
-        return hours
-      }
+      // if (string === 'startTime') {
+      //   const hours = []
+      //   const time = this.data[id].time.split(':')
+      //   const endTime = this.data[id].endTime.split(':')
+      //   const timeArr = time[1] > 9 ? time[1] : time[1][1]
+      //   const endTimeArr = endTime[1] > 9 ? endTime[1] : endTime[1][1]
+      //   if (selectedHour === parseInt(time[0])) {
+      //     for (let i = (parseInt(timeArr) + 1); i < 60; i++) {
+      //       hours.push(i)
+      //     }
+      //   }
+      //   if (id !== 0) {
+      //     const lastEndTime = this.data[id - 1].endTime.split(':')
+      //     const lastEndTimeArr = lastEndTime[1] > 9 ? lastEndTime[1] : lastEndTime[1][1]
+      //     if (selectedHour === parseInt(lastEndTimeArr[0])) {
+      //       for (let k = 0; k < parseInt(lastEndTimeArr); k++) {
+      //         hours.push(k)
+      //       }
+      //     }
+      //   }
+      //   if (endTime[1] !== '00') {
+      //     if (selectedHour === parseInt(endTimeArr[0])) {
+      //       for (let j = parseInt(endTimeArr); j < 60; j++) {
+      //         hours.push(j)
+      //       }
+      //     }
+      //   }
+      //   return hours
+      // }
+      // // 大于上一个endTime 大于starttime 小于endtime
+      // if (id !== 0 && string === 'time') {
+      //   const hours = []
+      //   const lastEndTime = this.data[id - 1].endTime.split(':')
+      //   const startTime = this.data[id].startTime.split(':')
+      //   const endTime = this.data[id].endTime.split(':')
+      //   const lastEndTimeArr = lastEndTime[1] > 9 ? lastEndTime[1] : lastEndTime[1][1]
+      //   const startTimeArr = startTime > 9 ? startTime[1] : startTime[1][1]
+      //   const endTimeArr = endTime > 9 ? endTime[1] : endTime[1][1]
+      //   if (selectedHour === parseInt(lastEndTimeArr[0])) {
+      //     for (let i = 0; i < parseInt(lastEndTimeArr); i++) {
+      //       hours.push(i)
+      //     }
+      //   }
+      //   if (selectedHour === parseInt(startTimeArr[0])) {
+      //     for (let k = 0; k < parseInt(startTimeArr); k++) {
+      //       hours.push(k)
+      //     }
+      //   }
+      //   if (selectedHour === parseInt(endTimeArr[0])) {
+      //     if (endTime[1] !== '00') {
+      //       for (let j = parseInt(endTimeArr); j < 60; j++) {
+      //         hours.push(j)
+      //       }
+      //     }
+      //   }
+      //   return hours
+      // }
+      // // 大于time和startime 小于下一个starttime
+      // if (string === 'endTime') {
+      //   const hours = []
+      //   const time = this.data[id].time.split(':')
+      //   const startTime = this.data[id].startTime.split(':')
+      //   const timeArr = time[1] > 9 ? time[1] : time[1][1]
+      //   const startTimeArr = startTime[1] > 9 ? startTime[1] : startTime[1][1]
+      //   if (selectedHour === parseInt(timeArr[0])) {
+      //     for (let i = 0; i < parseInt(timeArr); i++) {
+      //       hours.push(i)
+      //     }
+      //   }
+      //   if (selectedHour === parseInt(startTimeArr[0])) {
+      //     for (let k = 0; k < parseInt(startTimeArr); k++) {
+      //       hours.push(k)
+      //     }
+      //   }
+      //   return hours
+      // }
+      // if (id === 0 && string !== 'endTime') {
+      //   return 0
+      // } else {
+      //   const hours = []
+      //   const time = string === 'time' ? this.data[id - 1].time : string === 'startTime' ? this.data[id - 1].endTime : this.data[id].startTime
+      //   const timeArr = time.split(':')
+      //   if (selectedHour === parseInt(timeArr[0])) {
+      //     for (var i = 0; i < parseInt(timeArr[1]); i++) {
+      //       hours.push(i)
+      //     }
+      //   }
+      //   return hours
+      // }
       // if (id === 0 && string !== 'endTime') {
       //   return 0
       // } else {

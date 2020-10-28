@@ -214,6 +214,8 @@ const filters = {
       return '正常'
     } else if (text === 7) {
       return '缺勤'
+    } else {
+      return '暂无'
     }
   },
   pState: val => {

@@ -420,10 +420,13 @@ export default {
         }
       })
       const req = {
+        className: this.clazzName,
         classCode: this.classCode,
         schoolCode: this.userInfo.schoolCode,
         schoolYearId: this.schoolYearId,
-        classScheduleList
+        classScheduleList,
+        createUsername: this.userInfo.userName,
+        createUsercode: this.userInfo.userCode
       }
       this.saveClassByTeacher(req).then((res) => {
         this.$message.success('排课成功')

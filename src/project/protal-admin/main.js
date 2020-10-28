@@ -12,9 +12,10 @@ import '@a/css/common.less'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import AntdPlugin from '@a/js/antd-plugin'
-
+import { FormModel } from 'ant-design-vue'
 import bootstrap from './store/bootstrap'
 import '@/core/use'
+Vue.use(FormModel)
 Vue.use(AntdPlugin)
 Vue.config.productionTip = false
 Vue.prototype.$ajax = $ajax
