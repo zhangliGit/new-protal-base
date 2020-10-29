@@ -11,13 +11,13 @@
           <div class="tips">请点击学生添加值日生</div>
         </div>
         <div class="stu_dent">
-          <div class=" u-padd-20">
+          <div class="u-padd-20 ">
             <div
               @click="checkSingle(index)"
               :class="['choose-person', { 'choose-person-ok': person.check }]"
               v-for="(person, index) in studentsList"
               :key="index"
-              class="stu-info "
+              class="stu-info u-padd-20 "
             >
               <a-badge :count="person.count" show-zero>
                 <div class="student-img">
@@ -318,11 +318,11 @@ export default {
   }
 }
 .u-padd-20 {
-  margin-left: 20px;
+  padding: 20px;
 }
 .stu-info {
   float: left;
-  padding: 10px 20px;
+  margin-left: 13px;
 }
 .student-img {
   width: 62px;
