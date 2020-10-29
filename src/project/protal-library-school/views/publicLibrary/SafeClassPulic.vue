@@ -153,11 +153,7 @@ export default {
     }
   },
   computed: {
-<<<<<<< HEAD
-    ...mapState('home', ['userInfo', 'eduCode'])
-=======
     ...mapState('home', ['userInfo'])
->>>>>>> 8b329c2d398082eb42e30b90ec8ab85b65474074
   },
   async mounted() {
     this.categoryId = ''

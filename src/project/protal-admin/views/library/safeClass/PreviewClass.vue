@@ -155,10 +155,7 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 import moment from 'moment'
-<<<<<<< HEAD
-=======
 import Tools from '@u/tools'
->>>>>>> 8b329c2d398082eb42e30b90ec8ab85b65474074
 export default {
   name: 'PreviewClass',
   components: {
@@ -168,11 +165,7 @@ export default {
       options: [], // 资源树
       firstData: [],
       secondData: [],
-<<<<<<< HEAD
-      activeKey: '1',
-=======
       activeKey: '3',
->>>>>>> 8b329c2d398082eb42e30b90ec8ab85b65474074
       form: this.$form.createForm(this, { name: 'horizontal_login' }),
       detailInfo: []
     }
@@ -251,12 +244,9 @@ export default {
         }
       })
     },
-<<<<<<< HEAD
-=======
     downloadFile(url) {
       Tools.downloadFile(url)
     },
->>>>>>> 8b329c2d398082eb42e30b90ec8ab85b65474074
     // 下载查看
     down(type, url) {
       var a = document.createElement('a')

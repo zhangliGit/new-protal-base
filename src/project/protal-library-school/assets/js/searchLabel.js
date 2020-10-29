@@ -37,11 +37,7 @@ export const knowledgeSearchLabel = [
   }
 ]
 // 安全课堂
-<<<<<<< HEAD
-export const SafeClassItemLabel = [
-=======
 export const safeClassItemLabel = [
->>>>>>> 8b329c2d398082eb42e30b90ec8ab85b65474074
   {
     value: 'section', // 表单属性
     type: 'select', // 表单类型

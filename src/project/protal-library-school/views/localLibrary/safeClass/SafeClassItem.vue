@@ -147,11 +147,7 @@ export default {
     }
   },
   computed: {
-<<<<<<< HEAD
-    ...mapState('home', ['userInfo', 'eduCode'])
-=======
     ...mapState('home', ['userInfo'])
->>>>>>> 8b329c2d398082eb42e30b90ec8ab85b65474074
   },
   async created() {
     this.categoryId = ''
@@ -159,11 +155,7 @@ export default {
     await this.showList()
   },
   methods: {
-<<<<<<< HEAD
-    ...mapActions('home', ['claroomPublicList', 'claroomRemove', 'claroomRemoves', 'treeView', 'statistics', 'pageStatistics', 'classAddbou']),
-=======
     ...mapActions('home', ['claroomLocalList', 'claroomRemove', 'claroomRemoves', 'treeView', 'statistics', 'pageStatistics', 'classAddbou']),
->>>>>>> 8b329c2d398082eb42e30b90ec8ab85b65474074
     async showList() {
       const req = {
         categoryId: this.categoryId,
@@ -171,11 +163,7 @@ export default {
         ...this.pageList,
         ...this.searchList
       }
-<<<<<<< HEAD
-      const res = await this.claroomPublicList(req)
-=======
       const res = await this.claroomLocalList(req)
->>>>>>> 8b329c2d398082eb42e30b90ec8ab85b65474074
       this.findList = res.data.records
       this.total = res.data.total
     },

@@ -153,10 +153,7 @@
   </div>
 </template>
 <script>
-<<<<<<< HEAD
-=======
 import Tools from '@u/tools'
->>>>>>> 8b329c2d398082eb42e30b90ec8ab85b65474074
 import { mapState, mapActions } from 'vuex'
 import moment from 'moment'
 export default {
@@ -249,12 +246,9 @@ export default {
         }
       })
     },
-<<<<<<< HEAD
-=======
     downloadFile(url) {
       Tools.downloadFile(url)
     },
->>>>>>> 8b329c2d398082eb42e30b90ec8ab85b65474074
     // 下载查看
     down(type, url) {
       var a = document.createElement('a')

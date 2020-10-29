@@ -150,19 +150,11 @@ export default {
       const { name, size, type } = data.file
       this.docName = name
       this.docSize = size
-<<<<<<< HEAD
-      this.docType = type
-      this.$tools.ossUpload(this.userInfo.schoolCode, data.file, type, this.callBack)
-    },
-    callBack(value) {
-      // this.uploadFile = value.url
-=======
       this.docType = type.split('/')[1]
       this.$tools.ossUpload(this.userInfo.schoolCode, data.file, type, this.callBack)
     },
     callBack(value) {
       value = value.data
->>>>>>> 8b329c2d398082eb42e30b90ec8ab85b65474074
       this.fileList = [{
         docSize: this.docSize,
         docType: this.docType,
