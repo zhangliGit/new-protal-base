@@ -217,10 +217,8 @@ export default {
       isRepeat = this.ratedPersonList
         .filter(el => el.weekDay === key)
         .some(el => {
-          console.log('el', el.userCode, checkCodes)
           return checkCodes.indexOf(el.userCode) !== -1
         })
-      console.log('isRepeat', isRepeat, checkCodes)
       if (isRepeat) {
         this.$message.warning('不可添加重复学生')
         return
