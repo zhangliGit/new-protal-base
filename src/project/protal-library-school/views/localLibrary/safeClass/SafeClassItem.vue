@@ -1,7 +1,7 @@
 <template>
   <div class="page-layout SafeClassItem qui-fx-ver">
     <div class="content pos-box bg-fff">
-      <div class="qui-fx qui-fx-jsb" style="width:100%;height:100%" >
+      <div class="qui-fx qui-fx-jsb" style="width:100%;height:100%">
         <div class="left u-padd-l30 u-padd-t30 u-padd-b40">
           <grade-tree @select="select" :treeData="treeData"></grade-tree>
         </div>
@@ -18,26 +18,41 @@
             v-model="chooseList"
             :page-list="pageList"
             :columns="safeClassItemColumns"
-            :table-list="findList">
+            :table-list="findList"
+          >
             <template v-slot:actions="action">
               <a-tooltip placement="topLeft" title="查看">
-                <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="preview(action.record)"></a-button>
+                <a-button
+                  size="small"
+                  class="detail-action-btn"
+                  icon="ellipsis"
+                  @click="preview(action.record)"
+                ></a-button>
               </a-tooltip>
-              <a-tooltip placement="topLeft" title="编辑" >
-                <a-button size="small" class="user-action-btn" icon="form" @click="add(1,action.record)"></a-button>
+              <a-tooltip placement="topLeft" title="编辑">
+                <a-button
+                  size="small"
+                  class="user-action-btn"
+                  icon="form"
+                  @click="add(1,action.record)"
+                ></a-button>
               </a-tooltip>
               <a-tooltip placement="topLeft" title="使用统计">
-                <a-button size="small" class="export-all-btn" icon="export" @click="getStatistics(action.record)"></a-button>
+                <a-button
+                  size="small"
+                  class="export-all-btn"
+                  icon="export"
+                  @click="getStatistics(action.record)"
+                ></a-button>
               </a-tooltip>
               <a-popconfirm
                 v-if="!action.record.hasBoutique"
                 placement="topLeft"
                 ok-text="确定"
                 cancel-text="取消"
-                @confirm="refining(action.record)">
-                <template slot="title">
-                  确定将该安全课堂设为精品吗？
-                </template>
+                @confirm="refining(action.record)"
+              >
+                <template slot="title">确定将该安全课堂设为精品吗？</template>
                 <a-tooltip placement="topLeft" title="加精">
                   <a-button size="small" class="add-action-btn" icon="plus"></a-button>
                 </a-tooltip>
@@ -46,12 +61,11 @@
                 placement="topLeft"
                 ok-text="确定"
                 cancel-text="取消"
-                @confirm="delBatch(action.record)">
-                <template slot="title">
-                  确定删除该任务吗？
-                </template>
+                @confirm="delBatch(action.record)"
+              >
+                <template slot="title">确定删除该任务吗？</template>
                 <a-tooltip placement="topLeft" title="删除">
-                  <a-button size="small" class="del-action-btn" icon="delete" ></a-button>
+                  <a-button size="small" class="del-action-btn" icon="delete"></a-button>
                 </a-tooltip>
               </a-popconfirm>
             </template>
@@ -68,12 +82,15 @@
             :columns="columnsUrl"
             :pagination="false"
             :data-source="statisticsData.records"
-            bordered>
-            <template slot="index" slot-scope="text, record, index">
-              {{ index }}
-            </template>
+            bordered
+          >
+            <template slot="index" slot-scope="text, record, index">{{ index }}</template>
           </a-table>
-          <page-num v-model="statisticsPageList" :total="statisticsData.total" @change-page="_pageStatistics"></page-num>
+          <page-num
+            v-model="statisticsPageList"
+            :total="statisticsData.total"
+            @change-page="_pageStatistics"
+          ></page-num>
         </div>
       </a-modal>
     </div>
@@ -147,11 +164,7 @@ export default {
     }
   },
   computed: {
-<<<<<<< HEAD
-    ...mapState('home', ['userInfo', 'eduCode'])
-=======
     ...mapState('home', ['userInfo'])
->>>>>>> 8b329c2d398082eb42e30b90ec8ab85b65474074
   },
   async created() {
     this.categoryId = ''
@@ -159,11 +172,7 @@ export default {
     await this.showList()
   },
   methods: {
-<<<<<<< HEAD
-    ...mapActions('home', ['claroomPublicList', 'claroomRemove', 'claroomRemoves', 'treeView', 'statistics', 'pageStatistics', 'classAddbou']),
-=======
     ...mapActions('home', ['claroomLocalList', 'claroomRemove', 'claroomRemoves', 'treeView', 'statistics', 'pageStatistics', 'classAddbou']),
->>>>>>> 8b329c2d398082eb42e30b90ec8ab85b65474074
     async showList() {
       const req = {
         categoryId: this.categoryId,
@@ -275,20 +284,20 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-.SafeClassItem{
+.SafeClassItem {
   height: 100%;
   width: 100%;
-  .left{
+  .left {
     padding-bottom: 30px;
-    .grade-tree{
+    .grade-tree {
       height: 100%;
     }
   }
 }
 @deep: ~'>>>';
-    .statistic{
-      @{deep} .ant-table-thead > tr >th{
-      background: #ecf5ff !important;
-    }
+.statistic {
+  @{deep} .ant-table-thead > tr > th {
+    background: #ecf5ff !important;
   }
+}
 </style>

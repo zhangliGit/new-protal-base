@@ -210,6 +210,6 @@ export default {
   ljj_people,
   img_download,
   hzz_ecard,
-  wxz_notice
-  oss_upload,
+  wxz_notice,
+  oss_upload
 }
