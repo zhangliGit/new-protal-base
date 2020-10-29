@@ -22,13 +22,14 @@ const homeApi = {
   addHighClass: '/class/manage/add#post', // 添加
   addHighClasses: '/class/manage/batch/add#post', // 批量添加
   delHighClasses: '/class/manage/batch/delete#delQuery', // 批量删除
-  unbindHighClass: '/class/manage/batch/unbind/place#put', // 批量解绑教室
-  unbindHighTea: '/class/manage/batch/unbind/teacher#put', // 批量解绑辅导员
+  unbindHighClass: '/class/manage/batch/unbind/place#postQuery', // 批量解绑教室
+  unbindHighTea: '/class/manage/batch/unbind/teacher#postQuery', // 批量解绑辅导员
   delHighClass: '/class/manage/delete#delQuery', // 删除
   highClassDetail: '/class/manage/detail#get', // 详情
   getHighClass: '/class/manage/list#post', // 列表查询
   updateHighClass: '/class/manage/update#post', // 更新
-  getHighNode: '/class/manage/node#get' // 班级节点查询
+  getHighNode: '/class/manage/node#get', // 班级节点查询
+  highClassBind: '/class/manage/update#post' // 更新/绑定辅导员/绑定教室
 }
 for (const val in homeApi) {
   homeApi[val] = `${hostEnv.ljj_admin}${homeApi[val]}`

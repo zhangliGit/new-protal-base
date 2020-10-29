@@ -175,7 +175,6 @@ export default {
           }
           values.ids = this.identifyList.map(el => el.id)
           values.schoolCode = this.userInfo.schoolCode
-          // values.categoryCode = 'CG9vqoi9m1vk00'
           this.isLoad = true
           if (this.detailId) {
             values.id = this.detailId
