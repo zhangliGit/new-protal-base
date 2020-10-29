@@ -39,7 +39,6 @@
   </div>
 </template>
 <script>
-
 import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'

@@ -3,7 +3,7 @@ const highStudent = {
   columns: [
     {
       title: '序号',
-      width: '10%',
+      width: '8%',
       scopedSlots: {
         customRender: 'index'
       }
@@ -11,7 +11,7 @@ const highStudent = {
     {
       title: '姓名',
       dataIndex: 'userName',
-      width: '10%'
+      width: '8%'
     },
     {
       title: '学号',
@@ -21,27 +21,27 @@ const highStudent = {
     {
       title: '性别',
       dataIndex: 'sex',
-      width: '10%',
+      width: '8%',
       customRender: text => {
         return Tools.getSex(text)
       }
     },
     {
       title: '年级',
-      dataIndex: 'gradeName',
-      width: '15%',
-      customRender: (text, record) => {
-        return `${record.gradeName}${record.className}`
+      dataIndex: 'grade',
+      width: '12%',
+      customRender: text => {
+        return text ? `${text}级` : ''
       }
     },
     {
       title: '专业',
-      dataIndex: 'workNo1',
+      dataIndex: 'subjectName',
       width: '10%'
     },
     {
       title: '班级',
-      dataIndex: 'workNo2',
+      dataIndex: 'className',
       width: '10%'
     },
     {
@@ -55,7 +55,7 @@ const highStudent = {
     {
       title: '走住读',
       dataIndex: 'hasDorm',
-      width: '8%',
+      width: '10%',
       scopedSlots: {
         customRender: 'other1'
       }
@@ -63,26 +63,24 @@ const highStudent = {
     {
       title: '照片',
       width: '10%',
+      dataIndex: 'photoUrl',
       scopedSlots: {
         customRender: 'photoPic'
+      }
+    },
+    {
+      title: '操作',
+      width: '10%',
+      scopedSlots: {
+        customRender: 'action'
       }
     }
   ],
   searchLabel: [
     {
       value: 'keyword',
-      initValue: '',
-      type: 'selectInput',
-      selectType: [
-        {
-          key: 1,
-          val: '姓名'
-        },
-        {
-          key: 2,
-          val: '学号'
-        }
-      ],
+      type: 'input',
+      label: '姓名/学号',
       placeholder: '请输入'
     },
     {
@@ -102,7 +100,7 @@ const highStudent = {
       ],
       value: 'hasDorm',
       type: 'select',
-      label: '走住读类型'
+      label: '走住读'
     },
     {
       list: [
@@ -121,7 +119,45 @@ const highStudent = {
       ],
       value: 'hasPhoto',
       type: 'select',
-      label: '有无照片'
+      label: '照片'
+    },
+    {
+      list: [
+        {
+          key: '',
+          val: '全部'
+        },
+        {
+          key: 1,
+          val: '已分班'
+        },
+        {
+          key: 0,
+          val: '未分班'
+        }
+      ],
+      value: 'hasClass',
+      type: 'select',
+      label: '班级'
+    },
+    {
+      list: [
+        {
+          key: '',
+          val: '全部'
+        },
+        {
+          key: 1,
+          val: '已绑定'
+        },
+        {
+          key: 0,
+          val: '未绑定'
+        }
+      ],
+      value: 'hasParent',
+      type: 'select',
+      label: '学生家长'
     }
   ],
   formData: [
@@ -181,9 +217,13 @@ const highStudent = {
       value: 'admissionTime',
       initValue: [new Date().getFullYear()],
       list: [
-        { key: new Date().getFullYear() + 1, val: new Date().getFullYear() + 1 },
         { key: new Date().getFullYear(), val: new Date().getFullYear() },
-        { key: new Date().getFullYear() - 1, val: new Date().getFullYear() - 1 }
+        { key: new Date().getFullYear() - 1, val: new Date().getFullYear() - 1 },
+        { key: new Date().getFullYear() - 2, val: new Date().getFullYear() - 2 },
+        { key: new Date().getFullYear() - 3, val: new Date().getFullYear() - 3 },
+        { key: new Date().getFullYear() - 4, val: new Date().getFullYear() - 4 },
+        { key: new Date().getFullYear() - 5, val: new Date().getFullYear() - 5 },
+        { key: new Date().getFullYear() - 6, val: new Date().getFullYear() - 6 }
       ],
       type: 'select',
       label: '入学年份',
@@ -196,17 +236,21 @@ const highStudent = {
       placeholder: '请上传人脸照片'
     },
     {
-      value1: 'grade',
-      value2: 'class',
+      value1: 'gradeCode',
+      value2: 'subject',
+      value3: 'class',
       initValue1: [],
       initValue2: [],
-      type: 'linkSelect',
+      initValue3: [],
+      type: 'threeLinkSelect',
       required: false,
       label: '班级',
-      placeholder1: '请选择',
-      placeholder2: '请选择',
+      placeholder1: '请选择年级',
+      placeholder2: '请选择专业',
+      placeholder3: '请选择班级',
       firstList: [],
-      secondList: []
+      secondList: [],
+      threeList: []
     },
     {
       value: 'cardNo',
