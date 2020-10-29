@@ -376,8 +376,8 @@ module.exports = {
         }
       },
       '/ljj_people': {
-        // target: 'http://192.168.1.76:11002/', // 刘继杰-局端安全任务根据选中的学校职务查人
-        target: 'http://192.168.2.242:11002/',
+        target: 'http://192.168.1.76:11002/', // 刘继杰-局端安全任务根据选中的学校职务查人
+        // target: 'http://192.168.2.242:11002/',
         changeOrigin: true,
         pathRewrite: {
           '^/ljj_people': ''

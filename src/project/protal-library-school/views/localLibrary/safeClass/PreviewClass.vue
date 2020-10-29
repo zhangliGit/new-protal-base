@@ -130,15 +130,6 @@
                     <div class="comt u-bg-color u-padd-10 u-fx-jsb">
                       <div class="left u-padd-l10">
                         <div class="name u-main-color">{{ item.name }}</div>
-<<<<<<< HEAD
-                        <div class="size u-font-01 u-tips-color">{{ item.docSize }}</div>
-                      </div>
-                      <div class="rigth u-fx u-padd-r10">
-                        <div class="see_icon u-mar-r10" @click="down(0,item.resourceUrl)">查看
-                        </div>
-                        <div class="down_icon" @click="down(1,item.resourceUrl)">下载
-                          <a-icon type="arrow-down"/>
-=======
                         <div class="size u-font-01 u-tips-color">{{ item.docSize | dosizeformat }}</div>
                       </div>
                       <div class="rigth u-fx u-padd-r10">
@@ -148,7 +139,6 @@
                         </div>
                         <div class="down_icon u-fx-ver" @click="downloadFile(item.resourceUrl)">下载
                           <a-icon type="download" />
->>>>>>> 8b329c2d398082eb42e30b90ec8ab85b65474074
                         </div>
                       </div>
                     </div>
@@ -164,10 +154,7 @@
 </template>
 <script>
 import { mapState, mapActions } from 'vuex'
-<<<<<<< HEAD
-=======
 import Tools from '@u/tools'
->>>>>>> 8b329c2d398082eb42e30b90ec8ab85b65474074
 import moment from 'moment'
 export default {
   name: 'PreviewClass',
