@@ -1,5 +1,12 @@
 <template>
   <div class="home-page page-layout qui-fx-ver">
+    <div class="select-year">
+      <a-select :value="selectYear" style="width: 120px" @change="handleChangeYear">
+        <a-select-option v-for="item in yearList" :value="item.value" :key="item.value">
+          {{ item.title }}
+        </a-select-option>
+      </a-select>
+    </div>
     <div class="stu-overview">
       <div class="view-item" v-for="item in viewList" :key="item.id">
         <span>{{ item.title }}</span>
@@ -20,11 +27,6 @@ import { mapState } from 'vuex'
 import TableList from '@c/TableList'
 const columns = [
   {
-    title: '任务名称',
-    dataIndex: 'taskName',
-    width: '25%'
-  },
-  {
     title: '专业名称',
     dataIndex: 'subjectName',
     width: '20%'
@@ -40,18 +42,13 @@ const columns = [
     width: '10%'
   },
   {
-    title: '已报道',
-    dataIndex: 'hasReport',
+    title: '录取人数',
+    dataIndex: 'enterCount',
     width: '10%'
   },
   {
-    title: '未报道',
-    dataIndex: 'noReport',
-    width: '10%'
-  },
-  {
-    title: '已缴费',
-    dataIndex: 'hasPay',
+    title: '已报到/未报道',
+    dataIndex: 'isReport',
     width: '10%'
   }
 ]
@@ -63,35 +60,35 @@ export default {
   },
   data() {
     return {
+      yearList: [
+        {
+          value: '2020',
+          title: '2020级'
+        },
+        {
+          value: '2019',
+          title: '2019级'
+        }
+      ],
+      selectYear: '2020',
       columns,
-      title: '招生任务',
+      title: '招生专业',
       taskList: [
         {
-          taskName: '2020计算机学院招生计划',
           subjectName: '软件技术',
           allCount: 600,
           applyCount: 500,
-          hasReport: 458,
-          noReport: 300,
-          hasPay: 300
+          enterCount: 458,
+          isReport: '300/300'
         },
         {
-          taskName: '2020计算机学院招生计划',
           subjectName: '软件测试',
           allCount: 400,
           applyCount: 360,
-          hasReport: 350,
-          noReport: 300,
-          hasPay: 300
+          enterCount: 350,
+          isReport: '300/300'
         }
       ],
-      studentCount: {
-        planCount: 3000,
-        applyCount: 2899,
-        newCount: 2899,
-        reportCount: 2000,
-        hasPay: 1999
-      },
       viewList: [
         {
           id: 'planCount',
@@ -112,12 +109,12 @@ export default {
           id: 'reportCount',
           title: '报到人数',
           count: 2900
-        },
-        {
-          id: 'hasPayCount',
-          title: '已缴费人数',
-          count: 2500
         }
+        // {
+        //   id: 'hasPayCount',
+        //   title: '已缴费人数',
+        //   count: 2500
+        // }
       ]
     }
   },
@@ -127,7 +124,11 @@ export default {
   mounted() {
     this.showList()
   },
-  methods: {}
+  methods: {
+    handleChangeYear(value) {
+      this.selectYear = value
+    }
+  }
 }
 </script>
 <style lang="less" scoped>
@@ -136,19 +137,19 @@ export default {
   box-sizing: border-box;
 }
 .stu-overview {
-  overflow: hidden;
+ display: flex;
+ justify-content: space-around;
+ align-items: center;
+ padding: 30px 0;
 
   .view-item {
-    float: left;
     display: flex;
     box-sizing: border-box;
     flex-direction: column;
     justify-content: space-around;
     align-items: center;
-    width: 240px;
+    width: 260px;
     height: 120px;
-    margin-right: 30px;
-    margin-bottom: 30px;
     padding: 10px 0;
     font-size: 16px;
     border: 1px solid #ccc;

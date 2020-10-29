@@ -12,15 +12,7 @@
     <div class="qui-fx-f1 qui-fx qui-fx-ver">
       <header-top v-if="false" @toggle="toggle" :slide-tag="slideTag"></header-top>
       <div class="qui-fx-f1 qui-fx-ver content-bg">
-        <route-navigator>
-          <li v-if="showSelect" class="select-year" slot="yearSelect">
-            <a-select :value="selectYear" style="width: 100px" @change="handleChangeYear">
-              <a-select-option v-for="item in yearList" :value="item.value" :key="item.value">
-                {{ item.title }}
-              </a-select-option>
-            </a-select>
-          </li>
-        </route-navigator>
+        <route-navigator></route-navigator>
         <route-view />
       </div>
     </div>
@@ -50,27 +42,7 @@ export default {
       isDev: false,
       routeAddress: [],
       slideTag: false,
-      menus: asyncRouterMap,
-      showSelect: false,
-      yearList: [
-        {
-          value: '2020',
-          title: '2020级'
-        },
-        {
-          value: '2019',
-          title: '2019级'
-        }
-      ],
-      selectYear: '2020'
-    }
-  },
-  watch: {
-    $route: {
-      handler(to) {
-        this.showSelect = to.fullPath === '/home'
-      },
-      immediate: true
+      menus: asyncRouterMap
     }
   },
   created() {
@@ -94,9 +66,6 @@ export default {
   methods: {
     toggle() {
       this.slideTag = !this.slideTag
-    },
-    handleChangeYear(value) {
-      this.selectYear = value
     }
   }
 }
@@ -136,9 +105,5 @@ export default {
 .page-transition-leave-active .page-transition-container {
   -webkit-transform: scale(1.1);
   transform: scale(1.1);
-}
-
-.select-year {
-  margin-left: 20px;
 }
 </style>

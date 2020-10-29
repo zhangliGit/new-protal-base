@@ -13,7 +13,6 @@
         <span :class="{'act': index < routeAddress.length - 1}">{{ item.title }}</span>
         <span v-if="index < routeAddress.length - 1" style="padding: 0 5px">/</span>
       </li>
-      <slot name="yearSelect"></slot>
     </ul>
   </div>
 </template>
