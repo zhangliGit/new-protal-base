@@ -6,13 +6,16 @@
     @ok="submitOk"
     :maskClosable="false"
     :destroyOnClose="true"
-    @cancel="closeModal"
-    okText="提交"
+    :okText="okText"
     :confirmLoading="confirmLoading"
   >
-    <slot name="tips"></slot>
     <a-form :form="form">
       <div v-for="(item, index) in formData" :key="index">
+        <!--文本-->
+        <a-form-item v-bind="{wrapperCol: { span: 20 ,offset: 4 }}" v-if="item.type === 'text'">
+          <span :style="item.style">{{ item.text }}</span>
+          <!-- <span :style="item.style">{{ item.value }}</span> -->
+        </a-form-item>
         <!--文本框-->
         <a-form-item v-bind="formItemLayout" :label="item.label" v-if="item.type === 'input'">
           <a-input
@@ -37,14 +40,13 @@
             ]"
           />
         </a-form-item>
-        <!--文本域-->
-        <a-form-item v-bind="formItemLayout" :label="item.label" v-if="item.type === 'textarea'">
-          <a-textarea
+        <!-- 多行文本框
+        <a-form-item v-bind="formItemLayout" :label="item.label" v-if="item.type === 'input'">
+          <a-input
             :placeholder="item.placeholder"
             :read-only="item.readonly"
             :disabled="item.disabled"
-            :autoSize="{ minRows: item.minRows, maxRows: item.maxRows }"
-            :allowClear="true"
+            :type="item.password ? 'password' : 'text'"
             v-decorator="[
               item.value,
               {
@@ -61,7 +63,7 @@
               }
             ]"
           />
-        </a-form-item>
+        </a-form-item> -->
         <!--数字文本框-->
         <a-form-item v-bind="formItemLayout" :label="item.label" v-if="item.type === 'numberInput'">
           <a-input-number
@@ -86,6 +88,7 @@
             :read-only="item.readonly"
             :disabled="item.disabled"
             buttonStyle="solid"
+            @change="radioChange"
             v-decorator="[
               item.value,
               {
@@ -111,7 +114,7 @@
                 rules: [{ required: !item.hasOwnProperty('required') || item.required, message: item.placeholder }]
               }
             ]"
-            style="width: 100%; margin-top: 8px"
+            style="width: 100%;margin-top: 8px;"
             :placeholder="item.placeholder"
           >
             <a-row>
@@ -144,6 +147,23 @@
               item2.val
             }}</a-select-option>
           </a-select>
+        </a-form-item>
+        <!--场地选择-->
+        <a-form-item v-bind="formItemLayout" :label="item.label" v-if="item.type === 'siteChoose'">
+          <a-cascader
+            :options="buildList"
+            @change="onChange"
+            @click.stop="onFocus"
+            :loadData="loadData"
+            :placeholder="item.placeholder"
+            v-decorator="[
+              item.value,
+              {
+                initialValue: item.initValue,
+                rules: [{ required: !item.hasOwnProperty('required') || item.required, message: item.placeholder }]
+              }
+            ]"
+          />
         </a-form-item>
         <!--上传图片-->
         <a-form-item
@@ -182,46 +202,6 @@
             ]"
           />
         </a-form-item>
-        <!--时间设置-->
-        <a-form-item v-bind="formItemLayout" :label="item.label" v-if="item.type === 'time'">
-          <a-time-picker
-            format="HH:mm"
-            v-decorator="[
-              item.value,
-              {
-                initialValue: moment(item.initValue || '00:00', 'HH:mm'),
-                rules: [{ required: item.required, message: item.placeholder }]
-              }
-            ]"
-          />
-        </a-form-item>
-        <!--带按钮的输入框-->
-        <a-form-item v-bind="formItemLayout" :label="item.label" v-if="item.type === 'input-button'">
-          <a-input-search
-            :placeholder="item.placeholder"
-            :read-only="item.readonly"
-            :disabled="item.disabled"
-            @search="item.onSearch"
-            :type="item.password ? 'password' : 'text'"
-            v-decorator="[
-              item.value,
-              {
-                initialValue: item.initValue + '',
-                rules: [
-                  {
-                    len: item.len,
-                    max: item.max || 100,
-                    required: !item.hasOwnProperty('required') || item.required,
-                    message: item.placeholder
-                  },
-                  { pattern: item.regular ? rules[item.regular] : '', message: item.placeholder }
-                ]
-              }
-            ]"
-          >
-            <a-button slot="enterButton"> {{ item.buttonText }} </a-button>
-          </a-input-search>
-        </a-form-item>
       </div>
     </a-form>
   </a-modal>
@@ -229,6 +209,7 @@
 
 <script>
 import moment from 'moment'
+import { mapState, mapActions } from 'vuex'
 export default {
   name: 'SubmitForm',
   components: {},
@@ -241,23 +222,19 @@ export default {
       type: Boolean,
       default: false
     },
+    okText: {
+      type: String,
+      default: '提交'
+    },
     formData: {
       type: Array,
       default: () => {
         return []
       }
-    },
-    formItemLayout: {
-      type: Object,
-      default: () => {
-        return {
-          labelCol: { span: 4 },
-          wrapperCol: { span: 20 }
-        }
-      }
     }
   },
   computed: {
+    ...mapState('home', ['schoolCode']),
     status: {
       get() {
         return this.value
@@ -280,30 +257,77 @@ export default {
       },
       moment,
       confirmLoading: false,
-      form: this.$form.createForm(this)
+      form: this.$form.createForm(this),
+      formItemLayout: {
+        labelCol: { span: 4 },
+        wrapperCol: { span: 20 }
+      },
+      buildList: [],
+      chooseSite: ''
     }
   },
   methods: {
+    ...mapActions('home', ['getSiteList', 'getSiteById', 'getChildSite']),
     reset() {
       this.confirmLoading = false
       this.$emit('input', false)
     },
-    closeModal() {
-      this.$emit('closeModal')
-    },
     error() {
       this.confirmLoading = false
+    },
+    onChange(value, selectedOptions) {
+      this.chooseSite = ''
+      if (selectedOptions) {
+        this.chooseSite += selectedOptions.map(ele => {
+          return ele.label
+        })
+      }
+      this.$emit('classRoom', this.chooseSite.split(',').join('-'))
+    },
+    radioChange(e) {
+      this.$emit('radioChange', e.target.value)
+    },
+    async onFocus(value) {
+      this.buildList = []
+      const req = {
+        name: '',
+        schoolCode: this.schoolCode,
+        type: this.type
+      }
+      const res = await this.getSiteList(req)
+      this.buildList = res.data
+      this.buildList.forEach(el => {
+        el.label = el.name
+        el.value = el.id
+        el.isLeaf = false
+      })
+    },
+    loadData(selectedOptions) {
+      const targetOption = selectedOptions[selectedOptions.length - 1]
+      targetOption.loading = true
+      const req = {
+        parentId: targetOption.id,
+        schoolCode: this.schoolCode
+      }
+      this.getChildSite(req).then(res => {
+        targetOption.loading = false
+        targetOption.children = res.data.list
+        // 处理第三层没有子节点的情况
+        targetOption.children.forEach(el => {
+          el.label = el.name + (el.type === '2' ? '楼' : '')
+          el.value = el.id
+          el.isLeaf = el.type === '3'
+        })
+        this.buildList = [...this.buildList]
+      })
     },
     submitOk(e) {
       e.preventDefault()
       this.form.validateFields((err, values) => {
         if (!err) {
-          // console.log(values)
+          console.log(values)
           for (const key in values) {
-            if (values[key]._f === 'HH:mm') {
-              values[key] = moment(values[key]).format('HH:mm')
-            }
-            if (values[key]._f === 'YYYY-MM-DD') {
+            if (values[key]._isAMomentObject) {
               values[key] = moment(values[key]).format('YYYY-MM-DD')
             }
             if (values[key] instanceof Array && values[key][0]._isAMomentObject) {
@@ -319,4 +343,8 @@ export default {
 }
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.ant-form-item{
+  margin-bottom: 14px;
+}
+</style>

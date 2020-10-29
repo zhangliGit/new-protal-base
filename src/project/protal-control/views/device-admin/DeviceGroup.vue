@@ -30,7 +30,7 @@
         </a-popconfirm>
       </template>
     </table-list>
-    <page-num v-model="pageList" :total="total"></page-num>
+    <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
   </div>
 </template>
 

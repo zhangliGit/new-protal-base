@@ -41,6 +41,8 @@ let ljj_people = ''
 let img_download = ''
 let oss_upload = ''
 let hzz_ecard = ''
+let hzz_deal = ''
+let hzz_tooken = ''
 if (ConfigEnv === 'test') {
   wxz_control = '/wxz_control'
   zk_school = '/zk_school'
@@ -82,6 +84,8 @@ if (ConfigEnv === 'test') {
   img_download = '/img_download'
   oss_upload = '/oss_upload'
   hzz_ecard = '/hzz_ecard'
+  hzz_deal = '/hzz_deal'
+  hzz_tooken = '/hzz_tooken'
 } else if (ConfigEnv === 'prod') {
   wxz_control = '/wxz_control'
   zk_school = '/zk_school'
@@ -123,6 +127,8 @@ if (ConfigEnv === 'test') {
   img_download = '/img_download'
   oss_upload = '/oss_upload'
   hzz_ecard = '/hzz_ecard'
+  hzz_deal = '/hzz_deal'
+  hzz_tooken = '/hzz_tooken'
 } else {
   wxz_control = '/wxz_control'
   zk_school = '/zk_school'
@@ -164,6 +170,8 @@ if (ConfigEnv === 'test') {
   img_download = '/img_download'
   oss_upload = '/oss_upload'
   hzz_ecard = '/hzz_ecard'
+  hzz_deal = '/hzz_deal'
+  hzz_tooken = '/hzz_tooken'
 }
 
 export default {
@@ -206,5 +214,7 @@ export default {
   ljj_people,
   img_download,
   oss_upload,
-  hzz_ecard
+  hzz_ecard,
+  hzz_deal,
+  hzz_tooken
 }

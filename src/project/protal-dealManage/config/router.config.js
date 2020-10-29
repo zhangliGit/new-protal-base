@@ -1,10 +1,10 @@
 // eslint-disable-next-line
 import { BasicLayout, RouteView } from '../layouts'
 const Home = resolve => require(['../views/Home.vue'], resolve)
-const Template = resolve => require(['../views/Template.vue'], resolve)
-const ChildOne = resolve => require(['../views/child/ChildOne'], resolve)
-const ChildDetail = resolve => require(['../views/child/ChildDetail'], resolve)
-const ChildTwo = resolve => require(['../views/child/ChildTwo'], resolve)
+const OrderList = resolve => require(['../views/orderManage/OrderList.vue'], resolve)
+const OrderDetail = resolve => require(['../views/orderManage/OrderDetail'], resolve)
+const ApplyManage = resolve => require(['../views/applyManage/ApplyManage.vue'], resolve)
+const RuleSet = resolve => require(['../views/ruleSet/RuleSet.vue'], resolve)
 
 export const asyncRouterMap = [
   {
@@ -25,49 +25,49 @@ export const asyncRouterMap = [
         }
       },
       {
-        path: '/template',
-        name: 'template',
-        component: Template,
-        meta: {
-          title: '模板页'
-        }
-      },
-      {
-        path: '/childOne',
-        name: 'childOne',
-        redirect: '/childOne',
+        path: '/orderManage',
+        name: 'orderManage',
+        redirect: '/orderManage',
         component: RouteView,
         meta: {
-          title: '示例界面'
+          title: '订单管理'
         },
         children: [
           {
-            path: '/childOne',
-            name: 'childOne',
-            component: ChildOne,
+            path: '/orderList',
+            name: 'orderList',
+            component: OrderList,
             meta: {
-              title: '界面一'
+              title: '订单列表'
             }
           },
           {
-            path: '/childOne/detial',
-            name: 'childDetail',
-            component: ChildDetail,
+            path: '/orderList/detial',
+            name: 'orderDetail',
+            component: OrderDetail,
             meta: {
-              title: '界面详情',
+              title: '订单详情',
               isHide: true
             },
             hidden: true
-          },
-          {
-            path: '/childTwo',
-            name: 'childTwo',
-            component: ChildTwo,
-            meta: {
-              title: '界面二'
-            }
           }
         ]
+      },
+      {
+        path: '/applyManage',
+        name: 'applyManage',
+        component: ApplyManage,
+        meta: {
+          title: '应用管理'
+        }
+      },
+      {
+        path: '/ruleSet',
+        name: 'ruleSet',
+        component: RuleSet,
+        meta: {
+          title: '订单管理'
+        }
       }
     ]
   },

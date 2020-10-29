@@ -1,4 +1,4 @@
-import $ajax from '@u/ajax-serve'
+import $ajax from './ajax-serve'
 import apiList from '../../api/index'
 
 /**

@@ -5,8 +5,14 @@
 
 import hostEnv from '@config/host-env'
 
-const Api = {}
-for (const val in Api) {
-  Api[val] = `${hostEnv.zk_oa}${Api[val]}`
+const dealApi = {
+  getOrderList: '/order/page#postQuery', // 查询订单列表
+  getDictList: '/dict/data/type#getUrl', // 数据字典
+  getOrderDetail: '/order/info#getUrl', // 查询订单详情
 }
-export default Api
+for (const val in dealApi) {
+  dealApi[val] = `${hostEnv.hzz_deal}${dealApi[val]}`
+}
+export default {
+  ...dealApi
+}
