@@ -1,13 +1,13 @@
 <template>
   <div class="class page-layout qui-fx">
-    <choose-user
+    <choose-post
       is-radio
       ref="chooseForm"
       v-if="userTag"
       v-model="userTag"
       @submit="chooseTeacher"
       title="添加班主任"
-    ></choose-user>
+    ></choose-post>
     <submit-form
       ref="form"
       @submit-form="submitForm"
@@ -26,14 +26,12 @@
             <a-button icon="plus" class="add-btn" @click="addClass(0)">添加</a-button>
             <a-button icon="export" class="export-all-btn" @click.stop="addClass(2)">批量添加</a-button>
             <a-button icon="delete" class="del-btn" @click.stop="deleteList(0)">批量删除</a-button>
-            <a-button icon="delete" class="power-action-btn" @click.stop="deleteList(0)">批量解绑辅导员</a-button>
-            <a-button icon="delete" class="del-action-btn" @click.stop="deleteList(0)">批量解绑教室</a-button>
+            <a-button icon="delete" class="power-action-btn" @click.stop="deleteList(2)">批量解绑辅导员</a-button>
+            <a-button icon="delete" class="del-action-btn" @click.stop="deleteList(3)">批量解绑教室</a-button>
           </div>
         </search-form>
         <class-table
           is-check
-          is-zoom
-          @clickRow="clickRow"
           :page-list="pageList"
           v-model="chooseList"
           :columns="highClass.columns"
@@ -54,7 +52,7 @@
                   placement="left"
                   okText="确定"
                   cancelText="取消"
-                  @confirm.stop="untie(0, editClassRoom.record)"
+                  @confirm.stop="del('unbindHighClass', {ids: editClassRoom.record.id})"
                 >
                   <template slot="title">您确定解绑吗?</template>
                   <a-tooltip placement="topLeft" title="解绑">
@@ -64,9 +62,6 @@
               </span>
             </div>
           </template>
-          <!-- <template
-            v-slot:editClassRooms="editClassRoom"
-          >{{ editClassRoom.record.placeName }}</template> -->
           <template v-slot:editClassTeachers="editClassTeacher">
             <div class="qui-fx">
               <span
@@ -82,7 +77,7 @@
                   placement="left"
                   okText="确定"
                   cancelText="取消"
-                  @confirm.stop="untie(1, editClassTeacher.record)"
+                  @confirm.stop="del('unbindHighTea', {ids: editClassTeacher.record.id})"
                 >
                   <template slot="title">您确定解绑吗?</template>
                   <a-tooltip placement="topLeft" title="解绑">
@@ -92,7 +87,6 @@
               </span>
             </div>
           </template>
-          <!-- <template v-slot:editClassTeachers="editClassTeacher" >{{ editClassTeacher.record.teacherName }}</template> -->
           <template v-slot:totalNum1s="totalNum1">
             <div
               class="table-total-num"
@@ -135,7 +129,7 @@
             </a-popconfirm>
           </template>
         </class-table>
-        <page-num v-model="pageList" :total="total" @change-page="showMore"></page-num>
+        <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
       </div>
     </div>
   </div>
@@ -150,7 +144,7 @@ import GradeTree from '@c/GradeTree'
 import PageNum from '@c/PageNum'
 import SubmitForm from '../components/SubForm'
 import SearchForm from '@c/SearchForm'
-import ChooseUser from '@c/ChooseUser'
+import ChoosePost from '@c/choose/ChoosePost'
 
 export default {
   name: 'HighClass',
@@ -160,7 +154,7 @@ export default {
     PageNum,
     SubmitForm,
     SearchForm,
-    ChooseUser,
+    ChoosePost,
     MajorTree
   },
   data() {
@@ -180,18 +174,16 @@ export default {
         size: 20
       },
       classList: [],
-      gradeList: [],
       type: 0,
       yearList: [],
       isNewYear: true,
-      teacherName: '',
       placeName: '',
       record: null,
       userTag: false,
-      schoolYear: '',
       highSubList: [],
       highSubTerm: [],
-      searchList: {}
+      searchList: {},
+      bindList: {}
     }
   },
   computed: {
@@ -203,14 +195,14 @@ export default {
   },
   methods: {
     ...mapActions('home', [
-      'getHighClass', 'getGradeList', 'addHighClass', 'addClassList', 'addHighClasses',
-      'deleteTheClass', 'editTheClass', 'addPlace', 'getHighTerm', 'getHighSub'
+      'getHighClass', 'addHighClass', 'addClassList', 'addHighClasses',
+      'delHighClass', 'getHighTerm', 'getHighSub', 'highClassBind',
+      'delHighClasses', 'unbindHighClass', 'unbindHighTea'
     ]),
     // 获取学年
     async getGrade() {
       this.highClass.formData[0].list = []
       this.highClass.formDatas[0].list = []
-      this.gradeList = []
       const req = {
         schoolCode: this.userInfo.schoolCode,
         page: 1,
@@ -222,9 +214,8 @@ export default {
       }
       this.highSubTerm = res.data.records
       res.data.records.forEach(ele => {
-        this.highClass.formData[0].list.push({ key: ele.schoolYearCode, val: ele.schoolYearName })
-        this.highClass.formDatas[0].list.push({ key: ele.schoolYearCode, val: ele.schoolYearName })
-        // this.gradeList.push({ key: ele.schoolYearCode, val: ele.schoolYearName })
+        this.highClass.formData[0].list.push({ key: ele.schoolYearCode, val: `${ele.schoolYearName.split('-')[0]}级` })
+        this.highClass.formDatas[0].list.push({ key: ele.schoolYearCode, val: `${ele.schoolYearName.split('-')[0]}级` })
       })
     },
     // 获取专业
@@ -243,221 +234,7 @@ export default {
       res.data.records.forEach(ele => {
         this.highClass.formData[1].list.push({ key: ele.subjectCode, val: ele.subjectName })
         this.highClass.formDatas[1].list.push({ key: ele.subjectCode, val: ele.subjectName })
-        // this.gradeList.push({ key: ele.subjectCode, val: ele.subjectName })
       })
-    },
-    // 添加场地
-    addClassRoom(val) {
-      this.placeName = val
-    },
-    // 选中年级
-    select(item) {
-      this.searchList.gradeName = item.gradeName
-      this.searchList.subjectCode = item.subjectCode || ''
-      this.searchList.classCode = item.classCode || ''
-      this.showList()
-    },
-    // 模糊查询
-    searchForm(values) {
-      this.teacherName = values.teacherName
-      const req = {
-        ...this.pageList,
-        ...this.userInfo,
-        schoolYearId: this.schoolYearId,
-        gradeCode: this.gradeCode,
-        classCode: this.classCode,
-        teacherName: values.teacherName
-      }
-      this.showList(req)
-    },
-    // 翻页
-    showMore() {
-      const req = {
-        ...this.pageList,
-        ...this.userInfo,
-        schoolYearId: this.schoolYearId,
-        gradeCode: this.gradeCode,
-        classCode: this.classCode,
-        teacherName: this.teacherName
-      }
-      this.showList(req)
-    },
-    // 提交
-    submitForm(values) {
-      values.schoolCode = this.userInfo.schoolCode
-      values.gradeName = this.highSubTerm.filter(el => el.schoolYearCode === values.gradeCode)[0].schoolYearName
-      values.subjectName = this.highSubList.filter(el => el.subjectCode === values.subjectCode)[0].subjectName
-      if (this.type === 0) {
-        this.addHighClass(values)
-          .then(res => {
-            this.$message.success('添加成功')
-            this.$tools.goNext(() => {
-              const data = {
-                ...this.pageList,
-                ...this.userInfo,
-                schoolYearId: this.schoolYearId,
-                gradeCode: this.gradeCode,
-                classCode: this.classCode
-              }
-              this.showList(data)
-              this.$refs.form.reset()
-            })
-          })
-          .catch(() => {
-            this.$refs.form.error()
-          })
-      } else if (this.type === 1) {
-        const req = {
-          ...this.userInfo,
-          schoolYearId: this.schoolYearId,
-          gradeCode: this.record.gradeCode,
-          className: values.className,
-          id: this.record.id,
-          remark: values.remark,
-          placeName: this.record.placeName,
-          placeId: this.record.placeId
-        }
-        this.editTheClass(req)
-          .then(res => {
-            this.$message.success('编辑成功')
-            this.$tools.goNext(() => {
-              const data = {
-                ...this.pageList,
-                ...this.userInfo,
-                schoolYearId: this.schoolYearId,
-                gradeCode: this.gradeCode,
-                classCode: this.classCode
-              }
-              this.showList(data)
-              this.$refs.form.reset()
-            })
-          })
-          .catch(() => {
-            this.$refs.form.error()
-          })
-      } else if (this.type === 2) {
-        this.addHighClasses(values)
-          .then(res => {
-            this.$message.success('添加成功')
-            this.$tools.goNext(() => {
-              this.showList()
-              this.$refs.form.reset()
-            })
-          })
-          .catch(() => {
-            this.$refs.form.error()
-          })
-      } else if (this.type === 3) {
-        const req = {
-          id: this.record.id,
-          placeId: values.placeName.join(','),
-          teacherId: this.record.teacherId,
-          schoolYearId: this.schoolYearId
-        }
-        this.addPlace(req)
-          .then(res => {
-            this.$message.success('绑定成功')
-            this.$tools.goNext(() => {
-              const data = {
-                ...this.pageList,
-                ...this.userInfo,
-                schoolYearId: this.schoolYearId,
-                gradeCode: this.gradeCode,
-                classCode: this.classCode
-              }
-              this.showList(data)
-              this.$refs.form.reset()
-            })
-          })
-          .catch(() => {
-            this.$refs.form.error()
-          })
-      }
-    },
-    // 编辑添加
-    addClass(type, record) {
-      this.formStatus = true
-      this.type = type
-      if (type === 1) {
-        this.title = '编辑班级'
-        this.highClass.formData = this.$tools.fillForm(highClass.formData, record)
-        this.record = record
-        this.highClass.formData[0].disabled = true
-      } else if (type === 2) {
-        this.title = '批量添加班级'
-        this.highClass.formDatas[0].disabled = false
-      } else if (type === 0) {
-        this.title = '添加班级'
-        this.highClass.formData[0].disabled = false
-      } else if (type === 3) {
-        this.title = '添加教室'
-        this.record = record
-      } else if (type === 4) {
-        this.formStatus = false
-        this.title = '添加班主任'
-        this.userTag = true
-        this.record = record
-      }
-    },
-    // 解绑
-    untie(type, record) {
-      const req = {
-        ...this.userInfo,
-        id: record.id,
-        placeName: type === 0 ? '' : record.placeName,
-        placeId: type === 0 ? '' : record.placeId,
-        teacherName: type === 1 ? '' : record.teacherName,
-        teacherId: type === 1 ? '' : record.teacherId,
-        schoolYearId: this.schoolYearId
-      }
-      this.addPlace(req)
-        .then(res => {
-          this.$message.success('解绑成功')
-          this.$tools.goNext(() => {
-            const data = {
-              ...this.pageList,
-              ...this.userInfo,
-              schoolYearId: this.schoolYearId,
-              gradeCode: this.gradeCode,
-              classCode: this.classCode
-            }
-            this.showList(data)
-            this.$refs.form.reset()
-          })
-        })
-        .catch(() => {
-          this.$refs.form.error()
-        })
-    },
-    // 绑定班主任
-    chooseTeacher(value) {
-      const req = {
-        schoolCode: this.userInfo.schoolCode,
-        schoolId: this.userInfo.schoolId,
-        id: this.record.id,
-        teacherName: value[0].userName,
-        teacherId: value[0].id,
-        placeId: this.record.placeId,
-        schoolYearId: this.schoolYearId
-      }
-      this.addPlace(req)
-        .then(res => {
-          this.$message.success('绑定成功')
-          this.$tools.goNext(() => {
-            const data = {
-              ...this.pageList,
-              ...this.userInfo,
-              schoolYearId: this.schoolYearId,
-              gradeCode: this.gradeCode,
-              classCode: this.classCode
-            }
-            this.showList(data)
-            this.$refs.chooseForm.reset()
-          })
-        })
-        .catch(() => {
-          this.$refs.chooseForm.error()
-        })
     },
     // 查询班级列表
     async showList() {
@@ -471,49 +248,169 @@ export default {
       this.classList = res.data.records
       this.total = res.data.total
     },
-    // 删除班级
+    // 选中年级
+    select(item) {
+      this.searchList.gradeCode = item.gradeCode
+      this.searchList.gradeName = item.gradeName
+      this.searchList.subjectCode = item.subjectCode || ''
+      this.searchList.classCode = item.classCode || ''
+      this.showList()
+    },
+    // 模糊查询
+    searchForm(values) {
+      this.pageList.page = 1
+      this.pageList.size = 20
+      this.searchList = Object.assign(this.searchList, values)
+      this.showList()
+    },
+    // 编辑添加
+    addClass(type, record) {
+      this.formStatus = true
+      this.type = type
+      if (type === 1) {
+        this.title = '编辑班级'
+        this.highClass.formData = this.$tools.fillForm(highClass.formData, record)
+        this.record = record
+        this.highClass.formData[0].disabled = true
+        this.highClass.formData[1].disabled = true
+      } else if (type === 2) {
+        this.title = '批量添加班级'
+        this.highClass.formDatas[0].disabled = false
+        this.highClass.formDatas[0].initValue = this.searchList.gradeCode
+        if (this.searchList.subjectCode) {
+          this.highClass.formDatas[1].initValue = this.searchList.subjectCode
+        }
+        console.log('123', this.highClass.formDatas[0].initValue)
+      } else if (type === 0) {
+        this.title = '添加班级'
+        this.highClass.formData[0].disabled = false
+        this.highClass.formData[0].initValue = this.searchList.gradeCode
+        if (this.searchList.subjectCode) {
+          this.highClass.formData[1].initValue = this.searchList.subjectCode
+        }
+      } else if (type === 3) {
+        this.title = '添加教室'
+        this.record = record
+      } else if (type === 4) {
+        this.formStatus = false
+        this.title = '添加班主任'
+        this.userTag = true
+        this.record = record
+      }
+    },
     async deleteList(type, record) {
       let ids = []
-      if (type) {
+      // 批量删除
+      if (type === 1) {
         ids = [record.id]
-        await this.deleteTheClass(ids)
+        await this.delHighClass(ids)
         this.$message.success('删除成功')
         this.$tools.goNext(() => {
-          const data = {
-            ...this.pageList,
-            ...this.userInfo,
-            schoolYearId: this.schoolYearId,
-            gradeCode: this.gradeCode,
-            classCode: this.classCode
-          }
-          this.showList(data)
+          this.showList()
         })
+        // 批量解绑
       } else {
         if (this.chooseList.length === 0) {
-          this.$message.warning('请选择删除项')
+          this.$message.warning('请选择班级')
           return
         }
-        ids = this.chooseList
-        this.$tools.delTip('您确定删除吗?', () => {
-          this.deleteTheClass(ids).then(res => {
-            this.$message.success('删除成功')
-            this.$tools.goNext(() => {
-              const data = {
-                ...this.pageList,
-                ...this.userInfo,
-                schoolYearId: this.schoolYearId,
-                gradeCode: this.gradeCode,
-                classCode: this.classCode
-              }
-              this.showList(data)
-            })
-          })
+        const string = type === 2 ? '解绑辅导员' : type === 3 ? '解绑教室' : '删除'
+        this.$tools.delTip(`您确定${string}吗?`, () => {
+          const method = type === 2 ? 'unbindHighTea' : type === 3 ? 'unbindHighClass' : 'delHighClasses'
+          const req = { ids: this.chooseList }
+          this.del(method, req)
         })
       }
     },
-    // 选中列表项
-    clickRow(id) {
-      
+    // 解绑公共方法
+    del(method, req) {
+      this[method](req).then(res => {
+        this.$message.success('操作成功')
+        this.chooseList = []
+        this.$tools.goNext(() => {
+          this.showList()
+        })
+      })
+    },
+    // 选择班主任
+    chooseTeacher(value) {
+      this.bindList.teacherCode = value[0].userCode
+      this.bindList.teacherName = value[0].userName
+      this.bindList.placeCode = ''
+      this.bindList.placeName = ''
+      this._highClassBind('chooseForm')
+    },
+    // 选择场地
+    addClassRoom(val) {
+      console.log('val', val)
+      this.placeName = val
+    },
+    // 教室和辅导员绑定
+    _highClassBind(form) {
+      this.bindList.id = this.record.id
+      this.bindList.className = this.record.className
+      this.highClassBind(this.bindList).then(res => {
+        this.$message.success('绑定成功')
+        this.$tools.goNext(() => {
+          this.showList()
+          this.$refs[form].reset()
+        })
+      })
+        .catch(() => {
+          this.$refs[form].error()
+        })
+    },
+    // 提交
+    submitForm(values) {
+      // 绑定教室
+      if (this.type === 3) {
+        this.bindList.placeCode = values.placeName.join(',')
+        this.bindList.placeName = this.placeName.split('-').join(',')
+        this.bindList.teacherCode = ''
+        this.bindList.teacherName = ''
+        this._highClassBind('form')
+      } else {
+        values.schoolCode = this.userInfo.schoolCode
+        values.gradeName = this.highSubTerm.filter(el => el.schoolYearCode === values.gradeCode)[0].schoolYearName
+        values.subjectName = this.highSubList.filter(el => el.subjectCode === values.subjectCode)[0].subjectName
+        if (this.type === 0) {
+          this.addHighClass(values)
+            .then(res => {
+              this.$message.success('添加成功')
+              this.$tools.goNext(() => {
+                this.showList()
+                this.$refs.form.reset()
+              })
+            })
+            .catch(() => {
+              this.$refs.form.error()
+            })
+        } else if (this.type === 1) {
+          values.id = this.record.id
+          this.highClassBind(values).then(res => {
+            this.$message.success('编辑成功')
+            this.$tools.goNext(() => {
+              this.showList()
+              this.$refs.form.reset()
+            })
+          })
+            .catch(() => {
+              this.$refs.form.error()
+            })
+        } else if (this.type === 2) {
+          this.addHighClasses(values)
+            .then(res => {
+              this.$message.success('添加成功')
+              this.$tools.goNext(() => {
+                this.showList()
+                this.$refs.form.reset()
+              })
+            })
+            .catch(() => {
+              this.$refs.form.error()
+            })
+        }
+      }
     },
     // 详情
     goDetail(path, record, type = '1') {
@@ -521,7 +418,6 @@ export default {
         path,
         query: {
           id: record.id,
-          schoolYear: this.schoolYear,
           schoolYearId: record.schoolYearId,
           classCode: record.classCode,
           gradeCode: record.gradeCode,
@@ -559,25 +455,6 @@ export default {
         }
       }
     }
-  }
-}
-.modal {
-  padding: 0 40px;
-  .line {
-    margin-bottom: 20px;
-  }
-  .title {
-    font-size: 14px;
-    font-weight: bold;
-    margin-right: 20px;
-    min-width: 70px;
-  }
-  .download {
-    color: #6882da;
-    cursor: pointer;
-  }
-  /deep/ .ant-upload-list-item-info {
-    padding: 0 22px 0 4px;
   }
 }
 .tab-add {

@@ -73,6 +73,7 @@ export default {
         title: tree.selectedNodes[0].data.props.title,
         code: tree.selectedNodes[0].data.props.code,
         gradeName: tree.selectedNodes[0].data.props.gradeName,
+        gradeCode: tree.selectedNodes[0].data.props.gradeCode,
         subjectCode: tree.selectedNodes[0].data.props.subjectCode,
         classCode: tree.selectedNodes[0].data.props.classCode
       }
@@ -98,6 +99,7 @@ export default {
         code: res.data[0].gradeCode,
         key: res.data[0].gradeCode,
         gradeName: res.data[0].gradeName,
+        gradeCode: res.data[0].gradeCode,
         subjectCode: '',
         classCode: ''
       }
@@ -105,6 +107,7 @@ export default {
       this.treeData = res.data.map((item) => {
         return {
           gradeName: item.gradeName,
+          gradeCode: item.gradeCode,
           subjectCode: '',
           classCode: '',
           title: item.gradeName + '级',
@@ -120,21 +123,23 @@ export default {
       const newData = data.map(el => {
         return {
           gradeName: el.gradeName,
+          gradeCode: el.gradeCode,
           subjectCode: el.subjectCode,
           classCode: '',
           title: el.subjectName,
           code: el.subjectCode,
           key: el.subjectCode,
-          children: el.classNodeDtos ? this.filterClass(el.classNodeDtos, el.gradeName, el.subjectCode) : []
+          children: el.classNodeDtos ? this.filterClass(el.classNodeDtos, el.gradeCode, el.gradeName, el.subjectCode) : []
         }
       })
       return newData
     },
     // 处理班级节点
-    filterClass(data, gradeName, subjectCode) {
+    filterClass(data, gradeCode, gradeName, subjectCode) {
       const newData = data.map(el => {
         return {
           gradeName: gradeName,
+          gradeCode: gradeCode,
           subjectCode: subjectCode,
           classCode: el.classCode,
           title: el.className,

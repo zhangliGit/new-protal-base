@@ -30,12 +30,7 @@
                 ></a-button>
               </a-tooltip>
               <a-tooltip placement="topLeft" title="编辑">
-                <a-button
-                  size="small"
-                  class="user-action-btn"
-                  icon="form"
-                  @click="add(1,action.record)"
-                ></a-button>
+                <a-button size="small" class="user-action-btn" icon="form" @click="add(1, action.record)"></a-button>
               </a-tooltip>
               <a-tooltip placement="topLeft" title="使用统计">
                 <a-button
@@ -57,12 +52,7 @@
                   <a-button size="small" class="add-action-btn" icon="plus"></a-button>
                 </a-tooltip>
               </a-popconfirm>
-              <a-popconfirm
-                placement="topLeft"
-                ok-text="确定"
-                cancel-text="取消"
-                @confirm="delBatch(action.record)"
-              >
+              <a-popconfirm placement="topLeft" ok-text="确定" cancel-text="取消" @confirm="delBatch(action.record)">
                 <template slot="title">确定删除该任务吗？</template>
                 <a-tooltip placement="topLeft" title="删除">
                   <a-button size="small" class="del-action-btn" icon="delete"></a-button>
@@ -172,7 +162,15 @@ export default {
     await this.showList()
   },
   methods: {
-    ...mapActions('home', ['claroomLocalList', 'claroomRemove', 'claroomRemoves', 'treeView', 'statistics', 'pageStatistics', 'classAddbou']),
+    ...mapActions('home', [
+      'claroomLocalList',
+      'claroomRemove',
+      'claroomRemoves',
+      'treeView',
+      'statistics',
+      'pageStatistics',
+      'classAddbou'
+    ]),
     async showList() {
       const req = {
         categoryId: this.categoryId,
@@ -180,11 +178,7 @@ export default {
         ...this.pageList,
         ...this.searchList
       }
-<<<<<<< HEAD
-      const res = await this.claroomPublicList(req)
-=======
       const res = await this.claroomLocalList(req)
->>>>>>> 8b329c2d398082eb42e30b90ec8ab85b65474074
       this.findList = res.data.records
       this.total = res.data.total
     },
@@ -207,14 +201,13 @@ export default {
       this.$confirm({
         title: '提示',
         content: '确定批量删除选中的课堂吗?',
-        onOk () {
+        onOk() {
           that.claroomRemoves(that.chooseList).then(res => {
             that.$message.success('操作成功')
             that.showList()
           })
         },
-        onCancel () {
-        }
+        onCancel() {}
       })
     },
     add(type, record) {
@@ -255,8 +248,8 @@ export default {
     // 获取查看统计数据
     async getStatisticsData(id) {
       const req = {
-        'id': id,
-        'schoolCode': this.userInfo.schoolCode,
+        id: id,
+        schoolCode: this.userInfo.schoolCode,
         source: '3'
       }
       const res1 = await this.statistics(req)
@@ -264,11 +257,11 @@ export default {
       this._pageStatistics()
     },
     // 统计数据分页table
-    async  _pageStatistics() {
+    async _pageStatistics() {
       const req = {
         ...this.statisticsPageList,
-        'id': this.StatisticsId,
-        'schoolCode': this.userInfo.schoolCode,
+        id: this.StatisticsId,
+        schoolCode: this.userInfo.schoolCode,
         source: '3'
       }
       const res = await this.pageStatistics(req)

@@ -133,7 +133,7 @@ export default {
       })
     },
     mapClick(record) {
-      console.log('rerer',record)
+      console.log('rerer', record)
       this.mapVisible = true
       setTimeout(() => {
         this.map = new qq.maps.Map(document.getElementById('container'), {

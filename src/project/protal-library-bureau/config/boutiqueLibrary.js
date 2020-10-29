@@ -5,11 +5,7 @@ const boutique = {
   name: 'boutiqueLibrary',
   component: RouteView,
   meta: {
-<<<<<<< HEAD
-    title: '精品资源库'
-=======
     title: '校精品资源库'
->>>>>>> 8b329c2d398082eb42e30b90ec8ab85b65474074
   },
   children: [
     {

@@ -135,7 +135,7 @@
             changeOnSelect
           />
         </a-form-item>
-        <!--联动选择框-->
+        <!--二级联动选择框-->
         <a-form-item v-bind="formItemLayout" :label="item.label" v-if="item.type === 'linkSelect'">
           <a-select
             :read-only="item.readonly"
@@ -169,6 +169,58 @@
             ]"
           >
             <a-select-option v-for="(second, i) in item.secondList" :key="i">{{ second.val }}</a-select-option>
+          </a-select>
+        </a-form-item>
+        <!--三级联动选择框-->
+        <a-form-item v-bind="formItemLayout" :label="item.label" v-if="item.type === 'threeLinkSelect'">
+          <a-select
+            :read-only="item.readonly"
+            :disabled="item.disabled"
+            allowClear
+            v-decorator="[
+              item.value1,
+              {
+                initialValue: item.initValue1,
+                rules: [{ required: !item.hasOwnProperty('required') || item.required, message: item.placeholder1 }]
+              }
+            ]"
+            style="width: calc(32% - 10px);margin-right:10px;"
+            :placeholder="item.placeholder1"
+            @change="item.firstChange"
+          >
+            <a-select-option v-for="(first, i) in item.firstList" :key="i">{{ first.val }}</a-select-option>
+          </a-select>
+          <a-select
+            allowClear
+            style="width:32%;margin-right:10px;"
+            :placeholder="item.placeholder2"
+            @change="item.secondChange"
+            :disabled="item.disabled"
+            v-decorator="[
+              item.value2,
+              {
+                initialValue: item.initValue2,
+                rules: [{ required: !item.hasOwnProperty('required') || item.required, message: item.placeholder2 }]
+              }
+            ]"
+          >
+            <a-select-option v-for="(second, i) in item.secondList" :key="i">{{ second.val }}</a-select-option>
+          </a-select>
+          <a-select
+            allowClear
+            style="width:32%"
+            :placeholder="item.placeholder3"
+            @change="item.threeChange"
+            :disabled="item.disabled"
+            v-decorator="[
+              item.value3,
+              {
+                initialValue: item.initValue3,
+                rules: [{ required: !item.hasOwnProperty('required') || item.required, message: item.placeholder3 }]
+              }
+            ]"
+          >
+            <a-select-option v-for="(three, i) in item.threeList" :key="i">{{ three.val }}</a-select-option>
           </a-select>
         </a-form-item>
         <!--单个日期-->
@@ -282,6 +334,7 @@ export default {
           return ele.label
         })
       }
+      console.log('this.chooseSite',this.chooseSite)
       this.$emit('classRoom', this.chooseSite.split(',').join('-'))
     },
     async onFocus(value) {
