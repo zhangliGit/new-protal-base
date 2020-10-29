@@ -34,6 +34,10 @@ export default {
           url: 'protal-login'
         },
         {
+          name: '小程序管理后台',
+          url: 'protal-wechart'
+        },
+        {
           name: '运维端',
           url: 'protal-admin'
         },
@@ -120,6 +124,10 @@ export default {
         {
           name: '安全教育-校端',
           url: 'protal-library-school'
+        },
+        {
+          name: '安全台账-校端',
+          url: 'protal-parameter-school'
         }
       ]
     }

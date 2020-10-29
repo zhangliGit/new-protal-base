@@ -19,10 +19,8 @@
         is-check
         :columns="columns"
         :table-list="subjectList"
-        @clickRow="clickRow"
         :page-list="pageList"
-        v-model="chooseList"
-        @selectAll="selectAll">
+        v-model="chooseList">
         <template v-slot:actions="action">
           <a-tooltip placement="topLeft" title="编辑">
             <a-button
@@ -171,31 +169,6 @@ export default {
       this.pageList.size = 20
       this.searchList.subjectName = values.subjectName
       this._getSubjectList(this.searchList)
-    },
-    selectAll (item, type) {
-      if (type) {
-        this.totalList = this.totalList.concat(item)
-      } else {
-        item.forEach(item => {
-          const index = this.totalList.findIndex(list => {
-            return list.id === item.id
-          })
-          this.totalList.splice(index, 1)
-        })
-      }
-    },
-    // 监听选中或取消
-    clickRow (item, type) {
-      if (type) {
-        if (this.isCheck) {
-          this.totalList.push(item)
-        } else {
-          this.totalList = [item]
-        }
-      } else {
-        const index = this.totalList.findIndex(list => list.id === item.id)
-        this.totalList.splice(index, 1)
-      }
     },
     submitForm(values) {
       values.schoolCode = this.userInfo.schoolCode

@@ -1,19 +1,18 @@
-
 /**
  * 触发 window.resize
  */
-export function triggerWindowResizeEvent () {
+export function triggerWindowResizeEvent() {
   const event = document.createEvent('HTMLEvents')
   event.initEvent('resize', true, true)
   event.eventType = 'message'
   window.dispatchEvent(event)
 }
 
-export function handleScrollHeader (callback) {
+export function handleScrollHeader(callback) {
   let timer = 0
 
   let beforeScrollTop = window.pageYOffset
-  callback = callback || function () {}
+  callback = callback || function() {}
   window.addEventListener(
     'scroll',
     event => {
@@ -39,7 +38,7 @@ export function handleScrollHeader (callback) {
  * @param id parent element id or class
  * @param timeout
  */
-export function removeLoadingAnimate (id = '', timeout = 1500) {
+export function removeLoadingAnimate(id = '', timeout = 1500) {
   if (id === '') {
     return
   }

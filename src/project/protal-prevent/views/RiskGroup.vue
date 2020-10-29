@@ -44,7 +44,7 @@
                   'emergencyPhone',
                   {
                     initialValue: emergencyPhone,
-                    rules: [{ required: true, message: '请输入电话' }]
+                    rules: [{ pattern: phone, required: true, message: '请输入正确的电话号码' }]
                   }
                 ]"
                 placeholder="请输入电话"
@@ -159,7 +159,8 @@ export default {
       memberList: [],
       fileList: [],
       url: '',
-      params: {}
+      params: {},
+      phone: /^(?:(?:\+|00)86)?1[3-9]\d{9}$/
     }
   },
   computed: {

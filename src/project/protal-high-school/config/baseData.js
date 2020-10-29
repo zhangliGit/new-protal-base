@@ -21,6 +21,7 @@ const HighDetail = resolve => require(['../views/basedata/HighDetail.vue'], reso
 const HighStuDetail = resolve => require(['../views/basedata/HighStuDetail.vue'], resolve)
 const HighYear = resolve => require(['../views/basedata/HighYear.vue'], resolve)
 const HighStudent = resolve => require(['../views/basedata/HighStudent.vue'], resolve)
+const BulkStu = resolve => require(['../views/basedata/BulkStu.vue'], resolve)
 
 const basedata = [
   {
@@ -205,6 +206,15 @@ const basedata = [
     component: HighYear,
     meta: {
       title: '高校学年管理'
+    }
+  },
+  {
+    path: '/basedata/bulkStu',
+    name: 'bulkStu',
+    component: BulkStu,
+    meta: {
+      title: '批量导入',
+      isHide: true
     }
   }
 ]
