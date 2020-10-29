@@ -13,34 +13,27 @@
         <span style="font-size:12px;margin-left:10px;">大小20到100kB，像素400x400到800x800，格式仅jpg</span>
       </div>
     </sub-form>
-    <no-data msg="暂无学生" v-if="false">
-      <div slot="btn">
-        <a-button type="primary" @click="addStudents(0)">
-          <a-icon type="plus" />添加学生
-        </a-button>
-      </div>
-    </no-data>
-    <div class="qui-fx qui-fx-jsb" style="width:100%; " v-else>
+    <div class="qui-fx qui-fx-jsb" style="width:100%;">
       <div class="left">
-        <grade-tree @select="select"></grade-tree>
+        <major-tree @select="select"></major-tree>
       </div>
       <div class="right qui-fx-ver qui-fx-f1" style="padding-right: 10px">
         <search-form isReset @search-form="searchForm" :search-label="highStudent.searchLabel">
-          <div slot="left" v-if="isNewYear">
-            <a-button icon="plus" class="add-btn" @click="addStudents(0)">添加</a-button>
+          <div slot="left">
+            <a-button icon="plus" class="add-btn" @click="addClick(0)">添加</a-button>
+            <a-button icon="export" class="export-all-btn" @click.stop="addClick(2)">批量导入</a-button>
             <!--             <a-button icon="delete" class="del-btn" @click.stop="deleteList(0)">批量删除</a-button> -->
           </div>
         </search-form>
         <table-list
           is-check
           is-zoom
-          @clickRow="clickRow"
           :page-list="pageList"
           v-model="chooseList"
           :columns="highStudent.columns"
           :table-list="studentsList"
         >
-          <template v-slot:actions="action" v-if="isNewYear">
+          <template v-slot:actions="action">
             <a-tooltip placement="topLeft" title="详情">
               <a-button
                 size="small"
@@ -54,7 +47,7 @@
                 size="small"
                 class="edit-action-btn"
                 icon="form"
-                @click.stop="addStudents(1, action.record)"
+                @click.stop="addClick(1, action.record)"
               ></a-button>
             </a-tooltip>
             <!-- <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="deleteList(action.record)">
@@ -72,7 +65,7 @@
             >{{ other1.record.hasDorm === '1' ? '住读' : other1.record.hasDorm === '0' ? '走读' : '未知' }}</a-tag>
           </template>
         </table-list>
-        <page-num v-model="pageList" :total="total" @change-page="showMore"></page-num>
+        <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
       </div>
     </div>
   </div>
@@ -81,7 +74,6 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
-import GradeTree from '@c/GradeTree'
 import NoData from '@c/NoData'
 import PageNum from '@c/PageNum'
 import SubForm from '../components/SubForm'
@@ -89,17 +81,18 @@ import SearchForm from '@c/SearchForm'
 import UploadMulti from '@c/UploadFace'
 import ShowDialog from '@c/ShowDialog'
 import highStudent from '../../assets/js/table/highStudent.js'
+import MajorTree from '../components/MajorTree'
 export default {
   name: 'Students',
   components: {
     TableList,
-    GradeTree,
     PageNum,
     SubForm,
     UploadMulti,
     SearchForm,
     NoData,
-    ShowDialog
+    ShowDialog,
+    MajorTree
   },
   data() {
     return {
@@ -132,9 +125,12 @@ export default {
       schoolYearId: '',
       gradeCode: '',
       classCode: '',
-      isNewYear: true,
       userId: '',
-      keyObj: {}
+      keyObj: {},
+      highSubTerm: [],
+      highClass: [],
+      searchList: {},
+      userDetail: {}
     }
   },
   computed: {
@@ -142,17 +138,20 @@ export default {
   },
   created() {
     this.getGrade()
-    this.highStudent.formData[6].firstChange = this.firstChange
+    this._getSubjectList()
+    // this.highStudent.formData[6].firstChange = this.firstChange
+    // this.highStudent.formData[6].secondChange = this.secondChange
     this.highStudent.formData[6].secondChange = this.secondChange
   },
   mounted() {},
   methods: {
     ...mapActions('home', [
+      'getHighTerm', 'getHighSub', 'getHighClass', 'addHighStu', 'updateHighStu',
       'getClassList',
       'withoutClassStudent',
       'studentUpdate',
       'getGradeList',
-      'studentList',
+      'getHighStu',
       'addStudent',
       'detailClassStudent',
       'changeClass',
@@ -162,98 +161,143 @@ export default {
     async getGrade() {
       this.highStudent.formData[6].firstList = []
       const req = {
-        schoolCode: this.userInfo.schoolCode
+        schoolCode: this.userInfo.schoolCode,
+        page: 1,
+        size: 99999
       }
-      const res = await this.getGradeList(req)
-      if (!res.data) {
+      const res = await this.getHighTerm(req)
+      if (res.data.records.length === 0) {
         return
       }
-      if (res.data.list.length > 0) {
-        res.data.list.forEach(ele => {
-          this.highStudent.formData[6].firstList.push({ key: ele.code, val: ele.name })
-          this.gradeList.push({ key: ele.code, val: ele.name })
+      this.highSubTerm = res.data.records
+      res.data.records.forEach(ele => {
+        this.highStudent.formData[6].firstList.push({ key: ele.schoolYearCode, val: `${ele.schoolYearName.split('-')[0]}级` })
+      })
+    },
+    // 获取列表
+    async showList() {
+      this.searchList.schoolCode = this.userInfo.schoolCode
+      this.searchList = Object.assign(this.searchList, this.pageList)
+      const res = await this.getHighStu(this.searchList)
+      if (!res.data.list) {
+        this.studentsList = []
+        return
+      }
+      this.studentsList = res.data.list
+      this.total = res.data.total
+    },
+    // tree选择
+    select(item) {
+      this.searchList.gradeCode = item.gradeCode
+      this.searchList.gradeName = item.gradeName
+      this.searchList.subjectCode = item.subjectCode || ''
+      this.searchList.classCode = item.classCode || ''
+      this.showList()
+    },
+    // 获取专业
+    async _getSubjectList() {
+      this.highStudent.formData[6].secondList = []
+      const req = {
+        page: 1,
+        size: 99999
+      }
+      const res = await this.getHighSub(req)
+      if (res.data.records.length === 0) {
+        return
+      }
+      this.highSubList = res.data.records
+      res.data.records.forEach(ele => {
+        this.highStudent.formData[6].secondList.push({ key: ele.subjectCode, val: ele.subjectName })
+      })
+    },
+    // 点击专业获取班级
+    secondChange(value) {
+      this._getHighClass(this.highSubList[value].subjectCode)
+    },
+    // 查询班级列表
+    async _getHighClass(subjectCode) {
+      const req = {
+        schoolCode: this.userInfo.schoolCode,
+        page: 1,
+        size: 99999,
+        subjectCode: subjectCode
+      }
+      const res = await this.getHighClass(req)
+      this.highClass = res.data.records
+      if (res.data.records.length > 0) {
+        res.data.records.forEach(ele => {
+          this.highStudent.formData[6].threeList.push({ key: ele.id, val: ele.className })
+          this.classList.push({ key: ele.id, val: ele.className })
         })
       }
     },
-    select(item) {
-      this.schoolYear = item.title
-      this.schoolYearId = item.schoolYearId
-      this.gradeCode = item.gradeCode
-      this.classCode = item.classCode
-      this.isNewYear = item.isNewYear
-      const req = {
-        ...this.pageList,
-        schoolCode: this.userInfo.schoolCode,
-        schoolYearId: item.schoolYearId,
-        gradeId: item.gradeCode || '',
-        classId: item.classCode || '',
-        ...this.keyObj
-      }
-      console.log(req)
-      this.showList(req)
-      this.highStudent.columns[10] = this.isNewYear
-        ? {
-          title: '操作',
-          width: '10%',
-          scopedSlots: {
-            customRender: 'action'
-          }
-        }
-        : {}
-    },
-    submit() {
-      this.confirmLoading = true
-      setTimeout(() => {
-        this.dialogTag = false
-        this.confirmLoading = false
-      }, 2000)
-    },
+    // 搜索
     searchForm(values) {
       console.log(values)
-      this.keywords = values.keyword
-      this.keyObj = values
-      const req = {
-        ...this.pageList,
-        schoolCode: this.userInfo.schoolCode,
-        schoolYearId: this.schoolYearId,
-        gradeId: this.gradeCode || '',
-        classId: this.classCode || '',
-        ...values
+      this.pageList.page = 1
+      this.pageList.size = 20
+      this.searchList = Object.assign(this.searchList, values)
+      this.showList()
+    },
+    addClick(type, record) {
+      this.type = type
+      if (type === 1) {
+        console.log(record)
+        this.title = '编辑学生'
+        this.userDetail = record
+        this.highStudent.formData = this.$tools.fillForm(highStudent.formData, record)
+        this.fileList = record.photoUrl ? [{ url: record.photoUrl }] : []
+        this.userId = record.id
+        this.highStudent.formData[3].initValue = record.hasDorm === '1' ? '住读' : '走读'
+        this.highStudent.formData[4].initValue = new Date(record.admissionTime).getFullYear()
+        this.highStudent.formData[6].disabled = true
+        this.highStudent.formData[6].initValue1 = record.grade ? `${[record.grade]}级` : ['请选择']
+        this.highStudent.formData[6].initValue2 = record.subjectName ? [record.subjectName] : ['请选择']
+        this.highStudent.formData[6].initValue3 = record.className ? [record.className] : ['请选择']
+        this.formStatus = true
+      } else if (type === 2) {
+        // this.orgCodeList[0] = this.orgCodeList[0] === '' ? this.userInfo.schoolCode : this.orgCodeList[0]
+        // const path = `/basedata/bulkImport?code=${this.orgCodeList.join(',')}&name=${this.orgName}`
+        const path = '/basedata/bulkStu'
+        this.$router.push({ path, query: { type: 'teachers' } })
+      } else {
+        this.title = '添加学生'
+        this.highStudent.formData = highStudent.formData
+        this.fileList = []
+        this.highStudent.formData[6].disabled = false
+        this.formStatus = true
       }
-      this.showList(req)
     },
     submitForm(values) {
+      console.log('value',values)
+      console.log('value',this.userDetail)
       values.hasDorm = values.hasDorm === '住读' ? '1' : values.hasDorm === '走读' ? '0' : values.hasDorm
+      values.schoolCode = this.userInfo.schoolCode
+      values.schoolId = this.userInfo.schoolId
       const req = {
         ...values,
-        schoolCode: this.userInfo.schoolCode,
-        schoolId: this.userInfo.schoolId,
         admissionTime: values.admissionTime[0] || values.admissionTime,
-        photoUrl: this.fileList.length > 0 ? this.fileList[0].url : '',
-        gradeId: this.gradeId,
-        classId: this.classChoose
+        photoUrl: this.fileList.length > 0 ? this.fileList[0].url : ''
       }
       let res = null
       if (this.type === 0) {
-        res = this.addStudent(req)
+        req.grade = this.highSubTerm[values.gradeCode].schoolYearName.split('-')[0]
+        req.className = this.highClass[values.class].className
+        req.classCode = this.highClass[values.class].classCode
+        req.subjectName = this.highSubList[values.subject].subjectName
+        req.subjectCode = this.highSubList[values.subject].subjectCode
+        res = this.addHighStu(req)
       } else {
-        req.userId = this.userId
-        res = this.studentUpdate(req)
+        req.grade = values.gradeCode.substring(0, 4)
+        req.id = this.userId
+        res = this.updateHighStu({ ...this.userDetail, ...req })
       }
       res
         .then(() => {
           this.keywords = ''
           this.$message.success(this.type === 0 ? '添加成功' : '编辑成功')
           this.$tools.goNext(() => {
-            const data = {
-              ...this.pageList,
-              schoolCode: this.userInfo.schoolCode,
-              schoolYearId: this.schoolYearId,
-              gradeId: this.gradeCode || '',
-              classId: this.classCode || '',
-              ...this.keyObj
-            }
-            this.showList(data)
+            this.showList()
             this.$refs.form.reset()
             this.fileList = []
           })
@@ -262,49 +306,6 @@ export default {
           this.$refs.form.error()
         })
     },
-    addStudents(type, record) {
-      this.formStatus = true
-      if (type) {
-        console.log(record)
-        this.title = '编辑学生'
-        this.highStudent.formData = this.$tools.fillForm(highStudent.formData, record)
-        this.fileList = record.photoUrl ? [{ url: record.photoUrl }] : []
-        this.userId = record.id
-        this.highStudent.formData[3].initValue = record.hasDorm === '1' ? '住读' : '走读'
-        this.highStudent.formData[4].initValue = new Date(record.admissionTime).getFullYear()
-        this.highStudent.formData[6].disabled = true
-        this.highStudent.formData[6].initValue1 = record.gradeName ? [record.gradeName] : ['请选择']
-        this.highStudent.formData[6].initValue2 = record.className ? [record.className] : ['请选择']
-        console.log(this.highStudent.formData[6].initValue2)
-        this.type = 1
-      } else {
-        this.title = '添加学生'
-        this.highStudent.formData = highStudent.formData
-        this.fileList = []
-        this.highStudent.formData[6].disabled = false
-        this.type = 0
-      }
-    },
-    async showList(req) {
-      const res = await this.studentList(req)
-      if (!res.data.list) {
-        this.studentsList = []
-        return
-      }
-      this.studentsList = res.data.list
-      this.total = res.data.total
-    },
-    showMore() {
-      const req = {
-        ...this.pageList,
-        schoolCode: this.userInfo.schoolCode,
-        schoolYearId: this.schoolYearId,
-        gradeId: this.gradeCode || '',
-        classId: this.classCode || '',
-        ...this.keyObj
-      }
-      this.showList(req)
-    },
     deleteList(type, record) {
       if (type) {
       } else {
@@ -312,9 +313,6 @@ export default {
           this.$message.warning('请选择删除项')
         }
       }
-    },
-    clickRow(id) {
-      console.log(id)
     },
     goLead(path, record) {
       if (record) {
@@ -325,40 +323,6 @@ export default {
       } else {
         this.$router.push({ path, query: { type: 'students' } })
       }
-    },
-    async firstChange(value) {
-      this.highStudent.formData[6].secondList = []
-      this.classList = []
-      console.log(value)
-      if (value === undefined) {
-        this.gradeId = ''
-        this.classChoose = ''
-        return
-      }
-      this.gradeId = this.gradeList[value].key
-      const req = {
-        schoolCode: this.userInfo.schoolCode,
-        gradeCode: this.gradeList[value].key,
-        schoolYearId: this.schoolYearId
-      }
-      const res = await this.getClassList(req)
-      if (!res.data) {
-        return
-      }
-      if (res.data.list.length > 0) {
-        res.data.list.forEach(ele => {
-          this.highStudent.formData[6].secondList.push({ key: ele.id, val: ele.className })
-          this.classList.push({ key: ele.id, val: ele.className })
-        })
-        this.secondChange(0)
-      }
-    },
-    secondChange(value) {
-      if (value === undefined) {
-        this.secondChange(0)
-        return
-      }
-      this.classChoose = this.classList[value].key
     }
   }
 }
@@ -386,25 +350,6 @@ export default {
         }
       }
     }
-  }
-}
-.modal {
-  padding: 0 40px;
-  .line {
-    margin-bottom: 20px;
-  }
-  .title {
-    font-size: 14px;
-    font-weight: bold;
-    margin-right: 20px;
-    min-width: 70px;
-  }
-  .download {
-    color: #6882da;
-    cursor: pointer;
-  }
-  /deep/ .ant-upload-list-item-info {
-    padding: 0 22px 0 4px;
   }
 }
 </style>

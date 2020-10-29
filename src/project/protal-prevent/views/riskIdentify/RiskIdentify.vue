@@ -92,7 +92,7 @@ export default {
       this.showList()
     },
     searchForm(values) {
-      this.searchList = Object.assign(this.searchList, values)
+      this.taskSearch = Object.assign(this.taskSearch, values)
       this.pageList.page = 1
       this.pageList.size = 20
       this.showList()

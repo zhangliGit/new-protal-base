@@ -148,7 +148,8 @@ const Tools = {
           if (progressEvent.lengthComputable) {
             const loaded = progressEvent.loaded
             const total = progressEvent.total
-            callbackProgress && callbackProgress(Math.floor((loaded / total) * 100) > 1 ? Math.floor((loaded / total) * 100) : 1)
+            callbackProgress &&
+              callbackProgress(Math.floor((loaded / total) * 100) > 1 ? Math.floor((loaded / total) * 100) : 1)
           }
         }
       }).then(
@@ -549,7 +550,6 @@ const Tools = {
       return '6'
     }
   },
-
   ...baseData
 }
 

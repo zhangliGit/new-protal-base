@@ -8,18 +8,6 @@
     :destroyOnClose="true"
     :confirmLoading="confirmLoading"
   >
-    <a-row
-      type="flex"
-      justify="end"
-      style="margin-bottom: 15px"
-      :style="'margin-right:215px'"
-    >
-      <a-col>
-        <span>类型：</span>
-        <a-input v-model="riskContent" style="width: 120px;margin-right: 10px" placeholder="请输入" />
-        <a-button type="primary" @click="searchForm">查询</a-button>
-      </a-col>
-    </a-row>
     <div class="choose-user qui-fx">
       <div class="tree-box">
         <a-tree
@@ -141,7 +129,6 @@ export default {
         page: 1,
         size: 20
       },
-      searchList: {},
       riskContent: '',
       total: 0,
       identifyList: [],
