@@ -62,12 +62,23 @@ export const asyncRouterMap = [
         }
       },
       {
-        path: '/ruleSet',
-        name: 'ruleSet',
-        component: RuleSet,
+        path: '/dealRule',
+        name: 'dealRule',
+        redirect: '/dealRule',
+        component: RouteView,
         meta: {
-          title: '订单管理'
-        }
+          title: '交易规则'
+        },
+        children: [
+          {
+            path: '/ruleSet',
+            name: 'ruleSet',
+            component: RuleSet,
+            meta: {
+              title: '消费规则'
+            }
+          }
+        ]
       }
     ]
   },
