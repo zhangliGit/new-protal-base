@@ -19,6 +19,7 @@
         :rowSelection="selectObj"
         :columns="columns"
         :dataSource="tableList"
+        :bordered="isBorder"
       >
         <template v-if="isIndex" slot="index" slot-scope="text, record, index">{{
           index | getPageIndex(pageList)
@@ -31,8 +32,8 @@
                   record.validDate && record.validDate - new Date().getTime() < 0
                     ? 'red'
                     : record.validDate && record.validDate - new Date().getTime() - 1000 * 60 * 60 * 24 * 30 < 0
-                      ? 'orange'
-                      : 'black'
+                    ? 'orange'
+                    : 'black'
               }
             ]"
           >
@@ -174,6 +175,10 @@ export default {
       default: false
     },
     isCheck: {
+      type: Boolean,
+      default: false
+    },
+    isBorder: {
       type: Boolean,
       default: false
     },

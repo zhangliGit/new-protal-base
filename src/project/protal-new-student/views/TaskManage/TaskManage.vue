@@ -14,7 +14,7 @@
             size="small"
             class="detail-action-btn"
             icon="ellipsis"
-            @click.stop="addTask('1', action.record)"
+            @click.stop="goDetail(action.record)"
           ></a-button>
         </a-tooltip>
         <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="deleteList(action.record)">
@@ -238,7 +238,18 @@ export default {
     addTask() {
       this.$router.push({ path: '/taskManage/addTask' })
     },
-    goDetail(record) {},
+    goDetail(record) {
+      const { id } = record
+      if (!id) {
+        return
+      }
+      this.$router.push({
+        path: `taskManage/taskDetails`,
+        query: {
+          id
+        }
+      })
+    },
     async deleteList(record) {
       await this.delReserve(record.id)
       this.$message.success('删除成功')

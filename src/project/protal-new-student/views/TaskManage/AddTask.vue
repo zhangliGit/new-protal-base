@@ -1,7 +1,7 @@
 <template>
   <div class="add-booking page-layout qui-fx-ver">
     <a-form :form="form" :style="{ maxHeight: maxHeight, overflow: 'auto' }">
-      <a-form-item label="任务名称" :label-col="{ span: 3 }" :wrapper-col="{ span: 15 }">
+      <a-form-item label="任务名称" :label-col="{ span: 3 }" :wrapper-col="{ span: 5 }">
         <a-input
           placeholder="请输入任务名称，限50字符"
           :maxLength="50"
@@ -12,16 +12,20 @@
           @change="changeTaskName"
         />
       </a-form-item>
-      <a-form-item label="年级" :label-col="{ span: 3 }" :wrapper-col="{ span: 15 }" :required="true">
-        <a-select
-          v-decorator="['grade', { rules: [{ required: true, message: '请选择年级' }] }]"
-          placeholder="请选择年级"
-          @change="handleChangeGrade"
-        >
-          <a-select-option v-for="item in options" :key="item.value"> {{ item.label }} </a-select-option>
-        </a-select>
+      <a-form-item label="年级" :label-col="{ span: 3 }" :wrapper-col="{ span: 8 }" :required="true">
+        <div style="display: flex">
+          <a-select
+            v-decorator="['grade', { rules: [{ required: true, message: '请选择年级' }] }]"
+            placeholder="请选择年级"
+            @change="handleChangeGrade"
+            style="width: 150px; margin-right: 20px"
+          >
+            <a-select-option v-for="item in options" :key="item.value"> {{ item.label }} </a-select-option>
+          </a-select>
+          <span class="grade-warning">*确定已在基础数据中添加新学年及专业</span>
+        </div>
       </a-form-item>
-      <a-form-item label="招生专业" :label-col="{ span: 3 }" :wrapper-col="{ span: 8 }" :required="true">
+      <a-form-item label="招生专业" :label-col="{ span: 3 }" :wrapper-col="{ span: 5 }" :required="true">
         <a-button type="primary" @click="selectProject"> 选择专业 </a-button>
         <a-table :columns="columns" :data-source="selectList" :pagination="false">
           <template slot="inputCount" slot-scope="count, record">
@@ -29,7 +33,7 @@
           </template>
         </a-table>
       </a-form-item>
-      <a-form-item label="招生截止时间" :label-col="{ span: 3 }" :wrapper-col="{ span: 15 }" :required="true">
+      <a-form-item label="招生截止时间" :label-col="{ span: 3 }" :wrapper-col="{ span: 5 }" :required="true">
         <a-date-picker
           @change="onChangeDate"
           placeholder="年/月/日"
@@ -163,9 +167,30 @@ export default {
   },
   mounted() {
     this.maxHeight = window.screen.height - 280 + 'px'
-    this.type = this.$route.query.type
-    if (this.type !== '0') {
-      // this.showData()
+    const taskId = this.$route.query.id
+    const count = this.$route.query.count || 500
+    if (taskId) {
+      this.projectList = this.projectList.map((item) => {
+        if (item.id === taskId) {
+          return {
+            ...item,
+            checked: true,
+            count
+          }
+        }
+        return item
+      })
+      this.selectList = [
+        {
+          projectName: '软件技术',
+          id: '1',
+          checked: false,
+          count: 555
+        }
+      ]
+      this.formData.taskName = '软件技术招生'
+      this.handleChangeGrade('2020')
+      this.formData.endTime = moment(new Date('2020-12-30'), 'YYYY/MM/DD')
     }
   },
   methods: {
@@ -195,9 +220,9 @@ export default {
       this.formData.taskName = e.target.value
     },
     handleChangeGrade(val) {
-      this.form.setFieldsValue = {
+      this.form.setFieldsValue({
         grade: val
-      }
+      })
     },
     selectProject() {
       this.showProjectList = true
@@ -279,5 +304,9 @@ export default {
   /deep/ .ant-form-item {
     margin-bottom: 14px;
   }
+}
+
+.grade-warning {
+  color: rgb(250, 16, 16);
 }
 </style>

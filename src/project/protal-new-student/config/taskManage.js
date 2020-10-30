@@ -2,6 +2,7 @@
 import { RouteView } from '../layouts'
 const TaskManage = resolve => require(['../views/TaskManage/TaskManage.vue'], resolve)
 const AddTask = resolve => require(['../views/TaskManage/AddTask.vue'], resolve)
+const TaskDetails = resolve => require(['../views/TaskManage/TaskDetails.vue'], resolve)
 const taskManage = {
   path: '/taskManage',
   name: 'taskManage',
@@ -24,6 +25,15 @@ const taskManage = {
       component: AddTask,
       meta: {
         title: '添加任务',
+        isHide: true
+      }
+    },
+    {
+      path: '/taskManage/taskDetails',
+      name: 'taskDetails',
+      component: TaskDetails,
+      meta: {
+        title: '任务详情',
         isHide: true
       }
     }
