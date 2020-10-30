@@ -8,12 +8,12 @@ const highApi = {
   addHighStu: '/student/manage/add#post', // 新增学生用户信息
   highStusChange: '/student/manage/batch/change/class#post', // 批量转班
   highStuImport: '/student/manage/batch/import#post', // 批量导入
-  highStusRemove: '/student/manage/batch/remove#put', // 批量移出
+  highStusRemove: '/student/manage/batch/remove#putQuery', // 批量移出
   highStuChange: '/student/manage/change/class#post', // 转班
-  highStuDetail: '/student/manage/detail#getUrl', // 详情
+  getHighStuDetail: '/student/manage/detail#get', // 详情
   highStuJoin: '/student/manage/join/class#post', // 加入班级
   getHighStu: '/student/manage/list#post', // 列表
-  highStuRemove: '/student/manage/remove#put', // 移出班级
+  highStuRemove: '/student/manage/remove#putQuery', // 移出班级
   updateHighStu: '/student/manage/update#post' // 更新
 
 }

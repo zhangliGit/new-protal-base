@@ -256,3 +256,7 @@ export {
   default as SaveOutline
 }
   from '@ant-design/icons/lib/outline/SaveOutline'
+export {
+  default as InfoCircleOutline
+}
+  from '@ant-design/icons/lib/outline/InfoCircleOutline'

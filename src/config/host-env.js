@@ -42,6 +42,7 @@ let img_download = ''
 let oss_upload = ''
 let hzz_ecard = ''
 let wxz_notice = ''
+let ljj_high = ''
 if (ConfigEnv === 'test') {
   wxz_control = '/wxz_control'
   zk_school = '/zk_school'
@@ -84,6 +85,7 @@ if (ConfigEnv === 'test') {
   oss_upload = '/oss_upload'
   hzz_ecard = '/hzz_ecard'
   wxz_notice = '/wxz_notice'
+  ljj_high = '/ljj_high'
 } else if (ConfigEnv === 'prod') {
   wxz_control = '/wxz_control'
   zk_school = '/zk_school'
@@ -126,6 +128,7 @@ if (ConfigEnv === 'test') {
   oss_upload = '/oss_upload'
   hzz_ecard = '/hzz_ecard'
   wxz_notice = '/wxz_notice'
+  ljj_high = '/ljj_high'
 } else {
   wxz_control = '/wxz_control'
   zk_school = '/zk_school'
@@ -168,6 +171,7 @@ if (ConfigEnv === 'test') {
   oss_upload = '/oss_upload'
   hzz_ecard = '/hzz_ecard'
   wxz_notice = '/wxz_notice'
+  ljj_high = '/ljj_high'
 }
 
 export default {
@@ -211,5 +215,6 @@ export default {
   img_download,
   hzz_ecard,
   wxz_notice,
-  oss_upload 
+  oss_upload,
+  ljj_high
 }
