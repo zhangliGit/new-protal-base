@@ -32,7 +32,6 @@ let zk_work = ''
 let ljj_attendance = ''
 let zk_oa = ''
 let lz_safe = ''
-let cl_oa = ''
 let wxz_pay = ''
 let cl_class = ''
 let zk_class = ''
@@ -76,7 +75,6 @@ if (ConfigEnv === 'test') {
   zq_oa = '/zq_oa'
   ljj_attendance = '/ljj_attendance'
   lz_safe = '/lz_safe'
-  cl_oa = '/cl_oa'
   wxz_pay = '/wxz_pay'
   cl_class = '/cl_class'
   zk_class = '/zk_class'
@@ -120,7 +118,6 @@ if (ConfigEnv === 'test') {
   zq_oa = '/zq_oa'
   ljj_attendance = '/ljj_attendance'
   lz_safe = '/lz_safe'
-  cl_oa = '/cl_oa'
   wxz_pay = '/wxz_pay'
   cl_class = '/cl_class'
   zk_class = '/zk_class'
@@ -164,7 +161,6 @@ if (ConfigEnv === 'test') {
   zq_oa = '/zq_oa'
   ljj_attendance = '/ljj_attendance'
   lz_safe = '/lz_safe'
-  cl_oa = '/cl_oa'
   wxz_pay = '/wxz_pay'
   cl_class = '/cl_class'
   zk_class = '/zk_class'
@@ -210,7 +206,6 @@ export default {
   zq_oa,
   ljj_attendance,
   lz_safe,
-  cl_oa,
   wxz_pay,
   cl_class,
   zk_class,

@@ -161,35 +161,27 @@ export default {
     }
   },
   mounted() {
-    this._getDictList()
+    this._getDictList('user_type', 'userType')
     this.showList()
   },
   methods: {
     ...mapActions('home', ['getRuleList', 'editRule', 'addRule', 'delRule', 'getDictList']),
-    async _getDictList() {
+    async _getDictList(type, text) {
       this.formData[0].list = []
-      const res = await this.getDictList({
-        pageNum: 1,
-        pageSize: 100,
-        dictType: 'user_type'
-      })
-      res.rows.forEach((ele) => {
+      const res = await this.getDictList(type)
+      res.data.forEach((ele) => {
         this.formData[0].list.push({
           key: ele.dictValue,
           val: ele.dictLabel
         })
       })
-      const index = this.columns.findIndex(list => list.dataIndex === 'userType')
+      const index = this.columns.findIndex(list => list.dataIndex === text)
       this.columns[index].customRender = (text) => {
-        return res.rows.filter(ele => ele.dictValue === text).length > 0 ? res.rows.filter(ele => ele.dictValue === text)[0].dictLabel : ''
+        return res.rows.filter(ele => ele.dictValue === text).length > 0 ? res.data.filter(ele => ele.dictValue === text)[0].dictLabel : ''
       }
     },
     async showList(keyword = '') {
-      const req = {
-        pageNum: this.pageList.page,
-        pageSize: this.pageList.size
-      }
-      const res = await this.getRuleList(req)
+      const res = await this.getRuleList()
       this.dataList = res.rows
       this.total = res.total
     },

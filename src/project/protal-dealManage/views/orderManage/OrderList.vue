@@ -37,15 +37,10 @@ const searchLabel = [
     label: '交易状态'
   },
   {
-    list: [
-      {
-        key: '',
-        val: '全部'
-      }
-    ],
     value: 'source',
-    type: 'select',
-    label: '订单来源'
+    type: 'input',
+    label: '订单来源',
+    placeholder: '请输入订单来源'
   }
 ]
 const columns = [

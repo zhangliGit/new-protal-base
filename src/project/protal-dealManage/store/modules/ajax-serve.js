@@ -20,12 +20,24 @@ axios.defaults.timeout = 15000
 axios.defaults.withCredentials = true // 让ajax携带cookie
 
 // 设置公用请求头
-axios.defaults.headers.common['Authorization'] = window.sessionStorage.getItem('token')
+axios.defaults.headers.common['Authorization'] = window.sessionStorage.getItem('Authorization')
 
 // 拦截请求
 axios.interceptors.request.use(
   function(config) {
-    return config
+    return new Promise((resolve) => {
+      if (config.url.indexOf('token') !== -1) {
+        resolve(config)
+      } else {
+        if (!window.sessionStorage.getItem('Authorization')) {
+          if (isRefreshing) {
+            refreshTokenRequst()
+          }
+          isRefreshing = false
+        }
+        resolve(config)
+      }
+    })
   },
   function(error) {
     return Promise.reject(error)
@@ -55,10 +67,9 @@ function refreshTokenRequst() {
       method: 'post'
     })
     .then(response => {
-      const token = response.data.tokenType + ' ' + response.data.value
-      console.log(token)
-      window.sessionStorage.setItem('token', token)
-      axios.defaults.headers.common['Authorization'] = token
+      const Authorization = response.data.tokenType + ' ' + response.data.value
+      console.log(Authorization)
+      window.sessionStorage.setItem('Authorization', Authorization)
       window.location.reload()
       isRefreshing = true
     })
@@ -72,10 +83,6 @@ function responseRes(res, obj) {
     if (res.code === 200 || res.status === true || res.status === 200) {
       resolve(res)
     } else if (res.code === 0) {
-      if (isRefreshing) {
-        refreshTokenRequst()
-      }
-      isRefreshing = false
     } else if (res.code === 401) {
       Modal.warning({
         title: '提示',
