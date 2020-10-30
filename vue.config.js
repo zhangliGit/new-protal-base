@@ -313,13 +313,6 @@ module.exports = {
           '^/zq_oa': ''
         }
       },
-      '/cl_oa': {
-        target: 'http://192.168.2.242:11014/',
-        changeOrigin: true,
-        pathRewrite: {
-          '^/cl_oa': ''
-        }
-      },
       '/hpb_card': {
         target: 'http://192.168.2.242:11008/', // 胡鹏奔-消费
         // target: 'http://192.168.2.134:11008/', // 胡鹏奔-消费
