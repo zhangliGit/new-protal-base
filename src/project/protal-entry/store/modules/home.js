@@ -98,7 +98,7 @@ const newData = [
             name: '招生任务',
             parentId: 1179,
             orderNum: 20,
-            url: '/pc-protal/protal-new-student#/studentTask',
+            url: '/pc-protal/protal-new-student#/taskManage',
             menuType: 2,
             perms: '',
             icon:

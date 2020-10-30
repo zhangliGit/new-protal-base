@@ -1,8 +1,8 @@
 // 系统表单
 // import { RouteView } from '../layouts'
-const StudentApply = resolve => require(['../views/NewStudentManage/StudentApply.vue'], resolve)
-const ApplyDetails = resolve => require(['../views/NewStudentManage/ApplyDetails.vue'], resolve)
-const meetBooking = {
+const StudentApply = resolve => require(['../views/TaskManage/StudentApply.vue'], resolve)
+const ApplyDetails = resolve => require(['../views/TaskManage/ApplyDetails.vue'], resolve)
+const studentApply = {
   path: '/studentApply',
   name: '/studentApply',
   component: StudentApply,
@@ -11,14 +11,15 @@ const meetBooking = {
   },
   children: [
     {
-      path: '/meetBooking',
-      name: 'meetBooking',
+      path: '/applyDetails',
+      name: 'applyDetails',
       component: ApplyDetails,
       meta: {
-        title: '申请详情'
+        title: '申请详情',
+        isHide: true
       }
     }
   ]
 }
 
-export default meetBooking
+export default studentApply

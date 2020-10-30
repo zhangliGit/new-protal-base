@@ -1,9 +1,11 @@
 // eslint-disable-next-line
 import { BasicLayout, RouteView } from '../layouts'
+import taskManage from './taskManage'
+import studentApply from './studentApply'
 // const Home = resolve => require(['../views/Home.vue'], resolve)
 const HomePage = resolve => require(['../views/HomePage/HomePage.vue'], resolve)
-const TaskManage = resolve => require(['../views/TaskManage/TaskManage.vue'], resolve)
-const StudentApply = resolve => require(['../views/TaskManage/StudentApply.vue'], resolve)
+// const TaskManage = resolve => require(['../views/TaskManage/TaskManage.vue'], resolve)
+// import studentApply = resolve => require(['../views/TaskManage/StudentApply.vue'], resolve)
 const StudentManage = resolve => require(['../views/NewStudentManage/StudentManage.vue'], resolve)
 const StudentClasses = resolve => require(['../views/NewStudentManage/StudentCLasses.vue'], resolve)
 const DeviceManege = resolve => require(['../views/DeviceManege/DeviceManege.vue'], resolve)
@@ -24,22 +26,22 @@ export const asyncRouterMap = [
           title: '首页'
         }
       },
-      {
-        path: '/studentTask',
-        name: 'studentTask',
-        component: TaskManage,
-        meta: {
-          title: '招生任务'
-        }
-      },
-      {
-        path: '/studentApply',
-        name: 'studentApply',
-        component: StudentApply,
-        meta: {
-          title: '新生申请'
-        }
-      },
+      // {
+      //   path: '/studentTask',
+      //   name: 'studentTask',
+      //   component: TaskManage,
+      //   meta: {
+      //     title: '招生任务'
+      //   }
+      // },
+      // {
+      //   path: '/studentApply',
+      //   name: 'studentApply',
+      //   component: StudentApply,
+      //   meta: {
+      //     title: '新生申请'
+      //   }
+      // },
       {
         path: '/studentManage',
         name: 'studentManage',
@@ -63,7 +65,9 @@ export const asyncRouterMap = [
         meta: {
           title: '设备管理'
         }
-      }
+      },
+      taskManage,
+      studentApply
     ]
   },
   {

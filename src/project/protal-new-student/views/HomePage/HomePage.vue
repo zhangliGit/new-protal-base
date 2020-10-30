@@ -10,7 +10,7 @@
     <div class="stu-overview">
       <div class="view-item" v-for="item in viewList" :key="item.id">
         <span>{{ item.title }}</span>
-        <span>{{ item.count }}</span>
+        <span class="view-count">{{ item.count }}</span>
       </div>
     </div>
     <div class="task-list">
@@ -137,10 +137,10 @@ export default {
   box-sizing: border-box;
 }
 .stu-overview {
- display: flex;
- justify-content: space-around;
- align-items: center;
- padding: 30px 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 30px 0;
 
   .view-item {
     display: flex;
@@ -154,6 +154,10 @@ export default {
     font-size: 16px;
     border: 1px solid #ccc;
     border-radius: 4px;
+
+    .view-count {
+      font-weight: bold;
+    }
   }
 }
 .task-list {

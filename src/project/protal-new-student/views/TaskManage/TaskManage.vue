@@ -236,7 +236,7 @@ export default {
       this.showList()
     },
     addTask() {
-      this.formStatus = true
+      this.$router.push({ path: '/taskManage/addTask' })
     },
     goDetail(record) {},
     async deleteList(record) {
