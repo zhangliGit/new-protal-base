@@ -550,7 +550,6 @@ const Tools = {
       return '6'
     }
   },
-
   ...baseData
 }
 

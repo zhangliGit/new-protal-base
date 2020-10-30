@@ -2,7 +2,7 @@
 import { RouteView } from '../layouts'
 const CardSet = resolve => require(['../views/systemSet/CardSet.vue'], resolve)
 const FaceBlacklist = resolve => require(['../views/systemSet/FaceBlacklist.vue'], resolve)
-const MessageSettings = resolve => require(['../views/systemSet/MessageSettings.vue'], resolve)
+// const MessageSettings = resolve => require(['../views/systemSet/MessageSettings.vue'], resolve)
 const systemSet = {
   path: '/systemSet',
   name: 'systemSet',
@@ -26,7 +26,7 @@ const systemSet = {
       meta: {
         title: '人脸黑名单'
       }
-    },
+    }/* ,
     {
       path: '/MessageSettings',
       name: 'MessageSettings',
@@ -34,7 +34,7 @@ const systemSet = {
       meta: {
         title: '消息设置'
       }
-    }
+    } */
   ]
 }
 

@@ -298,8 +298,8 @@ module.exports = {
         }
       },
       '/ljj_admin': {
+        // target: 'http://192.168.2.242:10050/', // 柳继杰-局端模块
         target: 'http://192.168.2.242:10050/', // 柳继杰-局端模块
-        // target: 'http://192.168.1.76:8092/', // 柳继杰-局端模块
         changeOrigin: true,
         pathRewrite: {
           '^/ljj_admin': ''
@@ -311,14 +311,6 @@ module.exports = {
         changeOrigin: true,
         pathRewrite: {
           '^/zq_oa': ''
-        }
-      },
-      '/cl_oa': {
-        target: 'http://192.168.2.242:11014/',
-        // target: 'http://192.168.1.23:11009/',
-        changeOrigin: true,
-        pathRewrite: {
-          '^/cl_oa': ''
         }
       },
       '/hpb_card': {
@@ -402,6 +394,20 @@ module.exports = {
         changeOrigin: true,
         pathRewrite: {
           '^/hzz_ecard': ''
+        }
+      },
+      '/hzz_deal': {
+        target: 'http://192.168.2.242:11025/', // 胡周志-交易管理系统
+        changeOrigin: true,
+        pathRewrite: {
+          '^/hzz_deal': ''
+        }
+      },
+      '/hzz_tooken': {
+        target: 'http://192.168.2.242:11022/', // 胡周志-tooken
+        changeOrigin: true,
+        pathRewrite: {
+          '^/hzz_tooken': ''
         }
       },
       '/wxz_notice': {

@@ -19,7 +19,7 @@
           :columns="columns"
           :table-list="recordList"
         >
-          <template v-slot:actions="action">        
+          <template v-slot:actions="action">
             <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="deleteList(1, action.record)">
               <template slot="title">
                 您确定删除吗?
@@ -39,7 +39,7 @@
           </template>
         </table-list>
         <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
-        <add-praise ref="addPraise" :title="title" @update="showList" ></add-praise>
+        <add-praise ref="addPraise" :title="title" @update="showList"></add-praise>
       </div>
     </div>
   </div>
@@ -121,10 +121,9 @@ export default {
         schoolCode: '',
         classCode: '',
         category: 1,
-        gradeCode:''
+        gradeCode: ''
       },
-      recordList: [],
-
+      recordList: []
     }
   },
   computed: {
@@ -155,7 +154,6 @@ export default {
       this.$refs.addPraise.appForm = {}
       this.$refs.addPraise.classList = []
       this.$refs.addPraise.addVisible = true
-
     },
     async deleteList(type, record) {
       if (type) {

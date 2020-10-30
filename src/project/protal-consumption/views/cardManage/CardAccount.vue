@@ -12,7 +12,7 @@
         </template>
       </table-list>
     </div>
-    <page-num v-model="pageList" :total="total"></page-num>
+    <page-num v-model="pageList" :total="total" @change-page="_getCardList"></page-num>
   </div>
 </template>
 

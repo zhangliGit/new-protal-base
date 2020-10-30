@@ -5,10 +5,7 @@
 
 import axios from 'axios'
 import qs from 'qs'
-import {
-  Modal,
-  message
-} from 'ant-design-vue'
+import { Modal, message } from 'ant-design-vue'
 import Vue from 'vue'
 let loading
 message.config({
@@ -23,38 +20,59 @@ axios.defaults.timeout = 15000
 axios.defaults.withCredentials = true // 让ajax携带cookie
 
 // 设置公用请求头
-const {
-  schoolCode = ''
-} = JSON.parse(window.sessionStorage.getItem('loginInfo') || JSON.stringify({}))
-const {
-  token = '', userCode = ''
-} = JSON.parse(window.sessionStorage.getItem('loginType') || JSON.stringify({}))
-axios.defaults.headers.common['token'] = token
-axios.defaults.headers.common['userCode'] = userCode
-axios.defaults.headers.common['schoolCode'] = schoolCode
-axios.defaults.headers.common['operator'] = 'admin'
+axios.defaults.headers.common['Authorization'] = window.sessionStorage.getItem('Authorization')
+
 // 拦截请求
 axios.interceptors.request.use(
-  function (config) {
-    return config
+  function(config) {
+    return new Promise((resolve) => {
+      if (config.url.indexOf('token') !== -1) {
+        resolve(config)
+      } else {
+        if (!window.sessionStorage.getItem('Authorization')) {
+          if (isRefreshing) {
+            refreshTokenRequst()
+          }
+          isRefreshing = false
+        }
+        resolve(config)
+      }
+    })
   },
-  function (error) {
+  function(error) {
     return Promise.reject(error)
   }
 )
 
 // 拦截响应
 axios.interceptors.response.use(
-  function (response) {
+  function(response) {
     return response
   },
-  function (error) {
+  function(error) {
     return Promise.reject(error)
   }
 )
 
 const showToast = (tip = '') => {
   loading = vm.$message.loading('加载中...', 0)
+}
+
+// 刷新tooken
+let isRefreshing = true
+function refreshTokenRequst() {
+  axios
+    .request({
+      url: `/hzz_tooken/oauth/token?client_id=trade-web&client_secret=secret&grant_type=client_credentials`,
+      method: 'post'
+    })
+    .then(response => {
+      const Authorization = response.data.tokenType + ' ' + response.data.value
+      console.log(Authorization)
+      window.sessionStorage.setItem('Authorization', Authorization)
+      window.location.reload()
+      isRefreshing = true
+    })
 }
 
 // 处理响应结果
@@ -64,18 +82,19 @@ function responseRes(res, obj) {
   return new Promise((resolve, reject) => {
     if (res.code === 200 || res.status === true || res.status === 200) {
       resolve(res)
+    } else if (res.code === 0) {
     } else if (res.code === 401) {
       Modal.warning({
         title: '提示',
         okText: '确定',
         content: '认证过期，请重新登录',
-        onOk: function () {}
+        onOk: function() {}
       })
     } else {
       Modal.warning({
         title: '提示',
         content: res.message || res.msg || '数据请求失败, 请联系管理员',
-        onOk: function () {}
+        onOk: function() {}
       })
       reject(res.message)
       if (process.env.NODE_ENV === 'production') {
@@ -375,7 +394,7 @@ const $ajax = {
       return responseRes(errMsg, obj)
     }
   },
-  async export (obj, tag = true) {
+  async export(obj, tag = true) {
     if (tag) showToast()
     try {
       axios
@@ -477,16 +496,8 @@ const $ajax = {
 const sendError = obj => {
   const loginInfo = sessionStorage.getItem('loginInfo')
   if (!loginInfo) return
-  const {
-    userName,
-    schoolCode,
-    schoolName
-  } = JSON.parse(loginInfo)
-  const {
-    message,
-    url,
-    params
-  } = obj
+  const { userName, schoolCode, schoolName } = JSON.parse(loginInfo)
+  const { message, url, params } = obj
   axios({
     url: 'http://canpointtest.com:8090/errorApi/addErrorApi',
     method: 'post',
