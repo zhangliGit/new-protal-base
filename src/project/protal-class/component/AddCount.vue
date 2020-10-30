@@ -156,8 +156,8 @@ export default {
             schoolCode: this.userInfo.schoolCode,
             schoolYearId: this.classList[0].schoolYearId,
             classCodes: this.classCodeList,
-            createUsername: this.userInfo.userCode,
-            createUsercode: this.userInfo.userName,
+            createUsername: this.userInfo.userName,
+            createUsercode: this.userInfo.userCode,
             ...values
           }
           if (this.title === '编辑倒数日') {
