@@ -58,12 +58,12 @@ const columns = [
   {
     title: '身份',
     dataIndex: 'userType',
-    width: '10%'
+    width: '20%'
   },
   {
     title: '优惠类型',
     dataIndex: 'preferType',
-    width: '15%',
+    width: '20%',
     scopedSlots: {
       customRender: 'other1'
     }
@@ -71,12 +71,12 @@ const columns = [
   {
     title: '每日消费限额',
     dataIndex: 'everydayConsume',
-    width: '15%'
+    width: '20%'
   },
   {
     title: '单次消费限额',
     dataIndex: 'singleConsume',
-    width: '15'
+    width: '20%'
   },
   {
     title: '操作',

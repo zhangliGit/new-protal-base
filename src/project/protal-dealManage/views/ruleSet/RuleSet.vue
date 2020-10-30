@@ -58,12 +58,12 @@ const columns = [
   {
     title: '身份',
     dataIndex: 'userType',
-    width: '10%'
+    width: '20%'
   },
   {
     title: '优惠类型',
     dataIndex: 'preferType',
-    width: '15%',
+    width: '20%',
     scopedSlots: {
       customRender: 'other1'
     }
@@ -71,12 +71,12 @@ const columns = [
   {
     title: '每日消费限额',
     dataIndex: 'everydayConsume',
-    width: '15%'
+    width: '20%'
   },
   {
     title: '单次消费限额',
     dataIndex: 'singleConsume',
-    width: '15'
+    width: '20%'
   },
   {
     title: '操作',
@@ -143,7 +143,7 @@ export default {
     ASwitch: Switch
   },
   computed: {
-    ...mapState('home', ['userInfo', 'schoolCode'])
+    ...mapState('home', ['schoolCode'])
   },
   data() {
     return {
@@ -154,7 +154,7 @@ export default {
       total: 0,
       pageList: {
         page: 1,
-        size: 20
+        size: 9999
       },
       type: 0,
       dataList: []
@@ -162,7 +162,6 @@ export default {
   },
   mounted() {
     this._getDictList('user_type', 'userType')
-    this.showList()
   },
   methods: {
     ...mapActions('home', ['getRuleList', 'editRule', 'addRule', 'delRule', 'getDictList']),
@@ -177,12 +176,16 @@ export default {
       })
       const index = this.columns.findIndex(list => list.dataIndex === text)
       this.columns[index].customRender = (text) => {
-        return res.rows.filter(ele => ele.dictValue === text).length > 0 ? res.data.filter(ele => ele.dictValue === text)[0].dictLabel : ''
+        return res.data.filter(ele => ele.dictValue === text).length > 0 ? res.data.filter(ele => ele.dictValue === text)[0].dictLabel : ''
       }
+      this.showList()
     },
     async showList(keyword = '') {
-      const res = await this.getRuleList()
-      this.dataList = res.rows
+      const res = await this.getRuleList({
+        ...this.pageList,
+        schoolCode: this.schoolCode
+      })
+      this.dataList = res.data.records
       this.total = res.total
     },
     add(type, record) {

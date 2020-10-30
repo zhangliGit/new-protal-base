@@ -43,9 +43,14 @@ const getState = (state, val) => {
 const home = {
   namespaced: true,
   state: {
-    testData: getState('testData', ''), // store数据
-    loginInfo: JSON.parse(window.sessionStorage.getItem('loginInfo') || '{}'),
-    loginType: JSON.parse(window.sessionStorage.getItem('loginType') || '{}')
+    schoolCode: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolCode,
+    userInfo: getState('userInfo', {
+      schoolCode: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolCode,
+      schoolName: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolName,
+      schoolId: JSON.parse(window.sessionStorage.getItem('loginInfo')).id,
+      userCode: JSON.parse(window.sessionStorage.getItem('loginType')).userCode,
+      userId: JSON.parse(window.sessionStorage.getItem('loginType')).id
+    })
   },
   actions: {
     ...actions
