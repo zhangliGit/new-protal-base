@@ -290,8 +290,8 @@ module.exports = {
         }
       },
       '/zk_examplan': {
-        // target: 'http://192.168.1.23:11013/', // 张坤-考试计划
-        target: 'http://192.168.2.242:11013/',
+        target: 'http://192.168.1.193:11013/', // 张坤-考试计划
+        // target: 'http://192.168.2.242:11013/',
         changeOrigin: true,
         pathRewrite: {
           '^/zk_examplan': ''
