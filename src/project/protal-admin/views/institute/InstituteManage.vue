@@ -128,6 +128,12 @@ const columns = [
           newArr.push('初中')
         } else if (arr[i] === '03') {
           newArr.push('高中')
+        } else if (arr[i] === '00') {
+          newArr.push('幼儿园')
+        } else if (arr[i] === '04') {
+          newArr.push('高校')
+        } else if (arr[i] === '05') {
+          newArr.push('中职')
         }
       }
       return newArr.join(',')
@@ -187,6 +193,10 @@ export default {
       form: this.$form.createForm(this),
       studyList: [
         {
+          key: '00',
+          val: '幼儿园'
+        },
+        {
           key: '01',
           val: '小学'
         },
@@ -197,6 +207,14 @@ export default {
         {
           key: '03',
           val: '高中'
+        },
+        {
+          key: '04',
+          val: '高校'
+        },
+        {
+          key: '05',
+          val: '中职'
         }
       ],
       areaList: [],
@@ -265,6 +283,9 @@ export default {
         this.$refs.addInstitute.primarySystem = this.$refs.addInstitute.primarySystem ? record.record.primarySystem : 6
         this.$refs.addInstitute.middleSystem = this.$refs.addInstitute.middleSystem ? record.record.middleSystem : 3
         this.$refs.addInstitute.highSystem = this.$refs.addInstitute.highSystem ? record.record.highSystem : 3
+        this.$refs.addInstitute.nurserySystem = this.$refs.addInstitute.nurserySystem ? record.record.nurserySystem : 3
+        this.$refs.addInstitute.collegeSystem = this.$refs.addInstitute.collegeSystem ? record.record.collegeSystem : 3
+        this.$refs.addInstitute.secondVocationalSystem = this.$refs.addInstitute.secondVocationalSystem ? record.record.highSystem : 3
         this.title = '编辑学校'
         this.disabled = true
       } else {
@@ -275,6 +296,9 @@ export default {
         this.$refs.addInstitute.primarySystem = 6
         this.$refs.addInstitute.middleSystem = 3
         this.$refs.addInstitute.highSystem = 3
+        this.$refs.addInstitute.nurserySystem = 3
+        this.$refs.addInstitute.collegeSystem = 3
+        this.$refs.addInstitute.secondVocationalSystem = 3
         this.title = '新增学校'
         this.disabled = false
       }

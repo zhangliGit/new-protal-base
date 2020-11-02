@@ -7,27 +7,25 @@
     <div class="top">
       <div class="qui-fx-ver">
         <p class="info qui-fx">
-          <span>学年： {{ year }}学年</span>
           <span>姓名： {{ studentInfo.userName }}</span>
           <span>学号： {{ studentInfo.workNo }}</span>
-          <span>年级： {{ studentInfo.gradeName }}</span>
-          <span>班级： {{ studentInfo.className }}</span>
-          <span>入学年份： {{ studentInfo.admissionTime }}</span>
           <span>性别： {{ studentInfo.sex | getSex() }}</span>
-          <span>状态： {{ studentInfo.sex | getSex() }}</span>
-          <span>走住读类型： {{ studentInfo.hasDorm | getDorm() }}</span>
-          <span>卡号： {{ studentInfo.className }}</span>
+          <span>走住读： {{ studentInfo.hasDorm | getDorm() }}</span>
+          <span>年级： {{ studentInfo.grade }}级</span>
+          <span>专业： {{ studentInfo.subjectName }}</span>
+          <span>班级： {{ studentInfo.className }}</span>
+          <span>卡号： {{ studentInfo.cardNo }}</span>
+          <span>备注： {{ studentInfo.remark }}</span>
         </p>
         <p class="phone qui-fx">
-          <span class="qui-fx-ac">人脸照片：</span>
+          <span class="qui-fx-ac">图片：</span>
           <a-popover placement="right">
             <template slot="content">
-              <img :src="studentInfo.photoUrl" style="max-width: 200px; max-height: 220px; display: block;" alt="">
+              <img :src="studentInfo.photoUrl || noImg" style="max-width: 200px; max-height: 220px; display: block;" alt="">
             </template>
-            <img :src="studentInfo.photoUrl" style="max-width: 80px; max-height: 80px; display: block;" alt="">
+            <img :src="studentInfo.photoUrl || noImg" style="max-width: 80px; max-height: 80px; display: block;" alt="">
           </a-popover>
         </p>
-        <span>备注： {{ studentInfo.remark }}</span>
       </div>
     </div>
     <a-tabs default-active-key="1" @change="tabChange" v-model="tabValue">
@@ -93,6 +91,7 @@ import TableList from '@c/TableList'
 import { Switch } from 'ant-design-vue'
 import NoData from '@c/NoData'
 import highStuDetail from '../../assets/js/table/highStuDetail.js'
+import noImg from '../../assets/img/no_img.png'
 
 export default {
   name: 'HighStuDetail',
@@ -106,6 +105,7 @@ export default {
   },
   data() {
     return {
+      noImg,
       highStuDetail,
       changeTag: false,
       changeTitle: '变更',
@@ -122,33 +122,30 @@ export default {
       tabValue: '1',
       photoList: [],
       noDataTag: false,
-      height: 0
+      height: 0,
+      studentId: ''
     }
   },
   mounted() {
-    console.log(window.innerHeight)
     this.height = window.innerHeight - 460
     this.userCode = this.$route.query.userCode
     this.year = this.$route.query.year
     this.yearId = this.$route.query.yearId
-    console.log(this.userCode)
+    this.studentId = this.$route.query.id
     this.showStudentInfo()
   },
   methods: {
     ...mapActions('home', [
-      'queryStudentInfoById',
+      'getHighStuDetail',
       'queryParents',
       'setParents',
       'getChangeList',
-      'getDormChangeList',
-      'getIntro'
+      'getDormChangeList'
     ]),
     tabChange() {
-      console.log(this.tabValue)
       this.showList()
     },
     changeMain(value, e) {
-      console.log(value, e)
       this.parentsList.map((ele) => {
         ele.hasMainParent = false
       })
@@ -168,7 +165,7 @@ export default {
       })
     },
     async showStudentInfo() {
-      const res = await this.queryStudentInfoById({ userCode: this.userCode, schoolYearId: this.yearId })
+      const res = await this.getHighStuDetail({ id: this.studentId })
       this.studentInfo = res.data
       this.childCode = res.data.userCode
       this.showList()
@@ -218,7 +215,8 @@ export default {
       margin-bottom: 20px;
       flex-wrap: wrap;
       span {
-        margin-right: 50px;
+        width: 200px;
+        margin-right: 10px;
         padding: 10px 0;
       }
     }
@@ -237,31 +235,6 @@ export default {
     padding: 0 20px;
     .table {
       margin-bottom: 20px;
-    }
-  }
-  .intro{
-    .line {
-      width: 2px;
-      height: 14px;
-    }
-    .content{
-      text-indent: 2em;
-    }
-    .photo-list {
-      margin-bottom: 10px;
-      border-radius: 4px;
-      overflow: hidden;
-      width: 240px;
-      height: 200px;
-      background-color:#fff;
-      float: left;
-      margin-right: 1.5%;
-      position: relative;
-      & > img {
-        width: 240px;
-        height: 180px;
-        display: block;
-      }
     }
   }
 }

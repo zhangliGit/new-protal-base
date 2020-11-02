@@ -46,7 +46,10 @@
           format="YYYY-MM-DD"
         />
       </a-form-item>
-      <div class="tip">开始日期不早于{{ limit.split('-')[0] }}年8月1日，结束日期不晚于{{ limit.split('-')[1] }}年7月31日。 </div>
+      <div class="tip">
+        <a-icon class="u-mar-r10 u-type-primary" type="info-circle" />
+        开始日期不早于{{ limit.split('-')[0] }}年8月1日，结束日期不晚于{{ limit.split('-')[1] }}年7月31日。
+      </div>
     </a-form>
   </a-modal>
 </template>
@@ -117,7 +120,7 @@ export default {
           values.schoolCode = this.userInfo.schoolCode
           const startDate = moment(values.time[0]).format('YYYY-MM-DD')
           const endDate = moment(values.time[1]).format('YYYY-MM-DD')
-          if (`${this.limit.split('-')[0]} 08-01` <= startDate && endDate <= `${this.limit.split('-')[1]} 07-31`) {
+          if (`${this.limit.split('-')[0]}-08-01` <= startDate && endDate <= `${this.limit.split('-')[1]}-07-31`) {
             if (!this.detailId) {
               this.confirmLoading = true
               this.addHighTerm({ ...values, startDate, endDate })

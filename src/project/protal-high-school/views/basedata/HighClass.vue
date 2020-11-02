@@ -18,7 +18,7 @@
     ></submit-form>
     <div class="qui-fx qui-fx-jsb" style="width:100%">
       <div class="left">
-        <major-tree @select="select"></major-tree>
+        <major-tree ref="majorTree" @select="select"></major-tree>
       </div>
       <div class="right qui-fx-ver qui-fx-f1" style="padding-right: 10px">
         <search-form is-reset @search-form="searchForm" :search-label="highClass.searchLabel">
@@ -162,11 +162,6 @@ export default {
       highClass,
       title: '添加班级',
       formStatus: false,
-      schoolYearId: '',
-      gradeCode: '',
-      classCode: '',
-      gradeId: '',
-      gradeName: '',
       chooseList: [],
       total: 0,
       pageList: {
@@ -175,8 +170,6 @@ export default {
       },
       classList: [],
       type: 0,
-      yearList: [],
-      isNewYear: true,
       placeName: '',
       record: null,
       userTag: false,
@@ -197,25 +190,20 @@ export default {
     ...mapActions('home', [
       'getHighClass', 'addHighClass', 'addClassList', 'addHighClasses',
       'delHighClass', 'getHighTerm', 'getHighSub', 'highClassBind',
-      'delHighClasses', 'unbindHighClass', 'unbindHighTea'
+      'delHighClasses', 'unbindHighClass', 'unbindHighTea', 'getHighGrade'
     ]),
     // 获取学年
     async getGrade() {
       this.highClass.formData[0].list = []
       this.highClass.formDatas[0].list = []
-      const req = {
-        schoolCode: this.userInfo.schoolCode,
-        page: 1,
-        size: 99999
-      }
-      const res = await this.getHighTerm(req)
-      if (res.data.records.length === 0) {
+      const res = await this.getHighGrade({ schoolCode: this.userInfo.schoolCode })
+      if (res.data.length === 0) {
         return
       }
-      this.highSubTerm = res.data.records
-      res.data.records.forEach(ele => {
-        this.highClass.formData[0].list.push({ key: ele.schoolYearCode, val: `${ele.schoolYearName.split('-')[0]}级` })
-        this.highClass.formDatas[0].list.push({ key: ele.schoolYearCode, val: `${ele.schoolYearName.split('-')[0]}级` })
+      this.highSubTerm = res.data
+      res.data.forEach(ele => {
+        this.highClass.formData[0].list.push({ key: ele.gradeCode, val: `${ele.gradeName.split('-')[0]}级` })
+        this.highClass.formDatas[0].list.push({ key: ele.gradeCode, val: `${ele.gradeName.split('-')[0]}级` })
       })
     },
     // 获取专业
@@ -224,7 +212,8 @@ export default {
       this.highClass.formDatas[1].list = []
       const req = {
         page: 1,
-        size: 99999
+        size: 99999,
+        schoolCode: this.userInfo.schoolCode
       }
       const res = await this.getHighSub(req)
       if (res.data.records.length === 0) {
@@ -252,6 +241,7 @@ export default {
     select(item) {
       this.searchList.gradeCode = item.gradeCode
       this.searchList.gradeName = item.gradeName
+      this.searchList.grade = item.gradeName
       this.searchList.subjectCode = item.subjectCode || ''
       this.searchList.classCode = item.classCode || ''
       this.showList()
@@ -273,21 +263,28 @@ export default {
         this.record = record
         this.highClass.formData[0].disabled = true
         this.highClass.formData[1].disabled = true
+        this.highClass.formData[1].initValue = record.subjectName
       } else if (type === 2) {
         this.title = '批量添加班级'
         this.highClass.formDatas[0].disabled = false
         this.highClass.formDatas[0].initValue = this.searchList.gradeCode
         if (this.searchList.subjectCode) {
-          this.highClass.formDatas[1].initValue = this.searchList.subjectCode
+          this.highClass.formDatas[1].initValue = this.highSubList.filter(el => el.subjectCode === this.searchList.subjectCode)[0].subjectName
+        } else {
+          this.highClass.formDatas[1].initValue = []
         }
-        console.log('123', this.highClass.formDatas[0].initValue)
       } else if (type === 0) {
         this.title = '添加班级'
         this.highClass.formData[0].disabled = false
+        this.highClass.formData[1].disabled = false
         this.highClass.formData[0].initValue = this.searchList.gradeCode
         if (this.searchList.subjectCode) {
-          this.highClass.formData[1].initValue = this.searchList.subjectCode
+          this.highClass.formData[1].initValue = this.highSubList.filter(el => el.subjectCode === this.searchList.subjectCode)[0].subjectName
+        } else {
+          this.highClass.formData[1].initValue = []
         }
+        this.highClass.formData[2].initValue = ''
+        this.highClass.formData[3].initValue = ''
       } else if (type === 3) {
         this.title = '添加教室'
         this.record = record
@@ -299,13 +296,12 @@ export default {
       }
     },
     async deleteList(type, record) {
-      let ids = []
-      // 批量删除
+      // 单个删除
       if (type === 1) {
-        ids = [record.id]
-        await this.delHighClass(ids)
+        await this.delHighClass({ id: record.id })
         this.$message.success('删除成功')
         this.$tools.goNext(() => {
+          this.$refs.majorTree.initMenu()
           this.showList()
         })
         // 批量解绑
@@ -342,7 +338,6 @@ export default {
     },
     // 选择场地
     addClassRoom(val) {
-      console.log('val', val)
       this.placeName = val
     },
     // 教室和辅导员绑定
@@ -371,15 +366,16 @@ export default {
         this._highClassBind('form')
       } else {
         values.schoolCode = this.userInfo.schoolCode
-        values.gradeName = this.highSubTerm.filter(el => el.schoolYearCode === values.gradeCode)[0].schoolYearName
-        values.subjectName = this.highSubList.filter(el => el.subjectCode === values.subjectCode)[0].subjectName
+        values.gradeName = this.highSubTerm.filter(el => el.gradeCode === values.gradeCode)[0].gradeName
         if (this.type === 0) {
+          values.subjectName = this.highSubList.filter(el => el.subjectCode === values.subjectCode)[0].subjectName
           this.addHighClass(values)
             .then(res => {
               this.$message.success('添加成功')
               this.$tools.goNext(() => {
                 this.showList()
                 this.$refs.form.reset()
+                this.$refs.majorTree.initMenu()
               })
             })
             .catch(() => {
@@ -391,6 +387,7 @@ export default {
             this.$message.success('编辑成功')
             this.$tools.goNext(() => {
               this.showList()
+              this.$refs.majorTree.initMenu()
               this.$refs.form.reset()
             })
           })
@@ -403,6 +400,7 @@ export default {
               this.$message.success('添加成功')
               this.$tools.goNext(() => {
                 this.showList()
+                this.$refs.majorTree.initMenu()
                 this.$refs.form.reset()
               })
             })
@@ -418,11 +416,9 @@ export default {
         path,
         query: {
           id: record.id,
-          schoolYearId: record.schoolYearId,
+          subjectCode: record.subjectCode,
           classCode: record.classCode,
-          gradeCode: record.gradeCode,
-          isNewYear: this.isNewYear ? '1' : '0',
-          type
+          gradeCode: record.gradeCode
         }
       })
     }
@@ -442,19 +438,6 @@ export default {
   .right {
     border-left: 1px solid @bor-color;
     padding: 0 0 0 10px;
-    .action {
-      div {
-        cursor: pointer;
-        margin: 4px 30px 0 0;
-        img {
-          width: 20px;
-          height: 20px;
-        }
-        span {
-          font-size: 12px;
-        }
-      }
-    }
   }
 }
 .tab-add {

@@ -10,8 +10,7 @@ require('colors')
 modulesDir.forEach(file => {
   projectList.push(file.split('/')[file.split('/').length - 1])
 })
-projectList = ['protal-admin', 'protal-login', 'protal-entry', 'index', 'protal-parameter-school', 'protal-safe-bureau', 'protal-library-school']
-console.log(projectList)
+projectList = ['index', 'protal-admin', 'protal-login', 'protal-entry', 'protal-school', 'protal-organize', 'protal-control', 'protal-door', 'protal-attendance', 'protal-ncov', 'protal-dorm', 'protal-class', 'protal-common', 'protal-consumption', 'protal-dealManage', 'protal-oa'] // 局部编译
 if (process.env.NODE_ENV === 'production') {
   if (projectList.indexOf(buildModule) === -1) {
     console.log(`请您输入正确的打包模块: ${JSON.stringify(projectList)}`.red)

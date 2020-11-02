@@ -85,7 +85,7 @@ export default {
         schoolCode: this.school ? this.school : this.schoolCode
       }
       const res = await $ajax.get({
-        url: `${hostEnv.ljj_admin}/class/manage/node`,
+        url: `${hostEnv.ljj_high}/class/manage/node`,
         params: req
       })
       if (res.data === null || res.data.length === 0) {

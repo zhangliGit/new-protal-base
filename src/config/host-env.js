@@ -32,7 +32,6 @@ let zk_work = ''
 let ljj_attendance = ''
 let zk_oa = ''
 let lz_safe = ''
-let cl_oa = ''
 let wxz_pay = ''
 let cl_class = ''
 let zk_class = ''
@@ -41,7 +40,10 @@ let ljj_people = ''
 let img_download = ''
 let oss_upload = ''
 let hzz_ecard = ''
+let hzz_deal = ''
+let hzz_tooken = ''
 let wxz_notice = ''
+let ljj_high = ''
 if (ConfigEnv === 'test') {
   wxz_control = '/wxz_control'
   zk_school = '/zk_school'
@@ -74,7 +76,6 @@ if (ConfigEnv === 'test') {
   zq_oa = '/zq_oa'
   ljj_attendance = '/ljj_attendance'
   lz_safe = '/lz_safe'
-  cl_oa = '/cl_oa'
   wxz_pay = '/wxz_pay'
   cl_class = '/cl_class'
   zk_class = '/zk_class'
@@ -83,7 +84,10 @@ if (ConfigEnv === 'test') {
   img_download = '/img_download'
   oss_upload = '/oss_upload'
   hzz_ecard = '/hzz_ecard'
+  hzz_deal = '/hzz_deal'
+  hzz_tooken = '/hzz_tooken'
   wxz_notice = '/wxz_notice'
+  ljj_high = '/ljj_high'
 } else if (ConfigEnv === 'prod') {
   wxz_control = '/wxz_control'
   zk_school = '/zk_school'
@@ -116,7 +120,6 @@ if (ConfigEnv === 'test') {
   zq_oa = '/zq_oa'
   ljj_attendance = '/ljj_attendance'
   lz_safe = '/lz_safe'
-  cl_oa = '/cl_oa'
   wxz_pay = '/wxz_pay'
   cl_class = '/cl_class'
   zk_class = '/zk_class'
@@ -125,7 +128,10 @@ if (ConfigEnv === 'test') {
   img_download = '/img_download'
   oss_upload = '/oss_upload'
   hzz_ecard = '/hzz_ecard'
+  hzz_deal = '/hzz_deal'
+  hzz_tooken = '/hzz_tooken'
   wxz_notice = '/wxz_notice'
+  ljj_high = '/ljj_high'
 } else {
   wxz_control = '/wxz_control'
   zk_school = '/zk_school'
@@ -158,7 +164,6 @@ if (ConfigEnv === 'test') {
   zq_oa = '/zq_oa'
   ljj_attendance = '/ljj_attendance'
   lz_safe = '/lz_safe'
-  cl_oa = '/cl_oa'
   wxz_pay = '/wxz_pay'
   cl_class = '/cl_class'
   zk_class = '/zk_class'
@@ -167,7 +172,10 @@ if (ConfigEnv === 'test') {
   img_download = '/img_download'
   oss_upload = '/oss_upload'
   hzz_ecard = '/hzz_ecard'
+  hzz_deal = '/hzz_deal'
+  hzz_tooken = '/hzz_tooken'
   wxz_notice = '/wxz_notice'
+  ljj_high = '/ljj_high'
 }
 
 export default {
@@ -202,14 +210,18 @@ export default {
   zq_oa,
   ljj_attendance,
   lz_safe,
-  cl_oa,
   wxz_pay,
   cl_class,
   zk_class,
   zk_news,
   ljj_people,
   img_download,
+  oss_upload,
   hzz_ecard,
+  hzz_deal,
+  hzz_tooken,
   wxz_notice,
-  oss_upload 
+  oss_upload,
+  ljj_high,
+  oss_upload
 }

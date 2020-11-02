@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    width="650px"
+    width="900px"
     :title="title"
     v-model="status"
     @ok="submitOk"
@@ -32,34 +32,70 @@
       <!--复选框-->
       <a-form-item v-bind="formItemLayout" label="学段" required>
         <a-checkbox-group v-model="checkedList" :disabled="disabled" @change="periodChange">
-          <div class="qui-fx mar-b10">
-            <div style="width:75px">
-              <a-checkbox :style="radioStyle" :value="primary"> 小学 </a-checkbox>
+          <div class="qui-fx">
+            <div class="qui-fx mar-b10">
+              <div style="width:80px">
+                <a-checkbox :style="radioStyle" :value="nursery"> 幼儿园 </a-checkbox>
+              </div>
+              <div style="width:200px">
+                <a-select v-model="nurserySystem" :disabled="disabled">
+                  <a-select-option v-for="item in middleList" :key="item.key">{{ item.value }}</a-select-option>
+                </a-select>
+              </div>
             </div>
-            <div style="width:275px">
-              <a-select v-model="primarySystem" :disabled="disabled">
-                <a-select-option v-for="item in primaryList" :key="item.key">{{ item.value }}</a-select-option>
-              </a-select>
-            </div>
-          </div>
-          <div class="qui-fx mar-b10">
-            <div style="width:75px">
-              <a-checkbox :style="radioStyle" :value="middle"> 初中 </a-checkbox>
-            </div>
-            <div style="width:275px">
-              <a-select v-model="middleSystem" :disabled="disabled">
-                <a-select-option v-for="item in middleList" :key="item.key">{{ item.value }}</a-select-option>
-              </a-select>
+            <div class="qui-fx mar-b10 u-mar-l20">
+              <div style="width:80px">
+                <a-checkbox :style="radioStyle" :value="primary"> 小学 </a-checkbox>
+              </div>
+              <div style="width:200px">
+                <a-select v-model="primarySystem" :disabled="disabled">
+                  <a-select-option v-for="item in primaryList" :key="item.key">{{ item.value }}</a-select-option>
+                </a-select>
+              </div>
             </div>
           </div>
           <div class="qui-fx">
-            <div style="width:75px">
-              <a-checkbox :style="radioStyle" :value="high"> 高中 </a-checkbox>
+            <div class="qui-fx mar-b10">
+              <div style="width:80px">
+                <a-checkbox :style="radioStyle" :value="middle"> 初中 </a-checkbox>
+              </div>
+              <div style="width:200px">
+                <a-select v-model="middleSystem" :disabled="disabled">
+                  <a-select-option v-for="item in middleList" :key="item.key">{{ item.value }}</a-select-option>
+                </a-select>
+              </div>
             </div>
-            <div style="width:275px">
-              <a-select v-model="highSystem" :disabled="disabled">
-                <a-select-option v-for="item in highList" :key="item.key">{{ item.value }}</a-select-option>
-              </a-select>
+            <div class="qui-fx u-mar-l20">
+              <div style="width:80px">
+                <a-checkbox :style="radioStyle" :value="high"> 高中 </a-checkbox>
+              </div>
+              <div style="width:200px">
+                <a-select v-model="highSystem" :disabled="disabled">
+                  <a-select-option v-for="item in highList" :key="item.key">{{ item.value }}</a-select-option>
+                </a-select>
+              </div>
+            </div>
+          </div>
+          <div class="qui-fx">
+            <div class="qui-fx">
+              <div style="width:80px">
+                <a-checkbox :style="radioStyle" :value="secondVocational"> 中职 </a-checkbox>
+              </div>
+              <div style="width:200px">
+                <a-select v-model="secondVocationalSystem" :disabled="disabled">
+                  <a-select-option v-for="item in secondVocationalList" :key="item.key">{{ item.value }}</a-select-option>
+                </a-select>
+              </div>
+            </div>
+            <div class="qui-fx u-mar-l20">
+              <div style="width:80px">
+                <a-checkbox :style="radioStyle" :value="college"> 高校 </a-checkbox>
+              </div>
+              <div style="width:200px">
+                <a-select v-model="collegeSystem" :disabled="disabled">
+                  <a-select-option v-for="item in collegeList" :key="item.key">{{ item.value }}</a-select-option>
+                </a-select>
+              </div>
             </div>
           </div>
         </a-checkbox-group>
@@ -72,12 +108,15 @@
             'schoolType',
             { initialValue: appForm.schoolType }
           ]">
+          <a-radio-button value="7"> 幼儿园 </a-radio-button>
           <a-radio-button value="1"> 小学 </a-radio-button>
           <a-radio-button value="2"> 初中 </a-radio-button>
           <a-radio-button value="3"> 高中 </a-radio-button>
           <a-radio-button value="4"> 九年制 </a-radio-button>
           <a-radio-button value="6"> 十二年制 </a-radio-button>
           <a-radio-button value="5"> 完全中学 </a-radio-button>
+          <a-radio-button value="8"> 中职 </a-radio-button>
+          <a-radio-button value="9"> 高校 </a-radio-button>
         </a-radio-group>
       </a-form-item>
       <a-form-item v-bind="formItemLayout" label="地区">
@@ -164,6 +203,9 @@ export default {
       primarySystem: 6,
       middleSystem: 3,
       highSystem: 3,
+      nurserySystem: 3,
+      secondVocationalSystem: 3,
+      collegeSystem: 3,
       primaryList: [{
         key: 6,
         value: '六年制'
@@ -185,10 +227,27 @@ export default {
         key: 4,
         value: '四年制'
       }],
+      secondVocationalList: [{
+        key: 3,
+        value: '三年制'
+      }],
+      collegeList: [{
+        key: 3,
+        value: '三年制'
+      }, {
+        key: 4,
+        value: '四年制'
+      }, {
+        key: 5,
+        value: '五年制'
+      }],
       checkBox: [],
       primary: '01',
       middle: '02',
       high: '03',
+      nursery: '00',
+      secondVocational: '05',
+      college: '04',
       checkedList: [],
       defaultValue: '0'
     }
@@ -198,25 +257,37 @@ export default {
       'getProvinces', 'getSubNodes', 'delSchool', 'addSchool', 'updateSchool'
     ]),
     periodChange(e) {
-      if (e.length === 1) {
-        this.appForm.schoolType = e[0].substr(1, 2)
-      } else if (e.length === 2) {
-        const primary = e.indexOf('01') !== -1
-        const middle = e.indexOf('02') !== -1
-        const high = e.indexOf('03') !== -1
-        if (primary && middle) {
-          this.appForm.schoolType = '4'
-        } else if (high && middle) {
-          this.appForm.schoolType = '5'
-        } else {
-          this.appForm.schoolType = '1'
-          this.checkedList = ['01']
-        }
-      } else if (e.length === 3) {
+      const nursery = e.indexOf('00') !== -1
+      const primary = e.indexOf('01') !== -1
+      const middle = e.indexOf('02') !== -1
+      const high = e.indexOf('03') !== -1
+      const college = e.indexOf('04') !== -1
+      const secondVocational = e.indexOf('05') !== -1
+      if (nursery) {
+        this.checkedList = ['00']
+        this.appForm.schoolType = '7'
+      }
+      if (college) {
+        this.checkedList = ['04']
+        this.appForm.schoolType = '9'
+      }
+      if (secondVocational) {
+        this.checkedList = ['05']
+        this.appForm.schoolType = '8'
+      }
+      if (primary && high && !middle) {
+        this.checkedList = []
+        this.appForm.schoolType = ''
+      }
+      if (primary && middle && !high) {
+        this.appForm.schoolType = '4'
+      } else if (high && middle && !primary) {
+        this.appForm.schoolType = '5'
+      } else if (primary && high && middle) {
         this.appForm.schoolType = '6'
-      } else {
-        this.appForm.schoolType = '1'
-        this.checkedList = ['01']
+      }
+      if (e.length === 1 && !nursery && !college && !secondVocational) {
+        this.appForm.schoolType = e[0].substr(1, 2)
       }
     },
     onChange (value, obj) {
@@ -275,6 +346,9 @@ export default {
           values.schoolStage = this.checkedList.join(',')
           values.middleSystem = this.middleSystem
           values.highSystem = this.highSystem
+          values.nurserySystem = this.nurserySystem
+          values.secondVocationalSystem = this.secondVocationalSystem
+          values.collegeSystem = this.collegeSystem
           values.logoUrl = this.fileList[0].url
           if (this.checkedList.indexOf('01') === -1) {
             values.primarySystem = ''
@@ -284,6 +358,15 @@ export default {
           }
           if (this.checkedList.indexOf('03') === -1) {
             values.highSystem = ''
+          }
+          if (this.checkedList.indexOf('00') === -1) {
+            values.nurserySystem = ''
+          }
+          if (this.checkedList.indexOf('04') === -1) {
+            values.collegeSystem = ''
+          }
+          if (this.checkedList.indexOf('05') === -1) {
+            values.secondVocationalSystem = ''
           }
           if (this.title === '新增学校') {
             this.addSchool({

@@ -163,7 +163,7 @@ export default {
             .then(res => {
               this.addVisible = false
               this.isLoad = false
-              this.batchList = []
+              this.value = []
               this.$message.success('操作成功')
               this.$tools.goNext(() => {
                 this.$emit('update')
