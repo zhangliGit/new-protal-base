@@ -1,8 +1,8 @@
 
-import libraryApi from './library'
+import parameterApi from './parameter'
 import homeApi from './home'
 const apiList = {
   ...homeApi,
-  ...libraryApi
+  ...parameterApi
 }
 export default apiList

@@ -6,7 +6,7 @@
 import hostEnv from '@config/host-env'
 
 const homeApi = {
-  getEduCode: '/school/info/edu/info/by/childnode#postJsonQuery' // 获取学校所绑定的机构
+  getEduCode: '/school/info/edu/info/by/childnode#get' // 获取学校所绑定的机构
 }
 for (const val in homeApi) {
   homeApi[val] = `${hostEnv.ljj_edu}${homeApi[val]}`

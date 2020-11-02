@@ -1,6 +1,6 @@
 <template>
   <!-- 2. 柱状图Dom -->
-  <div :id="id" ref="chart" style="width: 60%;height:400px;"></div>
+  <div :id="id" ref="chart" style="width:100%;height:100%;" ></div>
 </template>
 <script>
 const echarts = require('echarts/lib/echarts')
@@ -11,9 +11,9 @@ require('echarts/lib/component/toolbox')
 require('echarts/lib/chart/bar')
 require('echarts/lib/chart/line')
 export default {
-  name: 'PreBarEcharts',
+  name: 'PreEcharts',
   props: {
-    dataList: {
+    data: {
       type: Array,
       default: function() {
         return []
@@ -28,6 +28,10 @@ export default {
     id: {
       type: String,
       required: true
+    },
+    radius: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -35,7 +39,7 @@ export default {
     }
   },
   mounted() {
-    this.initPieData(this.fomartData(this.dataList), this.legendData)
+    this.initPieData(this.data, this.legendData, this.radius)
   },
   created() {
   },
@@ -46,10 +50,11 @@ export default {
       const fomartData = JSON.parse(JSON.stringify(val).replace(/answer/g, 'name').replace(/count/g, 'value'))
       return fomartData
     },
-    initPieData(data, legendData) {
+    initPieData(data, legendData, radius) {
       // 对饼状图dom，初始化echarts实例
       var myChart1 = echarts.init(this.$refs.chart, 'shine')
       myChart1.setOption({
+        color: ['#FF9593FF', '#71A6EEFF', '#FFE18FFF', '#BFB1FEFF', '#71CBA6FF'],
         // 图表标题
         title: {
           text: '某站点用户访问来源', // 标题内容
@@ -63,48 +68,45 @@ export default {
         },
         // 图例
         legend: {
-          x: '80%',
-          y: '45%',
-          orient: 'horizontal', // 垂直显示
-          right: 'auto',
-          // x: 'bottom', // 显示位置--左上
-          data: legendData
+          bottom: 0,
+          itemHeight: 8,
+          itemWidth: 8,
+          data: data.map(v => v.name)
         },
-        calculable: true,
+        // calculable: true,
         series: [
           {
             name: '选项',
             type: 'pie',
-            radius: '65%',
+            radius: radius ? ['40%', '60%'] : ['0%', '60%'],
             center: ['50%', '50%'],
+            avoidLabelverlap: true,
             data: data,
+            animation: true, // 是否开启动画
+            label: {
+              // position: radius ? 'center' : 'outer',
+              position: 'outer',
+              alignTo: 'edge',
+              margin: 30,
+              normal: {
+                formatter: '{b}:{c}: ({d}%)',
+                textStyle: {
+                  fontWeight: 'normal',
+                  fontSize: 15
+                }
+              }
+            },
             itemStyle: {
               emphasis: {
                 shadowBlur: 10,
                 shadowOffsetX: 0
-                // shadowColor: 'rgba(0, 0, 0, 0.5)'
               },
               normal: {
-                color: function(params) {
-                  // 自定义颜色
-                  var colorList = [
-                    '#399ffb', '#f9d239', '#fd7d2a', '#f26980'
-                  ]
-                  return colorList[params.dataIndex]
-                }
               }
             }
           }
         ]
-      }) // 按option1展示myChart1图表
-      // echarts.connect([myChart2, myChart1])
-      // 配置自动适应Windows窗口大小
-      // setTimeout(function () {
-      //   window.onresize = function () {
-      //     myChart1.resize()
-      //     myChart2.resize()
-      //   }
-      // }, 200)
+      })
     }
   }
 }

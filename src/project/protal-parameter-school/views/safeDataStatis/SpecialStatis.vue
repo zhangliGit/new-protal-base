@@ -1,207 +1,221 @@
 <template>
-  <div class="page-layout qui-fx-ver">
-    <div class="content pos-box bg-fff">
-      <div class="qui-fx qui-fx-jsb" style="width:100%;height:100%" >
-        <div class="left u-padd-l30 u-padd-t30 u-padd-b40">
-          <grade-tree @select="select" :treeData="treeData"></grade-tree>
+  <div class="page-layout SpecialStatis  qui-fx-ver">
+    <div class="content pos-box u-fx-ver">
+      <div class="search-form u-padd-t10 u-padd-b10 u-tips-color">
+        <a-month-picker
+          v-model="startValue"
+          placeholder="请选择月份"
+          :disabled-date="disabledStartMonth"
+        />&nbsp;&nbsp;-&nbsp;
+        <a-month-picker
+          v-model="endValue"
+          placeholder="请选择月份"
+          :disabled-date="disabledEndMonth"
+        />
+        <a-button class="u-mar-l10" type="primary" @click="search()">搜索</a-button>
+      </div>
+      <div class="charts u-mar-t10 u-fx">
+        <div class="zhexian u-fx-f1 u-bg-fff u-mar-r10 u-fx-ver u-padd-t10">
+          <div class="title u-mar-l20 u-padd-l10">专项检查任务总览
+            <div class="line"></div>
+          </div>
+          <pre-echarts
+            id="SpecialStatis1"
+            v-if="countDTO.length>0"
+            :data="countDTO"
+          ></pre-echarts>
         </div>
-        <div class="right qui-fx-ver qui-fx-f1" style="padding-right: 10px">
-          <search-form is-reset @search-form="searchForm" :search-label="knowledgeSearchLabel">
-          </search-form>
-          <table-list
-            is-zoom
-            v-model="chooseList"
-            :page-list="pageList"
-            :columns="knowledgeColumns"
-            :table-list="findList">
-            <template v-slot:actions="action">
-              <a-tooltip placement="topLeft" title="查看">
-                <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="preview(action.record)"></a-button>
-              </a-tooltip>
-              <a-tooltip placement="topLeft" title="使用统计">
-                <a-button size="small" class="export-all-btn" icon="export" @click="getStatistics(action.record)"></a-button>
-              </a-tooltip>
-            </template>
-          </table-list>
-          <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
+        <div class="top5 u-fx-f2 u-bg-fff u-fx-ver u-padd-t10">
+          <div class="title u-mar-l20 u-padd-l10">专项检查任务排行TOP5(本区域排行)
+            <div class="line"></div>
+          </div>
+          <div class="table-box u-padd-20 u-fx-ac-jc">
+            <top5-table :checkTableIndex="checkTableIndex" :columns="columns" :data="rankList"></top5-table>
+          </div>
         </div>
       </div>
-      <a-modal width="600px" title="使用统计" v-model="visible" :footer="null" @cancel="close">
-        <div class="qui-fx-ver statistic" v-if="Object.keys(statisticsData).length">
-          <div class="number u-mar-b10">使用总数：{{ statisticsData.count }}</div>
-          <div class="number u-mar-b20">最近一次使用记录：{{ statisticsData.recent }}</div>
-          <a-table
-            :rowKey="(record, index) => index"
-            :columns="columnsUrl"
-            :pagination="false"
-            :data-source="statisticsData.records"
-            bordered>
-            <template slot="index" slot-scope="text, record, index">
-              {{ index }}
-            </template>
-          </a-table>
-          <page-num v-model="statisticsPageList" :total="statisticsData.total" @change-page="_pageStatistics"></page-num>
+      <div class="second-row u-bg-fff u-mar-t10 ">
+        <div class="title u-padd-l10  ">专项检查统计图
+          <div class="line"></div>
         </div>
-      </a-modal>
+        <columnar-echarts
+          id="SpecialStatis1"
+          v-if="chartList.length>0"
+          :data="chartList"
+          :legendData="[{name:'任务总数',value:'all'},{name:'任务完成数',value:'done'}]"
+        ></columnar-echarts>
+      </div>
     </div>
   </div>
 </template>
 <script>
-import Tools from '@u/tools'
+import moment from 'moment'
+import PreEcharts from '../../component/PreEcharts'
+import columnarEcharts from '../../component/columnarEcharts'
+
+import Top5Table from '../../component/Top5Table'
 import { mapState, mapActions } from 'vuex'
-import TableList from '@c/TableList'
-import PageNum from '@c/PageNum'
-import SearchForm from '@c/SearchForm'
-import { knowledgeSearchLabel } from '../../assets/js/searchLabel.js'
-import { knowledgeColumns } from '../../assets/js/tableColumns'
-import GradeTree from '../../component/GradeTree'
-const columnsUrl = [
+const columns = [
   {
-    title: '序号',
+    title: '排名',
     align: 'center',
-    scopedSlots: {
-      customRender: 'index'
-    }
+    dataIndex: 'ranking'
   },
   {
-    title: '使用人员',
+    title: '学校名称',
     align: 'center',
-    dataIndex: 'name'
+    dataIndex: 'schoolName'
   },
   {
-    title: '使用时间',
-    width: '40%',
+    title: '任务完成数',
     align: 'center',
-    dataIndex: 'time',
-    customRender: text => {
-      return Tools.getDate(text)
+    dataIndex: 'finishTaskCount'
+  },
+  {
+    title: '任务完成率',
+    align: 'center',
+    dataIndex: 'finishRate',
+    customRender: (text) => {
+      return `${text}%`
     }
   }
 ]
 export default {
-  name: 'Knowledge',
+  name: 'SpecialStatis',
   components: {
-    TableList,
-    PageNum,
-    SearchForm,
-    GradeTree
+    PreEcharts,
+    Top5Table,
+    columnarEcharts
   },
   data() {
     return {
-      columnsUrl,
-      visible: false,
-      categoryId: '', // 树选择的id
-      knowledgeColumns,
-      knowledgeSearchLabel,
-      total: 0,
-      treeData: [],
-      pageList: {
-        page: 1,
-        size: 20
-      },
-      chooseList: [], // 当有选择项时，被选中的项，返回每项的唯一id
-      findList: [],
-      searchList: {},
-      // 使用统计弹框
-      statisticsPageList: {
-        page: 1,
-        size: 5
-      },
-      statisticsData: {
-        // record: [],
-        // total: '20'
-      }
+      startValue: moment(new Date()),
+      endValue: moment(new Date()),
+      columns,
+      eduSchoolCodes: [],
+      checkTableIndex: -1,
+      chartList: [], //	条形图统计
+      countDTO: [], // 总体数量统计
+      myRank: [], // 本校名次
+      rankList: [] //	排行榜
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
-  async mounted() {
-    this.categoryId = ''
-    await this._treeView()
+  async created() {
+    await this.getEducode()
+    await this.getSchools()
     await this.showList()
   },
+  async mounted() {
+  },
   methods: {
-    ...mapActions('home', ['klgPublicList', 'batchRemove', 'batchRemoveAll', 'treeView', 'statistics', 'pageStatistics']),
+    ...mapActions('home', ['schSpecialStatis', 'getEduCode', 'underSchoolList']),
+    // 获取上级教育局code
+    async getEducode() {
+      const res = await this.getEduCode({ schoolCode: this.userInfo.schoolCode })
+      this.eduCode = res.data.schoolCode
+      this.getSchools()
+    },
+    // 获取教育下面的schoolCode集合
+    async getSchools() {
+      const req = {
+        eduCode: this.eduCode,
+        areas: [],
+        keyWord: '',
+        page: 1,
+        schoolStage: '',
+        size: 30
+      }
+      const res = await this.underSchoolList(req)
+      this.eduSchoolCodes = res.data.list.map(v => v.schoolCode)
+    },
+    // 月日期选择器
+    disabledStartMonth(startValue) {
+      if (startValue.valueOf() > new Date()) return true
+      const endValue = this.endValue
+      if (!startValue || !endValue) {
+        return false
+      }
+      return startValue.valueOf() > endValue.valueOf()
+    },
+    disabledEndMonth(endValue) {
+      if (endValue.valueOf() > new Date()) return true
+      const startValue = this.startValue
+      if (!endValue || !startValue) {
+        return false
+      }
+      return startValue.valueOf() >= endValue.valueOf()
+    },
+    search() {
+      this.showList()
+    },
     async showList() {
       const req = {
-        categoryId: this.categoryId,
-        ...this.pageList,
-        ...this.searchList
+        schoolCodeList: this.eduSchoolCodes,
+        startYear: this.startValue.format('YYYY'),
+        startMonth: this.startValue.format('M'),
+        endYear: this.endValue.format('YYYY'),
+        endMonth: this.endValue.format('M'),
+        schoolCode: this.userInfo.schoolCode
       }
-      const res = await this.klgPublicList(req)
-      this.findList = res.data.records
-      this.total = res.data.total
-    },
-    async _treeView() {
-      const res = await this.treeView()
-      this.treeData = res.data
+      const res = await this.schSpecialStatis(req)
+      const { chartList, countDTO, myRank, rankList } = res.data
+      this.chartList = chartList
+      this.countDTO = [
+        { name: '未完成', value: countDTO.notFinishCount },
+        { name: '已完成', value: countDTO.finishCount }
+      ]
+      this.myRank = myRank
+      const count = rankList.findIndex(el => el.schoolCode === this.userInfo.schoolCode)
+      if (count === -1) {
+        this.rankList = this.rankList.push(myRank)
+      } else {
+        this.checkTableIndex = count
+      }
+      this.rankList = rankList
     },
     searchForm(values) {
-      this.searchList = values
       this.showList()
-    },
-    async delBatch(record) {
-      await this.batchRemove(record.id)
-      this.showList()
-    },
-
-    // 选中categoryId
-    select(id) {
-      this.categoryId = id
-      this.showList()
-    },
-    // 查看预览
-    preview(record) {
-      this.$router.push({
-        path: '/knowledgePublic/previewKlg',
-        query: {
-          id: record ? record.id : ''
-        }
-      })
-    },
-    // 查看统计
-    getStatistics(record) {
-      this.visible = true
-      this.StatisticsId = record.id
-      this.getStatisticsData(record.id)
-    },
-    // 获取查看统计数据 总数，最近一次记录数据
-    async getStatisticsData(id) {
-      const req = {
-        'id': id,
-        'schoolCode': this.userInfo.schoolCode,
-        source: '3'
-      }
-      const res1 = await this.statistics(req)
-      this.statisticsData = res1.data
-      this._pageStatistics()
-    },
-    // 获取查看统计数据分页table数据
-    async  _pageStatistics() {
-      const req = {
-        ...this.statisticsPageList,
-        'id': this.StatisticsId,
-        'schoolCode': this.userInfo.schoolCode,
-        source: '3'
-      }
-      const res = await this.pageStatistics(req)
-      this.statisticsData = Object.assign({}, this.statisticsData, res.data)
-    },
-    // 关闭重置数据
-    close() {
-      this.visible = false
-      this.StatisticsId = ''
-      this.statisticsData = {}
     }
   }
 }
 </script>
 <style lang="less" scoped>
 @deep: ~'>>>';
-    .statistic{
-      @{deep} .ant-table-thead > tr >th{
-      background: #ecf5ff !important;
+.SpecialStatis{
+  background-color: #f0f2f5;
+  .content{
+    height: calc(100% - 10px);
+    .title{
+      position: relative;
+      .line{
+        position: absolute;
+        left:0;
+        top: 50%;
+        transform: translate(-50%,-50%);
+        width: 2px;
+        height: 13px;
+        background: #9698D6;
+      }
+    }
+    .charts{
+      height: 390px;
+      .top5{
+        .table-box{
+          height: 100%;
+          @{deep} .ant-table-thead > tr >th{
+            background: #C9CEEEFF !important;
+          }
+        }
+      }
+    }
+    .second-row{
+      padding: 20px;
+      padding-top: 10px;
+      height: 100%;
     }
   }
+}
 </style>

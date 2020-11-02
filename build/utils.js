@@ -10,6 +10,7 @@ require('colors')
 modulesDir.forEach(file => {
   projectList.push(file.split('/')[file.split('/').length - 1])
 })
+projectList = ['protal-admin', 'protal-login', 'protal-entry', 'index', 'protal-parameter-school', 'protal-safe-bureau', 'protal-library-school']
 console.log(projectList)
 if (process.env.NODE_ENV === 'production') {
   if (projectList.indexOf(buildModule) === -1) {
