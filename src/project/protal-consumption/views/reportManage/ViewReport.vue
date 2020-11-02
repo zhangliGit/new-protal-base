@@ -8,7 +8,7 @@
     <div class="qui-fx-f1 qui-fx">
       <table-list :page-list="pageList" :columns="reportColumns" :table-list="dataList"></table-list>
     </div>
-    <page-num v-model="pageList" :total="total"></page-num>
+    <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
   </div>
 </template>
 

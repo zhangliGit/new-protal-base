@@ -39,7 +39,7 @@
                 size="small"
                 class="detail-action-btn"
                 icon="ellipsis"
-                @click.stop="goLead('/basedata/stusentsDetail',action.record)"
+                @click.stop="goLead('/basedata/HighStuDetail',action.record)"
               ></a-button>
             </a-tooltip>
             <a-tooltip placement="topLeft" title="编辑">
@@ -108,11 +108,6 @@ export default {
       uploadFile: [],
       title: '添加学生',
       formStatus: false,
-      gradeList: [],
-      classList: [],
-      gradeId: '',
-      classId: '',
-      classChoose: '',
       chooseList: [],
       type: 0,
       total: 0,
@@ -121,12 +116,7 @@ export default {
         size: 20
       },
       studentsList: [],
-      schoolYear: '',
-      schoolYearId: '',
-      gradeCode: '',
-      classCode: '',
       userId: '',
-      keyObj: {},
       highSubTerm: [],
       highClass: [],
       searchList: {},
@@ -139,39 +129,24 @@ export default {
   created() {
     this.getGrade()
     this._getSubjectList()
-    // this.highStudent.formData[6].firstChange = this.firstChange
-    // this.highStudent.formData[6].secondChange = this.secondChange
     this.highStudent.formData[6].secondChange = this.secondChange
   },
   mounted() {},
   methods: {
     ...mapActions('home', [
-      'getHighTerm', 'getHighSub', 'getHighClass', 'addHighStu', 'updateHighStu',
-      'getClassList',
-      'withoutClassStudent',
-      'studentUpdate',
-      'getGradeList',
-      'getHighStu',
-      'addStudent',
-      'detailClassStudent',
-      'changeClass',
-      'deleteClassStudent'
+      'getHighTerm', 'getHighSub', 'getHighClass', 'addHighStu',
+      'getHighStu', 'updateHighStu', 'getHighGrade'
     ]),
     // 获取年级
     async getGrade() {
       this.highStudent.formData[6].firstList = []
-      const req = {
-        schoolCode: this.userInfo.schoolCode,
-        page: 1,
-        size: 99999
-      }
-      const res = await this.getHighTerm(req)
-      if (res.data.records.length === 0) {
+      const res = await this.getHighGrade({ schoolCode: this.userInfo.schoolCode })
+      if (res.data.length === 0) {
         return
       }
-      this.highSubTerm = res.data.records
-      res.data.records.forEach(ele => {
-        this.highStudent.formData[6].firstList.push({ key: ele.schoolYearCode, val: `${ele.schoolYearName.split('-')[0]}级` })
+      this.highSubTerm = res.data
+      res.data.forEach(ele => {
+        this.highStudent.formData[6].firstList.push({ key: ele.gradeCode, val: `${ele.gradeName}级` })
       })
     },
     // 获取列表
@@ -199,7 +174,8 @@ export default {
       this.highStudent.formData[6].secondList = []
       const req = {
         page: 1,
-        size: 99999
+        size: 99999,
+        schoolCode: this.userInfo.schoolCode
       }
       const res = await this.getHighSub(req)
       if (res.data.records.length === 0) {
@@ -227,13 +203,11 @@ export default {
       if (res.data.records.length > 0) {
         res.data.records.forEach(ele => {
           this.highStudent.formData[6].threeList.push({ key: ele.id, val: ele.className })
-          this.classList.push({ key: ele.id, val: ele.className })
         })
       }
     },
     // 搜索
     searchForm(values) {
-      console.log(values)
       this.pageList.page = 1
       this.pageList.size = 20
       this.searchList = Object.assign(this.searchList, values)
@@ -242,7 +216,6 @@ export default {
     addClick(type, record) {
       this.type = type
       if (type === 1) {
-        console.log(record)
         this.title = '编辑学生'
         this.userDetail = record
         this.highStudent.formData = this.$tools.fillForm(highStudent.formData, record)
@@ -256,21 +229,26 @@ export default {
         this.highStudent.formData[6].initValue3 = record.className ? [record.className] : ['请选择']
         this.formStatus = true
       } else if (type === 2) {
-        // this.orgCodeList[0] = this.orgCodeList[0] === '' ? this.userInfo.schoolCode : this.orgCodeList[0]
-        // const path = `/basedata/bulkImport?code=${this.orgCodeList.join(',')}&name=${this.orgName}`
-        const path = '/basedata/bulkStu'
-        this.$router.push({ path, query: { type: 'teachers' } })
+        const path = '/basedata/bulkImport'
+        this.$router.push({
+          path,
+          query: {
+            type: 'students',
+            state: 1
+          }
+        })
       } else {
         this.title = '添加学生'
-        this.highStudent.formData = highStudent.formData
+        this.highStudent.formData = this.$tools.fillForm(highStudent.formData, {})
         this.fileList = []
         this.highStudent.formData[6].disabled = false
+        this.highStudent.formData[6].initValue1 = ['请选择']
+        this.highStudent.formData[6].initValue2 = ['请选择']
+        this.highStudent.formData[6].initValue3 = ['请选择']
         this.formStatus = true
       }
     },
     submitForm(values) {
-      console.log('value',values)
-      console.log('value',this.userDetail)
       values.hasDorm = values.hasDorm === '住读' ? '1' : values.hasDorm === '走读' ? '0' : values.hasDorm
       values.schoolCode = this.userInfo.schoolCode
       values.schoolId = this.userInfo.schoolId
@@ -318,7 +296,7 @@ export default {
       if (record) {
         this.$router.push({
           path,
-          query: { userCode: record.userCode, year: this.schoolYear, yearId: this.schoolYearId }
+          query: { userCode: record.userCode, id: record.id }
         })
       } else {
         this.$router.push({ path, query: { type: 'students' } })

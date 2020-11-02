@@ -10,12 +10,9 @@
       <div class="tips qui-fx mar-b10">
         <p>说明：</p>
         <div class="qui-fx-ver" v-if="isStudent">
-          <p>1、请将学生信息Excel表和人脸照片放在同一个文件夹下，表格以“student”命名，照片以学生姓名命名，文件夹压缩后上传，目前支持的压缩包格式为ZIP；</p>
-          <p>2、目前支持的照片文件格式有JPG，照片大小20kb-100kb，分辨率400*400-800*800，每个人的照片名称必须与学生列表中人员姓名一致，否则视为无效图片，一个人只能放一张照片；</p>
-          <p>3、如果仅上传学生信息不上传人脸照片，文件夹中仅存放Excel即可；</p>
-          <p>4、填写表格时请确保学生姓名与文件夹中照片命名一致，入学年份请填写数字，性别仅支持填写男/女，走住读类型仅支持填写走读/住读。切忌修改表头字段或改变列顺序，否则将导入异常；</p>
-          <p>5、家长姓名、手机号、亲属关系3列选填，手机号请填写11位数字，亲属关系仅支持填写爸爸/妈妈/爷爷/奶奶/其他。3者必需填写完整才能录入成功。每个学生只能同时导入一个家长。</p>
-          <p>6、文件上传失败或提示错误，可重新选择压缩包后再上传。</p>
+          <p>1、学生信息采集表：下载模板，按模板格式录入学生信息。不可修改表格文件名“student”；</p>
+          <p>2、学生照片：支持JPG，大小20kb-100kb，分辨率400*400-800*800，以学生姓名命名，每个人的照片名称必须与学生列表中人员姓名一致；</p>
+          <p>3、上传文件：将学生信息采集表与所有学生人脸照片放在同一个文件夹下，文件夹名称不限，将文件夹压缩为ZIP压缩包后上传；</p>
         </div>
         <div class="qui-fx-ver" v-if="isTeacher">
           <p>1、请将教职工信息Excel表和人脸照片放在同一个文件夹下，表格以“teacher”命名，照片以教职工姓名命名，文件夹压缩后上传，目前支持的压缩包格式为ZIP；</p>
@@ -25,21 +22,57 @@
           <p>5、文件上传失败或提示错误，可重新选择压缩包后再上传。</p>
         </div>
       </div>
-      <div class="line qui-fx">
-        <span class="title qui-fx-ac">选择文件：</span>
-        <div class="qui-fx">
-          <a-upload
-            class="qui-fx qui-fx-ac"
-            :multiple="false"
-            name="multipartFile"
-            :data="{fileType: 'zip'}"
-            accept=".zip"
-            :fileList="fileList"
-            :withCredentials="true"
-            :customRequest="customRequest"
-            :beforeUpload="beforeUpload">
-            <a-button style="margin-right:20px" type="primary"> <a-icon type="upload" /> 选择压缩包 </a-button>
-          </a-upload>
+      <div class="line qui-fx-ver">
+        <div class="qui-fx" v-if="state">
+          <span class="title qui-fx-ac">选择班级：</span>
+          <div class="qui-fx-f1 qui-fx">
+            <a-select
+              v-model="selectGrade"
+              style="width: calc(32% - 10px);margin-right:10px;"
+              placeholder="请选择年级"
+            >
+              <a-select-option v-for="(first, i) in firstList" :key="i">{{ first.val }}</a-select-option>
+            </a-select>
+            <a-select
+              style="width:32%;margin-right:10px;"
+              placeholder="请选择专业"
+              @change="secondChange"
+              v-model="selectSubject"
+            >
+              <a-select-option v-for="(second, i) in secondList" :key="i">{{ second.val }}</a-select-option>
+            </a-select>
+            <a-select
+              style="width:32%"
+              placeholder="请选择班级"
+              v-model="selectClass"
+            >
+              <a-select-option v-for="(three, i) in threeList" :key="i">{{ three.val }}</a-select-option>
+            </a-select>
+          </div>
+        </div>
+        <div class="qui-fx u-mar-t10" v-if="state">
+          <div class="title"></div>
+          <div class="u-tips-color">
+            <a-icon type="info-circle" class="u-mar-r10 u-type-primary"/>
+            批量导入学生仅支持以班级为单位的导入哦，在导入之前请选择学生所属班级~
+          </div>
+        </div>
+        <div class="qui-fx u-mar-t20">
+          <span class="title qui-fx-ac">选择文件：</span>
+          <div class="qui-fx">
+            <a-upload
+              class="qui-fx qui-fx-ac"
+              :multiple="false"
+              name="multipartFile"
+              :data="{fileType: 'zip'}"
+              accept=".zip"
+              :fileList="fileList"
+              :withCredentials="true"
+              :customRequest="customRequest"
+              :beforeUpload="beforeUpload">
+              <a-button style="margin-right:20px" type="primary"> <a-icon type="upload" /> 选择压缩包 </a-button>
+            </a-upload>
+          </div>
         </div>
       </div>
     </div>
@@ -112,13 +145,34 @@ export default {
       fileList: [],
       result: false,
       orgCode: '',
-      orgName: ''
+      orgName: '',
+      grade: '',
+      subjectCode: '',
+      classCode: '',
+      subjectName: '',
+      className: '',
+      firstList: [],
+      secondList: [],
+      threeList: [],
+      highSubTerm: [],
+      highSubList: [],
+      highClass: [],
+      selectGrade: '',
+      selectSubject: '',
+      selectClass: ''
+
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
   created () {
+    this.state = parseInt(this.$route.query.state) === 1
+    this.grade = this.$route.query.grade
+    this.subjectCode = this.$route.query.subjectCode
+    this.classCode = this.$route.query.classCode
+    this.subjectName = this.$route.query.subjectName
+    this.className = this.$route.query.className
     this.orgCode = this.$route.query.code
     this.orgName = this.$route.query.name
     console.log(this.orgCode)
@@ -128,24 +182,23 @@ export default {
       this.fileUrl = `${hostEnv.lz_user_center}/userinfo/teacher/user/batTeacherAdd?schoolCode=${this.userInfo.schoolCode}&orgCode=${this.orgCode}&orgName=${this.orgName}`
     } else if (this.$route.query.type === 'students') {
       this.isStudent = true
-      this.fileUrl = `${hostEnv.lz_user_center}/userinfo/student/user/upload`
+      // this.fileUrl = `${hostEnv.lz_user_center}/userinfo/student/user/upload`
+      this.fileUrl = `${hostEnv.ljj_people}/student/manage/batch/import`
     }
   },
+
   mounted () {
+    if (this.state) {
+      this.getGrade()
+      this._getSubjectList()
+    }
   },
   methods: {
     ...mapActions('home', [
-      'downStudentsTemplate', 'downStudentsTemplate'
+      'downStudentsTemplate', 'downStudentsTemplate', 'getHighClass', 'getHighSub', 'getHighGrade'
     ]),
-    deleteList (action) {
-    },
-    reelect (action) {
-
-    },
-    lead () {
-    },
     beforeUpload (file) {
-      console.log(file)
+      console.log('file', file)
       const isZip = file.type === 'application/x-zip-compressed' || 'application/zip'
       if (!isZip) {
         this.$message.error('请上传格式为ZIP的压缩包')
@@ -162,9 +215,24 @@ export default {
     saveFile (formData) {
       let params = {}
       if (this.isStudent) {
-        params = {
-          classId: this.$route.query.id,
-          schoolCode: this.userInfo.schoolCode
+        if (this.state) {
+          params = {
+            schoolCode: this.userInfo.schoolCode,
+            grade: this.grade,
+            subjectCode: this.subjectCode,
+            classCode: this.classCode,
+            subjectName: this.selectSubject,
+            className: this.selectClass
+          }
+        } else {
+          params = {
+            schoolCode: this.userInfo.schoolCode,
+            grade: this.grade,
+            subjectCode: this.subjectCode,
+            classCode: this.classCode,
+            subjectName: this.subjectName,
+            className: this.className
+          }
         }
       }
       axios({
@@ -175,9 +243,8 @@ export default {
       }).then((res) => {
         if (res.data.code === 200) {
           this.$message.success(`导入成功`)
-          console.log(res.data.data)
           this.result = true
-          this.resList = res.data.data
+          this.resList = this.isTeacher ? res.data.data : res.data.data.list
           this.resList.forEach((ele, index) => {
             ele.id = index
             ele.result = '失败'
@@ -199,6 +266,62 @@ export default {
       } else if (this.isTeacher) {
         window.location.href = `${hostEnv.lz_user_center}/userinfo/teacher/user/download/teacher/template`
       }
+    },
+    // 获取专业
+    async _getSubjectList() {
+      this.secondList = []
+      const req = {
+        page: 1,
+        size: 99999,
+        schoolCode: this.userInfo.schoolCode
+      }
+      const res = await this.getHighSub(req)
+      if (res.data.records.length === 0) {
+        return
+      }
+      this.highSubList = res.data.records
+      res.data.records.forEach(ele => {
+        this.secondList.push({ key: ele.subjectCode, val: ele.subjectName })
+      })
+      this.selectSubject = this.secondList[0].val
+      this.subjectCode = this.secondList[0].key
+      this._getHighClass(res.data.records[0].subjectCode)
+    },
+    // 获取年级
+    async getGrade() {
+      this.firstList = []
+      const res = await this.getHighGrade({ schoolCode: this.userInfo.schoolCode })
+      if (res.data.length === 0) {
+        return
+      }
+      this.highSubTerm = res.data
+      res.data.forEach(ele => {
+        this.firstList.push({ key: ele.gradeCode, val: `${ele.gradeName}级` })
+      })
+      this.selectGrade = this.firstList[0].val
+      this.grade = res.data[0].gradeName
+    },
+    // 点击专业获取班级
+    secondChange(value) {
+      this._getHighClass(this.highSubList[value].subjectCode)
+    },
+    // 查询班级列表
+    async _getHighClass(subjectCode) {
+      const req = {
+        schoolCode: this.userInfo.schoolCode,
+        page: 1,
+        size: 99999,
+        subjectCode: subjectCode
+      }
+      const res = await this.getHighClass(req)
+      this.highClass = res.data.records
+      if (res.data.records.length > 0) {
+        res.data.records.forEach(ele => {
+          this.threeList.push({ key: ele.id, val: ele.className })
+        })
+      }
+      this.selectClass = this.threeList[0].val
+      this.classCode = this.threeList[0].key
     }
   }
 }

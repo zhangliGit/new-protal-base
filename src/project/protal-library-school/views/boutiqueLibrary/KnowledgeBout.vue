@@ -151,7 +151,7 @@ export default {
       'cancelBoutique',
       'getEduCode'
     ]),
-    // 获取教育局code
+    // 获取上级教育局code
     async getEducode() {
       const res = await this.getEduCode({ schoolCode: this.userInfo.schoolCode })
       this.eduCode = res.data.schoolCode

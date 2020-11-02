@@ -299,7 +299,7 @@ module.exports = {
       },
       '/ljj_admin': {
         // target: 'http://192.168.2.242:10050/', // 柳继杰-局端模块
-        target: 'http://192.168.1.76:8092/', // 柳继杰-局端模块
+        target: 'http://192.168.2.242:10050/', // 柳继杰-局端模块
         changeOrigin: true,
         pathRewrite: {
           '^/ljj_admin': ''
@@ -311,14 +311,6 @@ module.exports = {
         changeOrigin: true,
         pathRewrite: {
           '^/zq_oa': ''
-        }
-      },
-      '/cl_oa': {
-        target: 'http://192.168.2.242:11014/',
-        // target: 'http://192.168.1.23:11009/',
-        changeOrigin: true,
-        pathRewrite: {
-          '^/cl_oa': ''
         }
       },
       '/hpb_card': {
@@ -376,8 +368,8 @@ module.exports = {
         }
       },
       '/ljj_people': {
-        // target: 'http://192.168.1.76:11002/', // 刘继杰-局端安全任务根据选中的学校职务查人
-        target: 'http://192.168.2.242:11002/',
+        target: 'http://192.168.1.76:11002/', // 刘继杰-局端安全任务根据选中的学校职务查人
+        // target: 'http://192.168.2.242:11002/',
         changeOrigin: true,
         pathRewrite: {
           '^/ljj_people': ''
@@ -404,11 +396,33 @@ module.exports = {
           '^/hzz_ecard': ''
         }
       },
+      '/hzz_deal': {
+        target: 'http://192.168.2.242:11025/', // 胡周志-交易管理系统
+        changeOrigin: true,
+        pathRewrite: {
+          '^/hzz_deal': ''
+        }
+      },
+      '/hzz_tooken': {
+        target: 'http://192.168.2.242:11022/', // 胡周志-tooken
+        changeOrigin: true,
+        pathRewrite: {
+          '^/hzz_tooken': ''
+        }
+      },
       '/wxz_notice': {
         target: 'http://192.168.1.123:18090/', // 王选章-通知公告
         changeOrigin: true,
         pathRewrite: {
           '^/wxz_notice': ''
+        }
+      },
+      '/ljj_high': {
+        // target: 'http://192.168.2.242:8092/', // 柳继杰-高校
+        target: 'http://192.168.1.76:8092/', // 柳继杰-高校
+        changeOrigin: true,
+        pathRewrite: {
+          '^/ljj_high': ''
         }
       }
     }

@@ -557,7 +557,7 @@ export default {
     },
     goLead() {
       this.orgCodeList[0] = this.orgCodeList[0] === '' ? this.userInfo.schoolCode : this.orgCodeList[0]
-      const path = `/basedata/bulkImport?code=${this.orgCodeList.join(',')}&name=${this.orgName}`
+      const path = `/basedata/bulkImport?code=${this.orgCodeList.join(',')}&name=${this.orgName}&state=0`
       this.$router.push({ path, query: { type: 'teachers' } })
     }
   }

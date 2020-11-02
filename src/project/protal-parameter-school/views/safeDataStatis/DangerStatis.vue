@@ -1,338 +1,263 @@
 <template>
-  <div class="preview-class page-layout bg-fff qui-fx-ver">
-    <div class="content pos-box">
-      <a-form class="u-padd-b20" layout="inline" :form="form" >
-        <a-form-item label="适用学段" >
-          <a-select
-            @change="changeSections"
-            style="width: 200px;"
-            v-decorator="[
-              'section',
-            ]"
-            placeholder="请选择适用学段">
-            <a-select-option :value="1">幼儿园</a-select-option>
-            <a-select-option :value="2">小学低年级</a-select-option>
-            <a-select-option :value="4">小学高年级</a-select-option>
-            <a-select-option :value="8">初中</a-select-option>
-            <a-select-option :value="16">高中</a-select-option>
-          </a-select>
-        </a-form-item>
-        <a-form-item label="资源类型" >
-          <a-select
-            @change="value => changeCategoryId(1,value)"
-            style="width: 200px;"
-            v-decorator="[
-              'firstId',
-              ,
-            ]"
-            placeholder="请选择资源类型">
-            <a-select-option
-              v-for="(item,index) in firstData"
-              :value="item.id"
-              :key="index">{{ item.name }}</a-select-option>
-          </a-select>
-        </a-form-item>
-        <a-form-item label="资源类别" >
-          <a-select
-            @change="value => changeCategoryId(2,value)"
-            style="width: 200px;"
-            v-decorator="[
-              'secondId',
-              ,
-            ]"
-            placeholder="请选择资源类型">
-            <a-select-option
-              v-for="(item,index) in secondData"
-              :value="item.id"
-              :key="index">{{ item.categoryName }}</a-select-option>
-          </a-select>
-        </a-form-item>
-      </a-form>
-      <div class="detail-info">
-        <div class="img-box">
-          <img :src="detailInfo.thumbnailUrl" alt="">
-        </div>
-        <div class="cont-box ">
-          <div class="top">
-            <div class="title u-font-2 u-main-color u-bold ">{{ detailInfo.name }}</div>
-            <div class="cont">
-              <div class="tip u-tips-color u-mar-t20">课程类型：{{ detailInfo.classType }}</div>
-              <div class="tip u-tips-color u-mar-b20">适用学段：{{ detailInfo.section }}</div>
-              <div class="des u-mar-b40">简介：{{ detailInfo.des }}</div>
+  <div class="page-layout daily-statis  qui-fx-ver">
+    <div class="content pos-box  u-fx-ver">
+      <div class="search-form u-padd-t10 u-padd-b10 u-tips-color">
+        <a-month-picker
+          v-model="startValue"
+          placeholder="请选择月份"
+          :disabled-date="disabledStartMonth"
+        />&nbsp;&nbsp;-&nbsp;
+        <a-month-picker
+          v-model="endValue"
+          placeholder="请选择月份"
+          :disabled-date="disabledEndMonth"
+        />
+        <a-button class="u-mar-l10" type="primary" @click="search()">搜索</a-button>
+      </div>
+      <div class="numbers u-mar-t10 u-fx wh" >
+        <div class="list u-bg-fff u-fx-jc u-mar-r10 u-fx-ac">
+          <img src="../../assets/img/图1@2x.png" alt="">
+          <div class="text u-mar-l20 v-fx-ver u-fx-ac-jc">隐患任务总数
+            <div class="number u-font-3 u-bold">
+              {{ count.all }}
             </div>
           </div>
-          <div class="btn">
-            <a-button type="primary" @click="activeKey='1'" >开始上课</a-button>
-            <a-button class="u-mar-l20" @click="activeKey='2'">课后习题</a-button>
+        </div>
+        <div class="list u-bg-fff u-fx-jc u-mar-r10 u-fx-ac">
+          <img src="../../assets/img/图2@2x.png" alt="">
+          <div class="text u-mar-l20 v-fx-ver u-fx-ac-jc">已整改
+            <div class="number u-font-3 u-bold">
+              {{ count.done }}
+            </div>
+          </div>
+        </div>
+        <div class="list u-bg-fff u-fx-jc u-mar-r10 u-fx-ac">
+          <img src="../../assets/img/图3@2x.png" alt="">
+          <div class="text u-mar-l20 v-fx-ver u-fx-ac-jc">整改中
+            <div class="number u-font-3 u-bold">
+              {{ count.doing }}
+            </div>
+          </div>
+        </div>
+        <div class="list u-bg-fff u-fx-jc u-mar-r10 u-fx-ac">
+          <img src="../../assets/img/图4@2x.png" alt="">
+          <div class="text u-mar-l20 v-fx-ver u-fx-ac-jc">逾期未整改
+            <div class="number u-font-3 u-bold">
+              {{ count.delay }}
+            </div>
+          </div>
+        </div>
+        <div class="list u-bg-fff u-fx-jc u-fx-ac">
+          <img src="../../assets/img/图4@2x.png" alt="">
+          <div class="text u-mar-l20 v-fx-ver u-fx-ac-jc">整改率
+            <div class="number u-font-3 u-bold">
+              {{ count.rate }}%
+            </div>
           </div>
         </div>
       </div>
-      <div class="detail-deal">
-        <div class="detail-title">
-          <a-tabs v-model="activeKey" class="a-tab" >
-            <a-tab-pane key="1" tab="安全课堂">
-              <div class="cont-box u-mar-b20 u-padd-40" v-for="(item,index) in detailInfo.planList" :key="index" >
-                <a-row :gutter="[50,30]" type="flex" justify="center" >
-                  <a-col :span="18" >
-                    <a-carousel arrows >
-                      <div
-                        slot="prevArrow"
-                        slot-scope="props"
-                        class="custom-slick-arrow"
-                        style="left: 10px;zIndex: 1"
-                      >
-                        <a-icon type="left-circle" />
-                      </div>
-                      <div slot="nextArrow" slot-scope="props" class="custom-slick-arrow" style="right: 10px">
-                        <a-icon type="right-circle" />
-                      </div>
-                      <div v-for="(url,count) in item.pictures" :key="count">
-                        <img :src="url" alt="">
-                      </div>
-                    </a-carousel>
-                  </a-col>
-                  <a-col :span="20" >
-                    <div class="name  u-mar-b10">课程名称：{{ item.name }}</div>
-                    <div class="cont" v-html="item.content"></div>
-                  </a-col>
-                </a-row>
-                <a-divider />
-              </div>
-            </a-tab-pane>
-            <a-tab-pane key="2" tab="课后习题" force-render>
-              <div class="cont-box u-padd-40 u-padd-b20">
-                <a-row
-                  v-for="(item,index) in detailInfo.exercisesList"
-                  :key="index"
-                  :gutter="[10,10]"
-                  type="flex"
-                  justify="start" >
-                  <a-col :span="10">
-                    <div class="title">{{ index+1 }}、{{ item.content }}。【{{ item.topicType }}】({{ item.fraction }}分)</div>
-                  </a-col>
-                  <a-col :span="24" >
-                    <div class="u-padd-l20 u-padd-b20">
-                      <a-radio-group :disabled="true" v-model="item.chenck" :options="item.answer" />
-                    </div>
-                  </a-col>
-                </a-row>
-              </div>
-            </a-tab-pane>
-            <a-tab-pane key="3" tab="相关资源" force-render>
-              <div class="resource-box  u-padd-40 u-padd-b20">
-                <a-row
-                  :gutter="[10,10]"
-                  type="flex">
-                  <a-col
-                    v-for="(item,index) in detailInfo.resourceList"
-                    :key="index"
-                    :span="24">
-                    <div class="comt u-bg-color u-padd-10 u-fx-jsb">
-                      <div class="left u-padd-l10">
-                        <div class="name u-main-color">{{ item.name }}</div>
-                        <div class="size u-font-01 u-tips-color">{{ item.docSize | dosizeformat }}</div>
-                      </div>
-                      <div class="rigth u-fx u-padd-r10">
-                        <div class="see_icon u-mar-r10 u-fx-ver">查看
-                          <a-icon v-if="item.docType==='msword'||item.docType==='vnd.ms-excel'||item.docType==='x-zip-compressed'" type="eye-invisible" />
-                          <a-icon v-else type="eye" @click="down(0,item.resourceUrl)" />
-                        </div>
-                        <div class="down_icon u-fx-ver" @click="downloadFile(item.resourceUrl)">下载
-                          <a-icon type="download" />
-                        </div>
-                      </div>
-                    </div>
-                  </a-col>
-                </a-row>
-              </div>
-            </a-tab-pane>
-          </a-tabs>
+      <div class="three-row u-bg-fff u-mar-b10  u-mar-t10 ">
+        <div class="title u-padd-l10  ">安全隐患统计图
+          <div class="line"></div>
+        </div>
+        <columnar-echarts
+          id="DangerStatis1"
+          v-if="barChart.length>0"
+          :data="barChart"
+          :legendData="[{name:'隐患总数',value:'all'},
+                        {name:'逾期未整改',value:'delay'},
+                        {name:'整改中',value:'doing'},
+                        {name:'已整改',value:'done'}]"
+        ></columnar-echarts>
+      </div>
+      <div class="four-row  u-fx">
+        <div class="pie-box  u-fx-f2 u-bg-fff u-mar-r10 u-fx-ver u-padd-t10 u-mar-b10">
+          <div class="title u-mar-l20 u-padd-l10">隐患类型占比
+            <div class="line"></div>
+          </div>
+          <pre-echarts
+            id="DangerStatis1"
+            :radius="false"
+            v-if="ratioChart.length>0"
+            :data="ratioChart"
+          ></pre-echarts>
+        </div>
+        <div class="top5 u-fx-f3 u-bg-fff u-fx-ver u-padd-t10">
+          <div class="title u-mar-l20 u-padd-l10">隐患上报排行
+            <div class="line"></div>
+          </div>
+          <div class="table-box u-padd-20 u-fx-ac-jc">
+            <top5-table
+              :checkTableIndex="checkTableIndex"
+              :columns="columns"
+              :data="rankList"></top5-table>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </template>
 <script>
-import { mapState, mapActions } from 'vuex'
-import Tools from '@u/tools'
 import moment from 'moment'
+import PreEcharts from '../../component/PreEcharts'
+import columnarEcharts from '../../component/columnarEcharts'
+import Top5Table from '../../component/Top5Table'
+import { mapState, mapActions } from 'vuex'
+const columns = [
+  {
+    title: '排名',
+    align: 'center',
+    dataIndex: 'ranking'
+  },
+  {
+    title: '老师姓名',
+    align: 'center',
+    dataIndex: 'name'
+  },
+  {
+    title: '上报数量',
+    align: 'center',
+    dataIndex: 'number'
+  },
+  {
+    title: '占比',
+    align: 'center',
+    dataIndex: 'rate',
+    customRender: (text) => {
+      return `${text}%`
+    }
+  }
+]
 export default {
-  name: 'PreviewClass',
+  name: 'DangerStatis',
   components: {
+    PreEcharts,
+    Top5Table,
+    columnarEcharts
   },
   data() {
     return {
-      options: [], // 资源树
-      firstData: [],
-      secondData: [],
-      activeKey: '1',
-      form: this.$form.createForm(this, { name: 'horizontal_login' }),
-      detailInfo: []
+      startValue: moment(new Date()),
+      endValue: moment(new Date()),
+      columns,
+      checkTableIndex: -1,
+      count: {}, // 总体数量统计
+      barChart: [], //	条形图统计
+      ratioChart: [], // 饼图
+      rankList: [] //	排行榜
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
   async created() {
-    this._firstCategory()
-    this._treeView()
-    this.detailId = this.$route.query.id
-    if (this.detailId) {
-      this.showDetail()
-    }
+    await this.showList()
   },
-  async  mounted() {
+  async mounted() {
   },
   methods: {
-    ...mapActions('home', ['treeView', 'classroomInfo', 'secondCategory', 'firstCategory']),
-    moment,
-    // 资源类型获取一级分类
-    async _firstCategory() {
-      const res = await this.firstCategory()
-      this.firstData = res.data
-    },
-    // 资源类型加载二级分类
-    // async _secondCategory(selectedOptions) {
-    //   const res = await this.secondCategory()
-    //   this.secondData = res.data
-    // },
-    // 获取资源树赋值二级分类
-    async _treeView() {
-      const res = await this.treeView()
-      this.options = res.data
-      this.secondData = res.data.map(v => v.children).flat()
-    },
-    changeSections(value) {
-      this.$router.push({
-        path: '/safeClassPulic/classPageList',
-        query: {
-          section: value || ''
-        }
-      })
-    },
-    changeCategoryId(type, id) {
-      const firstId = type === 1 ? id : this.secondData.find(v => v.id === id).parentId
-      const secondId = type === 2 ? id : ''
-      this.$router.push({
-        path: '/safeClassPulic/classPageList',
-        query: {
-          firstId: firstId,
-          secondId: secondId
-        }
-      })
-    },
-    async showDetail() {
-      const req = {
-        id: this.detailId,
-        schoolCode: this.userInfo.schoolCode,
-        source: '3',
-        userName: this.userInfo.userName
+    ...mapActions('home', ['schDangerStatis', 'getEduCode', 'underSchoolList', 'treeView', 'statistics', 'pageStatistics']),
+    // 月日期选择器
+    disabledStartMonth(startValue) {
+      if (startValue.valueOf() > new Date()) return true
+      const endValue = this.endValue
+      if (!startValue || !endValue) {
+        return false
       }
-      const res = await this.classroomInfo(req)
-      this.detailInfo = res.data
-      // answer每一项增加value  answer平级增加选中的选项value(index)
-      this.detailInfo.exercisesList = this.detailInfo.exercisesList.map(el => {
+      return startValue.valueOf() > endValue.valueOf()
+    },
+    disabledEndMonth(endValue) {
+      if (endValue.valueOf() > new Date()) return true
+      const startValue = this.startValue
+      if (!endValue || !startValue) {
+        return false
+      }
+      return startValue.valueOf() >= endValue.valueOf()
+    },
+    search() {
+      this.showList()
+    },
+    async showList() {
+      const req = {
+        startYear: this.startValue.format('YYYY'),
+        startMonth: this.startValue.format('M'),
+        endYear: this.endValue.format('YYYY'),
+        endMonth: this.endValue.format('M'),
+        schoolCode: this.userInfo.schoolCode
+      }
+      const res = await this.schDangerStatis(req)
+      const { barChart, rankList, count, ratioChart } = res.data
+      this.count = count
+      this.ratioChart = ratioChart.map(el => {
         return {
-          ...el,
-          answer: el.answer.map((v, index) => {
-            if (v.selected) {
-              el.chenck = index
-            }
-            return {
-              value: index,
-              label: v.option
-            }
-          })
+          name: el.type,
+          value: el.count
         }
       })
+      this.barChart = barChart
+      // const index = rankList.findIndex(el => el.schoolCode === this.userInfo.schoolCode)
+      // if (index === -1) {
+      //   this.rankList = this.rankList.push(myRank)
+      // } else {
+      //   this.checkTableIndex = count
+      // }
+      this.rankList = rankList
     },
-    downloadFile(url) {
-      Tools.downloadFile(url)
-    },
-    // 下载查看
-    down(type, url) {
-      var a = document.createElement('a')
-      a.id = 'expertFile'
-      a.href = url
-      document.body.append(a)
-      a.click()
-      document.getElementById('expertFile').remove()
+    searchForm(values) {
+      this.showList()
     }
   }
 }
 </script>
 <style lang="less" scoped>
 @deep: ~'>>>';
-.preview-class {
+.daily-statis{
   background-color: #f0f2f5;
-  .content {
+  .content{
     height: calc(100% - 10px);
-    overflow-y: scroll;
-    .detail-info {
-      margin-top: 10px;
-      padding: 20px;
-      min-height: 300px;
-      overflow-y: scroll;
-      background-color: #fff;
-      display: flex;
-      .ant-card{
+    .title{
+      position: relative;
+      .line{
+        position: absolute;
+        left:0;
+        top: 50%;
+        transform: translate(-50%,-50%);
+        width: 2px;
+        height: 13px;
+        background: #9698D6;
       }
-      .img-box{
-        width: 500px;
-        height: 300px;
+    }
+    .numbers{
+      height: 100px;
+      .list{
+        box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.06);
+        opacity: 0.8;
+        border-radius: 5px;
+        width: 25%;
         img{
-          width:100%;
-          height: 100%;
+          width:48px
         }
       }
-      .cont-box{
-        display: flex;
-        flex-flow: column;
-        justify-content: space-between;
-        width: 100%;
-        padding-left: 20px;
+    }
+    .three-row{
+      height: 100%;
+      padding: 20px;
+      padding-top: 10px;
+    }
+    .four-row{
+      height: 320px;
+      .pie-box{
+      }
+      .top5{
+        .table-box{
+          height: 100%;
+          @{deep} .ant-table-thead > tr >th{
+            background: #C9CEEEFF !important;
+          }
+        }
       }
     }
 
-    .detail-deal {
-      margin-top: 20px;
-      padding: 20px 0;
-      background-color: #fff;
-      .resource-box{
-        background-color: #fff;
-      }
-    }
   }
-}
-//轮播图样式
-.ant-carousel @{deep} .slick-slide {
-  text-align: center;
-  width: 60%;
-  // height: 160px;
-  // line-height: 160px;
-  // background: #364d79;
-  overflow: hidden;
-  img{
-    max-width: 100%;
-    height: auto;
-  }
-}
-.ant-carousel @{deep} .custom-slick-arrow {
-  width: 25px;
-  height: 25px;
-  font-size: 25px;
-  color: #fff;
-  background-color: rgba(31, 45, 61, 0.11);
-  opacity: 0.3;
-}
-.ant-carousel @{deep} .custom-slick-arrow:before {
-  display: none;
-}
-.ant-carousel @{deep} .custom-slick-arrow:hover {
-  opacity: 0.5;
-}
-
-.ant-carousel @{deep} .slick-slide h3 {
-  color: #fff;
 }
 </style>

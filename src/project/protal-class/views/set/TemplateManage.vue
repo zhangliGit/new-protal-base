@@ -38,12 +38,12 @@
                   </template>
                   <img
                     :src="item.photoUrl"
-                    :style="{ width: `280px`, height: `200px`, display: 'block', backgroundColor: '#eee' }"
+                    :style="{ width: `280px`, height: item.isDefault === 1 ? `230px` : `200px`, display: 'block', backgroundColor: '#eee' }"
                     alt
                   />
                 </a-popover>
               </div>
-              <div class="qui-fx-jsb qui-fx-ac">
+              <div class="qui-fx-jsb qui-fx-ac" v-if="item.isDefault !== 1">
                 <div @click.stop="useTemplate(item)">
                   <div class="disable" v-if="item.count === 0">未启用</div>
                   <div class="useNum" v-else>{{ item.count }}台设备使用中</div>

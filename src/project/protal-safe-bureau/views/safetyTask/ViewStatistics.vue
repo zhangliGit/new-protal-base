@@ -320,7 +320,7 @@ export default {
           .list-cont{
             //修改表头文字、背景颜色
             @{deep} .ant-table-thead > tr >th{
-            background: #ecf5ff !important;
+            background: #C9CEEEFF !important;
           }
         }
       }

@@ -25,7 +25,7 @@
         </template>
       </table-list>
     </div>
-    <page-num v-model="pageList" :total="total"></page-num>
+    <page-num v-model="pageList" :total="total" @change-page="_getAccountList"></page-num>
     <!-- <count-detail
       ref="countDetail"
       isSearch

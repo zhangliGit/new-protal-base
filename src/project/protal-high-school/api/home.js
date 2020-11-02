@@ -29,9 +29,10 @@ const homeApi = {
   getHighClass: '/class/manage/list#post', // 列表查询
   updateHighClass: '/class/manage/update#post', // 更新
   getHighNode: '/class/manage/node#get', // 班级节点查询
-  highClassBind: '/class/manage/update#post' // 更新/绑定辅导员/绑定教室
+  highClassBind: '/class/manage/update#post', // 更新/绑定辅导员/绑定教室
+  getHighGrade: '/class/manage/query/grade#get' // 查询年级
 }
 for (const val in homeApi) {
-  homeApi[val] = `${hostEnv.ljj_admin}${homeApi[val]}`
+  homeApi[val] = `${hostEnv.ljj_high}${homeApi[val]}`
 }
 export default homeApi

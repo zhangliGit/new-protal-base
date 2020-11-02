@@ -219,7 +219,9 @@ export default {
       columns,
       detailTitle: '基本信息',
       detailInfo: [],
-      detail: {},
+      detail: {
+        cardInfo: {}
+      },
       dialogTag: false,
       historyList: [],
       userTypeList: [],

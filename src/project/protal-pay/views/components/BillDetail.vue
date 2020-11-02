@@ -12,7 +12,7 @@
         <detail-show :detail-info="detailInfo" :title="infoTitle" style="width: 74%;"></detail-show>
         <div class="mar-top">
           <!-- <a-button icon="plus" class="add-btn">编辑重发</a-button> -->
-          <a-button icon="export" class="export-btn">打印收据</a-button>
+          <!-- <a-button icon="export" class="export-btn">打印收据</a-button> -->
           <a-button icon="export" class="export-btn" @click="changeTime">确认收款</a-button>
           <a-button icon="export" class="export-all-btn" @click.stop="deleteList(0)">催缴</a-button>
           <a-button icon="delete" class="del-btn" @click.stop="deleteList(1)">关闭账单</a-button>
