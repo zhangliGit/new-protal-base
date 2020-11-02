@@ -150,17 +150,16 @@ export default {
       return fomartData
     },
     initPieData(data) {
-      console.log(data.map(v=>v.biggerCount).reduce(getSum))
-       function getSum(total, num) {
-          return total + num;
+      function getSum(total, num) {
+        return total + num
       }
       // 对饼状图dom，初始化echarts实例
       var myChart1 = echarts.init(document.getElementById('main1'), 'shine')
       const preData1 = [
-        { value: data.map(v=>v.lowCount).reduce(getSum), name: '低风险' },
-        { value:data.map(v=>v.generalCount).reduce(getSum), name: '一般风险' },
-        { value:data.map(v=>v.biggerCount).reduce(getSum), name: '较大风险' },
-        { value:data.map(v=>v.heavyCount).reduce(getSum), name: '重大风险' } 
+        { value: data.map(v => v.lowCount).reduce(getSum), name: '低风险' },
+        { value: data.map(v => v.generalCount).reduce(getSum), name: '一般风险' },
+        { value: data.map(v => v.biggerCount).reduce(getSum), name: '较大风险' },
+        { value: data.map(v => v.heavyCount).reduce(getSum), name: '重大风险' }
       ]
       myChart1.setOption({
         // 图表标题

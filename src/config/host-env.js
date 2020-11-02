@@ -43,6 +43,7 @@ let hzz_ecard = ''
 let hzz_deal = ''
 let hzz_tooken = ''
 let wxz_notice = ''
+let ljj_high = ''
 if (ConfigEnv === 'test') {
   wxz_control = '/wxz_control'
   zk_school = '/zk_school'
@@ -86,6 +87,7 @@ if (ConfigEnv === 'test') {
   hzz_deal = '/hzz_deal'
   hzz_tooken = '/hzz_tooken'
   wxz_notice = '/wxz_notice'
+  ljj_high = '/ljj_high'
 } else if (ConfigEnv === 'prod') {
   wxz_control = '/wxz_control'
   zk_school = '/zk_school'
@@ -129,6 +131,7 @@ if (ConfigEnv === 'test') {
   hzz_deal = '/hzz_deal'
   hzz_tooken = '/hzz_tooken'
   wxz_notice = '/wxz_notice'
+  ljj_high = '/ljj_high'
 } else {
   wxz_control = '/wxz_control'
   zk_school = '/zk_school'
@@ -172,6 +175,7 @@ if (ConfigEnv === 'test') {
   hzz_deal = '/hzz_deal'
   hzz_tooken = '/hzz_tooken'
   wxz_notice = '/wxz_notice'
+  ljj_high = '/ljj_high'
 }
 
 export default {
@@ -217,5 +221,7 @@ export default {
   hzz_deal,
   hzz_tooken,
   wxz_notice,
+  oss_upload,
+  ljj_high,
   oss_upload
 }

@@ -13,7 +13,7 @@ const safeDataStatis = {
       name: 'dailyStatis',
       component: () => import('../views/safeDataStatis/DailyStatis.vue'),
       meta: {
-        title: '日常巡检统计'
+        title: '日常巡查统计'
       }
     },
     // {

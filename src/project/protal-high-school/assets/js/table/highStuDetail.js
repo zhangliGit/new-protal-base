@@ -9,17 +9,17 @@ const highStuDetail = {
       }
     },
     {
-      title: '家长姓名',
+      title: '姓名',
       dataIndex: 'parentName',
       width: '10%'
     },
     {
-      title: '家长电话',
+      title: '手机号',
       dataIndex: 'mobile',
       width: '20%'
     },
     {
-      title: '亲属关系',
+      title: '关系',
       dataIndex: 'relationship',
       width: '20%',
       customRender: (text) => {
@@ -101,12 +101,7 @@ const highStuDetail = {
       customRender: (text) => {
         return Tools.getDate(text)
       }
-    } /* ,
-    {
-      title: '操作人',
-      dataIndex: 'optName',
-      width: '15%'
-    } */
+    }
   ],
   dormColumns: [
     {
@@ -148,12 +143,7 @@ const highStuDetail = {
       customRender: (text) => {
         return Tools.getDate(text)
       }
-    } /* ,
-    {
-      title: '操作人',
-      dataIndex: 'optName',
-      width: '15%'
-    } */
+    }
   ],
   statusList: [
     {

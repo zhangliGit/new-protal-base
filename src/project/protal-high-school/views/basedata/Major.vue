@@ -143,6 +143,7 @@ export default {
   methods: {
     ...mapActions('home', ['addHighSub', 'updateHighSub', 'getHighSub', 'delHighSub', 'delHighSubs', 'addHighSubs']),
     async _getSubjectList() {
+      this.searchList.schoolCode = this.userInfo.schoolCode
       this.searchList = Object.assign(this.searchList, this.pageList)
       const res = await this.getHighSub(this.searchList)
       this.subjectList = res.data.records
@@ -218,6 +219,8 @@ export default {
       this.delHighSub({ id: record.id }).then(res => {
         this.$message.success('操作成功')
         this.$tools.goNext(() => {
+          this.pageList.page = 1
+          this.pageList.size = 20
           this._getSubjectList()
           this.chooseList = []
         })
@@ -232,6 +235,8 @@ export default {
         this.delHighSubs({ ids: this.chooseList }).then(res => {
           this.$message.success('操作成功')
           this.$tools.goNext(() => {
+            this.pageList.page = 1
+            this.pageList.size = 20
             this._getSubjectList()
             this.chooseList = []
           })

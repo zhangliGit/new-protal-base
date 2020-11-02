@@ -207,6 +207,7 @@ export const taskSearchLabel = [
 ]
 // 安全事故
 export const IncidentSearchLabel = [
+
   {
     list: [
       {
@@ -229,6 +230,12 @@ export const IncidentSearchLabel = [
     value: 'accidentStatus',
     type: 'select',
     label: '事故状态'
+  },
+  {
+    value: 'schoolName',
+    type: 'input',
+    placeholder: '请输入学校名称',
+    label: '学校名称'
   },
   {
     value: 'rangeTime',

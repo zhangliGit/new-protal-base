@@ -54,12 +54,6 @@ const formData = [
     placeholder: '请输入学生学号'
   },
   {
-    type: 'upload',
-    label: '人脸照片',
-    required: false,
-    placeholder: '请上传人脸照片'
-  },
-  {
     value: 'hasDorm',
     initValue: [],
     list: [
@@ -80,26 +74,40 @@ const formData = [
     value: 'admissionTime',
     initValue: [new Date().getFullYear()],
     list: [
-      { key: new Date().getFullYear() + 1, val: new Date().getFullYear() + 1 },
       { key: new Date().getFullYear(), val: new Date().getFullYear() },
-      { key: new Date().getFullYear() - 1, val: new Date().getFullYear() - 1 }
+      { key: new Date().getFullYear() - 1, val: new Date().getFullYear() - 1 },
+      { key: new Date().getFullYear() - 2, val: new Date().getFullYear() - 2 },
+      { key: new Date().getFullYear() - 3, val: new Date().getFullYear() - 3 },
+      { key: new Date().getFullYear() - 4, val: new Date().getFullYear() - 4 },
+      { key: new Date().getFullYear() - 5, val: new Date().getFullYear() - 5 },
+      { key: new Date().getFullYear() - 6, val: new Date().getFullYear() - 6 }
     ],
     type: 'select',
     label: '入学年份',
     placeholder: '请选择入学年份'
   },
   {
-    value1: 'grade',
-    value2: 'class',
+    type: 'upload',
+    label: '人脸照片',
+    required: false,
+    placeholder: '请上传人脸照片'
+  },
+  {
+    value1: 'gradeCode',
+    value2: 'subject',
+    value3: 'class',
     initValue1: [],
     initValue2: [],
-    type: 'linkSelect',
+    initValue3: [],
+    type: 'threeLinkSelect',
     required: false,
     label: '班级',
-    placeholder1: '请选择',
-    placeholder2: '请选择',
+    placeholder1: '请选择年级',
+    placeholder2: '请选择专业',
+    placeholder3: '请选择班级',
     firstList: [],
-    secondList: []
+    secondList: [],
+    threeList: []
   },
   {
     value: 'cardNo',
@@ -128,10 +136,6 @@ export default {
     title: {
       type: String,
       default: ''
-    },
-    schoolYearId: {
-      type: Number,
-      default: 0
     }
   },
   data () {
@@ -144,7 +148,6 @@ export default {
         w: 120 // 宽度
       },
       fileList: [],
-      gradeList: [],
       classList: [],
       gradeId: '',
       classChoose: '',
@@ -156,99 +159,40 @@ export default {
   },
   watch: {
     classInfo(val) {
-      console.log(val)
       this.formData[6].disabled = true
-      this.formData[6].initValue1 = val.gradeName ? [val.gradeName] : ['请选择']
-      this.formData[6].initValue2 = val.className ? [val.className] : ['请选择']
+      this.formData[6].initValue1 = val.gradeName ? `${[val.gradeName]}级` : ['请选择']
+      this.formData[6].initValue2 = val.subjectName ? [val.subjectName] : ['请选择']
+      this.formData[6].initValue3 = val.className ? [val.className] : ['请选择']
       this.gradeId = val.gradeCode
       this.classChoose = val.id
     }
   },
-  mounted () {
-    this.getGrade()
-    this.formData[6].firstChange = this.firstChange
-    this.formData[6].secondChange = this.secondChange
-  },
   methods: {
     ...mapActions('home', [
-      'getClassList', 'getGradeList', 'addStudent'
+      'getClassList', 'getGradeList', 'addStudent', 'addHighStu'
     ]),
-    // 获取年级
-    async getGrade() {
-      this.formData[6].firstList = []
-      const req = {
-        schoolCode: this.userInfo.schoolCode
-      }
-      const res = await this.getGradeList(req)
-      if (!res.data) {
-        return
-      }
-      if (res.data.list.length > 0) {
-        res.data.list.forEach(ele => {
-          this.formData[6].firstList.push({ key: ele.code, val: ele.name })
-          this.gradeList.push({ key: ele.code, val: ele.name })
-        })
-      }
-    },
     submitForm(values) {
       values.hasDorm = values.hasDorm === '住读' ? '1' : values.hasDorm === '走读' ? '0' : values.hasDorm
+      values.schoolCode = this.userInfo.schoolCode
+      values.schoolId = this.userInfo.schoolId
       const req = {
         ...values,
-        schoolCode: this.userInfo.schoolCode,
-        schoolId: this.userInfo.schoolId,
+        ...this.classInfo,
+        grade: this.classInfo.gradeName,
         admissionTime: values.admissionTime[0] || values.admissionTime,
-        photoUrl: this.fileList.length > 0 ? this.fileList[0].url : '',
-        gradeId: this.gradeId,
-        classId: this.classChoose
+        photoUrl: this.fileList.length > 0 ? this.fileList[0].url : ''
       }
-      let res = null
-      res = this.addStudent(req)
-      res
+      this.addHighStu(req)
         .then(() => {
           this.$message.success('添加成功')
-          this.$refs.form.reset()
-          this.formData[6].initValue1 = this.classInfo.gradeName ? [this.classInfo.gradeName] : ['请选择']
-          this.formData[6].initValue2 = this.classInfo.className ? [this.classInfo.className] : ['请选择']
-          this.fileList = []
-          this.$emit('closeModel')
+          this.$tools.goNext(() => {
+            this.$refs.form.reset()
+            this.$emit('closeModel')
+          })
         })
         .catch(() => {
           this.$refs.form.error()
         })
-    },
-    async firstChange(value) {
-      this.formData[6].secondList = []
-      this.classList = []
-      console.log(value)
-      if (value === undefined) {
-        this.gradeId = ''
-        this.classChoose = ''
-        return
-      }
-      this.gradeId = this.gradeList[value].key
-      const req = {
-        schoolCode: this.userInfo.schoolCode,
-        gradeCode: this.gradeList[value].key,
-        schoolYearId: this.schoolYearId
-      }
-      const res = await this.getClassList(req)
-      if (!res.data) {
-        return
-      }
-      if (res.data.list.length > 0) {
-        res.data.list.forEach(ele => {
-          this.formData[6].secondList.push({ key: ele.id, val: ele.className })
-          this.classList.push({ key: ele.id, val: ele.className })
-        })
-        this.secondChange(0)
-      }
-    },
-    secondChange(value) {
-      if (value === undefined) {
-        this.secondChange(0)
-        return
-      }
-      this.classChoose = this.classList[value].key
     }
   }
 }

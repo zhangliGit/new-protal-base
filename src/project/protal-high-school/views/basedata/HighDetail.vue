@@ -1,6 +1,6 @@
 <template>
   <div class="class-detail page-layout qui-fx-ver">
-    <choose-student
+    <choose-high
       ref="chooseUser"
       is-check
       no-bind
@@ -10,23 +10,12 @@
       @toAdd="toAdd"
       hasAdd
       title="添加学生"
-    ></choose-student>
-    <choose-subteacher
-      is-radio
-      ref="chooseSubteacher"
-      v-if="teacherTag"
-      chooseType="subject"
-      v-model="teacherTag"
-      @submit="chooseTeacher"
-      title="添加教师"
-      :teacherList="studentsList"
-    ></choose-subteacher>
+    ></choose-high>
     <new-student
       title="添加学生"
       ref="newStudent"
       :classData="classInfo"
       @closeModel="closeModel"
-      :schoolYearId="parseInt(schoolYearId)"
     ></new-student>
     <sub-form
       ref="form"
@@ -35,24 +24,16 @@
       v-model="formStatus"
       :form-data="highDetail.formData"
     ></sub-form>
-    <detail-show :detail-info="detailInfo" :title="infoTitle"></detail-show>
-    <a-tabs v-model="autoKey" @change="tabChange">
-      <a-tab-pane tab="班级学生" key="1">
-      </a-tab-pane>
-      <a-tab-pane tab="任课教师" key="2">
-      </a-tab-pane>
+    <detail-show :col="8" :detail-info="detailInfo" :title="infoTitle"></detail-show>
+    <a-tabs>
+      <a-tab-pane tab="班级学生" key="1"> </a-tab-pane>
       <div slot="tabBarExtraContent" class="qui-fx-ac mar-r10">
-        <search-form v-if="autoKey === '1'" isReset @search-form="searchForm" :search-label="highDetail.searchLabel" style="padding: 0">
-          <div slot="right" v-if="isNewYear">
+        <search-form isReset @search-form="searchForm" :search-label="highDetail.searchLabel" style="padding: 0">
+          <div slot="right">
             <a-button icon="plus" class="add-btn mar-l10" @click="addStudent">添加学生</a-button>
             <a-button icon="export" class="export-all-btn" @click.stop="goAdd">批量导入</a-button>
-            <a-button icon="export" class="export-btn" @click.stop="goAdd">批量转班</a-button>
-            <a-button icon="delete" class="power-action-btn" @click.stop="goAdd">批量移出</a-button>
-          </div>
-        </search-form>
-        <search-form v-else isReset @search-form="teasearchForm" :search-label="highDetail.teasearchLabel" style="padding: 0">
-          <div slot="right" v-if="isNewYear">
-            <a-button icon="plus" class="add-btn mar-l10" @click="addTeacher">添加教师</a-button>
+            <a-button icon="export" class="export-btn" @click.stop="moveClass(0)">批量转班</a-button>
+            <a-button icon="delete" class="power-action-btn" @click.stop="dels">批量移出</a-button>
           </div>
         </search-form>
       </div>
@@ -64,17 +45,15 @@
           is-zoom
           :page-list="pageList"
           v-model="chooseList"
-          @clickRow="clickRow"
-          @selectAll="selectAll"
-          :columns="autoKey === '1' ? highDetail.columns : highDetail.teacolumns"
+          :columns="highDetail.columns"
           :table-list="studentsList">
-          <template v-slot:actions="action" v-if="isNewYear">
+          <template v-slot:actions="action">
             <a-tooltip placement="topLeft" title="详情">
               <a-button
                 size="small"
                 class="detail-action-btn"
                 icon="ellipsis"
-                @click.stop="goLead('/basedata/stusentsDetail', action.record)"
+                @click.stop="goLead('/basedata/HighStuDetail', action.record)"
               ></a-button>
             </a-tooltip>
             <a-tooltip placement="topLeft" title="转班">
@@ -82,27 +61,14 @@
                 size="small"
                 class="edit-action-btn"
                 icon="form"
-                @click.stop="moveClass(action.record)"
+                @click.stop="moveClass(1, action.record)"
               ></a-button>
             </a-tooltip>
             <a-popconfirm
               placement="left"
               okText="确定"
               cancelText="取消"
-              @confirm="deleteList(action.record)"
-            >
-              <template slot="title">您确定移除吗?</template>
-              <a-tooltip placement="topLeft" title="移除">
-                <a-button size="small" class="del-action-btn" icon="delete"></a-button>
-              </a-tooltip>
-            </a-popconfirm>
-          </template>
-          <template v-slot:other1="other1" v-if="isNewYear">
-            <a-popconfirm
-              placement="left"
-              okText="确定"
-              cancelText="取消"
-              @confirm="deleteTeacher(other1.record)"
+              @confirm="del(1, action.record)"
             >
               <template slot="title">您确定移除吗?</template>
               <a-tooltip placement="topLeft" title="移除">
@@ -111,25 +77,21 @@
             </a-popconfirm>
           </template>
         </table-list>
-        <page-num v-model="pageList" :total="total" @change-page="changePage"></page-num>
+        <page-num v-model="pageList" :total="total" @change-page="_getHighStu"></page-num>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { mapState, mapActions } from 'vuex'
 import DetailShow from '@c/DetailShow'
 import NewStudent from '../components/NewStudent'
-import moveClassImg from '../../assets/img/database/role/moveClass.png'
-import editImg from '../../assets/img/database/role/edit.png'
-import deleteImg from '../../assets/img/database/role/delete.png'
-import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import SearchForm from '@c/SearchForm'
 import SubForm from '../components/SubForm'
 import PageNum from '@c/PageNum'
-import ChooseStudent from '@c/ChooseStudent'
-import ChooseSubteacher from '../components/ChooseSubteacher'
+import ChooseHigh from '../components/ChooseHigh'
 import highDetail from '../../assets/js/table/highDetail.js'
 
 export default {
@@ -139,17 +101,13 @@ export default {
     SearchForm,
     SubForm,
     PageNum,
-    ChooseStudent,
+    ChooseHigh,
     DetailShow,
-    NewStudent,
-    ChooseSubteacher
+    NewStudent
   },
   data() {
     return {
       highDetail,
-      moveClassImg,
-      editImg,
-      deleteImg,
       title: '转班',
       formStatus: false,
       studentsList: [],
@@ -157,43 +115,36 @@ export default {
       dialogTag: false,
       keywords: '',
       userTag: false,
-      teacherTag: false,
-      total: 100,
+      total: 0,
       pageList: {
         page: 1,
         size: 20
       },
-      gradeList: [],
-      classList: [],
-      gradeId: '',
-      classId: '',
       classInfo: {},
-      schoolYear: '',
-      schoolYearId: '',
       record: null,
       detailInfo: [
-        {
-          key: '学年',
-          val: ''
-        },
         {
           key: '年级',
           val: ''
         },
         {
-          key: '班级名称',
+          key: '专业',
           val: ''
         },
         {
-          key: '班级教室',
+          key: '班级',
           val: ''
         },
         {
-          key: '班级学生人数',
+          key: '辅导员',
           val: ''
         },
         {
-          key: '班主任',
+          key: '教室',
+          val: ''
+        },
+        {
+          key: '班级学生',
           val: ''
         },
         {
@@ -202,198 +153,139 @@ export default {
         }
       ],
       infoTitle: '基础信息',
-      isNewYear: true,
-      autoKey: '1',
-      subjectCode: ''
+      chooseList: [],
+      searchList: {},
+      highSubList: [],
+      highSubTerm: [],
+      highClass: [],
+      classDetail: {},
+      type: 0
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
   created() {
-    this.autoKey = this.$route.query.type
-    this.highDetail.formData[0].firstChange = this.firstChange
     this.highDetail.formData[0].secondChange = this.secondChange
-    this.schoolYear = this.$route.query.schoolYear
-    this.schoolYearId = this.$route.query.schoolYearId
-    this.isNewYear = this.$route.query.isNewYear === '1'
-    this.highDetail.columns[7] = this.isNewYear
-      ? {
-        title: '操作',
-        width: '20%',
-        scopedSlots: {
-          customRender: 'action'
-        }
-      }
-      : {}
-    this.highDetail.teacolumns[7] = this.isNewYear
-      ? {
-        title: '操作',
-        width: '20%',
-        scopedSlots: {
-          customRender: 'other1'
-        }
-      }
-      : {}
+    this.searchList.subjectCode = this.$route.query.subjectCode
+    this.searchList.gradeCode = this.$route.query.gradeCode
+    this.searchList.classCode = this.$route.query.classCode
   },
   mounted() {
-    if (this.autoKey === '1') {
-      this.showList(this.keywords)
-    } else {
-      this.getSubjectList()
-      this.showTeaList(this.subjectCode)
-    }
+    this._getHighStu()
     this.showClassDetail()
     this.getGrade()
+    this._getSubjectList()
   },
   methods: {
     ...mapActions('home', [
-      'detailClass',
-      'getClassList',
-      'getGradeList',
-      'changeClass',
-      'getClassStudentList',
-      'addClassStudent',
-      'detailClassStudent',
-      'changeClass',
-      'deleteClassStudent',
-      'addClassTeacher',
-      'getClassTeacherList',
-      'deleteClassTeacher',
-      'getSubList'
+      'highClassDetail', 'getHighStu', 'getHighClass', 'getHighSub', 'getHighTerm', 'highStuRemove',
+      'highStusRemove', 'highStusChange', 'highStuChange', 'highStuJoin', 'getClassTeacherList'
     ]),
-    changePage() {
-      if (this.autoKey === '1') {
-        this.showList(this.keywords)
-      } else {
-        this.showTeaList(this.subjectCode)
-      }
-    },
-    async getSubjectList() {
-      this.highDetail.teasearchLabel[0].list = [{
-        key: '',
-        val: '全部'
-      }]
+    // 获取年级
+    async getGrade() {
+      this.highDetail.formData[0].firstList = []
       const req = {
-        ...this.userInfo
+        schoolCode: this.userInfo.schoolCode,
+        page: 1,
+        size: 99999
       }
-      const res = await this.getSubList(req)
-      res.data.forEach(ele => {
-        this.highDetail.teasearchLabel[0].list.push({
-          key: ele.subjectCode,
-          val: ele.subjectName
-        })
+      const res = await this.getHighTerm(req)
+      if (res.data.records.length === 0) {
+        return
+      }
+      this.highSubTerm = res.data.records
+      res.data.records.forEach(ele => {
+        this.highDetail.formData[0].firstList.push({ key: ele.schoolYearCode, val: `${ele.schoolYearName.split('-')[0]}级` })
       })
-      this.subjectList = res.data
     },
-    tabChange() {
-      if (this.autoKey === '1') {
-        this.showList(this.keywords)
-      } else {
-        this.showTeaList(this.subjectCode)
+    // 获取专业
+    async _getSubjectList() {
+      this.highDetail.formData[0].secondList = []
+      const req = {
+        page: 1,
+        size: 99999,
+        schoolCode: this.userInfo.schoolCode
+      }
+      const res = await this.getHighSub(req)
+      if (res.data.records.length === 0) {
+        return
+      }
+      this.highSubList = res.data.records
+      res.data.records.forEach(ele => {
+        this.highDetail.formData[0].secondList.push({ key: ele.subjectCode, val: ele.subjectName })
+      })
+    },
+    // 点击专业获取班级
+    secondChange(value) {
+      this._getHighClass(this.highSubList[value].subjectCode)
+    },
+    // 查询班级列表
+    async _getHighClass(subjectCode) {
+      this.highDetail.formData[0].threeList = []
+      const req = {
+        schoolCode: this.userInfo.schoolCode,
+        page: 1,
+        size: 99999,
+        subjectCode: subjectCode
+      }
+      const res = await this.getHighClass(req)
+      this.highClass = res.data.records
+      if (res.data.records.length > 0) {
+        res.data.records.forEach(ele => {
+          this.highDetail.formData[0].threeList.push({ key: ele.id, val: ele.className })
+        })
       }
     },
     toAdd(val) {
       this.$refs.newStudent.formStatus = val
     },
     closeModel() {
-      this.showList(this.keywords)
+      this._getHighStu()
       this.showClassDetail()
       this.$refs.chooseUser.reset()
     },
-    // 获取年级
-    async getGrade() {
-      this.highDetail.formData[0].firstList = []
-      const req = {
-        schoolCode: this.userInfo.schoolCode
-      }
-      const res = await this.getGradeList(req)
-      if (res.data.list.length > 0) {
-        res.data.list.forEach(ele => {
-          this.highDetail.formData[0].firstList.push({ key: ele.code, val: ele.name })
-          this.gradeList.push({ key: ele.code, val: ele.name })
-        })
-      }
-    },
+    // 获取详情
     async showClassDetail() {
-      const res = await this.detailClass(this.$route.query.id)
-      this.detailInfo[0].val = this.schoolYear
-      this.detailInfo[1].val = res.data.gradeName
+      const res = await this.highClassDetail({ id: this.$route.query.id })
+      this.classDetail = res.data
+      this.detailInfo[0].val = `${res.data.gradeName}级`
+      this.detailInfo[1].val = res.data.subjectName
       this.detailInfo[2].val = res.data.className
-      this.detailInfo[3].val = res.data.placeName
-      this.detailInfo[4].val = res.data.count || 0
-      this.detailInfo[5].val = res.data.teacherName
+      this.detailInfo[3].val = res.data.teacherName
+      this.detailInfo[4].val = res.data.placeName
+      this.detailInfo[5].val = res.data.count || 0
       this.detailInfo[6].val = res.data.remark
       this.$refs.newStudent.classInfo = res.data
     },
-    async showList(keyword = '') {
-      const req = {
-        classCode: this.$route.query.classCode,
-        gradeCode: this.$route.query.gradeCode,
-        schoolYearId: this.$route.query.schoolYearId,
-        ...this.pageList,
-        schoolCode: this.userInfo.schoolCode,
-        keyword: keyword
-      }
-      const res = await this.getClassStudentList(req)
-      this.studentsList = res.data.list
-      this.total = res.data.total
-    },
-    async showTeaList(subjectCode = '') {
-      const req = {
-        classId: this.$route.query.id,
-        pageNum: this.pageList.page,
-        pageSize: this.pageList.size,
-        schoolCode: this.userInfo.schoolCode,
-        subjectCode
-      }
-      const res = await this.getClassTeacherList(req)
+    async _getHighStu() {
+      this.searchList.schoolCode = this.userInfo.schoolCode
+      this.searchList = Object.assign(this.searchList, this.pageList)
+      const res = await this.getHighStu(this.searchList)
       this.studentsList = res.data.list
       this.total = res.data.total
     },
     addStudent() {
       this.userTag = true
     },
-    addTeacher() {
-      this.teacherTag = true
-    },
-    chooseTeacher(value) {
-      console.log(value)
-      const req = []
-      value.forEach(ele => {
-        req.push({
-          classId: this.$route.query.id,
-          schoolCode: this.userInfo.schoolCode,
-          subjectCode: ele.subjectCode,
-          teacherCode: ele.teacherCode
-        })
-      })
-      this.addClassTeacher(req)
-        .then(res => {
-          this.$message.success('添加成功')
-          this.$tools.goNext(() => {
-            this.showTeaList(this.subjectCode)
-            this.$refs.chooseSubteacher.reset()
-          })
-        })
-        .catch(() => {
-          this.$refs.chooseSubteacher.error()
-        })
-    },
+    // 添加学生
     chooseUser(value) {
       if (value.length > 0) {
         const req = {
-          classId: this.$route.query.id,
-          schoolCode: this.userInfo.schoolCode,
-          userIds: value.map(ele => {
+          classCode: this.classDetail.classCode,
+          className: this.classDetail.className,
+          grade: this.classDetail.gradeName,
+          subjectCode: this.classDetail.subjectCode,
+          subjectName: this.classDetail.subjectName,
+          ids: value.map(ele => {
             return ele.id
           })
         }
-        this.addClassStudent(req)
+        this.highStuJoin(req)
           .then(res => {
             this.$message.success('添加成功')
             this.$tools.goNext(() => {
-              this.showList(this.keywords)
+              this._getHighStu()
               this.showClassDetail()
               this.$refs.chooseUser.reset()
             })
@@ -406,121 +298,111 @@ export default {
         this.$refs.chooseUser.reset()
       }
     },
-    submit() {
-      this.confirmLoading = true
-      setTimeout(() => {
-        this.dialogTag = false
-        this.confirmLoading = false
-      }, 1000)
-    },
-    moveClass(record) {
+    // 转班
+    moveClass(type, record) {
+      this.type = type
+      if (type) {
+        this.record = record
+      } else {
+        if (this.chooseList.length === 0) {
+          this.$message.warning('请选择学生')
+          return
+        }
+      }
       this.formStatus = true
-      this.record = record
     },
+    // 查询
     searchForm(value) {
-      this.keywords = value.keywords
-      this.showList(value.keywords)
+      this.pageList.page = 0
+      this.pageList.size = 20
+      this.searchList = Object.assign(this.searchList, value)
+      this._getHighStu()
     },
-    teasearchForm(value) {
-      console.log(value)
-      this.subjectCode = value.subjectCode
-      this.showTeaList(value.subjectCode)
-    },
-    async deleteList(record) {
-      await this.deleteClassStudent(record.id)
+    // 单个移除
+    async del(record) {
+      await this.highStuRemove({ id: record.id })
       this.$message.success('移除成功')
       this.$tools.goNext(() => {
-        this.showList()
+        this._getHighStu()
         this.showClassDetail()
       })
     },
-    async deleteTeacher(record) {
-      await this.deleteClassTeacher(record.id)
-      this.$message.success('移除成功')
-      this.$tools.goNext(() => {
-        this.showTeaList(this.subjectCode)
+    // 批量移除
+    dels(type) {
+      if (this.chooseList.length === 0) {
+        this.$message.warning('请选择学生')
+        return
+      }
+      this.$tools.delTip('确定移除选中的学生吗？', () => {
+        this.highStusRemove({ ids: this.chooseList }).then(res => {
+          this.$message.success('操作成功')
+          this.chooseList = []
+          this.$tools.goNext(() => {
+            this._getHighStu()
+            this.showClassDetail()
+          })
+        })
       })
     },
     goLead(path, record) {
       this.$router.push({
         path,
-        query: { userCode: record.userCode, year: this.schoolYear, yearId: this.$route.query.schoolYearId }
+        query: { userCode: record.userCode, id: record.id }
       })
     },
-    async firstChange(value) {
-      this.classList = []
-      this.highDetail.formData[0].secondList = []
-      if (value === undefined) {
-        return
-      }
-      this.gradeId = this.gradeList[value].key
-      const req = {
-        schoolCode: this.userInfo.schoolCode,
-        gradeCode: this.gradeList[value].key,
-        schoolYearId: this.schoolYearId
-      }
-      const res = await this.getClassList(req)
-      if (res.data.list.length > 0) {
-        res.data.list.forEach(ele => {
-          this.highDetail.formData[0].secondList.push({ key: ele.id, val: ele.className })
-          this.classList.push({ key: ele.id, val: ele.className })
-        })
-        this.classId = this.classList[0].key
-      }
-    },
-    secondChange(value) {
-      this.classId = this.classList[value].key
-    },
-    selectAll(item, type) {
-      if (type) {
-        this.totalList = this.totalList.concat(item)
-      } else {
-        item.forEach(item => {
-          const index = this.totalList.findIndex(list => {
-            return list.id === item.id
-          })
-          this.totalList.splice(index, 1)
-        })
-      }
-    },
-    // 监听选中或取消
-    clickRow(item, type) {
-      if (type) {
-        if (this.isCheck) {
-          this.totalList.push(item)
-        } else {
-          this.totalList = [item]
-        }
-      } else {
-        const index = this.totalList.findIndex(list => list.id === item.id)
-        this.totalList.splice(index, 1)
-      }
-    },
+    // 提交转班
     submitForm(values) {
-      if (!this.classId) {
-        return
-      }
-      const req = {
-        classId: this.classId,
-        schoolCode: this.userInfo.schoolCode,
-        id: this.record.id,
-        userId: this.record.userId
-      }
-      this.changeClass(req)
-        .then(res => {
-          this.$message.success('转班成功')
-          this.$tools.goNext(() => {
-            this.showList()
-            this.showClassDetail()
-            this.$refs.form.reset()
+      const req = {}
+      req.grade = this.highSubTerm[values.gradeCode].schoolYearName.split('-')[0]
+      req.className = this.highClass[values.class].className
+      req.classCode = this.highClass[values.class].classCode
+      req.subjectName = this.highSubList[values.subject].subjectName
+      req.subjectCode = this.highSubList[values.subject].subjectCode
+      if (this.type === 0) {
+        req.ids = this.chooseList
+        this.highStusChange(req)
+          .then(res => {
+            this.$message.success('转班成功')
+            this.chooseList = []
+            this.$tools.goNext(() => {
+              this._getHighStu()
+              this.showClassDetail()
+              this.$refs.form.reset()
+            })
           })
-        })
-        .catch(() => {
-          this.$refs.form.error()
-        })
+          .catch(() => {
+            this.$refs.form.error()
+          })
+      } else {
+        req.id = this.record.id
+        this.highStuChange(req)
+          .then(res => {
+            this.$message.success('转班成功')
+            this.$tools.goNext(() => {
+              this._getHighStu()
+              this.showClassDetail()
+              this.$refs.form.reset()
+            })
+          })
+          .catch(() => {
+            this.$refs.form.error()
+          })
+      }
     },
     goAdd() {
-      this.$router.push({ path: '/basedata/bulkImport', query: { id: this.$route.query.id, type: 'students' } })
+      this.$router.push({
+        path: '/basedata/bulkImport',
+        query: {
+          id: this.$route.query.id,
+          type: 'students',
+          grade: this.classDetail.gradeName,
+          subjectCode: this.classDetail.subjectCode,
+          classCode: this.classDetail.classCode,
+          subjectName: this.classDetail.subjectName,
+          className: this.classDetail.className,
+          state: 0
+        }
+      })
     }
   }
 }
@@ -568,38 +450,6 @@ export default {
     .add {
       margin: 10px 0;
     }
-  }
-  .action {
-    div {
-      cursor: pointer;
-      margin: 4px 30px 0 0;
-      img {
-        width: 20px;
-        height: 20px;
-      }
-      span {
-        font-size: 12px;
-      }
-    }
-  }
-}
-.modal {
-  padding: 0 40px;
-  .line {
-    margin-bottom: 20px;
-  }
-  .title {
-    font-size: 14px;
-    font-weight: bold;
-    margin-right: 20px;
-    min-width: 70px;
-  }
-  .download {
-    color: #6882da;
-    cursor: pointer;
-  }
-  /deep/ .ant-upload-list-item-info {
-    padding: 0 22px 0 4px;
   }
 }
 </style>
