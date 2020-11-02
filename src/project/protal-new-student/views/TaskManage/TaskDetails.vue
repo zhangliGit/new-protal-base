@@ -3,21 +3,23 @@
     <div class="head-btn">
       <a-button type="primary" @click="editMsg"> 编辑 </a-button>
     </div>
-    <div class="base-message message">
-      <div class="title">基本信息</div>
-      <div class="base-msg-table">
-        <div class="table-list">
-          <div class="msg-item" v-for="item in baseList" :key="item.id">
-            <div class="name common">{{ item.name }}</div>
-            <div class="text common">{{ item.text }}</div>
+    <div class="message-box">
+      <div class="base-message message">
+        <div class="title">基本信息</div>
+        <div class="base-msg-table">
+          <div class="table-list">
+            <div class="msg-item" v-for="item in baseList" :key="item.id">
+              <div class="name common">{{ item.name }}</div>
+              <div class="text common">{{ item.text }}</div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="project-message message">
-      <div class="title">专业信息</div>
-      <div class="project-msg-table">
-        <TableList :columns="columns" :table-list="projectList" isBorder />
+      <div class="project-message message">
+        <div class="title">专业信息</div>
+        <div class="project-msg-table">
+          <TableList :columns="columns" :table-list="projectList" isBorder />
+        </div>
       </div>
     </div>
   </div>
@@ -132,6 +134,9 @@ export default {
 </script>
 <style lang="less" scoped>
 .home {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   box-sizing: border-box;
   padding: 20px 40px;
 }
@@ -142,6 +147,10 @@ export default {
   display: flex;
   justify-content: flex-end;
   align-items: center;
+}
+.message-box{
+  flex: 1;
+  overflow-y: scroll;
 }
 .title {
   display: flex;

@@ -82,6 +82,9 @@ export default {
  * You can easily play with the page transition by editing
  * these styles.
  */
+ .qui-fx-f1 {
+   overflow: hidden;
+ }
 .content-bg {
   padding: 5px 15px 15px;
 }

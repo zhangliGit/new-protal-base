@@ -1,171 +1,65 @@
 <template>
-  <div class="home page-layout qui-fx-ver">
-    <poster v-model="showTag" :record="record"></poster>
-    <meet-record ref="form" @submit-form="submitForm" title="活动心得" v-model="editTag" :id="editId">
-    </meet-record>
-    <sign-record
-      title="签到统计"
-      type="activity"
-      ref="signRecord"
-      :id="id"
-      v-model="signTag"
-      v-if="signTag"
-    ></sign-record>
-    <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
-      <div slot="left">
-        <a-button icon="plus" class="add-btn" @click.stop="addBooking('0')">发布</a-button>
+  <div class="page-layout qui-fx goods">
+    <a-modal
+      :title="checkTitle"
+      :visible="checkVisible"
+      :confirm-loading="confirmLoading"
+      @ok="handleCheckOk"
+      @cancel="handleCheckCancel"
+    >
+      <p>{{ checkText }}</p>
+    </a-modal>
+    <submit-form ref="form" @submit-form="submitForm" :title="title" v-model="addFormStatus" :form-data="addFormDatas">
+      <div slot="upload" class="qui-fx qui-fx-ac">
+        <upload-multi is-check :length="1" v-model="fileList" type="face" :fileInfo="fileInfo"></upload-multi>
       </div>
-    </search-form>
-    <table-list :page-list="pageList" :columns="columns" :table-list="bookingList">
-      <template v-slot:actions="action">
-        <a-tooltip placement="topLeft" title="查看" v-if="action.record.status !== '未使用'">
-          <a-button
-            size="small"
-            class="detail-action-btn"
-            icon="ellipsis"
-            @click.stop="addBooking('1', action.record)"
-          ></a-button>
-        </a-tooltip>
-        <a-tooltip placement="topLeft" title="编辑" v-if="action.record.status === '未使用'">
-          <a-button
-            size="small"
-            class="edit-action-btn"
-            icon="form"
-            @click.stop="addBooking('2', action.record)"
-          ></a-button>
-        </a-tooltip>
-        <!-- <a-tooltip placement="topLeft" title="活动心得" v-if="action.record.status !== '未使用'">
-          <a-button
-            size="small"
-            class="copy-action-btn"
-            icon="edit"
-            @click.stop="editMeeting(action.record)"
-          ></a-button>
-        </a-tooltip> -->
-        <a-tooltip placement="topLeft" title="查看海报">
-          <a-button
-            size="small"
-            class="play-action-btn"
-            icon="export"
-            @click.stop="showPoster(action.record)"
-          ></a-button>
-        </a-tooltip>
-        <!-- <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="deleteList(action.record)" v-if="action.record.status !== '使用中'">
-          <template slot="title">
-            确定删除吗?
-          </template>
-          <a-tooltip placement="topLeft" title="删除">
-            <a-button size="small" class="del-action-btn" icon="delete"></a-button>
+    </submit-form>
+    <div class="page-left">
+      <grade-tree @select="select"></grade-tree>
+    </div>
+    <div class="qui-fx-f1 qui-fx-ver">
+      <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
+        <div slot="left">
+          <a-button icon="plus" class="export-btn" @click="addClick">添加</a-button>
+          <a-button class="export-btn" @click="checkClick(true)">批量通过</a-button>
+          <a-button class="export-btn" @click="checkClick(false)">批量拒绝</a-button>
+        </div>
+      </search-form>
+      <table-list isZoom isCheck :page-list="pageList" :columns="columns" :table-list="userList">
+        <template v-slot:actions="action">
+          <a-tooltip placement="topLeft" title="查看详情">
+            <a-button
+              size="small"
+              class="detail-action-btn"
+              icon="ellipsis"
+              @click="detail(action.record.id)"
+            ></a-button>
           </a-tooltip>
-        </a-popconfirm> -->
-      </template>
-      <template v-slot:other3="other3">
-        <span>{{ other3.record.reserveDate | gmtToDate('date') }} {{ other3.record.startTime }}-{{ other3.record.endTime }}</span>
-      </template>
-      <template v-slot:other4="other4">
-        <a-popover>
-          <template slot="content">
-            <p>{{ other4.record.content }}</p>
-          </template>
-          <span>{{ other4.record.content.length > 10 ? (other4.record.content.substring(0, 20) + '...') : other4.record.content }}</span>
-        </a-popover>
-      </template>
-      <template v-slot:other2="other2">
-        <a-tag v-if="other2.record.openSign === '1'" color="green" @click="showRecord(other2.record)">{{ other2.record.signNum }} / {{ other2.record.totalNum }}</a-tag>
-        <span v-else>--</span>
-      </template>
-      <template v-slot:other1="other1">
-        <a-tag
-          :color="other1.record.status === '使用中' ? '#87d068' : other1.record.status === '未使用' ? '#2db7f5' : 'purple'"
-        >{{ other1.record.status === '使用中' ? '进行中' : other1.record.status === '未使用' ? '未开始' : '已结束' }}</a-tag>
-      </template>
-    </table-list>
-    <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
+        </template>
+      </table-list>
+      <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
+    </div>
   </div>
 </template>
-
 <script>
-import Poster from '../../component/siteBooking/Poster'
-import MeetRecord from '../../component/siteBooking/MeetRecord'
-import UploadMulti from '@c/UploadFace'
-import SignRecord from '../../component/siteBooking/SignRecord'
 import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
 import SearchForm from '@c/SearchForm'
+import GradeTree from '@c/GradeTree'
+import UploadMulti from '@c/UploadFace'
 import Tools from '@u/tools'
-const columns = [
-  {
-    title: '序号',
-    width: '8%',
-    scopedSlots: {
-      customRender: 'index'
-    }
-  },
-  {
-    title: '活动主题',
-    dataIndex: 'description',
-    width: '10%'
-  },
-  {
-    title: '活动地点',
-    dataIndex: 'placeName',
-    width: '10%'
-  },
-  {
-    title: '活动时间',
-    dataIndex: 'reserveDate',
-    width: '10%',
-    scopedSlots: {
-      customRender: 'other3'
-    }
-  },
-  {
-    title: '活动内容',
-    dataIndex: 'content',
-    width: '10%',
-    ellipsis: true,
-    scopedSlots: {
-      customRender: 'other4'
-    }
-  },
-  {
-    title: '发起人',
-    dataIndex: 'createName',
-    width: '10%'
-  },
-  {
-    title: '活动状态',
-    dataIndex: 'status',
-    width: '10%',
-    scopedSlots: {
-      customRender: 'other1'
-    }
-  },
-  {
-    title: '签到统计',
-    dataIndex: 'openSign',
-    width: '10%',
-    scopedSlots: {
-      customRender: 'other2'
-    }
-  },
-  {
-    title: '操作',
-    width: '12%',
-    scopedSlots: {
-      customRender: 'action'
-    }
-  }
-]
+import SubmitForm from '../../component/SubForm.vue'
 const searchLabel = [
   {
-    value: 'rangeTime',
-    type: 'rangeTime',
-    label: '活动日期',
-    customRender: text => {
-      return Tools.getDate(text)
-    }
+    value: 'name',
+    type: 'input',
+    label: '姓名'
+  },
+  {
+    value: 'idCard',
+    type: 'input',
+    label: '身份证号'
   },
   {
     list: [
@@ -174,60 +68,379 @@ const searchLabel = [
         val: '全部'
       },
       {
+        key: '0',
+        val: '申请中'
+      },
+      {
         key: '1',
-        val: '未开始'
+        val: '申请失败'
       },
       {
         key: '2',
-        val: '进行中'
+        val: '申请成功'
+      }
+    ],
+    value: 'state',
+    type: 'select',
+    label: '申请状态'
+  }
+]
+const addFormDatas = [
+  {
+    value: 'gradeName',
+    initValue: [],
+    list: [],
+    type: 'select',
+    label: '年级',
+    placeholder: '请选择年级'
+  },
+  {
+    value: 'name',
+    initValue: '',
+    type: 'input',
+    label: '姓名',
+    placeholder: '请输入姓名'
+  },
+  {
+    value: 'sex',
+    initValue: '1',
+    list: [
+      {
+        key: '1',
+        val: '男'
+      },
+      {
+        key: '2',
+        val: '女'
+      }
+    ],
+    type: 'radio',
+    label: '性别',
+    placeholder: ''
+  },
+  {
+    value: 'idCard',
+    initValue: '',
+    type: 'input',
+    label: '身份证号',
+    placeholder: '请输入身份证号'
+  },
+  {
+    value: 'identity',
+    initValue: [],
+    list: [
+      {
+        key: '1',
+        val: '群众'
+      },
+      {
+        key: '2',
+        val: '团员'
       },
       {
         key: '3',
-        val: '已结束'
+        val: '党员'
       }
     ],
-    value: 'status',
     type: 'select',
-    label: '活动状态'
+    label: '政治面貌',
+    placeholder: '请选择政治面貌'
   },
   {
-    value: 'description',
+    value: 'nation',
+    initValue: [],
+    list: [
+      {
+        key: '1',
+        val: '汉族'
+      },
+      {
+        key: '2',
+        val: '壮族'
+      },
+      {
+        key: '3',
+        val: '苗族'
+      }
+    ],
+    type: 'select',
+    label: '民族',
+    placeholder: '请选择民族'
+  },
+  {
+    value: 'mobile',
+    initValue: '',
     type: 'input',
-    label: '活动主题',
-    placeholder: '请输入活动主题'
+    label: '联系电话',
+    placeholder: '请输入电话号码'
+  },
+  {
+    value: 'project',
+    initValue: '',
+    type: 'input',
+    label: '申请专业',
+    placeholder: '请输入专业名称'
+  },
+  {
+    value: 'source',
+    initValue: '1',
+    list: [
+      {
+        key: '1',
+        val: '应届'
+      },
+      {
+        key: '2',
+        val: '非应届'
+      }
+    ],
+    type: 'radio',
+    label: '学生来源',
+    placeholder: ''
+  },
+  {
+    value: 'object',
+    initValue: '1',
+    list: [
+      {
+        key: '1',
+        val: '应届初中'
+      },
+      {
+        key: '2',
+        val: '非应届'
+      }
+    ],
+    type: 'radio',
+    label: '招生对象',
+    placeholder: ''
+  },
+  {
+    value: 'lastSchool',
+    initValue: '',
+    type: 'input',
+    label: '毕业学校',
+    placeholder: '请输入毕业学校'
+  },
+  {
+    value: 'health',
+    initValue: '',
+    type: 'input',
+    label: '健康状况',
+    placeholder: '请输入健康状况'
+  },
+  {
+    value: 'houseType',
+    initValue: '1',
+    list: [
+      {
+        key: '1',
+        val: '农业'
+      },
+      {
+        key: '2',
+        val: '非弄'
+      }
+    ],
+    type: 'radio',
+    label: '户口性质',
+    placeholder: ''
+  },
+  {
+    value: 'address',
+    initValue: '',
+    type: 'input',
+    label: '户口所在地区县以下详细地址',
+    placeholder: '请输入详细地址'
+  },
+  {
+    value: 'police',
+    initValue: '',
+    type: 'input',
+    label: '所属派出所',
+    placeholder: '请输入所属派出所名称'
+  },
+  {
+    value: 'addressType',
+    initValue: [],
+    list: [
+      {
+        key: '1',
+        val: '农村'
+      },
+      {
+        key: '2',
+        val: '城镇'
+      },
+      {
+        key: '3',
+        val: '县城'
+      }
+    ],
+    type: 'select',
+    label: '学生居住地类型',
+    placeholder: '请选择居住地类型'
+  },
+  {
+    value: 'addressNow',
+    initValue: '',
+    type: 'input',
+    label: '家庭现住址',
+    placeholder: '请输入家庭现住址'
+  },
+  {
+    value: 'parentName',
+    initValue: '',
+    type: 'input',
+    label: '家长姓名',
+    placeholder: '请输入家长姓名'
+  },
+  {
+    value: 'parentTel',
+    initValue: '',
+    type: 'input',
+    label: '家长手机号',
+    placeholder: '请输入家长手机号'
+  },
+  {
+    value: 'relation',
+    initValue: '',
+    type: 'input',
+    label: '与本人关系',
+    placeholder: '请输入家长与本人关系'
+  },
+  {
+    value: 'isGuardian',
+    initValue: '1',
+    list: [
+      {
+        key: '1',
+        val: '是'
+      },
+      {
+        key: '2',
+        val: '否'
+      }
+    ],
+    type: 'radio',
+    label: '是否监护人',
+    placeholder: ''
+  },
+  {
+    type: 'upload',
+    label: '学生人脸照片(选填)',
+    required: false,
+    placeholder: '请上传人脸照片'
+  }
+]
+const columns = [
+  {
+    title: '序号',
+    width: '5%',
+    scopedSlots: {
+      customRender: 'index'
+    }
+  },
+  {
+    title: '姓名',
+    dataIndex: 'name',
+    width: '8%'
+  },
+  {
+    title: '年级',
+    width: '8%',
+    dataIndex: 'grade'
+  },
+  {
+    title: '申请专业',
+    dataIndex: 'project',
+    width: '10%'
+  },
+  {
+    title: '性别',
+    dataIndex: 'sex',
+    width: '5%'
+  },
+  {
+    title: '身份证号',
+    dataIndex: 'idCard',
+    width: '8%'
+  },
+  {
+    title: '联系电话',
+    dataIndex: 'mobile',
+    width: '8%'
+  },
+  {
+    title: '申请时间',
+    dataIndex: 'createTime',
+    width: '8%',
+    customRender: (text) => {
+      return Tools.getDate(text)
+    }
+  },
+  {
+    title: '申请状态',
+    dataIndex: 'status',
+    width: '8%'
+  },
+  {
+    title: '人脸照片',
+    dataIndex: 'photo',
+    width: '10%',
+    scopedSlots: {
+      customRender: 'photoPic'
+    }
+  },
+  {
+    title: '操作',
+    width: '5%',
+    scopedSlots: {
+      customRender: 'action'
+    }
   }
 ]
 export default {
-  name: 'PublishActivity',
+  name: 'StudentApply',
   components: {
-    SearchForm,
-    UploadMulti,
-    MeetRecord,
-    PageNum,
     TableList,
-    SignRecord,
-    Poster
+    SearchForm,
+    PageNum,
+    GradeTree,
+    SubmitForm,
+    UploadMulti
   },
   data() {
     return {
       columns,
       searchLabel,
-      searchList: {},
+      title: '添加新生',
+      addFormStatus: false,
+      addFormDatas,
       fileList: [],
+      fileInfo: {
+        tip: '上传图片',
+        h: 120, // 高度
+        w: 120 // 宽度
+      },
+      confirmLoading: false,
+      checkResult: true,
+      checkTitle: '审核通过',
+      checkText: '确定通过新生入学申请吗？（录取）',
+      checkVisible: false,
       pageList: {
         page: 1,
         size: 20
       },
+      searchList: {
+        schoolCode: ''
+      },
       total: 0,
-      bookingList: [],
-      title: '活动发布',
-      signTag: false,
-      editTag: false,
-      showTag: false,
-      searchObj: {},
-      record: {},
-      id: 0,
-      editId: 0
+      userList: [],
+      previewVisible: false,
+      detailList: {},
+      dateTime: '',
+      state: ''
     }
   },
   computed: {
@@ -237,80 +450,110 @@ export default {
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getReserveList', 'delReserve', 'addMeetRecord', 'getMeetRecordById']),
-    async showList() {
-      const req = {
-        ...this.searchObj,
-        ...this.pageList,
-        schoolCode: this.userInfo.schoolCode,
-        type: '3'
-      }
-      const res = await this.getReserveList(req)
-      this.bookingList = res.data.list
-      this.bookingList.map(el => {
-        el.placeName = el.placeName.replace(/,/g, '-')
-      })
+    ...mapActions('home', ['getPageList', 'recordDetail', 'downRecord']),
+    async showList(searchObj = {}) {
+      this.searchList.schoolCode = this.userInfo.schoolCode
+      this.searchList = Object.assign(this.searchList, this.pageList, searchObj)
+      const res = await this.getPageList(this.searchList)
+      // this.userList = res.data.list
+      this.userList = [
+        {
+          id: 1,
+          name: '张学良',
+          grade: '2020',
+          project: '软件工程',
+          sex: '男',
+          idCard: '420333199563632020',
+          mobile: '13699996666',
+          createTime: 56565656565,
+          status: '1',
+          photo:
+            'http://canpoint-photo.oss-cn-beijing.aliyuncs.com/47801/2020/10/19/base/76b5c10347bf4e5185331bb917b762cb.jpg'
+        },
+        {
+          id: 2,
+          name: '张学良',
+          grade: '2020',
+          project: '软件工程',
+          sex: '男',
+          idCard: '420333199563632020',
+          mobile: '13699996666',
+          createTime: 56565656565,
+          status: '1',
+          photo:
+            'http://canpoint-photo.oss-cn-beijing.aliyuncs.com/47801/2020/10/19/base/76b5c10347bf4e5185331bb917b762cb.jpg'
+        }
+      ]
       this.total = res.data.total
     },
     searchForm(values) {
-      console.log(values)
-      this.searchObj = {
-        startDate: values.rangeTime ? values.rangeTime[0] : undefined,
-        endDate: values.rangeTime ? values.rangeTime[1] : undefined,
-        status: values.status,
-        description: values.description
+      this.pageList.page = 1
+      this.dateTime = values.date
+      this.state = values.state
+      const searchObj = {
+        date: values.date,
+        state: values.state
+      }
+      this.showList(searchObj)
+    },
+    async detail(id) {
+      this.previewVisible = true
+      const res = await this.recordDetail(id)
+      this.detailList = res.data
+    },
+    select(item) {
+      this.pageList.page = 1
+      this.pageList.size = 20
+      if (typeof item.materialTypeId === 'number') {
+        this.searchList.materialTypeId = item.materialTypeId
+        this.searchList.materialId = ''
+      } else {
+        this.searchList.materialId = item.materialTypeId.split('^')[1]
+        this.searchList.materialTypeId = ''
       }
       this.showList()
     },
-    addBooking(type, record) {
-      if (type !== '0') {
-        this.$router.push({ path: '/activityBooking/addActivityBooking', query: { id: record.id, type } })
+    addClick() {
+      this.addFormStatus = true
+    },
+    submitForm() {},
+    // 审核通过、拒绝按钮
+    checkClick(val) {
+      if (val) {
+        this.checkTitle = '审核通过'
+        this.checkText = '确定通过新生入学申请吗？（录取）'
+        this.checkResult = true
       } else {
-        this.$router.push({ path: '/activityBooking/addActivityBooking', query: { type } })
+        this.checkTitle = '审核拒绝'
+        this.checkText = '确定拒绝新生入学申请吗？（不录取）'
+        this.checkResult = false
       }
-    },
-    goDetail(record) {
-    },
-    async deleteList(record) {
-      await this.delReserve(record.id)
-      this.$message.success('删除成功')
-      this.$tools.goNext(() => {
-        this.showList()
+      this.$nextTick(() => {
+        this.checkVisible = true
       })
     },
-    showRecord(record) {
-      this.id = record.id
-      this.signTag = true
+    // 打开审核弹框
+    handleCheckOpen() {
+      this.checkVisible = true
     },
-    editMeeting(record) {
-      this.editId = record.id
-      this.editTag = true
+    // 审核确认
+    handleCheckOk() {
+      console.log(this.checkResult)
+      this.checkVisible = false
     },
-    showPoster(record) {
-      this.record = record
-      this.showTag = true
-    },
-    async submitForm(values) {
-      console.log(values)
-      const req = {
-        placeReserveId: this.editId,
-        content: values.content,
-        attachList: values.fileList.concat(values.otherList)
-      }
-      await this.addMeetRecord(req)
-      this.$message.success('发布成功')
-      this.$tools.goNext(() => {
-        this.$refs.form.appForm = {
-          content: '',
-          fileList: [],
-          otherList: []
-        }
-        this.$refs.form.showData()
-        this.$refs.form.reset()
-        this.showList()
-      })
+    // 取消审核 关闭弹框
+    handleCheckCancel() {
+      this.checkVisible = false
     }
   }
 }
 </script>
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.goods {
+  .page-left {
+    background: #fff;
+    margin-right: 10px;
+    width: 150px;
+  }
+}
+</style>
