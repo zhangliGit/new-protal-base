@@ -25,7 +25,15 @@
           <a-button class="export-btn" @click="checkClick(false)">批量拒绝</a-button>
         </div>
       </search-form>
-      <table-list isZoom isCheck :page-list="pageList" :columns="columns" :table-list="userList">
+      <table-list
+        isZoom
+        isCheck
+        v-model="chooseList"
+        :page-list="pageList"
+        @selectAll="selectAll"
+        :columns="columns"
+        :table-list="userList"
+      >
         <template v-slot:actions="action">
           <a-tooltip placement="topLeft" title="查看详情">
             <a-button
@@ -437,6 +445,8 @@ export default {
       },
       total: 0,
       userList: [],
+      chooseList: [],
+      totalList: [],
       previewVisible: false,
       detailList: {},
       dateTime: '',
@@ -447,7 +457,35 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
-    this.showList()
+    // this.showList()
+    this.userList = [
+      {
+        id: 1,
+        name: '张学良',
+        grade: '2020',
+        project: '软件工程',
+        sex: '男',
+        idCard: '420333199563632020',
+        mobile: '13699996666',
+        createTime: 56565656565,
+        status: '1',
+        photo:
+          'http://canpoint-photo.oss-cn-beijing.aliyuncs.com/47801/2020/10/19/base/76b5c10347bf4e5185331bb917b762cb.jpg'
+      },
+      {
+        id: 2,
+        name: '张学良',
+        grade: '2020',
+        project: '软件工程',
+        sex: '男',
+        idCard: '420333199563632020',
+        mobile: '13699996666',
+        createTime: 56565656565,
+        status: '1',
+        photo:
+          'http://canpoint-photo.oss-cn-beijing.aliyuncs.com/47801/2020/10/19/base/76b5c10347bf4e5185331bb917b762cb.jpg'
+      }
+    ]
   },
   methods: {
     ...mapActions('home', ['getPageList', 'recordDetail', 'downRecord']),
@@ -455,35 +493,7 @@ export default {
       this.searchList.schoolCode = this.userInfo.schoolCode
       this.searchList = Object.assign(this.searchList, this.pageList, searchObj)
       const res = await this.getPageList(this.searchList)
-      // this.userList = res.data.list
-      this.userList = [
-        {
-          id: 1,
-          name: '张学良',
-          grade: '2020',
-          project: '软件工程',
-          sex: '男',
-          idCard: '420333199563632020',
-          mobile: '13699996666',
-          createTime: 56565656565,
-          status: '1',
-          photo:
-            'http://canpoint-photo.oss-cn-beijing.aliyuncs.com/47801/2020/10/19/base/76b5c10347bf4e5185331bb917b762cb.jpg'
-        },
-        {
-          id: 2,
-          name: '张学良',
-          grade: '2020',
-          project: '软件工程',
-          sex: '男',
-          idCard: '420333199563632020',
-          mobile: '13699996666',
-          createTime: 56565656565,
-          status: '1',
-          photo:
-            'http://canpoint-photo.oss-cn-beijing.aliyuncs.com/47801/2020/10/19/base/76b5c10347bf4e5185331bb917b762cb.jpg'
-        }
-      ]
+      this.userList = res.data.list
       this.total = res.data.total
     },
     searchForm(values) {
@@ -496,10 +506,15 @@ export default {
       }
       this.showList(searchObj)
     },
-    async detail(id) {
-      this.previewVisible = true
-      const res = await this.recordDetail(id)
-      this.detailList = res.data
+    // 去详情
+    detail(id) {
+      console.log(id)
+      this.$router.push({
+        path: `/studentApply/applyDetails`,
+        query: {
+          id
+        }
+      })
     },
     select(item) {
       this.pageList.page = 1
@@ -516,7 +531,27 @@ export default {
     addClick() {
       this.addFormStatus = true
     },
-    submitForm() {},
+    // 表格全选
+    selectAll(item, type) {
+      console.log('2121')
+      if (type) {
+        this.totalList = this.totalList.concat(item)
+      } else {
+        item.forEach((item) => {
+          const index = this.totalList.findIndex((list) => {
+            return list.id === item.id
+          })
+          this.totalList.splice(index, 1)
+        })
+      }
+    },
+    submitForm() {
+      if (this.totalList.length === 0) {
+        this.$message.warning('请选择学生')
+        return
+      }
+      console.log(this.totalList)
+    },
     // 审核通过、拒绝按钮
     checkClick(val) {
       if (val) {
