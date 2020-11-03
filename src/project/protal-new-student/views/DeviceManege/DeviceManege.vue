@@ -1,12 +1,13 @@
 <template>
   <div class="home page-layout qui-fx-ver">
-    <IssueRecord :visible="issueVisible" :title="title" @cancel="closeIssue" />
+    <IssueRecord :visible="issueVisible" :title="title" @cancel="issueVisible = false" />
+    <BindDevice :visible="bindVisible" title="绑定设备" @cancel="bindVisible = false" width="90%" />
     <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
       <div slot="left">
-        <a-button icon="plus" class="add-btn" @click.stop="addTask">绑定设备</a-button>
+        <a-button icon="plus" class="add-btn" @click.stop="bindVisible=true">绑定设备</a-button>
       </div>
     </search-form>
-    <table-list isZoom :page-list="pageList" :columns="columns" :table-list="taskList">
+    <table-list isBorder isZoom :page-list="pageList" :columns="columns" :table-list="taskList">
       <template v-slot:other1="other1">
         <span>{{ other1.record.id }}</span>
         <a-icon
@@ -41,6 +42,7 @@ import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
 import SearchForm from '@c/SearchForm'
 import IssueRecord from '../../component/IssueRecord.vue'
+import BindDevice from '../../component/BindDevice.vue'
 // import Tools from '@u/tools'
 const columns = [
   {
@@ -117,12 +119,14 @@ export default {
     SearchForm,
     PageNum,
     TableList,
-    IssueRecord
+    IssueRecord,
+    BindDevice
   },
   data() {
     return {
       title: '下发记录',
       issueVisible: false,
+      bindVisible: false,
       columns,
       searchLabel,
       searchList: {},
@@ -185,9 +189,6 @@ export default {
     },
     handelIssue() {
       this.issueVisible = true
-    },
-    closeIssue(record) {
-      this.issueVisible = false
     },
     async deleteList(record) {
       await this.delReserve(record.id)

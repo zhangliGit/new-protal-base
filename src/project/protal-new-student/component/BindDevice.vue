@@ -10,65 +10,36 @@
     :footer="null"
     @ok="addHandle"
   >
-    <div>
-      <search-form is-reset @search-form="searchForm" :search-label="searchLabel"> </search-form>
-      <div class="btn">
-        <a-button class="export-btn" @click="checkClick">批量重发</a-button>
-      </div>
-      <table-list
-        isCheck
-        isZoom
-        v-model="chooseList"
-        :page-list="pageList"
-        @selectAll="selectAll"
-        :columns="columns"
-        :table-list="userList"
-      >
-        <template v-slot:actions="action">
-          <a-tooltip placement="topLeft" title="重发">
-            <a-button size="small" class="edit-action-btn" icon="edit" @click.stop="checkClick(action)"></a-button>
-          </a-tooltip>
-        </template>
-      </table-list>
-      <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
-    </div>
+    <SelectPanel
+      isReset
+      isCheck
+      isZoom
+      :chooseList="chooseList"
+      :columns="columns"
+      :tableList="userList"
+      :pageList="pageList"
+      :total="total"
+      :searchLabel="searchLabel"
+      @searchForm="searchForm"
+      @selectAll="selectAll"
+      @showList="showList"
+    />
   </a-modal>
 </template>
 <script>
 import { mapState } from 'vuex'
-import SearchForm from '@c/SearchForm'
-import TableList from '@c/TableList'
-import PageNum from '@c/PageNum'
+import SelectPanel from './SelectPanel'
 const searchLabel = [
   {
-    value: 'name',
+    value: 'position',
     type: 'input',
-    label: '人员',
-    placeholder: '请输入姓名'
+    label: '安装位置',
+    placeholder: '请输入安装位置'
   },
   {
-    value: 'time',
-    label: '下发时间',
-    type: 'rangeTime'
-  },
-  {
-    list: [
-      {
-        key: '',
-        val: '全部'
-      },
-      {
-        key: '0',
-        val: '成功'
-      },
-      {
-        key: '1',
-        val: '失败'
-      }
-    ],
-    value: 'result',
-    type: 'select',
-    label: '下发结果'
+    value: 'deviceName',
+    label: '设备名称',
+    type: 'input'
   }
 ]
 const columns = [
@@ -80,30 +51,29 @@ const columns = [
     }
   },
   {
-    title: '人员',
-    dataIndex: 'name',
+    title: '设备名称',
+    dataIndex: 'deviceName',
     width: '10%'
   },
   {
-    title: '下发时间',
-    dataIndex: 'time',
-    width: '15%'
-  },
-  {
-    title: '下发结果',
-    dataIndex: 'result',
+    title: '设备类型',
+    dataIndex: 'deviceType',
     width: '10%'
   },
   {
-    title: '失败原因',
-    dataIndex: 'reson'
+    title: '安装位置',
+    dataIndex: 'position',
+    width: '20%'
   },
   {
-    title: '操作',
-    width: '8%',
-    scopedSlots: {
-      customRender: 'action'
-    }
+    title: '设备IP',
+    width: '15%',
+    dataIndex: 'ip'
+  },
+  {
+    title: '状态',
+    width: '10%',
+    dataIndex: 'status'
   }
 ]
 export default {
@@ -126,9 +96,7 @@ export default {
     }
   },
   components: {
-    SearchForm,
-    TableList,
-    PageNum
+    SelectPanel
   },
   data() {
     return {
@@ -136,20 +104,27 @@ export default {
       columns,
       totalList: [],
       chooseList: [],
+      total: 0,
+      pageList: {
+        page: 1,
+        size: 20
+      },
       userList: [
         {
           id: '1',
-          name: '张三',
-          time: '2020/10/10 12:12:00',
-          result: '下发成功',
-          reson: ''
+          deviceName: '人脸识别设备1',
+          deviceType: '面板机',
+          position: '南校门-左',
+          ip: '172.168.1.1',
+          status: '运行正常'
         },
         {
           id: '2',
-          name: '李四',
-          time: '2020/10/10 12:12:00',
-          result: '下发失败',
-          reson: '网络异常'
+          deviceName: '人脸识别设备1',
+          deviceType: '面板机',
+          position: '南校门-右',
+          ip: '172.168.1.2',
+          status: '运行正常'
         }
       ]
     }
@@ -184,7 +159,8 @@ export default {
         })
       }
     },
-    searchForm() {}
+    searchForm() {},
+    showList() {}
   }
 }
 </script>
