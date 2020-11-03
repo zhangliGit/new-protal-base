@@ -139,7 +139,7 @@
 import highClass from '../../assets/js/table/highClass.js'
 import { mapState, mapActions } from 'vuex'
 import ClassTable from '../components/ClassTable'
-import MajorTree from '../components/MajorTree'
+import MajorTree from '@c/MajorTree'
 import GradeTree from '@c/GradeTree'
 import PageNum from '@c/PageNum'
 import SubmitForm from '../components/SubForm'
@@ -395,6 +395,7 @@ export default {
               this.$refs.form.error()
             })
         } else if (this.type === 2) {
+          values.subjectName = this.highSubList.filter(el => el.subjectCode === values.subjectCode)[0].subjectName
           this.addHighClasses(values)
             .then(res => {
               this.$message.success('添加成功')

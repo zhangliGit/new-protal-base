@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import NoData from '@c/NoData'
+import NoData from './NoData'
 import $ajax from '@u/ajax-serve'
 import { mapState } from 'vuex'
 import hostEnv from '@config/host-env'

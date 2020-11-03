@@ -98,7 +98,7 @@ const studentRecord = [
   },
   {
     title: '操作',
-    width: '15%',
+    width: '13%',
     scopedSlots: {
       customRender: 'action'
     }
