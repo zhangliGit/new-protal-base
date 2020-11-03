@@ -50,6 +50,37 @@
             ]"
           />
         </a-form-item>
+        <!--文本域-->
+        <a-form-item
+          v-bind="formItemLayout"
+          :label-col="{ span: 5 }"
+          :wrapper-col="{ span: 12 }"
+          :label="item.label"
+          v-if="item.type === 'textarea'"
+        >
+          <a-textarea
+            :placeholder="item.placeholder"
+            :read-only="item.readonly"
+            :disabled="item.disabled"
+            :autoSize="{ minRows: item.minRows, maxRows: item.maxRows }"
+            :allowClear="true"
+            v-decorator="[
+              item.value,
+              {
+                initialValue: item.initValue + '',
+                rules: [
+                  {
+                    len: item.len,
+                    max: item.max || 100,
+                    required: !item.hasOwnProperty('required') || item.required,
+                    message: item.placeholder
+                  },
+                  { pattern: item.regular ? rules[item.regular] : '', message: item.placeholder }
+                ]
+              }
+            ]"
+          />
+        </a-form-item>
         <!--数字框-->
         <a-form-item
           v-bind="formItemLayout"

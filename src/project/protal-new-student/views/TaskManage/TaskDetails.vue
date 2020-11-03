@@ -148,7 +148,7 @@ export default {
   justify-content: flex-end;
   align-items: center;
 }
-.message-box{
+.message-box {
   flex: 1;
   overflow-y: scroll;
 }
@@ -209,18 +209,19 @@ export default {
           width: 60%;
         }
       }
+      .msg-item {
+        border-top: 0;
+        border-left: 0;
+      }
+      .msg-item:nth-child(2n + 1) {
+        border-top: 0;
+        border-left: 1px solid #ccc;
+      }
       .msg-item:nth-child(1) {
-        border-bottom: 0;
+        border-top: 1px solid #ccc;
       }
       .msg-item:nth-child(2) {
-        border-left: 0;
-        border-bottom: 0;
-      }
-      .msg-item:nth-child(4) {
-        border-left: 0;
-      }
-      .msg-item:nth-child(5) {
-        border-top: 0;
+        border-top: 1px solid #ccc;
       }
     }
   }
