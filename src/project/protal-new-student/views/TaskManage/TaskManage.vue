@@ -30,7 +30,6 @@
 </template>
 
 <script>
-import SignRecord from '../../component/siteBooking/SignRecord'
 import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
@@ -168,7 +167,6 @@ export default {
     SearchForm,
     PageNum,
     TableList,
-    SignRecord,
     SubForm
   },
   data() {

@@ -1,964 +1,575 @@
 <template>
-  <div class="add-booking page-layout qui-fx-ver">
-    <choose-user
-      ref="chooseUser"
-      :teacherList="teacherList"
-      is-check
-      v-if="teacherTag"
-      v-model="teacherTag"
-      @submit="chooseUser"
-      title="添加教职工"
-    ></choose-user>
-    <choose-class
-      title="添加班级"
-      ref="chooseClass"
-      :classList="classList"
-      is-check
-      v-model="classTag"
-      v-if="classTag"
-      @submit="chooseClass"
-    ></choose-class>
-    <choose-control
-      ref="chooseControl"
-      is-check
-      v-model="controlTag"
-      v-if="controlTag"
-      @submit="chooseDevice"
-      :controlList="controlList"
-      :schoolCode="userInfo.schoolCode"
-      chooseType="common"
-      title="添加设备"
-    ></choose-control>
-    <a-form :form="form" :style="{ maxHeight: maxHeight,overflow: 'auto' }">
-      <a-form-item label="活动主题" :label-col="{ span: 3 }" :wrapper-col="{ span: 15 }">
-        <a-input
-          placeholder="请输入活动主题"
-          :maxLength="20"
-          :disabled="type === '1'"
-          v-decorator="['remark', { initialValue: formData.remark, rules: [{ required: true, message: '请输入活动主题' }] }]"
-        />
-      </a-form-item>
-      <a-form-item
-        label="活动地点"
-        :label-col="{ span: 3 }"
-        :wrapper-col="{ span: 15 }"
-        :required="true"
-      >
-        <a-radio-group v-model="currentKey" button-style="solid" :disabled="type !== '0'">
-          <a-radio v-for="tab in tabList" :key="tab.key" :value="tab.key">{{ tab.title }}</a-radio>
-        </a-radio-group>
-        <a-cascader
-          v-if="currentKey === 0"
-          :options="options"
-          :load-data="loadData"
-          :placeholder="formData.siteName"
-          @change="onChange"
-          :disabled="type !== '0'"
-          v-decorator="[
-            'placeList',
-            {
-              rules: [{ required: type === '0', message: '请选择活动地点' }]
-            }
-          ]"
-        />
-        <a-input
-          v-else
-          :maxLength="30"
-          placeholder="请输入活动地点"
-          :disabled="type !== '0'"
-          v-decorator="['placeName', { initialValue: formData.placeName, rules: [{ required: true, message: '请输入活动地点' }] }]"
-        />
-      </a-form-item>
-      <a-form-item
-        v-show="placeId !== '' || currentKey === 1"
-        label="活动时间"
-        :label-col="{ span: 3 }"
-        :wrapper-col="{ span: 18 }"
-        :required="true"
-      >
-        <ul>
-          <li class="qui-fx-f1" v-for="(time, index) in timeList" :key="index">
-            <div class="qui-fx-ac mar-b10">
-              <a-date-picker
-                :allowClear="false"
-                :value="time.date"
-                :disabled="type === '1'"
-                :default-value="defaultDate"
-                :disabled-date="disabledDate"
-                style="margin-right: 10px"
-                @change="(val,dateStrings)=>changeDate(val,dateStrings, index)"
-              />
-              <a-time-picker
-                :allowClear="false"
-                :disabled="type === '1'"
-                :value="time.startTime"
-                @change="(val,dateStrings)=>changeTime(val,dateStrings,'startTime', index)"
-                format="HH:mm"
-                :disabledMinutes="(val)=>getStartMinutes(val,index)"
-                :disabledHours="(val)=>getStartHours(val,index)"
-              />
-              <span style="padding: 0 8px">至</span>
-              <a-time-picker
-                :allowClear="false"
-                :disabled="type === '1'"
-                style="margin-right: 10px"
-                :value="time.endTime"
-                format="HH:mm"
-                :disabledMinutes="(val)=>getDisabledMinutes(val, index)"
-                :disabledHours="(val)=>getDisabledHours(val, index)"
-                @change="(val,dateStrings)=>changeTime(val,dateStrings,'endTime', index)"
-              ></a-time-picker>
-              <img
-                v-if="index === timeList.length - 1 && type === '0'"
-                :src="addImg"
-                alt
-                @click="add(true, index)"
-              />
-              <img v-if=" type === '0'" :src="deleImg" alt @click="add(false, index)" />
-            </div>
-          </li>
-        </ul>
-        <div
-          v-for="(time, index) in signList"
-          :key="index"
-          :id="`container${index}`"
-          style="width: 100%;height:220px;"
-        ></div>
-      </a-form-item>
-      <a-form-item
-        label="参加人员"
-        :label-col="{ span: 3 }"
-        :wrapper-col="{ span: 15 }"
-        :required="false"
-      >
-        <div>
-          <a-tag
-            v-if="type !== '1'"
-            @click="teacherSelect"
-            style="background: #fff; borderStyle: dashed;"
-          >
-            <a-icon type="plus" />添加参加人员
-          </a-tag>
-          <template v-for="tag in teacherList">
-            <a-tag
-              color="cyan"
-              :key="tag.userCode"
-              :closable="type !== '1'"
-              @close="() => userClose(tag)"
-            >{{ tag.userName }}</a-tag>
-          </template>
+  <div class="page-layout qui-fx goods">
+    <a-modal
+      :title="checkTitle"
+      :visible="checkVisible"
+      :confirm-loading="confirmLoading"
+      @ok="handleCheckOk"
+      @cancel="handleCheckCancel"
+    >
+      <p>{{ checkText }}</p>
+    </a-modal>
+    <submit-form ref="form" @submit-form="submitForm" :title="title" v-model="addFormStatus" :form-data="addFormDatas">
+      <div slot="upload" class="qui-fx qui-fx-ac">
+        <upload-multi is-check :length="1" v-model="fileList" type="face" :fileInfo="fileInfo"></upload-multi>
+      </div>
+    </submit-form>
+    <div class="page-left">
+      <grade-tree @select="select"></grade-tree>
+    </div>
+    <div class="qui-fx-f1 qui-fx-ver">
+      <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
+        <div slot="left">
+          <a-button class="export-btn" @click="checkClick">批量确认报到</a-button>
         </div>
-        <div>
-          <a-tag
-            v-if="type !== '1'"
-            @click="classSelect"
-            style="background: #fff; borderStyle: dashed;"
-          >
-            <a-icon type="plus" />添加班级
-          </a-tag>
-          <template v-for="tag in classList">
-            <a-tag
-              color="blue"
-              :key="tag.classCode"
-              :closable="type !== '1'"
-              @close="() => classClose(tag)"
-            >{{ tag.gradeName }}{{ tag.className }}</a-tag>
-          </template>
-        </div>
-      </a-form-item>
-      <a-form-item label="活动内容" :label-col="{ span: 3 }" :wrapper-col="{ span: 15 }">
-        <a-textarea
-          placeholder="请输入活动内容"
-          :autoSize="{ minRows: 2, maxRows: 3 }"
-          :maxLength="100"
-          :disabled="type === '1'"
-          v-decorator="['content', { initialValue: formData.content, rules: [{ required: false, message: '请输入活动内容' }] }]"
-        />
-      </a-form-item>
-      <a-form-item
-        v-show="placeId !== ''"
-        label="开启签到"
-        :label-col="{ span: 3 }"
-        :wrapper-col="{ span: 15 }"
+      </search-form>
+      <table-list
+        isZoom
+        isCheck
+        v-model="chooseList"
+        :page-list="pageList"
+        @selectAll="selectAll"
+        :columns="columns"
+        :table-list="userList"
       >
-        <a-switch
-          :disabled="type === '1'"
-          @click="switchChange"
-          v-model="formData.switch"
-          v-decorator="['switch', { initialValue: formData.switch }]"
-        />
-      </a-form-item>
-      <a-form-item
-        v-if="formData.switch"
-        label="签到设备"
-        :label-col="{ span: 3 }"
-        :wrapper-col="{ span: 15 }"
-        :required="true"
-      >
-        <div>
-          <a-tag
-            v-if="type !== '1'"
-            @click="controlSelect"
-            style="background: #fff; borderStyle: dashed;"
-          >
-            <a-icon type="plus" />添加设备
-          </a-tag>
-          <template v-for="tag in controlList">
-            <a-tag
-              color="orange"
-              :key="tag.deviceSn"
-              :closable="type !== '1'"
-              @close="() => controlClose(tag)"
-            >{{ tag.deviceName }}</a-tag>
-          </template>
-        </div>
-      </a-form-item>
-      <a-form-item v-if="type !== '1'" :wrapper-col="{ span: 15, offset: 3 }">
-        <a-button style="margin-right:50px;" @click="cancle">取消</a-button>
-        <a-button type="primary" @click="handleSubmit">保存</a-button>
-      </a-form-item>
-    </a-form>
+        <template v-slot:actions="action">
+          <a-tooltip placement="topLeft" title="详情">
+            <a-button
+              size="small"
+              class="detail-action-btn"
+              icon="ellipsis"
+              @click.stop="detail(action.record.id)"
+            ></a-button>
+          </a-tooltip>
+          <a-tooltip placement="topLeft" title="确认报到">
+            <a-button
+              size="small"
+              class="pair-action-btn"
+              icon="check-circle"
+              @click.stop="checkClick"
+            ></a-button>
+          </a-tooltip>
+        </template>
+      </table-list>
+      <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
+    </div>
   </div>
 </template>
-
 <script>
-import Highcharts from 'highcharts/highstock'
-import timeline from 'highcharts/modules/timeline'
-import addImg from '../../assets/img/add.png'
-import deleImg from '../../assets/img/delete.png'
-import ChooseClass from '@c/choose/ChooseClass'
-import ChooseUser from '@c/choose/ChooseUser'
 import { mapState, mapActions } from 'vuex'
-import ChooseControl from '@c/choose/ChooseControl'
-import { Switch } from 'ant-design-vue'
-import moment from 'moment'
-timeline(Highcharts)
+import TableList from '@c/TableList'
+import PageNum from '@c/PageNum'
+import SearchForm from '@c/SearchForm'
+import GradeTree from '@c/GradeTree'
+import UploadMulti from '@c/UploadFace'
+import SubmitForm from '../../component/SubForm.vue'
+const searchLabel = [
+  {
+    value: 'name',
+    type: 'input',
+    label: '姓名'
+  },
+  {
+    value: 'idCard',
+    type: 'input',
+    label: '身份证号'
+  },
+  {
+    list: [
+      {
+        key: '',
+        val: '全部'
+      },
+      {
+        key: '0',
+        val: '已报到'
+      },
+      {
+        key: '1',
+        val: '未报到'
+      }
+    ],
+    value: 'state',
+    type: 'select',
+    label: '报到状态'
+  }
+]
+const addFormDatas = [
+  {
+    value: 'gradeName',
+    initValue: [],
+    list: [],
+    type: 'select',
+    label: '年级',
+    placeholder: '请选择年级'
+  },
+  {
+    value: 'name',
+    initValue: '',
+    type: 'input',
+    label: '姓名',
+    placeholder: '请输入姓名'
+  },
+  {
+    value: 'sex',
+    initValue: '1',
+    list: [
+      {
+        key: '1',
+        val: '男'
+      },
+      {
+        key: '2',
+        val: '女'
+      }
+    ],
+    type: 'radio',
+    label: '性别',
+    placeholder: ''
+  },
+  {
+    value: 'idCard',
+    initValue: '',
+    type: 'input',
+    label: '身份证号',
+    placeholder: '请输入身份证号'
+  },
+  {
+    value: 'identity',
+    initValue: [],
+    list: [
+      {
+        key: '1',
+        val: '群众'
+      },
+      {
+        key: '2',
+        val: '团员'
+      },
+      {
+        key: '3',
+        val: '党员'
+      }
+    ],
+    type: 'select',
+    label: '政治面貌',
+    placeholder: '请选择政治面貌'
+  },
+  {
+    value: 'nation',
+    initValue: [],
+    list: [
+      {
+        key: '1',
+        val: '汉族'
+      },
+      {
+        key: '2',
+        val: '壮族'
+      },
+      {
+        key: '3',
+        val: '苗族'
+      }
+    ],
+    type: 'select',
+    label: '民族',
+    placeholder: '请选择民族'
+  },
+  {
+    value: 'mobile',
+    initValue: '',
+    type: 'input',
+    label: '联系电话',
+    placeholder: '请输入电话号码'
+  },
+  {
+    value: 'project',
+    initValue: '',
+    type: 'input',
+    label: '申请专业',
+    placeholder: '请输入专业名称'
+  },
+  {
+    value: 'source',
+    initValue: '1',
+    list: [
+      {
+        key: '1',
+        val: '应届'
+      },
+      {
+        key: '2',
+        val: '非应届'
+      }
+    ],
+    type: 'radio',
+    label: '学生来源',
+    placeholder: ''
+  },
+  {
+    value: 'object',
+    initValue: '1',
+    list: [
+      {
+        key: '1',
+        val: '应届初中'
+      },
+      {
+        key: '2',
+        val: '非应届'
+      }
+    ],
+    type: 'radio',
+    label: '招生对象',
+    placeholder: ''
+  },
+  {
+    value: 'lastSchool',
+    initValue: '',
+    type: 'input',
+    label: '毕业学校',
+    placeholder: '请输入毕业学校'
+  },
+  {
+    value: 'health',
+    initValue: '',
+    type: 'input',
+    label: '健康状况',
+    placeholder: '请输入健康状况'
+  },
+  {
+    value: 'houseType',
+    initValue: '1',
+    list: [
+      {
+        key: '1',
+        val: '农业'
+      },
+      {
+        key: '2',
+        val: '非弄'
+      }
+    ],
+    type: 'radio',
+    label: '户口性质',
+    placeholder: ''
+  },
+  {
+    value: 'address',
+    initValue: '',
+    type: 'input',
+    label: '户口所在地区县以下详细地址',
+    placeholder: '请输入详细地址'
+  },
+  {
+    value: 'police',
+    initValue: '',
+    type: 'input',
+    label: '所属派出所',
+    placeholder: '请输入所属派出所名称'
+  },
+  {
+    value: 'addressType',
+    initValue: [],
+    list: [
+      {
+        key: '1',
+        val: '农村'
+      },
+      {
+        key: '2',
+        val: '城镇'
+      },
+      {
+        key: '3',
+        val: '县城'
+      }
+    ],
+    type: 'select',
+    label: '学生居住地类型',
+    placeholder: '请选择居住地类型'
+  },
+  {
+    value: 'addressNow',
+    initValue: '',
+    type: 'input',
+    label: '家庭现住址',
+    placeholder: '请输入家庭现住址'
+  },
+  {
+    value: 'parentName',
+    initValue: '',
+    type: 'input',
+    label: '家长姓名',
+    placeholder: '请输入家长姓名'
+  },
+  {
+    value: 'parentTel',
+    initValue: '',
+    type: 'input',
+    label: '家长手机号',
+    placeholder: '请输入家长手机号'
+  },
+  {
+    value: 'relation',
+    initValue: '',
+    type: 'input',
+    label: '与本人关系',
+    placeholder: '请输入家长与本人关系'
+  },
+  {
+    value: 'isGuardian',
+    initValue: '1',
+    list: [
+      {
+        key: '1',
+        val: '是'
+      },
+      {
+        key: '2',
+        val: '否'
+      }
+    ],
+    type: 'radio',
+    label: '是否监护人',
+    placeholder: ''
+  },
+  {
+    type: 'upload',
+    label: '学生人脸照片(选填)',
+    required: false,
+    placeholder: '请上传人脸照片'
+  }
+]
+const columns = [
+  {
+    title: '序号',
+    width: '5%',
+    scopedSlots: {
+      customRender: 'index'
+    }
+  },
+  {
+    title: '姓名',
+    dataIndex: 'name',
+    width: '8%'
+  },
+  {
+    title: '年级',
+    width: '8%',
+    dataIndex: 'grade'
+  },
+  {
+    title: '专业',
+    dataIndex: 'project',
+    width: '10%'
+  },
+  {
+    title: '班级',
+    dataIndex: 'class',
+    width: '10%'
+  },
+  {
+    title: '性别',
+    dataIndex: 'sex',
+    width: '5%'
+  },
+  {
+    title: '身份证号',
+    dataIndex: 'idCard',
+    width: '8%'
+  },
+  {
+    title: '报到状态',
+    dataIndex: 'mobile',
+    width: '8%'
+  },
+  {
+    title: '人脸照片',
+    dataIndex: 'photo',
+    width: '10%',
+    scopedSlots: {
+      customRender: 'photoPic'
+    }
+  },
+  {
+    title: '操作',
+    width: '5%',
+    scopedSlots: {
+      customRender: 'action'
+    }
+  }
+]
 export default {
-  name: 'AddActivity',
+  name: 'StudentManage',
   components: {
-    moment,
-    ASwitch: Switch,
-    ChooseControl,
-    ChooseUser,
-    ChooseClass
+    TableList,
+    SearchForm,
+    PageNum,
+    GradeTree,
+    SubmitForm,
+    UploadMulti
   },
   data() {
     return {
-      currentKey: 0,
-      tabList: [
-        {
-          key: 0,
-          title: '选择地点'
-        },
-        {
-          key: 1,
-          title: '自定义地点'
-        }
-      ],
-      addImg,
-      deleImg,
-      defaultDate: moment(new Date(), 'YYYY/MM/DD'),
-      formData: {
-        placeList: [],
-        remark: '',
-        content: '',
-        siteName: '请选择活动地点',
-        placeName: '',
-        switch: false
+      columns,
+      searchLabel,
+      title: '添加新生',
+      addFormStatus: false,
+      addFormDatas,
+      fileList: [],
+      fileInfo: {
+        tip: '上传图片',
+        h: 120, // 高度
+        w: 120 // 宽度
       },
-      controlTag: false,
-      switchTag: false,
-      classTag: false,
-      teacherTag: false,
-      form: this.$form.createForm(this),
-      maxHeight: 0,
-      id: 0,
-      type: 0, // 0新增 1查看 2编辑
-      timeList: [],
-      groupList: [],
-      teacherList: [],
-      classList: [],
-      controlList: [],
-      options: [
-        {
-          value: '100',
-          label: '教室',
-          type: 0,
-          isLeaf: false
-        },
-        {
-          value: '101',
-          label: '宿舍',
-          type: 0,
-          isLeaf: false
-        },
-        {
-          value: '102',
-          label: '食堂',
-          type: 0,
-          isLeaf: false
-        },
-        {
-          value: '103',
-          label: '出入口',
-          type: 0,
-          isLeaf: false
-        },
-        {
-          value: '104',
-          label: '其它',
-          type: 0,
-          isLeaf: false
-        }
-      ],
-      siteList: [],
-      placeId: '',
-      placeName: '',
-      placeType: '',
-      placeTypeName: '',
-      signList: []
+      confirmLoading: false,
+      checkResult: true,
+      checkTitle: '确认报到',
+      checkText: '确定学生已报到吗？',
+      checkVisible: false,
+      pageList: {
+        page: 1,
+        size: 20
+      },
+      searchList: {
+        schoolCode: ''
+      },
+      total: 0,
+      userList: [],
+      chooseList: [],
+      totalList: [],
+      previewVisible: false,
+      detailList: {},
+      dateTime: '',
+      state: ''
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
-  watch: {
-    currentKey: {
-      handler(newValue, oldValue) {
-        if (newValue === 1) {
-          this.placeId = ''
-          this.timeList = [
-            {
-              date: moment(new Date(), 'YYYY/MM/DD'),
-              startTime: moment(new Date(), 'HH:mm'),
-              endTime: moment('20:00', 'HH:mm')
-            }
-          ]
-          this.signList = []
-        }
-      },
-      deep: true
-    },
-    placeId: {
-      handler(newValue, oldValue) {
-        if (newValue !== '') {
-          if (this.type === '0') {
-            this.timeList = [
-              {
-                date: moment(new Date(), 'YYYY/MM/DD'),
-                startTime: moment(new Date(), 'HH:mm'),
-                endTime: moment('20:00', 'HH:mm')
-              }
-            ]
-            setTimeout(() => {
-              this.showBI(`container0`, moment(new Date(), 'YYYY/MM/DD').format('YYYY-MM-DD'), newValue)
-            }, 500)
-          }
-        }
-      },
-      deep: true
-    },
-    timeList: {
-      handler(newValue, oldValue) {
-        if (this.type !== '1' && this.currentKey === 0) {
-          let dateList = []
-          newValue.map(el => {
-            dateList.push(el.date.format('YYYY-MM-DD'))
-          })
-          dateList = [...new Set(dateList)]
-          const arr = []
-          dateList.map(el => {
-            arr.push({
-              date: el
-            })
-          })
-          this.signList = arr
-        }
-      },
-      deep: true
-    },
-    signList: {
-      handler(newValue, oldValue) {
-        if (JSON.stringify(oldValue) !== JSON.stringify(newValue)) {
-          newValue.map((el, i) => {
-            setTimeout(() => {
-              this.showBI(`container${i}`, el.date, this.placeId)
-            }, 500)
-          })
-        }
-      },
-      deep: true
-    }
-  },
   mounted() {
-    this.maxHeight = window.screen.height - 280 + 'px'
-    this.type = this.$route.query.type
-    if (this.type !== '0') {
-      this.showData()
-    }
+    // this.showList()
+    this.userList = [
+      {
+        id: 1,
+        name: '张学良',
+        grade: '2020',
+        project: '软件工程',
+        class: '1班',
+        sex: '男',
+        idCard: '420333199563632020',
+        mobile: '13699996666',
+        createTime: 56565656565,
+        status: '1',
+        photo:
+          'http://canpoint-photo.oss-cn-beijing.aliyuncs.com/47801/2020/10/19/base/76b5c10347bf4e5185331bb917b762cb.jpg'
+      },
+      {
+        id: 2,
+        name: '张学良',
+        grade: '2020',
+        project: '软件工程',
+        class: '1班',
+        sex: '男',
+        idCard: '420333199563632020',
+        mobile: '13699996666',
+        createTime: 56565656565,
+        status: '1',
+        photo:
+          'http://canpoint-photo.oss-cn-beijing.aliyuncs.com/47801/2020/10/19/base/76b5c10347bf4e5185331bb917b762cb.jpg'
+      }
+    ]
   },
   methods: {
-    ...mapActions('home', [
-      'getSiteList',
-      'getChildSite',
-      'addReserve',
-      'getReserveList',
-      'checkReserve',
-      'reserveDetail'
-    ]),
-    async showSiteList(type, id) {
-      this.siteList = []
-      let res = null
+    ...mapActions('home', ['getPageList', 'recordDetail', 'downRecord']),
+    async showList(searchObj = {}) {
+      this.searchList.schoolCode = this.userInfo.schoolCode
+      this.searchList = Object.assign(this.searchList, this.pageList, searchObj)
+      const res = await this.getPageList(this.searchList)
+      this.userList = res.data.list
+      this.total = res.data.total
+    },
+    searchForm(values) {
+      this.pageList.page = 1
+      this.dateTime = values.date
+      this.state = values.state
+      const searchObj = {
+        date: values.date,
+        state: values.state
+      }
+      this.showList(searchObj)
+    },
+    // 去详情
+    detail(id) {
+      console.log(id)
+      this.$router.push({
+        path: `/studentManage/studentDetails`,
+        query: {
+          id
+        }
+      })
+    },
+    select(item) {
+      this.pageList.page = 1
+      this.pageList.size = 20
+      if (typeof item.materialTypeId === 'number') {
+        this.searchList.materialTypeId = item.materialTypeId
+        this.searchList.materialId = ''
+      } else {
+        this.searchList.materialId = item.materialTypeId.split('^')[1]
+        this.searchList.materialTypeId = ''
+      }
+      this.showList()
+    },
+    // 表格全选
+    selectAll(item, type) {
+      console.log('2121')
       if (type) {
-        const req = {
-          parentId: id,
-          schoolCode: this.userInfo.schoolCode
-        }
-        res = await this.getChildSite(req)
-        res.data = res.data.list
+        this.totalList = this.totalList.concat(item)
       } else {
-        const req = {
-          category: id,
-          schoolCode: this.userInfo.schoolCode
-        }
-        res = await this.getSiteList(req)
+        item.forEach((item) => {
+          const index = this.totalList.findIndex((list) => {
+            return list.id === item.id
+          })
+          this.totalList.splice(index, 1)
+        })
       }
-      if (res.data.length === 0) {
+    },
+    submitForm() {
+      if (this.totalList.length === 0) {
+        this.$message.warning('请选择学生')
         return
       }
-      res.data.forEach(ele => {
-        this.siteList.push({
-          label: ele.type === '2' ? ele.name + '楼' : ele.name,
-          value: ele.id,
-          type: ele.type,
-          isLeaf: ele.type === '3'
-        })
-      })
+      console.log(this.totalList)
     },
-    switchChange(val) {
-      if (!val) {
-        this.controlList = []
-      }
+    // 报到按钮
+    checkClick() {
+      this.checkVisible = true
     },
-    onChange(value, selectedOptions) {
-      if (value.length === 0) {
-        this.placeId = ''
-        this.placeName = ''
-        this.placeType = ''
-        this.placeTypeName = ''
-        return
-      }
-      this.placeId = value.join(',')
-      const arr = []
-      selectedOptions.slice(1).forEach(ele => {
-        arr.push(ele.label)
-      })
-      this.placeName = arr.join(',')
-      this.placeType = value[0]
-      this.placeTypeName = selectedOptions[0].label
+    // 打开报到弹框
+    handleCheckOpen() {
+      this.checkVisible = true
     },
-    async loadData(selectedOptions) {
-      const targetOption = selectedOptions[selectedOptions.length - 1]
-      targetOption.loading = true
-      await this.showSiteList(targetOption.type, targetOption.value)
-      targetOption.loading = false
-      targetOption.children = this.siteList
-      this.options = [...this.options]
+    // 报到确认
+    handleCheckOk() {
+      console.log(this.checkResult)
+      this.checkVisible = false
     },
-    // 表单回填
-    async showData() {
-      const res = await this.reserveDetail(this.$route.query.id)
-      console.log(res.data)
-      if (res.data.placeId !== '') {
-        this.currentKey = 0
-        this.placeId = res.data.placeType + ',' + res.data.placeId
-        this.placeName = res.data.placeName
-        this.placeType = res.data.placeType
-        this.placeTypeName = this.options.filter(ele => ele.value === res.data.placeType)[0].label
-        this.formData.placeList = [res.data.placeType].concat(res.data.placeId.split(','))
-        this.formData.siteName = (this.placeTypeName + ',' + res.data.placeName).replace(/,/g, '/')
-      } else {
-        this.currentKey = 1
-        this.formData.placeName = res.data.placeName
-      }
-      this.timeList = [
-        {
-          date: moment(new Date(res.data.reserveDate), 'YYYY/MM/DD'),
-          startTime: moment(res.data.startTime, 'HH:mm'),
-          endTime: moment(res.data.endTime, 'HH:mm')
-        }
-      ]
-      this.formData.remark = res.data.description
-      this.formData.content = res.data.content
-      this.formData.switch = res.data.openSign === '1'
-      console.log(this.formData.switch)
-      this.teacherList = res.data.teacherList
-      this.classList = res.data.classList
-      this.controlList = res.data.placeReserveDeviceList
-    },
-    // 验证时间是否重叠
-    yzTime(data) {
-      const arr = []
-      data.forEach(ele => {
-        arr.push({
-          startTime: new Date(`${ele.date.format('YYYY-MM-DD')} ${ele.startTime.format('HH:mm:ss')}`),
-          endTime: new Date(`${ele.date.format('YYYY-MM-DD')} ${ele.endTime.format('HH:mm:ss')}`)
-        })
-      })
-      const tempList = []
-      console.log(arr)
-      let isOverLap = 1
-      arr.forEach((item, index) => {
-        // 数据无效直接中断退出
-        if (!item.startTime || !item.endTime) {
-          return false
-        }
-        // 转换为时间戳
-        const startTimeStamp = item.startTime.getTime()
-        const endTimeStamp = item.endTime.getTime()
-        if (startTimeStamp >= endTimeStamp) {
-          isOverLap = 3
-        }
-        // 将时段数据处理后存入数组
-        tempList.push([
-          {
-            flag: index,
-            value: startTimeStamp
-          },
-          {
-            flag: index,
-            value: endTimeStamp
-          }
-        ])
-      })
-      // 对数组进行扁平处理后 从小到大排序
-      const timeFiledList = [].concat(...tempList)
-      timeFiledList.sort((a, b) => a.value - b.value)
-      console.log(timeFiledList)
-      // 是否重叠标志
-      for (let i = 0; i < timeFiledList.length; i += 2) {
-        if (i > 0) {
-          // 存在相同值时(排序中三个连续值) => 时间重叠
-          if (
-            timeFiledList[i].value === timeFiledList[i - 1].value ||
-            timeFiledList[i - 1].value === timeFiledList[i - 2].value
-          ) {
-            isOverLap = 2
-            break
-          }
-        }
-        // 相邻两个标记不同，则为重叠
-        if (timeFiledList[i].flag !== timeFiledList[i + 1].flag) {
-          isOverLap = 2
-          break
-        }
-      }
-      return isOverLap
-    },
-    // 提交权限组
-    handleSubmit(e) {
-      e.preventDefault()
-      this.form.validateFields((err, values) => {
-        if (!err) {
-          if (this.yzTime(this.timeList) === 3) {
-            this.$message.error('开始时间不能大于结束时间')
-            return
-          }
-          if (this.yzTime(this.timeList) === 2) {
-            this.$message.error('预订时间段重复，请重新选择')
-            return
-          }
-          if (values.switch) {
-            if (this.controlList.length === 0) {
-              this.$message.error('请选择签到设备')
-              return
-            }
-          }
-          const dateList = []
-          const checkTagList = []
-          this.timeList.forEach((ele, index) => {
-            dateList.push({
-              reserveDate: ele.date.format('YYYY-MM-DD'),
-              startTime: ele.startTime.format('HH:mm'),
-              endTime: ele.endTime.format('HH:mm')
-            })
-            this.checkReserve({
-              placeId: this.placeId
-                .split(',')
-                .slice(1)
-                .join(','),
-              startTime: ele.startTime.format('HH:mm'),
-              endTime: ele.endTime.format('HH:mm'),
-              reserveDate: ele.date.format('YYYY-MM-DD'),
-              id: this.type === '2' ? this.$route.query.id : undefined
-            }).catch(e => {
-              checkTagList.push(e)
-            })
-          })
-          this.$tools.goNext(() => {
-            console.log(checkTagList)
-            if (checkTagList.length !== 0) {
-              return
-            }
-            const req = {
-              schoolCode: this.userInfo.schoolCode,
-              createName: this.userInfo.userName,
-              createCode: this.userInfo.userCode,
-              description: values.remark,
-              content: values.content,
-              placeReserveDateDtoList: dateList,
-              openSign: values.switch ? '1' : '2',
-              teacherList: this.teacherList.map(el => {
-                return {
-                  workNo: el.mobile,
-                  userCode: el.userCode,
-                  userName: el.userName,
-                  orgCode: el.orgCode,
-                  orgName: el.orgName
-                }
-              }),
-              classList: this.classList.map(el => {
-                return {
-                  classCode: el.classCode,
-                  className: el.className,
-                  gradeName: el.gradeName,
-                  gradeCode: el.gradeCode,
-                  classId: el.id,
-                  schoolYearId: el.schoolYearId
-                }
-              }),
-              type: '3'
-            }
-            if (values.switch) {
-              req.placeReserveDeviceList = this.controlList.map(el => {
-                return {
-                  deviceName: el.deviceName,
-                  deviceSn: el.deviceSn
-                }
-              })
-            }
-            if (this.type === '2') {
-              req.id = this.$route.query.id
-              req.placeReserveDateDtoList = undefined
-              req.reserveDate = dateList[0].reserveDate
-              req.startTime = dateList[0].startTime
-              req.endTime = dateList[0].endTime
-            }
-            if (this.currentKey === 0) {
-              req.placeName = this.placeName
-              req.placeId = this.placeId
-                .split(',')
-                .slice(1)
-                .join(',')
-              req.placeType = this.placeId
-                .split(',')
-                .slice(0, 1)
-                .toString()
-            } else {
-              req.placeName = values.placeName
-            }
-            console.log(req)
-            this.addReserve(req).then(res => {
-              this.$message.success('添加成功')
-              this.$tools.goNext(() => {
-                this.$router.push({ path: '/activityBooking' })
-              })
-            })
-          })
-        }
-      })
-    },
-    // 添加签到设备
-    chooseDevice(value) {
-      this.controlList = value
-      this.$refs.chooseControl.reset()
-    },
-    chooseUser(teacherList) {
-      console.log(teacherList)
-      this.teacherList = teacherList
-      this.$refs.chooseUser.reset()
-    },
-    chooseClass(classInfo) {
-      console.log(classInfo)
-      this.classList = classInfo
-      this.$refs.chooseClass.reset()
-    },
-    userClose(removedTag) {
-      this.teacherList = this.teacherList.filter(tag => tag !== removedTag)
-    },
-    classClose(removedTag) {
-      this.classList = this.classList.filter(tag => tag !== removedTag)
-    },
-    controlClose(removedTag) {
-      this.controlList = this.controlList.filter(tag => tag !== removedTag)
-    },
-    classSelect() {
-      this.classTag = true
-    },
-    teacherSelect() {
-      this.teacherTag = true
-    },
-    controlSelect() {
-      this.controlTag = true
-    },
-    cancle() {
-      this.$router.push({ path: '/activityBooking' })
-    },
-    disabledDate(current) {
-      return current && current < moment().startOf('day')
-    },
-    add(tag, index) {
-      console.log(index)
-      if (tag) {
-        if (index > 1) {
-          this.$message.warning('最多添加三个时段')
-          return
-        }
-        this.timeList.push({
-          date: moment(new Date(), 'YYYY/MM/DD'),
-          startTime: moment(new Date(), 'HH:mm'),
-          endTime: moment('20:00', 'HH:mm')
-        })
-      } else {
-        if (this.timeList.length === 1) {
-          this.$message.warning('已经是最后一项了')
-          return
-        }
-        this.timeList.splice(index, 1)
-        console.log(this.timeList)
-      }
-    },
-    changeTime(val, dateStrings, type, index) {
-      console.log()
-      if (
-        this.timeList[index].date.format('YYYY/MM/DD') === moment(new Date()).format('YYYY/MM/DD') &&
-        val.valueOf() < moment(new Date()).valueOf()
-      ) {
-        val = moment(new Date(), 'HH:mm')
-      }
-      if (type === 'startTime') {
-        if (parseInt(val.format('HH')) * 60 + parseInt(val.format('mm')) > 20 * 60) {
-          this.$message.warning('预订时间不能晚于20:00')
-          this.timeList[index].startTime = moment('20:00', 'HH:mm')
-        } else {
-          this.timeList[index].startTime = val
-        }
-      } else {
-        if (parseInt(val.format('HH')) * 60 + parseInt(val.format('mm')) > 20 * 60) {
-          this.$message.warning('预订时间不能晚于20:00')
-          this.timeList[index].endTime = moment('20:00', 'HH:mm')
-        } else {
-          this.timeList[index].endTime = val
-        }
-      }
-    },
-    changeDate(val, dateStrings, index) {
-      this.timeList[index].date = val
-      if (dateStrings !== moment(new Date()).format('YYYY-MM-DD')) {
-        this.timeList[index].startTime = moment('08:00', 'HH:mm')
-      } else {
-        this.timeList[index].startTime = moment(new Date(), 'HH:mm')
-      }
-    },
-    range(start, end) {
-      const result = []
-      for (let i = start; i < end; i++) {
-        result.push(i)
-      }
-      return result
-    },
-    getStartHours(val, index) {
-      return this.range(0, 8).concat(this.range(21, 24))
-    },
-    getDisabledHours(val, index) {
-      const hours = []
-      const time = moment(this.timeList[index].startTime).format('HH:mm')
-      const timeArr = time.split(':')
-      for (var i = 0; i < parseInt(timeArr[0]); i++) {
-        hours.push(i)
-      }
-      const arr = hours.concat(this.range(21, 24))
-      return arr
-    },
-    getStartMinutes(selectedHour, index) {
-      if (index === 0) {
-        return
-      }
-      const time = moment(this.timeList[index].endTime).format('HH:mm')
-      const timeArr = time.split(':')
-      const minutes = []
-      if (selectedHour === parseInt(timeArr[0])) {
-        for (var i = 0; i < parseInt(timeArr[1]); i++) {
-          minutes.push(i)
-        }
-      }
-      return minutes
-    },
-    getDisabledMinutes(selectedHour, index) {
-      const time = moment(this.timeList[index].startTime).format('HH:mm')
-      const timeArr = time.split(':')
-      const minutes = []
-      if (selectedHour === parseInt(timeArr[0])) {
-        for (var i = 0; i < parseInt(timeArr[1]); i++) {
-          minutes.push(i)
-        }
-      }
-      return minutes
-    },
-    async showBI(id, date, placeId) {
-      console.log(date)
-      console.log(
-        placeId
-          .split(',')
-          .slice(1)
-          .join(',')
-      )
-      const req = {
-        schoolCode: this.userInfo.schoolCode,
-        placeId: placeId
-          .split(',')
-          .slice(1)
-          .join(','),
-        reserveDate: date,
-        orderBy: 'reserve_date ASC, start_time ASC'
-      }
-      const res = await this.getReserveList(req)
-      const data = res.data.list
-      const xData = []
-      if (data.length === 0) {
-        xData.push(
-          {
-            name: '00:00' + '-' + '08:00',
-            label: '不可预订',
-            color: '#ddd'
-          },
-          {
-            name: '08:00' + '-' + '20:00',
-            label: '可预订',
-            color: '#4f93ed'
-          },
-          {
-            name: '20:00' + '-' + '24:00',
-            label: '不可预订',
-            color: '#ddd'
-          }
-        )
-      } else {
-        data.forEach((el, i) => {
-          if (i === 0) {
-            xData.push({
-              name: el.startTime + '-' + el.endTime,
-              label: '预订人：' + el.createName,
-              color: '#ddd',
-              description: el.description
-            })
-          } else if (i >= 1) {
-            if (res.data.list[i - 1].endTime !== el.startTime) {
-              if (
-                moment(res.data.list[i - 1].endTime, 'HH:mm').valueOf() + 60 * 1000 ===
-                moment(el.startTime, 'HH:mm').valueOf()
-              ) {
-                xData.push({
-                  name: el.startTime + '-' + el.endTime,
-                  label: '预订人：' + el.createName,
-                  color: '#ddd',
-                  description: el.description
-                })
-              } else {
-                xData.push(
-                  {
-                    name:
-                      moment(moment(res.data.list[i - 1].endTime, 'HH:mm').valueOf() + 60 * 1000).format('HH:mm') +
-                      '-' +
-                      moment(moment(el.startTime, 'HH:mm').valueOf() - 60 * 1000).format('HH:mm'),
-                    label: '可预订',
-                    color: '#4f93ed'
-                  },
-                  {
-                    name: el.startTime + '-' + el.endTime,
-                    label: '预订人：' + el.createName,
-                    color: '#ddd',
-                    description: el.description
-                  }
-                )
-              }
-            } else {
-              xData.push({
-                name: el.startTime + '-' + el.endTime,
-                label: '预订人：' + el.createName,
-                color: '#ddd',
-                description: el.description
-              })
-            }
-          }
-        })
-        if (data[0].startTime !== '08:00') {
-          xData.unshift({
-            name: '08:00' + '-' + moment(moment(data[0].startTime, 'HH:mm').valueOf() - 60 * 1000).format('HH:mm'),
-            label: '可预订',
-            color: '#4f93ed'
-          })
-        }
-        if (data[data.length - 1].endTime !== '20:00') {
-          xData.push({
-            name:
-              moment(moment(data[data.length - 1].endTime, 'HH:mm').valueOf() + 60 * 1000).format('HH:mm') +
-              '-' +
-              '20:00',
-            label: '可预订',
-            color: '#4f93ed'
-          })
-        }
-        /* xData.unshift({
-          name: '00:00' + '-' + '08:00',
-          label: '不可预订',
-          color: '#ddd'
-        })
-        xData.push({
-          name: '20:00' + '-' + '24:00',
-          label: '不可预订',
-          color: '#ddd'
-        }) */
-      }
-      console.log(xData)
-      Highcharts.chart(id, {
-        chart: {
-          type: 'timeline'
-        },
-        credits: {
-          enabled: false
-        },
-        xAxis: {
-          visible: false
-        },
-        yAxis: {
-          visible: false
-        },
-        title: {
-          text: date
-        },
-        series: [
-          {
-            data: xData
-          }
-        ]
-      })
+    // 取消报到 关闭弹框
+    handleCheckCancel() {
+      this.checkVisible = false
     }
   }
 }
 </script>
-
 <style lang="less" scoped>
-.add-booking {
-  padding-top: 30px;
-  img {
-    width: 24px;
-    height: 24px;
-    margin: 0 10px;
-    cursor: pointer;
-  }
-  /deep/ .ant-form-item {
-    margin-bottom: 14px;
+.goods {
+  .page-left {
+    background: #fff;
+    margin-right: 10px;
+    width: 150px;
   }
 }
 </style>

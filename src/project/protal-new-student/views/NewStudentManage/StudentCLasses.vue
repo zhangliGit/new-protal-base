@@ -1,316 +1,212 @@
 <template>
-  <div class="home page-layout qui-fx-ver">
-    <poster v-model="showTag" :record="record"></poster>
-    <meet-record ref="form" @submit-form="submitForm" title="活动心得" v-model="editTag" :id="editId">
-    </meet-record>
-    <sign-record
-      title="签到统计"
-      type="activity"
-      ref="signRecord"
-      :id="id"
-      v-model="signTag"
-      v-if="signTag"
-    ></sign-record>
-    <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
-      <div slot="left">
-        <a-button icon="plus" class="add-btn" @click.stop="addBooking('0')">发布</a-button>
-      </div>
-    </search-form>
-    <table-list :page-list="pageList" :columns="columns" :table-list="bookingList">
-      <template v-slot:actions="action">
-        <a-tooltip placement="topLeft" title="查看" v-if="action.record.status !== '未使用'">
-          <a-button
-            size="small"
-            class="detail-action-btn"
-            icon="ellipsis"
-            @click.stop="addBooking('1', action.record)"
-          ></a-button>
-        </a-tooltip>
-        <a-tooltip placement="topLeft" title="编辑" v-if="action.record.status === '未使用'">
-          <a-button
-            size="small"
-            class="edit-action-btn"
-            icon="form"
-            @click.stop="addBooking('2', action.record)"
-          ></a-button>
-        </a-tooltip>
-        <!-- <a-tooltip placement="topLeft" title="活动心得" v-if="action.record.status !== '未使用'">
-          <a-button
-            size="small"
-            class="copy-action-btn"
-            icon="edit"
-            @click.stop="editMeeting(action.record)"
-          ></a-button>
-        </a-tooltip> -->
-        <a-tooltip placement="topLeft" title="查看海报">
-          <a-button
-            size="small"
-            class="play-action-btn"
-            icon="export"
-            @click.stop="showPoster(action.record)"
-          ></a-button>
-        </a-tooltip>
-        <!-- <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="deleteList(action.record)" v-if="action.record.status !== '使用中'">
-          <template slot="title">
-            确定删除吗?
-          </template>
-          <a-tooltip placement="topLeft" title="删除">
-            <a-button size="small" class="del-action-btn" icon="delete"></a-button>
+  <div class="page-layout qui-fx goods">
+    <div class="page-left">
+      <grade-tree @select="select"></grade-tree>
+    </div>
+    <div class="qui-fx-f1 qui-fx-ver">
+      <table-list
+        isZoom
+        v-model="chooseList"
+        :page-list="pageList"
+        :columns="columns"
+        :table-list="userList"
+      >
+        <template v-slot:actions="action">
+          <a-tooltip placement="topLeft" title="分配学生">
+            <a-button
+              size="small"
+              class="edit-action-btn"
+              icon="form"
+              @click.stop="checkClick(action.record.id)"
+            ></a-button>
           </a-tooltip>
-        </a-popconfirm> -->
-      </template>
-      <template v-slot:other3="other3">
-        <span>{{ other3.record.reserveDate | gmtToDate('date') }} {{ other3.record.startTime }}-{{ other3.record.endTime }}</span>
-      </template>
-      <template v-slot:other4="other4">
-        <a-popover>
-          <template slot="content">
-            <p>{{ other4.record.content }}</p>
-          </template>
-          <span>{{ other4.record.content.length > 10 ? (other4.record.content.substring(0, 20) + '...') : other4.record.content }}</span>
-        </a-popover>
-      </template>
-      <template v-slot:other2="other2">
-        <a-tag v-if="other2.record.openSign === '1'" color="green" @click="showRecord(other2.record)">{{ other2.record.signNum }} / {{ other2.record.totalNum }}</a-tag>
-        <span v-else>--</span>
-      </template>
-      <template v-slot:other1="other1">
-        <a-tag
-          :color="other1.record.status === '使用中' ? '#87d068' : other1.record.status === '未使用' ? '#2db7f5' : 'purple'"
-        >{{ other1.record.status === '使用中' ? '进行中' : other1.record.status === '未使用' ? '未开始' : '已结束' }}</a-tag>
-      </template>
-    </table-list>
-    <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
+        </template>
+      </table-list>
+      <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
+    </div>
   </div>
 </template>
-
 <script>
-import Poster from '../../component/siteBooking/Poster'
-import MeetRecord from '../../component/siteBooking/MeetRecord'
-import UploadMulti from '@c/UploadFace'
-import SignRecord from '../../component/siteBooking/SignRecord'
 import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
-import SearchForm from '@c/SearchForm'
-import Tools from '@u/tools'
+import GradeTree from '@c/GradeTree'
+
 const columns = [
   {
     title: '序号',
-    width: '8%',
+    width: '5%',
     scopedSlots: {
       customRender: 'index'
     }
   },
   {
-    title: '活动主题',
-    dataIndex: 'description',
+    title: '年级',
+    width: '8%',
+    dataIndex: 'grade'
+  },
+  {
+    title: '专业',
+    dataIndex: 'project',
     width: '10%'
   },
   {
-    title: '活动地点',
-    dataIndex: 'placeName',
+    title: '班级',
+    dataIndex: 'class',
     width: '10%'
   },
   {
-    title: '活动时间',
-    dataIndex: 'reserveDate',
-    width: '10%',
-    scopedSlots: {
-      customRender: 'other3'
-    }
-  },
-  {
-    title: '活动内容',
-    dataIndex: 'content',
-    width: '10%',
-    ellipsis: true,
-    scopedSlots: {
-      customRender: 'other4'
-    }
-  },
-  {
-    title: '发起人',
-    dataIndex: 'createName',
+    title: '辅导员',
+    dataIndex: 'teacher',
     width: '10%'
   },
   {
-    title: '活动状态',
-    dataIndex: 'status',
-    width: '10%',
-    scopedSlots: {
-      customRender: 'other1'
-    }
+    title: '教室',
+    dataIndex: 'classRoom',
+    width: '15%'
   },
   {
-    title: '签到统计',
-    dataIndex: 'openSign',
-    width: '10%',
-    scopedSlots: {
-      customRender: 'other2'
-    }
+    title: '班级学生',
+    dataIndex: 'studentCount',
+    width: '10%'
   },
   {
     title: '操作',
-    width: '12%',
+    width: '5%',
     scopedSlots: {
       customRender: 'action'
     }
   }
 ]
-const searchLabel = [
-  {
-    value: 'rangeTime',
-    type: 'rangeTime',
-    label: '活动日期',
-    customRender: text => {
-      return Tools.getDate(text)
-    }
-  },
-  {
-    list: [
-      {
-        key: '',
-        val: '全部'
-      },
-      {
-        key: '1',
-        val: '未开始'
-      },
-      {
-        key: '2',
-        val: '进行中'
-      },
-      {
-        key: '3',
-        val: '已结束'
-      }
-    ],
-    value: 'status',
-    type: 'select',
-    label: '活动状态'
-  },
-  {
-    value: 'description',
-    type: 'input',
-    label: '活动主题',
-    placeholder: '请输入活动主题'
-  }
-]
 export default {
-  name: 'PublishActivity',
+  name: 'StudentClasses',
   components: {
-    SearchForm,
-    UploadMulti,
-    MeetRecord,
-    PageNum,
     TableList,
-    SignRecord,
-    Poster
+    PageNum,
+    GradeTree
   },
   data() {
     return {
+      issueVisible: false,
       columns,
-      searchLabel,
-      searchList: {},
-      fileList: [],
       pageList: {
         page: 1,
         size: 20
       },
+      searchList: {
+        schoolCode: ''
+      },
       total: 0,
-      bookingList: [],
-      title: '活动发布',
-      signTag: false,
-      editTag: false,
-      showTag: false,
-      searchObj: {},
-      record: {},
-      id: 0,
-      editId: 0
+      userList: [],
+      chooseList: [],
+      totalList: [],
+      detailList: {},
+      dateTime: '',
+      state: ''
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
-    this.showList()
+    // this.showList()
+    this.userList = [
+      {
+        id: 1,
+        name: '张学良',
+        grade: '2020',
+        project: '软件工程',
+        class: '1班',
+        teacher: '李老师',
+        classRoom: '教学楼1楼101',
+        studentCount: 45
+      },
+      {
+        id: 2,
+        name: '张学良',
+        grade: '2020',
+        project: '软件工程',
+        class: '1班',
+        teacher: '李老师',
+        classRoom: '教学楼1楼101',
+        studentCount: 45
+      }
+    ]
   },
   methods: {
-    ...mapActions('home', ['getReserveList', 'delReserve', 'addMeetRecord', 'getMeetRecordById']),
-    async showList() {
-      const req = {
-        ...this.searchObj,
-        ...this.pageList,
-        schoolCode: this.userInfo.schoolCode,
-        type: '3'
-      }
-      const res = await this.getReserveList(req)
-      this.bookingList = res.data.list
-      this.bookingList.map(el => {
-        el.placeName = el.placeName.replace(/,/g, '-')
-      })
+    ...mapActions('home', ['getPageList', 'recordDetail', 'downRecord']),
+    async showList(searchObj = {}) {
+      this.searchList.schoolCode = this.userInfo.schoolCode
+      this.searchList = Object.assign(this.searchList, this.pageList, searchObj)
+      const res = await this.getPageList(this.searchList)
+      this.userList = res.data.list
       this.total = res.data.total
     },
     searchForm(values) {
-      console.log(values)
-      this.searchObj = {
-        startDate: values.rangeTime ? values.rangeTime[0] : undefined,
-        endDate: values.rangeTime ? values.rangeTime[1] : undefined,
-        status: values.status,
-        description: values.description
+      this.pageList.page = 1
+      this.dateTime = values.date
+      this.state = values.state
+      const searchObj = {
+        date: values.date,
+        state: values.state
+      }
+      this.showList(searchObj)
+    },
+    // 去详情
+    detail(id) {
+      console.log(id)
+      this.$router.push({
+        path: `/studentManage/studentDetails`,
+        query: {
+          id
+        }
+      })
+    },
+    select(item) {
+      this.pageList.page = 1
+      this.pageList.size = 20
+      if (typeof item.materialTypeId === 'number') {
+        this.searchList.materialTypeId = item.materialTypeId
+        this.searchList.materialId = ''
+      } else {
+        this.searchList.materialId = item.materialTypeId.split('^')[1]
+        this.searchList.materialTypeId = ''
       }
       this.showList()
     },
-    addBooking(type, record) {
-      if (type !== '0') {
-        this.$router.push({ path: '/activityBooking/addActivityBooking', query: { id: record.id, type } })
-      } else {
-        this.$router.push({ path: '/activityBooking/addActivityBooking', query: { type } })
+    submitForm() {
+      if (this.totalList.length === 0) {
+        this.$message.warning('请选择学生')
+        return
       }
+      console.log(this.totalList)
     },
-    goDetail(record) {
+    // 报到按钮
+    checkClick() {
+      this.checkVisible = true
     },
-    async deleteList(record) {
-      await this.delReserve(record.id)
-      this.$message.success('删除成功')
-      this.$tools.goNext(() => {
-        this.showList()
-      })
+    // 打开报到弹框
+    handleCheckOpen() {
+      this.checkVisible = true
     },
-    showRecord(record) {
-      this.id = record.id
-      this.signTag = true
+    // 报到确认
+    handleCheckOk() {
+      console.log(this.checkResult)
+      this.checkVisible = false
     },
-    editMeeting(record) {
-      this.editId = record.id
-      this.editTag = true
-    },
-    showPoster(record) {
-      this.record = record
-      this.showTag = true
-    },
-    async submitForm(values) {
-      console.log(values)
-      const req = {
-        placeReserveId: this.editId,
-        content: values.content,
-        attachList: values.fileList.concat(values.otherList)
-      }
-      await this.addMeetRecord(req)
-      this.$message.success('发布成功')
-      this.$tools.goNext(() => {
-        this.$refs.form.appForm = {
-          content: '',
-          fileList: [],
-          otherList: []
-        }
-        this.$refs.form.showData()
-        this.$refs.form.reset()
-        this.showList()
-      })
+    // 取消报到 关闭弹框
+    handleCheckCancel() {
+      this.checkVisible = false
     }
   }
 }
 </script>
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.goods {
+  .page-left {
+    background: #fff;
+    margin-right: 10px;
+    width: 150px;
+  }
+}
+</style>

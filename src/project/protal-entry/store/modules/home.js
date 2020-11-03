@@ -178,25 +178,25 @@ const newData = [
             remark: '',
             appCode: '',
             children: []
+          },
+          {
+            id: 1233,
+            name: '迎新设备',
+            parentId: 1232,
+            orderNum: 68,
+            url: '/pc-protal/protal-new-student#/deviceManage',
+            menuType: 2,
+            perms: '',
+            icon:
+              'http://canpoint-file.oss-cn-beijing.aliyuncs.com/CANPOINT/2020/08/18/base/9b04e61999cf4f91be08e71ffa5d2528.jpg',
+            plateformType: 2,
+            createTime: 1603416079000,
+            appId: 187,
+            remark: '',
+            appCode: '',
+            children: []
           }
         ]
-      },
-      {
-        id: 1233,
-        name: '设备管理',
-        parentId: null,
-        orderNum: 68,
-        url: '/pc-protal/protal-new-student#/deviceManage',
-        menuType: 2,
-        perms: '',
-        icon:
-          'http://canpoint-file.oss-cn-beijing.aliyuncs.com/CANPOINT/2020/08/18/base/9b04e61999cf4f91be08e71ffa5d2528.jpg',
-        plateformType: 2,
-        createTime: 1603416079000,
-        appId: 187,
-        remark: '',
-        appCode: '',
-        children: []
       }
     ]
   }

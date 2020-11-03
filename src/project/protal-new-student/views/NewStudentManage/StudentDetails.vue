@@ -1,48 +1,5 @@
 <template>
   <div class="home page-layout qui-fx-ver">
-    <a-modal
-      :title="checkTitle"
-      :visible="checkVisible"
-      :confirm-loading="confirmLoading"
-      @ok="handleCheckOk"
-      @cancel="handleCheckCancel"
-    >
-      <div class="check-result check-box">
-        <div class="check-title">审核结果：</div>
-        <div class="check-area">
-          <a-radio-group name="radioGroup" v-model="checkData.result">
-            <a-radio :value="1"> 通过(录取) </a-radio>
-            <a-radio :value="2"> 不通过(不录取) </a-radio>
-          </a-radio-group>
-        </div>
-      </div>
-      <div class="check-text check-box">
-        <div class="check-title">审核意见：</div>
-        <div class="check-area">
-          <a-textarea
-            :style="{ width: '100%' }"
-            v-model="checkData.text"
-            placeholder="请输入审核意见"
-            :auto-size="{ minRows: 3, maxRows: 8 }"
-          />
-        </div>
-      </div>
-    </a-modal>
-    <submit-form
-      ref="form"
-      @submit-form="submitForm"
-      :title="title"
-      v-model="editFormStatus"
-      :form-data="editFormDatas"
-    >
-      <div slot="upload" class="qui-fx qui-fx-ac">
-        <upload-multi is-check :length="1" v-model="fileList" type="face" :fileInfo="fileInfo"></upload-multi>
-      </div>
-    </submit-form>
-    <div class="head-btn">
-      <a-button type="primary" @click="checkClick"> 审核 </a-button>
-      <a-button type="primary" :style="{ marginLeft: '10px' }" @click="editFormStatus = true"> 编辑 </a-button>
-    </div>
     <div class="message-box">
       <div class="base-message message">
         <div class="title">基本信息</div>
@@ -74,7 +31,7 @@
         </div>
       </div>
       <div class="project-message message">
-        <div class="title">审核信息</div>
+        <div class="title">班级报到信息</div>
         <div class="project-msg-table msg-table">
           <div class="table-list">
             <div class="msg-item" v-for="item in checkInfo" :key="item.id">
@@ -93,29 +50,14 @@ import { mapState, mapActions } from 'vuex'
 import UploadMulti from '@c/UploadFace'
 import SubmitForm from '../../component/SubForm.vue'
 export default {
-  name: 'ApplyDetails',
+  name: 'StudentDetails',
   components: {
     SubmitForm,
     UploadMulti
   },
   data() {
     return {
-      title: '编辑新生',
-      editFormStatus: false,
       editFormDatas: [],
-      fileList: [],
-      fileInfo: {
-        tip: '上传图片',
-        h: 120, // 高度
-        w: 120 // 宽度
-      },
-      checkTitle: '审核',
-      checkVisible: false,
-      confirmLoading: false,
-      checkData: {
-        result: '',
-        checkText: ''
-      },
       baseListOne: [
         {
           id: '1',
@@ -250,18 +192,33 @@ export default {
       checkInfo: [
         {
           id: '1',
-          name: '审核意见',
-          text: '通过'
+          name: '专业',
+          text: '汽修'
         },
         {
           id: '2',
-          name: '审核人',
-          text: '曹操'
+          name: '班级',
+          text: '1班'
         },
         {
           id: '3',
-          name: '审核时间',
+          name: '报到状态',
+          text: '已报到'
+        },
+        {
+          id: '4',
+          name: '报到方式',
+          text: '线下'
+        },
+        {
+          id: '5',
+          name: '报到时间',
           text: '2020/10/17 12:36:00'
+        },
+        {
+          id: '6',
+          name: '确认人',
+          text: '李老师'
         }
       ]
     }
@@ -564,26 +521,6 @@ export default {
         el.placeName = el.placeName.replace(/,/g, '-')
       })
       this.total = res.data.total
-    },
-    // 打开审核弹框
-    checkClick() {
-      this.checkVisible = true
-    },
-    // 审核提交
-    handleCheckOk() {
-      this.checkVisible = false
-    },
-    // 取消审核
-    handleCheckCancel() {
-      this.checkVisible = false
-    },
-    // 编辑学生信息提交
-    submitForm() {
-      if (this.totalList.length === 0) {
-        this.$message.warning('请选择学生')
-        return
-      }
-      console.log(this.totalList)
     }
   }
 }
@@ -595,27 +532,6 @@ export default {
   overflow: hidden;
   box-sizing: border-box;
   padding: 20px 40px;
-}
-.check-box {
-  display: flex;
-
-  .check-title {
-    width: 100px;
-    margin-bottom: 20px;
-  }
-  .check-area {
-    flex: 1;
-  }
-}
-.head-btn {
-  width: 100%;
-  margin: 0 auto;
-  height: 50px;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  padding-right: 20px;
-  box-sizing: border-box;
 }
 .message-box {
   flex: 1;

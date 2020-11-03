@@ -2,11 +2,12 @@
 import { BasicLayout, RouteView } from '../layouts'
 import taskManage from './taskManage'
 import studentApply from './studentApply'
+import studentManage from './studentManage'
 // const Home = resolve => require(['../views/Home.vue'], resolve)
 const HomePage = resolve => require(['../views/HomePage/HomePage.vue'], resolve)
 // const TaskManage = resolve => require(['../views/TaskManage/TaskManage.vue'], resolve)
 // import studentApply = resolve => require(['../views/TaskManage/StudentApply.vue'], resolve)
-const StudentManage = resolve => require(['../views/NewStudentManage/StudentManage.vue'], resolve)
+// const StudentManage = resolve => require(['../views/NewStudentManage/StudentManage.vue'], resolve)
 const StudentClasses = resolve => require(['../views/NewStudentManage/StudentCLasses.vue'], resolve)
 const DeviceManege = resolve => require(['../views/DeviceManege/DeviceManege.vue'], resolve)
 
@@ -42,14 +43,14 @@ export const asyncRouterMap = [
       //     title: '新生申请'
       //   }
       // },
-      {
-        path: '/studentManage',
-        name: 'studentManage',
-        component: StudentManage,
-        meta: {
-          title: '新生管理'
-        }
-      },
+      // {
+      //   path: '/studentManage',
+      //   name: 'studentManage',
+      //   component: StudentManage,
+      //   meta: {
+      //     title: '新生管理'
+      //   }
+      // },
       {
         path: '/studentClasses',
         name: 'studentClasses',
@@ -63,11 +64,12 @@ export const asyncRouterMap = [
         name: 'deviceManage',
         component: DeviceManege,
         meta: {
-          title: '设备管理'
+          title: '迎新设备'
         }
       },
       taskManage,
-      studentApply
+      studentApply,
+      studentManage
     ]
   },
   {
