@@ -61,8 +61,8 @@ export default {
     record: {
       handler(newValue, oldValue) {
         if (newValue !== oldValue) {
-          // this.downloadData.url = `http://canpointlive.com/mobile-protal/protal/index.html?code=0619agZh1goHPs0kO40i1qqfZh19agZ1&state=STATE#/pages/protal/register?id=1&schoolCode=1`
-          this.downloadData.url = `http://canpointtest.com/mobile-protal/protal/#/pages/activity-booking/sign?id=${this.record.id}&schoolCode=${this.userInfo.schoolCode}`
+          this.downloadData.url = `http://canpointlive.com/mobile-protal/protal-card/#/pages/activity-booking/sign?id=${this.record.id}&schoolCode=${this.userInfo.schoolCode}`
+          // this.downloadData.url = `http://canpointtest.com/mobile-protal/protal/#/pages/activity-booking/sign?id=${this.record.id}&schoolCode=${this.userInfo.schoolCode}`
           console.log(newValue)
         }
       },
