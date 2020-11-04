@@ -201,7 +201,7 @@
             :placeholder="item.placeholder"
             :read-only="item.readonly"
             :disabled="item.disabled"
-            @search="item.onSearch"
+            @search="onSearch"
             :type="item.password ? 'password' : 'text'"
             v-decorator="[
               item.value,
@@ -293,6 +293,9 @@ export default {
     },
     error() {
       this.confirmLoading = false
+    },
+    onSearch(value) {
+      this.$emit('onSearch', value)
     },
     submitOk(e) {
       e.preventDefault()

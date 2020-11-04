@@ -13,26 +13,16 @@
               <a-button icon="plus" class="add-btn" @click="addnews(0)">发布新闻</a-button>
             </div>
           </no-data>
-          <div class="notice-card qui-fx" v-for="item in recordList" :key="item.id">
-            <div class="notice-img">
+          <div class="notice-card qui-fx u-bd-1px u-mar-b20 u-shadow" v-for="item in recordList" :key="item.id">
+            <div class="notice-img u-padd-20">
               <img :src="item.imgUrl" alt />
             </div>
-            <div class="qui-fx-f1 qui-fx-ver">
+            <div class="qui-fx-f1 qui-fx-ver u-padd-20">
               <p class="notice-title">{{ item.title }}</p>
-              <div
-                class="qui-fx-f1 notice-info"
-                style="text-indent:2em"
-                v-if="item.content.length < 60"
-                v-html="item.content"
-              >
+              <div class="qui-fx-f1 notice-info" v-if="item.content.length < 60" v-html="item.content">
                 {{ item.content }}
               </div>
-              <div
-                class="qui-fx-f1 notice-info"
-                style="text-indent:2em"
-                v-if="item.content.length >= 60"
-                v-html="item.content"
-              >
+              <div class="qui-fx-f1 notice-info" v-if="item.content.length >= 60" v-html="item.content">
                 {{ item.content.substring(0, 90) }}...
               </div>
               <div class="qui-fx-jsb notice-action">
@@ -198,21 +188,19 @@ export default {
 .notice-list {
   .notice-card {
     border-radius: 4px;
-    background-color: #fff;
-    padding: 20px 25px;
     float: left;
     width: 48.5%;
     margin-left: 1%;
-    overflow: hidden;
-    margin-bottom: 20px;
     height: 230px;
-    background-color: #f5f5f5;
   }
   .notice-title {
     font-size: 18px;
     font-weight: bold;
     height: 54px;
     margin-bottom: 5px;
+  }
+  .u-padd-20 {
+    padding: 20px;
   }
   .notice-info {
     overflow: hidden;
@@ -225,10 +213,7 @@ export default {
     }
   }
   .notice-img {
-    margin-right: 15px;
     width: 300px;
-    height: 200px;
-    background-color: #ccc;
     img {
       width: 100%;
       height: 100%;

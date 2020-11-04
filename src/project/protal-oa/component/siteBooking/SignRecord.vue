@@ -82,7 +82,7 @@ const columns = [
   {
     title: '所属部门',
     dataIndex: 'orgName',
-    width: '20%',
+    width: '10%',
     scopedSlots: {
       customRender: 'other4'
     }
@@ -98,7 +98,7 @@ const columns = [
   {
     title: '签到设备',
     dataIndex: 'deviceSn',
-    width: '20%',
+    width: '10%',
     scopedSlots: {
       customRender: 'other2'
     }
@@ -106,7 +106,7 @@ const columns = [
   {
     title: '签到时间',
     dataIndex: 'signTime',
-    width: '20%',
+    width: '10%',
     scopedSlots: {
       customRender: 'other3'
     }
