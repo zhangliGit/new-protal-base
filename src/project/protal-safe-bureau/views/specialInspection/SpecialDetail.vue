@@ -233,19 +233,18 @@ export default {
         userCode: this.userInfo.userCode,
         userName: this.userInfo.userName
       }
-      console.log(req)
-      // this.modifySpecial(req)
-      //   .then(res => {
-      //     this.isLoad = false
-      //     this.$message.success('操作成功')
-      //     this.$tools.goNext(() => {
-      //       this.$refs.modal.visible = false
-      //       this.$parent.showList()
-      //     })
-      //   })
-      //   .catch(res => {
-      //     this.isLoad = false
-      //   })
+      this.modifySpecial(req)
+        .then(res => {
+          this.isLoad = false
+          this.$message.success('操作成功')
+          this.$tools.goNext(() => {
+            this.$refs.modal.visible = false
+            this.$parent.showList()
+          })
+        })
+        .catch(res => {
+          this.isLoad = false
+        })
     }
   }
 }

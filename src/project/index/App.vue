@@ -34,6 +34,10 @@ export default {
           url: 'protal-login'
         },
         {
+          name: '小程序管理后台',
+          url: 'protal-wechart'
+        },
+        {
           name: '运维端',
           url: 'protal-admin'
         },
@@ -94,8 +98,12 @@ export default {
           url: 'protal-safe-bureau'
         },
         {
-          name: '一卡通消费',
+          name: '一卡通消费系统',
           url: 'protal-consumption'
+        },
+        {
+          name: '交易管理系统',
+          url: 'protal-dealManage'
         },
         {
           name: '全品缴费',
@@ -106,12 +114,20 @@ export default {
           url: 'protal-prevent'
         },
         {
+          name: '高教版基础数据',
+          url: 'protal-high-school'
+        },
+        {
           name: '安全教育-局端',
           url: 'protal-library-bureau'
         },
         {
           name: '安全教育-校端',
           url: 'protal-library-school'
+        },
+        {
+          name: '安全台账-校端',
+          url: 'protal-parameter-school'
         }
       ]
     }

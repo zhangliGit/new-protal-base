@@ -17,9 +17,10 @@
           {{ record.record.grade_name }}{{ record.record.class_name }}
         </template>
         <template v-slot:other2="record">
-          {{ record.record.total - (record.record.unsubmit_count || 0) }}
+          {{ record.record.count - (record.record.unsubmit_count || 0) }}
         </template>
       </table-list>
+      <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
     </div>
   </div>
 </template>
@@ -63,7 +64,7 @@ const columns = [
   },
   {
     title: '总人数',
-    dataIndex: 'total',
+    dataIndex: 'count',
     width: '10%'
   },
   {
@@ -144,10 +145,12 @@ export default {
       const req = {
         ...this.classInfo,
         ...this.searchList,
+        ...this.pageList,
         schoolCode: this.userInfo.schoolCode
       }
       const res = await this.getHomeworkList(req)
       this.dataList = res.data.list
+      this.total = res.data.total
     },
     searchForm (values) {
       this.searchList = values

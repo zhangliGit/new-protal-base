@@ -12,7 +12,7 @@
         <detail-show :detail-info="detailInfo" :title="infoTitle" style="width: 74%;"></detail-show>
         <div class="mar-top">
           <!-- <a-button icon="plus" class="add-btn">编辑重发</a-button> -->
-          <a-button icon="export" class="export-btn">打印收据</a-button>
+          <!-- <a-button icon="export" class="export-btn">打印收据</a-button> -->
           <a-button icon="export" class="export-btn" @click="changeTime">确认收款</a-button>
           <a-button icon="export" class="export-all-btn" @click.stop="deleteList(0)">催缴</a-button>
           <a-button icon="delete" class="del-btn" @click.stop="deleteList(1)">关闭账单</a-button>
@@ -34,10 +34,8 @@
       <template>
         <div class="u-padd-20">
           <a-timeline>
-            <a-timeline-item
-              v-for="(item, index) in OpeList"
-              :key="index"
-            >{{ item.opeTime | getDate(1) }}
+            <a-timeline-item v-for="(item, index) in OpeList" :key="index"
+              >{{ item.opeTime | getDate(1) }}
               <div>{{ $tools.opeType(item.opeType) }}</div>
             </a-timeline-item>
           </a-timeline>
@@ -213,7 +211,7 @@ export default {
   },
   created() {},
   mounted() {
-    this.maxHeight = window.screen.height - 250 + 'px'
+    this.maxHeight = window.screen.height - 230 + 'px'
     this.showClassDetail()
     this.showList()
   },

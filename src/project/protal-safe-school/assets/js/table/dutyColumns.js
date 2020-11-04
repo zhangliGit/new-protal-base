@@ -34,18 +34,18 @@ const dutyColumns = {
     {
       title: '状态',
       dataIndex: 'patrolStatus',
-      width: '10%',
+      width: '8%',
       customRender: text => {
         if (text === '1') {
-          return '异常'
-        } else {
           return '正常'
+        } else if (text === '0') {
+          return '异常'
         }
       }
     },
     {
       title: '值班轨迹',
-      width: '12%',
+      width: '15%',
       scopedSlots: {
         customRender: 'other1'
       }
@@ -67,28 +67,26 @@ const dutyColumns = {
   ],
   searchLabel: [
     {
-      value: 'rangeTime',
+      value: 'time',
       type: 'rangeTime',
       label: '上报时间'
     },
     {
-      value: 'name',
-      initValue: '',
-      type: 'selectInput',
-      selectType: [
-        {
-          key: 'schoolName',
-          val: '上报人'
-        },
-        {
-          key: 'schoolCode',
-          val: '值班人员'
-        },
-        {
-          key: 'schoolCode',
-          val: '带班领导'
-        }
-      ],
+      value: 'reporterName',
+      type: 'input',
+      label: '上报人姓名',
+      placeholder: '请输入'
+    },
+    {
+      value: 'watchName',
+      type: 'input',
+      label: '值班人姓名',
+      placeholder: '请输入'
+    },
+    {
+      value: 'leaderName',
+      type: 'input',
+      label: '带班领导姓名',
       placeholder: '请输入'
     },
     {
@@ -115,7 +113,10 @@ const dutyColumns = {
     {
       title: '巡查地点名称',
       dataIndex: 'patrolPointName',
-      width: '30'
+      width: '30',
+      customRender: text => {
+        return text ? '正常' : '异常'
+      }
     },
     {
       title: '巡查结果',

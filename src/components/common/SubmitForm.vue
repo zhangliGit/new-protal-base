@@ -94,11 +94,9 @@
               }
             ]"
           >
-            <a-radio-button
-              :value="list.key"
-              v-for="(list, ind) in item.list"
-              :key="ind"
-            >{{ list.val }}</a-radio-button>
+            <a-radio-button :value="list.key" v-for="(list, ind) in item.list" :key="ind">{{
+              list.val
+            }}</a-radio-button>
           </a-radio-group>
         </a-form-item>
         <!--复选框-->
@@ -113,7 +111,7 @@
                 rules: [{ required: !item.hasOwnProperty('required') || item.required, message: item.placeholder }]
               }
             ]"
-            style="width: 100%;margin-top: 8px;"
+            style="width: 100%; margin-top: 8px"
             :placeholder="item.placeholder"
           >
             <a-row>
@@ -142,11 +140,9 @@
             ]"
             :placeholder="item.placeholder"
           >
-            <a-select-option
-              v-for="(item2, index2) in item.list"
-              :value="item2.key"
-              :key="index2"
-            >{{ item2.val }}</a-select-option>
+            <a-select-option v-for="(item2, index2) in item.list" :value="item2.key" :key="index2">{{
+              item2.val
+            }}</a-select-option>
           </a-select>
         </a-form-item>
         <!--上传图片-->
@@ -198,6 +194,33 @@
               }
             ]"
           />
+        </a-form-item>
+        <!--带按钮的输入框-->
+        <a-form-item v-bind="formItemLayout" :label="item.label" v-if="item.type === 'input-button'">
+          <a-input-search
+            :placeholder="item.placeholder"
+            :read-only="item.readonly"
+            :disabled="item.disabled"
+            @search="onSearch"
+            :type="item.password ? 'password' : 'text'"
+            v-decorator="[
+              item.value,
+              {
+                initialValue: item.initValue + '',
+                rules: [
+                  {
+                    len: item.len,
+                    max: item.max || 100,
+                    required: !item.hasOwnProperty('required') || item.required,
+                    message: item.placeholder
+                  },
+                  { pattern: item.regular ? rules[item.regular] : '', message: item.placeholder }
+                ]
+              }
+            ]"
+          >
+            <a-button slot="enterButton"> {{ item.buttonText }} </a-button>
+          </a-input-search>
         </a-form-item>
       </div>
     </a-form>
@@ -270,6 +293,9 @@ export default {
     },
     error() {
       this.confirmLoading = false
+    },
+    onSearch(value) {
+      this.$emit('onSearch', value)
     },
     submitOk(e) {
       e.preventDefault()

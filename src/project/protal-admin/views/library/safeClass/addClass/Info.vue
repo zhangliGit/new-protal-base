@@ -137,7 +137,6 @@ export default {
     // 获取资源树
     async _treeView() {
       const res = await this.treeView()
-      console.log(res)
       this.options = res.data.map(res => {
         return {
           label: res.categoryName,

@@ -165,22 +165,38 @@ export default {
     }
   },
   computed: {
-    ...mapState('home', ['userInfo', 'eduCode'])
+    ...mapState('home', ['userInfo'])
   },
   async mounted() {
     const newColumnsArr = JSON.parse(JSON.stringify(safeClassItemColumns))
     newColumnsArr.splice(5, 0, { title: '机构来源', dataIndex: 'schoolName', width: '10%' })
     this.safeClassItemColumns = newColumnsArr
     this.categoryId = ''
+    this.eduCode = ''
+    this.getEducode()
     await this._treeView()
     await this.showList()
   },
   methods: {
-    ...mapActions('home', ['claroomGreatList', 'claroomRemove', 'claroomRemoves', 'treeView', 'statistics', 'pageStatistics', 'classCancelbou']),
+    ...mapActions('home', [
+      'claroomGreatList',
+      'claroomRemove',
+      'claroomRemoves',
+      'treeView',
+      'statistics',
+      'pageStatistics',
+      'classCancelbou',
+      'getEduCode'
+    ]),
+    // 获取教育局code
+    async getEducode() {
+      const res = await this.getEduCode({ schoolCode: this.userInfo.schoolCode })
+      this.eduCode = res.data.schoolCode
+    },
     async showList() {
       const req = {
         categoryId: this.categoryId,
-        eduCode: this.userInfo.schoolCode,
+        eduCode: this.eduCode,
         ...this.pageList,
         ...this.searchList
       }
@@ -190,7 +206,6 @@ export default {
     },
     async _treeView() {
       const res = await this.treeView()
-      // this.categoryId = res.data[0].id
       this.treeData = res.data
     },
     searchForm(values) {

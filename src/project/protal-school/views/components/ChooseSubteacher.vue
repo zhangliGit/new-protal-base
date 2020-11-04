@@ -201,19 +201,6 @@ export default {
   },
   created() {
     this.showSubList()
-    this.teacherList.forEach((ele, index) => {
-      if (ele.subjectName.split(',').length > 1) {
-        ele.subjectName.split(',').forEach((item, i) => {
-          this.totalList.push({
-            ...ele,
-            subjectName: item,
-            subjectCode: ele.subjectCode.split(',')[i]
-          })
-        })
-      } else {
-        this.totalList.push(ele)
-      }
-    })
   },
   async mounted() {
   },
@@ -241,6 +228,25 @@ export default {
           key: ele.subjectCode,
           title: ele.subjectName
         })
+      })
+      this.teacherList.forEach((ele, i) => {
+        const index = res.data.findIndex(list => list.subjectName === ele.subjectName)
+        if (index === -1) {
+          this.teacherList.splice(i, 1)
+        }
+      })
+      this.teacherList.forEach((ele, index) => {
+        if (ele.subjectName.split(',').length > 1) {
+          ele.subjectName.split(',').forEach((item, i) => {
+            this.totalList.push({
+              ...ele,
+              subjectName: item,
+              subjectCode: ele.subjectCode.split(',')[i]
+            })
+          })
+        } else {
+          this.totalList.push(ele)
+        }
       })
     },
     async getTeacherList(type = false) {

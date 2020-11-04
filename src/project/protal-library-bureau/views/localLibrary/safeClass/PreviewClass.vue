@@ -130,13 +130,15 @@
                     <div class="comt u-bg-color u-padd-10 u-fx-jsb">
                       <div class="left u-padd-l10">
                         <div class="name u-main-color">{{ item.name }}</div>
-                        <div class="size u-font-01 u-tips-color">{{ item.docSize }}</div>
+                        <div class="size u-font-01 u-tips-color">{{ item.docSize | dosizeformat }}</div>
                       </div>
                       <div class="rigth u-fx u-padd-r10">
-                        <div class="see_icon u-mar-r10" @click="down(0,item.resourceUrl)">查看
+                        <div class="see_icon u-mar-r10 u-fx-ver" >查看
+                          <a-icon v-if="item.docType==='msword'||item.docType==='vnd.ms-excel'||item.docType==='x-zip-compressed'" type="eye-invisible" />
+                          <a-icon v-else type="eye" @click="down(0,item.resourceUrl)" />
                         </div>
-                        <div class="down_icon" @click="down(1,item.resourceUrl)">下载
-                          <a-icon type="arrow-down"/>
+                        <div class="down_icon u-fx-ver" @click="downloadFile(item.resourceUrl)">下载
+                          <a-icon type="download" />
                         </div>
                       </div>
                     </div>
@@ -152,6 +154,7 @@
 </template>
 <script>
 import { mapState, mapActions } from 'vuex'
+import Tools from '@u/tools'
 import moment from 'moment'
 export default {
   name: 'PreviewClass',
@@ -240,6 +243,9 @@ export default {
           })
         }
       })
+    },
+    downloadFile(url) {
+      Tools.downloadFile(url)
     },
     // 下载查看
     down(type, url) {

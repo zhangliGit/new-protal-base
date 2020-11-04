@@ -13,15 +13,11 @@
       <a-form-item label="表扬班级" :label-col="{ span: 3 }" :wrapper-col="{ span: 21 }" required>
         <div>
           <template v-for="tag in classList">
-            <a-tag
-              :key="tag.classCode"
-              :closable="true"
-              :afterClose="() => classClose(tag)"
-            >{{ tag.gradeName }}{{ tag.className }}</a-tag>
+            <a-tag :key="tag.classCode" :closable="true" :afterClose="() => classClose(tag)"
+              >{{ tag.gradeName }}{{ tag.className }}</a-tag
+            >
           </template>
-          <a-tag @click="addTag()" style="background: #fff; borderStyle: dashed;">
-            <a-icon type="plus"/>添加
-          </a-tag>
+          <a-tag @click="addTag()" style="background: #fff; borderStyle: dashed;"> <a-icon type="plus" />添加 </a-tag>
         </div>
       </a-form-item>
       <a-form-item :label-col="{ span: 3 }" :wrapper-col="{ span: 21 }" label="选择表扬语" required>
@@ -90,19 +86,19 @@ export default {
     onChange(checkedValues) {
       this.labelList = []
       this.getList = checkedValues
-      this.batchList.forEach((item) => {
-        this.getList.forEach((el) => {
+      this.batchList.forEach(item => {
+        this.getList.forEach(el => {
           if (item.id == el) {
             this.labelList.push(item.label)
           }
         })
       })
       if (this.value.length >= 3) {
-        this.batchList.forEach((el) => {
+        this.batchList.forEach(el => {
           el.disabled = this.value.indexOf(el.id.toString()) == -1 ? true : false
         })
       } else {
-        this.batchList.forEach((el) => {
+        this.batchList.forEach(el => {
           if (el.disabled) {
             el.disabled = false
           }
@@ -118,16 +114,16 @@ export default {
         ...this.pageList
       }
       const res = await this.praiseList(req)
-      this.batchList = res.data.list.filter((item) => item.category === 1)
-      this.batchList.forEach((el) => {
+      this.batchList = res.data.list.filter(item => item.category === 1)
+      this.batchList.forEach(el => {
         this.$set(el, 'disabled', false)
       })
     },
     classClose(removedTag) {
-      this.classList = this.classList.filter((tag) => tag !== removedTag)
+      this.classList = this.classList.filter(tag => tag !== removedTag)
     },
     chooseClass(classInfo) {
-      this.classList = classInfo.map((el) => {
+      this.classList = classInfo.map(el => {
         return {
           category: 1,
           classCode: el.classCode,
@@ -156,15 +152,16 @@ export default {
             praiseList: this.classList
           }
           this.addsetPraise(req)
-            .then((res) => {
+            .then(res => {
               this.addVisible = false
               this.isLoad = false
+              this.value = []
               this.$message.success('操作成功')
               this.$tools.goNext(() => {
                 this.$emit('update')
               })
             })
-            .catch((res) => {
+            .catch(res => {
               this.isLoad = false
             })
         }
@@ -174,5 +171,4 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
-</style>
+<style lang="less" scoped></style>

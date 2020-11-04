@@ -39,8 +39,6 @@
   </div>
 </template>
 <script>
-import html2canvas from 'html2canvas'
-import hostEnv from '@config/host-env'
 import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'

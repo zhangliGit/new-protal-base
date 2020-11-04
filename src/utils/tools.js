@@ -6,6 +6,7 @@ import Vue from 'vue'
 import axios from 'axios'
 import baseData from './base-data'
 import autoImg from '@a/img/auto_app.png'
+import moment from 'moment'
 const vm = new Vue({})
 
 const Tools = {
@@ -131,7 +132,7 @@ const Tools = {
       formData.append('callback', aliyunOssToken.callback)
       formData.append('Signature', aliyunOssToken.signature) // 签名
       const _file = typeof file === 'object' ? file : _self.dataURLToBlob(file)
-      console.log(typeof file)
+      // console.log(typeof file)
       formData.append('file', _file)
       formData.append('success_action_status', 200) // 成功后返回的操作码
       axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
@@ -147,7 +148,8 @@ const Tools = {
           if (progressEvent.lengthComputable) {
             const loaded = progressEvent.loaded
             const total = progressEvent.total
-            callbackProgress(Math.floor((loaded / total) * 100) > 1 ? Math.floor((loaded / total) * 100) : 1)
+            callbackProgress &&
+              callbackProgress(Math.floor((loaded / total) * 100) > 1 ? Math.floor((loaded / total) * 100) : 1)
           }
         }
       }).then(
@@ -170,6 +172,41 @@ const Tools = {
         }
       )
     })
+  },
+  // 获取url文件名 后缀 类型
+  getFileTypeByPath(path) {
+    const typeObj = {
+      fileName: '',
+      fileType: '',
+      fileExtension: ''
+    }
+    var index = path.lastIndexOf('/')
+    typeObj.fileName = path.substr(index + 1)
+    var index1 = path.lastIndexOf('.')
+    typeObj.fileType = path.substr(index1 + 1)
+    var index2 = path.length
+    typeObj.fileExtension = path.substr(index1, index2)
+    return typeObj
+  },
+  // 根据url下载文件
+  downloadFile(url) {
+    var xhr = new XMLHttpRequest()
+    xhr.open('GET', url, true)
+    xhr.responseType = 'blob'
+    xhr.onload = function(e) {
+      if (e.target.readyState === 4 && e.target.status === 200) {
+        const blob = this.response
+        // 转换一个blob链接
+        const a = document.createElement('a')
+        a.href = window.URL.createObjectURL(new Blob([blob], { type: Tools.getFileTypeByPath(url).fileType }))
+        a.download = Tools.getFileTypeByPath(url).fileName + moment(new Date().getTime()).format('YYYY-MM-DD')
+        a.style.display = 'none'
+        document.body.appendChild(a)
+        a.click()
+        a.remove()
+      }
+    }
+    xhr.send()
   },
   // 取消上传
   closeUpload() {

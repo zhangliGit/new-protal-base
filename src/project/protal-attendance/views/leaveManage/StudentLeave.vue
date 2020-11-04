@@ -1,7 +1,8 @@
 <template>
   <div class="student-leave page-layout qui-fx">
     <div class="page-left">
-      <grade-tree @select="select"></grade-tree>
+      <major-tree v-if="userInfo.schoolType === '8'" @select="select"></major-tree>
+      <grade-tree v-else @select="select"></grade-tree>
     </div>
     <div class="qui-fx-f1 qui-fx-ver">
       <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
@@ -43,6 +44,7 @@ import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import SearchForm from '@c/SearchForm'
 import GradeTree from '@c/GradeTree'
+import MajorTree from '@c/MajorTree'
 import PageNum from '@c/PageNum'
 import 'moment/locale/zh-cn'
 
@@ -250,7 +252,8 @@ export default {
     GradeTree,
     TableList,
     SearchForm,
-    PageNum
+    PageNum,
+    MajorTree
   },
   data() {
     return {
@@ -276,7 +279,17 @@ export default {
   computed: {
     ...mapState('home', ['userInfo'])
   },
-  async mounted() {},
+  async mounted() {
+    if (this.userInfo.schoolType === '8') {
+      this.columns[2].dataIndex = 'schoolYearId'
+      this.columns.splice(3, 0,
+        {
+          title: '专业',
+          dataIndex: 'gradeName',
+          width: '7%'
+        })
+    }
+  },
   methods: {
     ...mapActions('home', ['getStudentsLeave', 'exportStuLea']),
     exportClick() {
@@ -309,9 +322,8 @@ export default {
       this.total = res.data.total
     },
     select(item) {
-      console.log(item)
-      this.schoolYearId = item.schoolYearId
-      this.gradeCode = item.gradeCode
+      this.schoolYearId = this.userInfo.schoolType === '8' ? item.gradeName : item.schoolYearId
+      this.gradeCode = this.userInfo.schoolType === '8' ? item.subjectCode : item.gradeCode
       this.classCode = item.classCode
       this.showList()
     },

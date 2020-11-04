@@ -99,8 +99,7 @@ export default {
       ],
       cardInfo: {
         topicType: '',
-        taskType: '',
-        thumbnailUrl: []
+        taskType: ''
       },
       total: 0,
       visible: true,
@@ -166,11 +165,11 @@ export default {
       const { name, size, type } = data.file
       this.docName = name
       this.docSize = size
-      this.docType = type
+      this.docType = type.split('/')[1]
       this.$tools.ossUpload(this.userInfo.schoolCode, data.file, type, this.callBack)
     },
     callBack(value) {
-      // this.uploadFile = value.url
+      value = value.data
       this.fileList = [{
         docSize: this.docSize,
         docType: this.docType,
@@ -186,8 +185,8 @@ export default {
       this.form.validateFields((error, values) => {
         this.isLoad = false
         if (!error) {
-          this.isLoad = true
           if (this.fileList.length === 0) return this.$message.success('请上传资源')
+          this.isLoad = true
           const req = {
             name: values.name,
             docSize: this.fileList[0].docSize,
@@ -221,11 +220,13 @@ export default {
       this.close()
     },
     reset() {
+      this.fileList = []
+      this.isLoad = false
       this.confirmLoading = false
       this.$emit('input', false)
     },
     close() {
-      this.$emit('closeModal')
+      this.$emit('input', false)
     },
     error() {
       this.confirmLoading = false

@@ -18,7 +18,9 @@
         </a-row>
         <a-row>
           <a-col :span="2" :offset="17"> 优惠 :</a-col>
-          <a-col :span="5"> <a-input placeholder="输入优惠金额" v-model="amount" /> </a-col>
+          <a-col :span="5">
+            <a-input placeholder="输入优惠金额" v-model="amount" />
+          </a-col>
         </a-row>
         <a-row>
           <a-col :span="2" :offset="17"> 应收：</a-col>
@@ -148,7 +150,7 @@ export default {
     this.getSchoolYearId()
   },
   methods: {
-    ...mapActions('home', ['addChargetask', 'getCharge', 'addBillInfo', 'getchargeTaskInfo', 'getSchoolYear']),
+    ...mapActions('home', ['getCharge', 'addBillInfo', 'getchargeTaskInfo', 'getSchoolYear']),
     async init() {
       const res = await this.getCharge(this.popTaskCode)
       const tas = await this.getchargeTaskInfo(this.popTaskId)

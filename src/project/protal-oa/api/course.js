@@ -9,8 +9,8 @@ const clApi = {
   getsubstituteDetail: '/substitute/form/detail/#getUrl', // 调课列表
 }
 for (const val in clApi) {
-  clApi[val] = `${hostEnv.cl_oa}${clApi[val]}`
+  clApi[val] = `${hostEnv.zk_oa}${clApi[val]}`
 }
 export default {
-  ...clApi,
+  ...clApi
 }

@@ -12,7 +12,7 @@
         </div>
       </no-data>
       <div class="qui-fx qui-fx-wp mar-20" style="    max-height: 400px;">
-        <div class="notice-card" v-for="item in noticeList" :key="item.id">
+        <div class="notice-card u-bd-1px u-shadow" v-for="item in noticeList" :key="item.id">
           <div class="qui-fx-f1 qui-fx-ver qui-fx-jsb">
             <div class=" qui-fx">
               <a-popover>
@@ -22,32 +22,23 @@
                 <span class="content">应用于 {{ item.outCountDownClassDtoList.length }}个班级</span>
               </a-popover>
             </div>
-            <div
-              class="notice-img qui-fx-ac-jc"
-              style=" background: #3c9bed "
-              v-if="item.endTime >= new Date().getTime()"
-            >
-              <div class="juli_">
-                <h2>
-                  距离 <span>{{ item.name }}</span> {{ item.tips }}
-                </h2>
-                <h1>{{ Math.round((item.endTime - new Date().getTime()) / (1000 * 60 * 60 * 24)) }}天</h1>
-              </div>
+            <div class="notice-state qui-fx-ac-jc " v-if="item.endTime >= new Date().getTime()">
+              <h2>
+                距离 <span>{{ item.name }}</span> {{ item.tips }}
+              </h2>
+              <h1 v-if="Math.round((item.endTime - new Date().getTime()) / (1000 * 60 * 60 * 24)) > 1">
+                {{ Math.round((item.endTime - new Date().getTime()) / (1000 * 60 * 60 * 24)) }}天
+              </h1>
+              <h1 v-else>{{ formatDuring(item.endTime - new Date().getTime()) }}</h1>
             </div>
-            <div
-              class="notice-img qui-fx-ac-jc"
-              style=" background: #d3d3d3 "
-              v-if="item.endTime < new Date().getTime()"
-            >
-              <div class="pState">
-                <h2>距离{{ item.name }}{{ item.tips }}</h2>
-                <h1>0天</h1>
-              </div>
+            <div class="notice-unstate qui-fx-ac-jc " v-if="item.endTime < new Date().getTime()">
+              <h2>距离{{ item.name }}{{ item.tips }}</h2>
+              <h1>0天</h1>
             </div>
             <div class="qui-fx-jsb qui-fx-ac">
               <div>
-                <a-tag color="#3c9bed" class="content-state" v-if="item.endTime >= new Date().getTime()"> 进行中</a-tag>
-                <a-tag color="#d3d3d3" class="content-state" v-if="item.endTime < new Date().getTime()"> 已过期</a-tag>
+                <a-tag color="#90d2f2" class="content-state" v-if="item.endTime >= new Date().getTime()"> 进行中</a-tag>
+                <a-tag color="#c1c1c1" class="content-state" v-if="item.endTime < new Date().getTime()"> 已过期</a-tag>
               </div>
               <div class=" qui-fx" v-if="item.endTime >= new Date().getTime()">
                 <a-tooltip placement="topLeft" title="编辑">
@@ -174,6 +165,13 @@ export default {
           })
         })
       })
+    },
+    formatDuring(mss) {
+      var days = parseInt(mss / (1000 * 60 * 60 * 24))
+      var hours = parseInt((mss % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+      var minutes = parseInt((mss % (1000 * 60 * 60)) / (1000 * 60))
+      var seconds = ((mss % (1000 * 60)) / 1000).toFixed(0)
+      return hours + ' 小时 ' + minutes + ' 分钟 '
     }
   }
 }
@@ -183,16 +181,14 @@ export default {
   margin: 0 10px;
 }
 .notice-card {
-  border-radius: 4px;
-  background-color: #fff;
-  border: 1px solid #dcdcdc;
-  border-radius: 10px;
-  padding: 10px;
-  width: calc(25% - 20px);
+  padding: 20px;
+  width: calc(16.66% - 20px);
   margin: 0 10px;
   overflow: hidden;
   margin-bottom: 20px;
   min-height: 200px;
+  border-radius: 4px;
+
   .title {
     font-size: 16px;
     font-weight: bold;
@@ -208,53 +204,32 @@ export default {
     color: #ccc;
   }
 }
-.notice-img {
-  margin: 0 15px 10px 0;
+.notice-state {
   width: 100%;
   height: 200px;
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-  .juli_ {
-    text-align: center;
-    background: url(./img/bg_1.png);
-    // margin: 0 15px 10px 0;
-    width: 80%;
-    height: 150px;
-    background-repeat: no-repeat;
-    background-size: 100% 100%;
-    h1 {
-      color: #b2d8fb;
-      font-size: 30px;
-    }
-    h2 {
-      color: #fff;
-      font-size: 22px;
-      padding-top: 5px;
-      span {
-        color: #3c9bed;
-      }
-    }
-  }
-}
-.time {
-  font-size: 18px;
-  line-height: 21px;
-  height: 21px;
-}
-.pState {
   text-align: center;
-  background: url(./img/bg_2.png);
-  // margin: 0 15px 10px 0;
-  width: 80%;
-  height: 150px;
+  background: url(./img/bg.png);
   background-repeat: no-repeat;
   background-size: 100% 100%;
+  margin-bottom: 10px;
+  margin-top: 10px;
   h1 {
-    color: #d3d3d3;
+    color: #117fc5;
     font-size: 25px;
   }
-  h2 {
-    color: #d3d3d3;
+}
+.notice-unstate {
+  width: 100%;
+  height: 200px;
+  text-align: center;
+  background: url(./img/bg1.png);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  h1 {
+    color: #c1c1c1;
+    font-size: 25px;
   }
 }
 </style>

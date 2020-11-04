@@ -31,7 +31,7 @@ export const asyncRouterMap = [{
       }
     },
     {
-      path: '/safetyIncident/specialDetail',
+      path: '/safetyIncident/accidentDetail',
       name: 'specialDetail',
       component: AccidentDetail,
       meta: {

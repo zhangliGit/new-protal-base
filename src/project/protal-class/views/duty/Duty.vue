@@ -11,23 +11,27 @@
           <div class="tips">请点击学生添加值日生</div>
         </div>
         <div class="stu_dent">
-           <div
-          @click="checkSingle(index)"
-          :class="['choose-person', { 'choose-person-ok': person.check }]"
-          v-for="(person, index) in studentsList"
-          :key="index"
-          class="stu-info"
-        >
-          <a-badge :count="person.count" show-zero>
-            <div class="student-img">
-              <img v-if="!person.photoUrl" :src="infoImg" alt="" />
-              <img else :src="person.photoUrl" alt="" />
-            </div>
-          </a-badge>
+          <div class="u-padd-20 ">
+            <draggable @end="dragEnd" element="ul" v-model="studentsList">
+              <div
+                @click="checkSingle(index)"
+                :class="['choose-person', { 'choose-person-ok': person.check }]"
+                v-for="(person, index) in studentsList"
+                :key="index"
+                class="stu-info u-padd-20 "
+              >
+                <a-badge :count="person.count" show-zero>
+                  <div class="student-img">
+                    <img v-if="!person.photoUrl" :src="infoImg" alt="" />
+                    <img v-else :src="person.photoUrl" alt="" />
+                  </div>
+                </a-badge>
 
-          <div class="code">{{ person.userName }}</div>
-        </div></div>
-     
+                <div class="code">{{ person.userName }}</div>
+              </div>
+            </draggable>
+          </div>
+        </div>
       </div>
       <div class="right qui-fx-ver qui-fx-f1">
         <div class="duty-list">
@@ -47,7 +51,7 @@
                   <template v-for="tag in ratedPersonList" v-if="tag.weekDay === day.key">
                     <div class="info-img ">
                       <img v-if="!tag.photoUrl" :src="infoImg" alt="" />
-                      <img else :src="tag.photoUrl" alt="" />
+                      <img v-else :src="tag.photoUrl" alt="" />
                     </div>
                     <a-tag :key="tag.id" :closable="closable" :afterClose="() => dutyClose(tag)">
                       {{ tag.userName }}
@@ -67,12 +71,14 @@ import { mapState, mapActions } from 'vuex'
 import ClassTree from '@c/ClassTree'
 import { Badge } from 'ant-design-vue'
 import infoImg from '../../assets/img/nouser.jpg'
+import draggable from 'vuedraggable'
 
 export default {
   name: 'Duty',
   components: {
     ClassTree,
-    ABadge: Badge
+    ABadge: Badge,
+    draggable
   },
   data() {
     return {
@@ -132,7 +138,9 @@ export default {
   mounted() {},
   methods: {
     ...mapActions('home', ['getStudentList', 'getdutyList', 'addonDuty', 'updateDuty', 'delDuty']),
+    dragEnd(evt) {},
     select(item) {
+      console.log(item)
       this.gradeCode = item.gradeCode
       this.classCode = item.classCode
       this.schoolYearId = item.schoolYearId
@@ -214,10 +222,8 @@ export default {
       isRepeat = this.ratedPersonList
         .filter(el => el.weekDay === key)
         .some(el => {
-          console.log('el', el.userCode, checkCodes)
           return checkCodes.indexOf(el.userCode) !== -1
         })
-      console.log('isRepeat', isRepeat, checkCodes)
       if (isRepeat) {
         this.$message.warning('不可添加重复学生')
         return
@@ -296,11 +302,10 @@ export default {
   margin-top: 10px;
   border: 1px solid #f5f5f5;
   width: 25%;
-  .stu_dent{
-        overflow-y: scroll;
-  height: 800px;
+  .stu_dent {
+    overflow-y: scroll;
+    height: 800px;
   }
-
 }
 .choose-all {
   height: 80px;
@@ -315,9 +320,12 @@ export default {
     color: #a9a9a9;
   }
 }
+.u-padd-20 {
+  padding: 20px;
+}
 .stu-info {
   float: left;
-  padding: 20px;
+  margin-left: 13px;
 }
 .student-img {
   width: 62px;
@@ -398,7 +406,7 @@ li {
 .info-img {
   width: 50px;
   height: 50px;
-  margin-left: 24.5%;
+  margin-left: 30%;
   margin-top: 7%;
   img {
     width: 100%;

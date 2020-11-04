@@ -11,7 +11,8 @@ const baseApi = {
   getGradeClass: '/classManage/list',
   // getSchoolRoot: '/schoolYearSemester/list',
   getStudentList: '/userinfo/student/user/queryStudentInfoList', // 获取所有学生
-  getTeacherList: '/userinfo/teacher/user/queryTeacherInfo' // 获取所有老师
+  getTeacherList: '/userinfo/teacher/user/queryTeacherInfo', // 获取所有老师
+  getHighStu: '/student/manage/list' // 列表
 }
 for (const val in baseApi) {
   baseApi[val] = `${hostEnv.lz_user_center}${baseApi[val]}`

@@ -38,8 +38,7 @@
                   <div class="qui-fx-ver u-mar-l20">
                     <div>{{ list.title }}</div>
                     <div class="u-mar-t10">
-                      <!-- v-model="list.answer[0]" -->
-                      <a-radio-group >
+                      <a-radio-group v-model="list.answer[0]" >
                         <a-radio
                           v-for="(element,index) in list.content"
                           :value="element"
@@ -112,7 +111,7 @@
                 <div class="time-left">{{ item.content }}</div>
                 <div class="qui-fx-f1">{{ item.createTime | gmtToDate }}</div>
               </div>
-              <div class="qui-fx" v-if='item.remark'>
+              <div class="qui-fx" v-if="item.remark">
                 <div>备注：</div>
                 <div> {{ item.remark }}</div>
               </div>

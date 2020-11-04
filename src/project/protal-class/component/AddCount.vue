@@ -117,7 +117,6 @@ export default {
     ...mapActions('home', ['addCount', 'updateCount']),
     moment,
     disabledDate(current) {
-      // Can not select days before today and today
       return current && current < moment().endOf('day')
     },
     addTag() {
@@ -148,7 +147,7 @@ export default {
           }
           this.isLoad = true
           values.id = this.title === '编辑倒数日' ? this.id : ''
-          values.endTime = moment(values.endTime).format('YYYY-MM-DD HH:mm:ss')
+          values.endTime = moment(values.endTime).format('YYYY-MM-DD')
           this.classCodeList = []
           this.classList.forEach(el => {
             this.classCodeList.push(el.classCode)
@@ -157,6 +156,8 @@ export default {
             schoolCode: this.userInfo.schoolCode,
             schoolYearId: this.classList[0].schoolYearId,
             classCodes: this.classCodeList,
+            createUsername: this.userInfo.userName,
+            createUsercode: this.userInfo.userCode,
             ...values
           }
           if (this.title === '编辑倒数日') {

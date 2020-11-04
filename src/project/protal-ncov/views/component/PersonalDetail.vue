@@ -10,14 +10,22 @@
           <div class="qui-fx-ver">
             <a-row class="padd-l10">
               <a-col class="mar-b10" :span="12">姓名 : {{ detailInfo.userName }}</a-col>
-              <a-col class="mar-b10" :span="12"
-                >性别 : {{ detailInfo.sex == '2' ? '女' : detailInfo.sex == '1' ? '男' : '未知' }}</a-col
+              <a-col
+                class="mar-b10"
+                :span="12"
+              >性别 : {{ detailInfo.sex == '2' ? '女' : detailInfo.sex == '1' ? '男' : '未知' }}</a-col
               >
-              <a-col class="mar-b10" :span="12" v-if="$route.query.userType == 4"
-                >组织机构 : {{ detailInfo.orgName }}</a-col
+              <a-col
+                class="mar-b10"
+                :span="12"
+                v-if="$route.query.userType == 4"
+              >组织机构 : {{ detailInfo.orgName }}</a-col
               >
-              <a-col class="mar-b10" :span="12" v-else
-                >班级 : {{ detailInfo.gradeName }}{{ detailInfo.className }}</a-col
+              <a-col
+                class="mar-b10"
+                :span="12"
+                v-else
+              >班级 : {{ schoolType === '8' ? detailInfo.schoolYearId : detailInfo.gradeName }}{{ schoolType === '8' ? detailInfo.gradeName : '' }}{{ detailInfo.className }}</a-col
               >
               <a-col class="mar-b10" :span="12">建档时间 : {{ getDateTime(detailInfo.createTime) }}</a-col>
             </a-row>
@@ -148,13 +156,15 @@ export default {
       detailList: [],
       detailInfo: [],
       reportTime: [],
-      temperature: []
+      temperature: [],
+      schoolType: ''
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
+    this.schoolType = this.userInfo.schoolType
     if (this.$route.query.userType === '8') {
       this.columns[3].title = '班级'
       this.columns[3].dataIndex = 'className'
