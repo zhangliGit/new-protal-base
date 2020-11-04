@@ -30,7 +30,7 @@
         <a-button icon="plus" class="add-btn" @click.stop="bindDevClick">绑定设备</a-button>
       </div>
     </search-form>
-    <table-list isBorder isZoom :page-list="pageList" :columns="columns" :table-list="taskList">
+    <table-list isZoom :page-list="pageList" :columns="columns" :table-list="taskList">
       <template v-slot:other1="other1">
         <span>{{ other1.record.id }}</span>
         <a-button
