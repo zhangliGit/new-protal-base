@@ -15,9 +15,18 @@ const dealApi = {
   editRule: '/consumeRule/modify#post', // 修改消费规则
   delRule: '/consumeRule/remove#getUrl' // 删除消费规则
 }
+const applyApi = {
+  getApplyList: '/oauthClient/page#postQuery', // 查询应用列表
+  getApplyDetail: '/oauthClient/info#getUrl', // 查询应用详情
+  editApply: '/oauthClient/modify#postQuery' // 编辑应用
+}
 for (const val in dealApi) {
   dealApi[val] = `${hostEnv.hzz_deal}${dealApi[val]}`
 }
+for (const val in applyApi) {
+  applyApi[val] = `${hostEnv.hzz_apply}${applyApi[val]}`
+}
 export default {
-  ...dealApi
+  ...dealApi,
+  ...applyApi
 }
