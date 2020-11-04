@@ -1,23 +1,28 @@
 <template>
   <div class="page-layout qui-fx goods">
+    <assign-student
+      type="edu"
+      chooseType="organize"
+      :assign-obj="assignStudent"
+      is-check
+      ref="form"
+      v-if="studentTag"
+      v-model="studentTag"
+      @submit="submitUser"
+      title="分配学生"
+    ></assign-student>
     <div class="page-left">
       <grade-tree @select="select"></grade-tree>
     </div>
     <div class="qui-fx-f1 qui-fx-ver">
-      <table-list
-        isZoom
-        v-model="chooseList"
-        :page-list="pageList"
-        :columns="columns"
-        :table-list="userList"
-      >
+      <table-list isZoom v-model="chooseList" :page-list="pageList" :columns="columns" :table-list="userList">
         <template v-slot:actions="action">
           <a-tooltip placement="topLeft" title="分配学生">
             <a-button
               size="small"
               class="edit-action-btn"
               icon="form"
-              @click.stop="checkClick(action.record.id)"
+              @click.stop="assignStuClick(action.record.id)"
             ></a-button>
           </a-tooltip>
         </template>
@@ -31,6 +36,7 @@ import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
 import GradeTree from '@c/GradeTree'
+import AssignStudent from '../../component/AssignStudent.vue'
 
 const columns = [
   {
@@ -83,11 +89,14 @@ export default {
   components: {
     TableList,
     PageNum,
-    GradeTree
+    GradeTree,
+    AssignStudent
   },
   data() {
     return {
       issueVisible: false,
+      studentTag: false,
+      assignStudent: {},
       columns,
       pageList: {
         page: 1,
@@ -181,23 +190,11 @@ export default {
       }
       console.log(this.totalList)
     },
-    // 报到按钮
-    checkClick() {
-      this.checkVisible = true
+    assignStuClick() {
+      this.assignStudent = {}
+      this.studentTag = true
     },
-    // 打开报到弹框
-    handleCheckOpen() {
-      this.checkVisible = true
-    },
-    // 报到确认
-    handleCheckOk() {
-      console.log(this.checkResult)
-      this.checkVisible = false
-    },
-    // 取消报到 关闭弹框
-    handleCheckCancel() {
-      this.checkVisible = false
-    }
+    submitUser() {}
   }
 }
 </script>

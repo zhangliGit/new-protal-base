@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    width="70%"
+    width="90%"
     :title="title"
     v-model="status"
     @ok="submitOk"
@@ -10,14 +10,15 @@
   >
     <a-row type="flex" justify="end" style="margin-bottom: 15px; margin-right: 215px">
       <a-col>
-        <span>安装位置：</span>
-        <a-input v-model="address" style="width: 120px; margin-right: 10px" placeholder="请输入安装位置" />
-        <span>设备名称：</span>
-        <a-input v-model="deviceName" style="width: 120px; margin-right: 10px" placeholder="请输入设备名称" />
+        <span>学生姓名：</span>
+        <a-input v-model="keyword" style="width: 120px; margin-right: 10px" placeholder="请输入姓名" />
         <a-button type="primary" @click="getUserList(chooseType !== '')">查询</a-button>
       </a-col>
     </a-row>
     <div class="choose-user qui-fx">
+      <div class="org-box">
+        <grade-tree @select="select" @defaultCode="defaultCode" :type="type"></grade-tree>
+      </div>
       <div class="qui-fx-ver qui-fx-f1">
         <table-list
           :is-check="isCheck"
@@ -43,12 +44,12 @@
       <div class="user-box qui-fx-ver" v-show="isTotal">
         <div class="title qui-fx-jsb">
           <span>已选择</span>
-          <span>{{ totalList.length }}个</span>
+          <span>{{ totalList.length }}人</span>
         </div>
         <div class="qui-fx-f1" style="overflow: auto">
           <ul style="padding-left: 0">
             <li v-for="(item, index) in totalList" :key="item.id" class="qui-fx-jsb">
-              <span>{{ item.deviceName }}</span>
+              <span>{{ item.userName }}</span>
               <a-tag @click="delUser(item.id, index)" color="#f50">删除</a-tag>
             </li>
           </ul>
@@ -74,33 +75,46 @@ const columns = [
     }
   },
   {
-    title: '设备名称',
-    dataIndex: 'deviceName',
-    width: '15%'
-  },
-  {
-    title: '设备类型',
-    dataIndex: 'deviceType',
+    title: '学生姓名',
+    dataIndex: 'studentName',
     width: '10%'
   },
   {
-    title: '安装位置',
-    dataIndex: 'address',
+    title: '身份证号码',
+    dataIndex: 'idCard',
     width: '20%'
   },
   {
-    title: '设备IP',
-    dataIndex: 'ip',
+    title: '性别',
+    dataIndex: 'sex',
     width: '10%'
   },
   {
-    title: '状态',
-    dataIndex: 'status',
+    title: '申请专业',
+    dataIndex: 'project',
+    width: '20%'
+  },
+  {
+    title: '年级',
+    dataIndex: 'grade',
     width: '8%'
+  },
+  {
+    title: '班级',
+    dataIndex: '1班',
+    width: '8%'
+  },
+  {
+    title: '人脸照片',
+    dataIndex: 'photo',
+    width: '10%',
+    scopedSlots: {
+      customRender: 'photoPic'
+    }
   }
 ]
 export default {
-  name: 'BindDevice',
+  name: 'BindStudent',
   components: {
     PageNum,
     TableList,
@@ -174,8 +188,7 @@ export default {
   data() {
     return {
       hasPhoto: '',
-      address: '',
-      deviceName: '',
+      keyword: '',
       confirmLoading: false,
       orgCode: '',
       chooseList: [],
@@ -185,24 +198,7 @@ export default {
       },
       total: 0,
       columns,
-      userList: [
-        {
-          id: '1',
-          deviceName: '设备1',
-          deviceType: '面板机',
-          address: '校南门',
-          ip: '172.169.1.12',
-          status: '运行正常'
-        },
-        {
-          id: '2',
-          deviceName: '设备2',
-          deviceType: '面板机',
-          address: '校北门',
-          ip: '172.169.1.13',
-          status: '运行正常'
-        }
-      ],
+      userList: [],
       totalList: [],
       code: ''
     }
@@ -380,8 +376,7 @@ export default {
         url: `${hostEnv.lz_user_center}/userinfo/teacher/user/queryTeacherInfo`,
         params: {
           orgCode: this.orgCode,
-          address: this.address,
-          deviceName: this.deviceName,
+          keyword: this.keyword,
           hasPhoto: this.hasPhoto,
           schoolCode: this.code,
           ...this.pageList
@@ -442,7 +437,7 @@ export default {
           this.totalList.push({
             id: item.id,
             userCode: item.userCode,
-            deviceName: item.deviceName,
+            studentName: item.studentName,
             orgCode: item.orgCode,
             orgName: item.orgName,
             photoUrl: item.photoUrl,

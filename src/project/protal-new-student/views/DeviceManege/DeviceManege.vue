@@ -1,19 +1,45 @@
 <template>
   <div class="home page-layout qui-fx-ver">
     <IssueRecord :visible="issueVisible" :title="title" @cancel="issueVisible = false" />
-    <BindDevice :visible="bindVisible" title="绑定设备" @cancel="bindVisible = false" width="90%" />
+    <bind-student
+      type="edu"
+      chooseType="organize"
+      :bind-obj="bindStudent"
+      is-check
+      ref="form"
+      v-if="studentTag"
+      v-model="studentTag"
+      @submit="submitUser"
+      title="绑定学生"
+    >
+    </bind-student>
+    <bind-device
+      type="edu"
+      chooseType="organize"
+      :bind-obj="bindDevice"
+      is-check
+      ref="form"
+      v-if="deviceTag"
+      v-model="deviceTag"
+      @submit="submitDevice"
+      title="绑定设备"
+    >
+    </bind-device>
     <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
       <div slot="left">
-        <a-button icon="plus" class="add-btn" @click.stop="bindVisible=true">绑定设备</a-button>
+        <a-button icon="plus" class="add-btn" @click.stop="bindDevClick">绑定设备</a-button>
       </div>
     </search-form>
     <table-list isBorder isZoom :page-list="pageList" :columns="columns" :table-list="taskList">
       <template v-slot:other1="other1">
         <span>{{ other1.record.id }}</span>
-        <a-icon
-          type="plus-circle"
-          :style="{ marginLeft: '10px', color: 'blue', cursor: 'pointer', fontSize: '20px', verticalAlign: 'middle' }"
-        />
+        <a-button
+          size="small"
+          type="primary"
+          icon="plus"
+          style="margin-left: 10px"
+          @click="bindStuClick(other1.record)"
+        ></a-button>
       </template>
       <template v-slot:actions="action">
         <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="deleteList(action.record)">
@@ -42,6 +68,7 @@ import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
 import SearchForm from '@c/SearchForm'
 import IssueRecord from '../../component/IssueRecord.vue'
+import BindStudent from '../../component/BindStudent.vue'
 import BindDevice from '../../component/BindDevice.vue'
 // import Tools from '@u/tools'
 const columns = [
@@ -120,13 +147,17 @@ export default {
     PageNum,
     TableList,
     IssueRecord,
+    BindStudent,
     BindDevice
   },
   data() {
     return {
       title: '下发记录',
       issueVisible: false,
-      bindVisible: false,
+      studentTag: false,
+      bindStudent: {},
+      deviceTag: false,
+      bindDevice: {},
       columns,
       searchLabel,
       searchList: {},
@@ -203,7 +234,17 @@ export default {
     },
     submitForm(values) {
       console.log(values)
-    }
+    },
+    bindStuClick() {
+      this.bindStudent = {}
+      this.studentTag = true
+    },
+    bindDevClick() {
+      this.bindDevice = {}
+      this.deviceTag = true
+    },
+    submitUser() {},
+    submitDevice() {}
   }
 }
 </script>

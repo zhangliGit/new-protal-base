@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    width="70%"
+    width="90%"
     :title="title"
     v-model="status"
     @ok="submitOk"
@@ -10,10 +10,10 @@
   >
     <a-row type="flex" justify="end" style="margin-bottom: 15px; margin-right: 215px">
       <a-col>
-        <span>安装位置：</span>
-        <a-input v-model="address" style="width: 120px; margin-right: 10px" placeholder="请输入安装位置" />
-        <span>设备名称：</span>
-        <a-input v-model="deviceName" style="width: 120px; margin-right: 10px" placeholder="请输入设备名称" />
+        <span>申请专业：</span>
+        <a-input v-model="address" style="width: 120px; margin-right: 10px" placeholder="请输入专业名称" />
+        <span>学生姓名：</span>
+        <a-input v-model="deviceName" style="width: 120px; margin-right: 10px" placeholder="请输入学生姓名" />
         <a-button type="primary" @click="getUserList(chooseType !== '')">查询</a-button>
       </a-col>
     </a-row>
@@ -43,12 +43,12 @@
       <div class="user-box qui-fx-ver" v-show="isTotal">
         <div class="title qui-fx-jsb">
           <span>已选择</span>
-          <span>{{ totalList.length }}个</span>
+          <span>{{ totalList.length }}人</span>
         </div>
         <div class="qui-fx-f1" style="overflow: auto">
           <ul style="padding-left: 0">
             <li v-for="(item, index) in totalList" :key="item.id" class="qui-fx-jsb">
-              <span>{{ item.deviceName }}</span>
+              <span>{{ item.studentName }}</span>
               <a-tag @click="delUser(item.id, index)" color="#f50">删除</a-tag>
             </li>
           </ul>
@@ -74,33 +74,41 @@ const columns = [
     }
   },
   {
-    title: '设备名称',
-    dataIndex: 'deviceName',
+    title: '学生姓名',
+    dataIndex: 'studentName',
+    width: '8%'
+  },
+  {
+    title: '身份证号码',
+    dataIndex: 'idCard',
+    width: '10%'
+  },
+  {
+    title: '性别',
+    dataIndex: 'sex',
+    width: '8%'
+  },
+  {
+    title: '年级',
+    dataIndex: 'grade',
+    width: '10%'
+  },
+  {
+    title: '申请专业',
+    dataIndex: 'project',
     width: '15%'
   },
   {
-    title: '设备类型',
-    dataIndex: 'deviceType',
-    width: '10%'
-  },
-  {
-    title: '安装位置',
-    dataIndex: 'address',
-    width: '20%'
-  },
-  {
-    title: '设备IP',
-    dataIndex: 'ip',
-    width: '10%'
-  },
-  {
-    title: '状态',
-    dataIndex: 'status',
-    width: '8%'
+    title: '人脸照片',
+    dataIndex: 'photo',
+    width: '10%',
+    scopedSlots: {
+      customRender: 'photoPic'
+    }
   }
 ]
 export default {
-  name: 'BindDevice',
+  name: 'AssignStudent',
   components: {
     PageNum,
     TableList,
@@ -188,19 +196,21 @@ export default {
       userList: [
         {
           id: '1',
-          deviceName: '设备1',
-          deviceType: '面板机',
-          address: '校南门',
-          ip: '172.169.1.12',
-          status: '运行正常'
+          studentName: '学生1',
+          idCard: '423324199563251020',
+          sex: '男',
+          grade: '2020级',
+          project: '软件技术',
+          photo: 'http://canpoint-photo.oss-cn-beijing.aliyuncs.com/47801/2020/10/19/base/76b5c10347bf4e5185331bb917b762cb.jpg'
         },
         {
           id: '2',
-          deviceName: '设备2',
-          deviceType: '面板机',
-          address: '校北门',
-          ip: '172.169.1.13',
-          status: '运行正常'
+          studentName: '学生2',
+          idCard: '423324199563251020',
+          sex: '男',
+          grade: '2020级',
+          project: '软件技术',
+          photo: 'http://canpoint-photo.oss-cn-beijing.aliyuncs.com/47801/2020/10/19/base/76b5c10347bf4e5185331bb917b762cb.jpg'
         }
       ],
       totalList: [],
@@ -442,7 +452,7 @@ export default {
           this.totalList.push({
             id: item.id,
             userCode: item.userCode,
-            deviceName: item.deviceName,
+            studentName: item.studentName,
             orgCode: item.orgCode,
             orgName: item.orgName,
             photoUrl: item.photoUrl,

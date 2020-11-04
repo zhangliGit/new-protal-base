@@ -8,7 +8,7 @@ const HomePage = resolve => require(['../views/HomePage/HomePage.vue'], resolve)
 // const TaskManage = resolve => require(['../views/TaskManage/TaskManage.vue'], resolve)
 // import studentApply = resolve => require(['../views/TaskManage/StudentApply.vue'], resolve)
 // const StudentManage = resolve => require(['../views/NewStudentManage/StudentManage.vue'], resolve)
-const StudentClasses = resolve => require(['../views/NewStudentManage/StudentCLasses.vue'], resolve)
+const StudentClasses = resolve => require(['../views/NewStudentManage/StudentClasses.vue'], resolve)
 const DeviceManege = resolve => require(['../views/DeviceManege/DeviceManege.vue'], resolve)
 
 export const asyncRouterMap = [
