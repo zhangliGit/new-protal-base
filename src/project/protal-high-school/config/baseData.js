@@ -1,7 +1,5 @@
 // 基础数据管理
 const Organ = resolve => require(['../views/basedata/Organ.vue'], resolve)
-const SchoolYear = resolve => require(['../views/basedata/SchoolYear.vue'], resolve)
-const Class = resolve => require(['../views/basedata/Class.vue'], resolve)
 const Role = resolve => require(['../views/basedata/Role.vue'], resolve)
 const Impower = resolve => require(['../views/basedata/Impower.vue'], resolve)
 const ClassUp = resolve => require(['../views/basedata/ClassUp.vue'], resolve)
@@ -10,7 +8,6 @@ const Teachers = resolve => require(['../views/basedata/Teachers.vue'], resolve)
 const BulkImport = resolve => require(['../views/basedata/BulkImport.vue'], resolve)
 const Subject = resolve => require(['../views/basedata/Subject.vue'], resolve)
 const SubjectTeacher = resolve => require(['../views/basedata/SubjectTeacher.vue'], resolve)
-const Students = resolve => require(['../views/basedata/Students.vue'], resolve)
 const StudentDetail = resolve => require(['../views/basedata/StudentDetail.vue'], resolve)
 const TeacherDetail = resolve => require(['../views/basedata/TeacherDetail.vue'], resolve)
 const ClassDetail = resolve => require(['../views/basedata/ClassDetail.vue'], resolve)
@@ -32,19 +29,54 @@ const basedata = [
     }
   },
   {
-    path: '/schoolyear',
-    name: 'schoolyear',
-    component: SchoolYear,
+    path: '/basedata/bulkImport',
+    name: 'bulkImport',
+    component: BulkImport,
     meta: {
-      title: '学年管理'
+      title: '批量导入',
+      isHide: true
     }
   },
   {
-    path: '/class',
-    name: 'class',
-    component: Class,
+    path: '/Post',
+    name: 'Post',
+    component: Post,
     meta: {
-      title: '班级管理'
+      title: '职务管理'
+    }
+  },
+  {
+    path: '/basedata/classDetail',
+    name: 'classDetail',
+    component: ClassDetail,
+    meta: {
+      title: '班级详情',
+      isHide: true
+    }
+  },
+  {
+    path: '/major',
+    name: 'major',
+    component: Major,
+    meta: {
+      title: '专业管理'
+    }
+  },
+  {
+    path: '/highClass',
+    name: 'highClass',
+    component: HighClass,
+    meta: {
+      title: '中职班级管理'
+    }
+  },
+  {
+    path: '/basedata/highDetail',
+    name: 'highDetail',
+    component: HighDetail,
+    meta: {
+      title: '班级详情',
+      isHide: true
     }
   },
   {
@@ -56,11 +88,45 @@ const basedata = [
     }
   },
   {
-    path: '/students',
-    name: 'students',
-    component: Students,
+    path: '/highStudent',
+    name: 'highStudent',
+    component: HighStudent,
     meta: {
-      title: '学生管理'
+      title: '中职学生管理'
+    }
+  },
+  {
+    path: '/basedata/highStuDetail',
+    name: 'highStuDetail',
+    component: HighStuDetail,
+    meta: {
+      title: '学生详情',
+      isHide: true
+    }
+  },
+  {
+    path: '/site',
+    name: 'site',
+    component: Site,
+    meta: {
+      title: '场地管理'
+    }
+  },
+  {
+    path: '/basedata/roleImpower',
+    name: 'roleImpower',
+    component: Impower,
+    meta: {
+      title: '授权用户',
+      isHide: true
+    }
+  },
+  {
+    path: '/highYear',
+    name: 'highYear',
+    component: HighYear,
+    meta: {
+      title: '中职学年管理'
     }
   },
   {
@@ -81,53 +147,11 @@ const basedata = [
     }
   },
   {
-    path: '/site',
-    name: 'site',
-    component: Site,
-    meta: {
-      title: '场地管理'
-    }
-  },
-  {
     path: '/classUp',
     name: 'classUp',
     component: ClassUp,
     meta: {
       title: '班级升级'
-    }
-  },
-  {
-    path: '/role',
-    name: 'role',
-    component: Role,
-    meta: {
-      title: '角色管理'
-    }
-  },
-  {
-    path: '/Post',
-    name: 'Post',
-    component: Post,
-    meta: {
-      title: '职务管理'
-    }
-  },
-  {
-    path: '/basedata/roleImpower',
-    name: 'roleImpower',
-    component: Impower,
-    meta: {
-      title: '授权用户',
-      isHide: true
-    }
-  },
-  {
-    path: '/basedata/stusentsDetail',
-    name: 'studentDetail',
-    component: StudentDetail,
-    meta: {
-      title: '学生详情',
-      isHide: true
     }
   },
   {
@@ -140,71 +164,20 @@ const basedata = [
     }
   },
   {
-    path: '/basedata/classDetail',
-    name: 'classDetail',
-    component: ClassDetail,
+    path: '/role',
+    name: 'role',
+    component: Role,
     meta: {
-      title: '班级详情',
-      isHide: true
+      title: '角色管理'
     }
   },
   {
-    path: '/basedata/bulkImport',
-    name: 'bulkImport',
-    component: BulkImport,
-    meta: {
-      title: '批量导入',
-      isHide: true
-    }
-  },
-  {
-    path: '/major',
-    name: 'major',
-    component: Major,
-    meta: {
-      title: '专业管理'
-    }
-  },
-  {
-    path: '/basedata/highStuDetail',
-    name: 'highStuDetail',
-    component: HighStuDetail,
+    path: '/basedata/stusentsDetail',
+    name: 'studentDetail',
+    component: StudentDetail,
     meta: {
       title: '学生详情',
       isHide: true
-    }
-  },
-  {
-    path: '/highClass',
-    name: 'highClass',
-    component: HighClass,
-    meta: {
-      title: '高校班级管理'
-    }
-  },
-  {
-    path: '/basedata/highDetail',
-    name: 'highDetail',
-    component: HighDetail,
-    meta: {
-      title: '班级详情',
-      isHide: true
-    }
-  },
-  {
-    path: '/highStudent',
-    name: 'highStudent',
-    component: HighStudent,
-    meta: {
-      title: '高校学生管理'
-    }
-  },
-  {
-    path: '/highYear',
-    name: 'highYear',
-    component: HighYear,
-    meta: {
-      title: '高校学年管理'
     }
   }
 ]

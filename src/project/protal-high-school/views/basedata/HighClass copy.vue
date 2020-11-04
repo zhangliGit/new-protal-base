@@ -184,13 +184,14 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   created() {
+    this.highClass.formData[0].selectChange = this.selectChange
+    // this.highClass.formDatas[0].selectChange = this.selectChange()
     this.getGrade()
-    this._getSubjectList()
   },
   methods: {
     ...mapActions('home', [
       'getHighClass', 'addHighClass', 'addClassList', 'addHighClasses',
-      'delHighClass', 'getHighTerm', 'getHighSub', 'highClassBind',
+      'delHighClass', 'getHighTerm', 'highClassBind', 'getHighGradeSub',
       'delHighClasses', 'unbindHighClass', 'unbindHighTea', 'getHighGrade'
     ]),
     // 获取学年
@@ -207,24 +208,30 @@ export default {
         this.highClass.formDatas[0].list.push({ key: ele.gradeCode, val: `${ele.gradeName}级` })
       })
     },
+    selectChange(value) {
+      const gradeName = this.highSubTerm.filter(el => el.gradeCode !== value)[0].gradeName
+      this._getSubjectList(gradeName)
+    },
     // 获取专业
-    async _getSubjectList() {
+    async _getSubjectList(gradeName) {
       this.highClass.formData[1].list = []
       this.highClass.formDatas[1].list = []
       const req = {
-        page: 1,
-        size: 99999,
+        gradeName: gradeName,
         schoolCode: this.userInfo.schoolCode
       }
-      const res = await this.getHighSub(req)
-      if (res.data.records.length === 0) {
+      const res = await this.getHighGradeSub(req)
+      if (res.data.length === 0) {
         return
       }
-      this.highSubList = res.data.records
-      res.data.records.forEach(ele => {
-        this.highClass.formData[1].list.push({ key: ele.subjectCode, val: ele.subjectName })
-        this.highClass.formDatas[1].list.push({ key: ele.subjectCode, val: ele.subjectName })
-      })
+      this.highSubList = res.data
+      if (res.data !== 0) {
+        res.data.forEach(ele => {
+          this.highClass.formData[1].list.push({ key: ele.subjectCode, val: ele.subjectName })
+          this.highClass.formDatas[1].list.push({ key: ele.subjectCode, val: ele.subjectName })
+        })
+        this.highClass.formData[1].initValue = [this.highSubList[0].subjectCode]
+      }
     },
     // 查询班级列表
     async showList() {
@@ -274,6 +281,8 @@ export default {
         this.title = '批量添加班级'
         this.highClass.formDatas[0].disabled = false
         this.highClass.formDatas[0].initValue = this.searchList.gradeCode
+        console.log('this.searchList.gradeCode', this.searchList.gradeCode)
+        // this.selectChange(0)
         if (this.searchList.subjectCode) {
           this.highClass.formDatas[1].initValue = this.searchList.subjectCode
           // this.highClass.formDatas[1].initValue = this.highSubList.filter(el => el.subjectCode === this.searchList.subjectCode)[0].subjectName
@@ -285,6 +294,8 @@ export default {
         this.highClass.formData[0].disabled = false
         this.highClass.formData[1].disabled = false
         this.highClass.formData[0].initValue = this.searchList.gradeCode
+        console.log('this.searchList.gradeCode', this.searchList.gradeCode)
+        this.selectChange(this.searchList.gradeCode)
         if (this.searchList.subjectCode) {
           this.highClass.formData[1].initValue = this.searchList.subjectCode
           // this.highClass.formData[1].initValue = this.highSubList.filter(el => el.subjectCode === this.searchList.subjectCode)[0].subjectName

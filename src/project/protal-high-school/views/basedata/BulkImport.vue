@@ -218,11 +218,11 @@ export default {
         if (this.state) {
           params = {
             schoolCode: this.userInfo.schoolCode,
-            grade: this.grade,
-            subjectCode: this.subjectCode,
-            classCode: this.classCode,
-            subjectName: this.selectSubject,
-            className: this.selectClass
+            grade: this.highSubTerm[this.selectGrade].gradeName,
+            subjectCode: this.highSubList[this.selectSubject].subjectCode,
+            classCode: this.highClass[this.selectClass].classCode,
+            subjectName: this.highSubList[this.selectSubject].subjectName,
+            className: this.highClass[this.selectClass].className
           }
         } else {
           params = {
@@ -235,6 +235,7 @@ export default {
           }
         }
       }
+      console.log('params',params)
       axios({
         method: 'post',
         url: this.fileUrl,
@@ -280,10 +281,11 @@ export default {
         return
       }
       this.highSubList = res.data.records
+      console.log('highSubList',this.highSubList)
       res.data.records.forEach(ele => {
         this.secondList.push({ key: ele.subjectCode, val: ele.subjectName })
       })
-      this.selectSubject = this.secondList[0].val
+      this.selectSubject = 0
       this.subjectCode = this.secondList[0].key
       this._getHighClass(res.data.records[0].subjectCode)
     },
@@ -295,10 +297,11 @@ export default {
         return
       }
       this.highSubTerm = res.data
+      console.log('highSubTerm',this.highSubTerm)
       res.data.forEach(ele => {
         this.firstList.push({ key: ele.gradeCode, val: `${ele.gradeName}级` })
       })
-      this.selectGrade = this.firstList[0].val
+      this.selectGrade = 0
       this.grade = res.data[0].gradeName
     },
     // 点击专业获取班级
@@ -307,6 +310,7 @@ export default {
     },
     // 查询班级列表
     async _getHighClass(subjectCode) {
+      this.threeList = []
       const req = {
         schoolCode: this.userInfo.schoolCode,
         page: 1,
@@ -315,13 +319,17 @@ export default {
       }
       const res = await this.getHighClass(req)
       this.highClass = res.data.records
+      console.log('highClass',this.highClass)
       if (res.data.records.length > 0) {
         res.data.records.forEach(ele => {
           this.threeList.push({ key: ele.id, val: ele.className })
         })
+        this.selectClass = 0
+        this.classCode = this.threeList[0].key
+      } else {
+        this.selectClass = ''
+        this.classCode = ''
       }
-      this.selectClass = this.threeList[0].val
-      this.classCode = this.threeList[0].key
     }
   }
 }

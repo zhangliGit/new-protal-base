@@ -84,6 +84,10 @@ const searchLabel = [
         val: '全部'
       },
       {
+        key: '00',
+        val: '幼儿园'
+      },
+      {
         key: '01',
         val: '小学'
       },
@@ -94,6 +98,14 @@ const searchLabel = [
       {
         key: '03',
         val: '高中'
+      },
+      {
+        key: '05',
+        val: '中职'
+      },
+      {
+        key: '04',
+        val: '高校'
       }
     ],
     value: 'schoolStage',

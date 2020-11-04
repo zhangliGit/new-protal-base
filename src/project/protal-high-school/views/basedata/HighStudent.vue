@@ -128,13 +128,13 @@ export default {
   },
   created() {
     this.getGrade()
-    this._getSubjectList()
+    this.highStudent.formData[6].firstChange = this.firstChange
     this.highStudent.formData[6].secondChange = this.secondChange
   },
   mounted() {},
   methods: {
     ...mapActions('home', [
-      'getHighTerm', 'getHighSub', 'getHighClass', 'addHighStu',
+      'getHighTerm', 'getHighGradeSub', 'getHighClass', 'addHighStu',
       'getHighStu', 'updateHighStu', 'getHighGrade'
     ]),
     // 获取年级
@@ -170,29 +170,38 @@ export default {
       this.searchList.classCode = item.classCode || ''
       this.showList()
     },
+    firstChange(value) {
+      console.log('value', value)
+      if (value || value === 0) {
+        const gradeName = this.highSubTerm[value].gradeName
+        this._getSubjectList(gradeName)
+      }
+    },
     // 获取专业
-    async _getSubjectList() {
+    async _getSubjectList(gradeName) {
       this.highStudent.formData[6].secondList = []
       const req = {
-        page: 1,
-        size: 99999,
+        gradeName: gradeName,
         schoolCode: this.userInfo.schoolCode
       }
-      const res = await this.getHighSub(req)
-      if (res.data.records.length === 0) {
+      const res = await this.getHighGradeSub(req)
+      if (res.data.length === 0) {
         return
       }
-      this.highSubList = res.data.records
-      res.data.records.forEach(ele => {
+      this.highSubList = res.data
+      res.data.forEach(ele => {
         this.highStudent.formData[6].secondList.push({ key: ele.subjectCode, val: ele.subjectName })
       })
     },
     // 点击专业获取班级
     secondChange(value) {
-      this._getHighClass(this.highSubList[value].subjectCode)
+      if (value || value === 0) {
+        this._getHighClass(this.highSubList[value].subjectCode)
+      }
     },
     // 查询班级列表
     async _getHighClass(subjectCode) {
+      this.highStudent.formData[6].threeList = []
       const req = {
         schoolCode: this.userInfo.schoolCode,
         page: 1,

@@ -192,7 +192,7 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
-    if (this.userInfo.schoolType === '8') {
+    if (this.userInfo.schoolType === '8' && this.columns[3].dataIndex !== 'gradeName') {
       this.columns.splice(3, 0,
         {
           title: '专业',
@@ -215,7 +215,6 @@ export default {
       this.pageList.size = 20
       this.searchList.schoolYearId = this.userInfo.schoolType === '8' ? item.gradeName : item.schoolYearId
       this.searchList.gradeCode = this.userInfo.schoolType === '8' ? item.subjectCode : item.gradeCode
-      this.searchList.schoolYearId = item.schoolYearId
       this.showList()
     },
     async showList(searchObj = {}) {

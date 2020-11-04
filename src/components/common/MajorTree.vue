@@ -116,6 +116,7 @@ export default {
           children: item.subjectNodeDtos ? this.filterSub(item.subjectNodeDtos) : []
         }
       })
+      console.log('this.defaultSelectedKeys',this.defaultSelectedKeys)
       this.$emit('select', selectObj)
     },
     // 处理专业节点
@@ -128,7 +129,7 @@ export default {
           classCode: '',
           title: el.subjectName,
           code: el.subjectCode,
-          key: el.subjectCode,
+          key: `${el.gradeName}-${el.subjectCode}`,
           children: el.classNodeDtos ? this.filterClass(el.classNodeDtos, el.gradeCode, el.gradeName, el.subjectCode) : []
         }
       })

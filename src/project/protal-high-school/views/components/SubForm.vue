@@ -86,6 +86,7 @@
           <a-select
             :read-only="item.readonly"
             :disabled="item.disabled"
+            @change="item.selectChange"
             v-decorator="[
               item.value,
               {

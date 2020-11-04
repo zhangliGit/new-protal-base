@@ -115,7 +115,7 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   async mounted () {
-    if (this.userInfo.schoolType === '8') {
+    if (this.userInfo.schoolType === '8' && this.detailInfo[2].val !== 'gradeName') {
       this.detailInfo.splice(2, 0,
         {
           key: '专业',

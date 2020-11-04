@@ -25,7 +25,18 @@
       :form-data="highDetail.formData"
     ></sub-form>
     <detail-show :col="8" :detail-info="detailInfo" :title="infoTitle"></detail-show>
-    <a-tabs>
+    <div class="u-bd-b qui-fx-ac qui-fx-jsb u-padd-r20">
+      <div class="title">班级学生</div>
+      <search-form isReset @search-form="searchForm" :search-label="highDetail.searchLabel" style="padding: 0">
+        <div slot="right">
+          <a-button icon="plus" class="add-btn mar-l10" @click="addStudent">添加学生</a-button>
+          <a-button icon="export" class="export-all-btn" @click.stop="goAdd">批量导入</a-button>
+          <a-button icon="export" class="export-btn" @click.stop="moveClass(0)">批量转班</a-button>
+          <a-button icon="delete" class="power-action-btn" @click.stop="dels">批量移出</a-button>
+        </div>
+      </search-form>
+    </div>
+    <!-- <a-tabs>
       <a-tab-pane tab="班级学生" key="1"> </a-tab-pane>
       <div slot="tabBarExtraContent" class="qui-fx-ac mar-r10">
         <search-form isReset @search-form="searchForm" :search-label="highDetail.searchLabel" style="padding: 0">
@@ -37,7 +48,7 @@
           </div>
         </search-form>
       </div>
-    </a-tabs>
+    </a-tabs> -->
     <div class="content qui-fx-ver qui-fx-f1">
       <div class="table qui-fx-ver qui-fx-f1">
         <table-list
@@ -180,23 +191,18 @@ export default {
   methods: {
     ...mapActions('home', [
       'highClassDetail', 'getHighStu', 'getHighClass', 'getHighSub', 'getHighTerm', 'highStuRemove',
-      'highStusRemove', 'highStusChange', 'highStuChange', 'highStuJoin', 'getClassTeacherList'
+      'highStusRemove', 'highStusChange', 'highStuChange', 'highStuJoin', 'getClassTeacherList', 'getHighGrade'
     ]),
     // 获取年级
     async getGrade() {
       this.highDetail.formData[0].firstList = []
-      const req = {
-        schoolCode: this.userInfo.schoolCode,
-        page: 1,
-        size: 99999
-      }
-      const res = await this.getHighGrade(req)
+      const res = await this.getHighGrade({ schoolCode: this.userInfo.schoolCode })
       if (res.data.records.length === 0) {
         return
       }
       this.highSubTerm = res.data.records
       res.data.records.forEach(ele => {
-        this.highDetail.formData[0].firstList.push({ key: ele.schoolYearCode, val: `${ele.schoolYearName.split('-')[0]}级` })
+        this.highDetail.formData[0].firstList.push({ key: ele.gradeCode, val: `${ele.gradeName}级` })
       })
     },
     // 获取专业
@@ -451,5 +457,12 @@ export default {
       margin: 10px 0;
     }
   }
+}
+.title {
+  width: 80px;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  border-bottom: 1px solid #2979ff;
 }
 </style>

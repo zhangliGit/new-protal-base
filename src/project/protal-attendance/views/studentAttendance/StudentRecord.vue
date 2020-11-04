@@ -162,7 +162,7 @@ export default {
     ])
   },
   mounted () {
-    if (this.userInfo.schoolType === '8') {
+    if (this.userInfo.schoolType === '8' && this.columns[3].dataIndex !== 'gradeName') {
       this.columns[2].dataIndex = 'schoolYearId'
       this.columns.splice(3, 0,
         {

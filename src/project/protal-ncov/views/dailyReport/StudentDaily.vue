@@ -233,7 +233,7 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
-    if (this.userInfo.schoolType === '8') {
+    if (this.userInfo.schoolType === '8' && this.columns1[4].dataIndex !== 'gradeName') {
       this.columns1.splice(4, 0,
         {
           title: '专业',
