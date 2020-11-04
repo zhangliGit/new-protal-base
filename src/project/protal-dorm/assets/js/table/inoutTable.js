@@ -22,7 +22,7 @@ const inoutTable = [
   }, {
     title: '宿舍',
     dataIndex: 'roomName',
-    width: '6%'
+    width: '8%'
   },
   {
     title: '班级',
@@ -32,7 +32,7 @@ const inoutTable = [
   {
     title: '监控设备',
     dataIndex: 'controllerName',
-    width: '8%'
+    width: '10%'
   },
   {
     title: '进出',
@@ -52,7 +52,7 @@ const inoutTable = [
   }, {
     title: '通过时间',
     dataIndex: 'recordTime',
-    width: '12%',
+    width: '10%',
     scopedSlots: {
       customRender: 'recordTime'
     }
@@ -63,12 +63,12 @@ const inoutTable = [
     scopedSlots: {
       customRender: 'photoSrc'
     },
-    width: '12%'
+    width: '8%'
   },
   {
     title: '抓拍照片',
     dataIndex: 'snapSrc',
-    width: '12%',
+    width: '8%',
     scopedSlots: {
       customRender: 'snapSrc'
     }

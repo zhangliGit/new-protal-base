@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 export default {
   name: 'StudentLeaveDetail',
   components: {
@@ -111,7 +111,17 @@ export default {
       approveImg: ''
     }
   },
+  computed: {
+    ...mapState('home', ['userInfo'])
+  },
   async mounted () {
+    if (this.userInfo.schoolType === '8') {
+      this.detailInfo.splice(2, 0,
+        {
+          key: '专业',
+          val: 'gradeName'
+        })
+    }
     this.showData()
   },
   methods: {
@@ -120,15 +130,17 @@ export default {
     ]),
     async showData () {
       const res = await this.getStudentLeaveDetail(this.$route.query.id)
+      const count = this.userInfo.schoolType === '8' ? 1 : 0
       this.detailInfo[0].val = res.data.userName
-      this.detailInfo[1].val = res.data.gradeName
-      this.detailInfo[2].val = res.data.className
-      this.detailInfo[3].val = res.data.reason
-      this.detailInfo[4].val = res.data.outSchool === 'Y' ? '是' : '否'
-      this.detailInfo[5].val = res.data.oddNumbers
-      this.detailInfo[6].val = this.$tools.getDate(new Date(res.data.startTime)) + ' ~ ' + this.$tools.getDate(new Date(res.data.endTime))
-      this.detailInfo[7].val = res.data.duration + '小时'
-      this.detailInfo[8].val = this.$tools.getState(res.data.state)
+      this.detailInfo[1].val = this.userInfo.schoolType === '8' ? res.data.schoolYearId : res.data.gradeName
+      this.detailInfo[1 + count].val = res.data.gradeName
+      this.detailInfo[2 + count].val = res.data.className
+      this.detailInfo[3 + count].val = res.data.reason
+      this.detailInfo[4 + count].val = res.data.outSchool === 'Y' ? '是' : '否'
+      this.detailInfo[5 + count].val = res.data.oddNumbers
+      this.detailInfo[6 + count].val = this.$tools.getDate(new Date(res.data.startTime)) + ' ~ ' + this.$tools.getDate(new Date(res.data.endTime))
+      this.detailInfo[7 + count].val = res.data.duration + '小时'
+      this.detailInfo[8 + count].val = this.$tools.getState(res.data.state)
       this.approveName = res.data.leaveApprovalAddDto.userName
       this.approveTime = res.data.state === '0' ? '--' : this.$tools.getDate(new Date(res.data.initiationTime))
       this.approveImg = res.data.leaveApprovalAddDto.photoUrl

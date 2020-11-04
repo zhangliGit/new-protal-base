@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
 const columns = [
@@ -121,6 +121,9 @@ export default {
       attendanceState: '5'
     }
   },
+  computed: {
+    ...mapState('home', ['userInfo'])
+  },
   async mounted () {
     this.detailId = this.$route.query.id
     this.showList()
@@ -146,7 +149,7 @@ export default {
         },
         {
           key: '年级',
-          value: res.data.gradeName
+          value: this.userInfo.schoolType === '8' ? res.data.schoolYearId : res.data.gradeName
         },
         {
           key: '班级',
@@ -157,6 +160,13 @@ export default {
         //   value: res.data.account
         // }
       ]
+      if (this.userInfo.schoolType === '8') {
+        this.baseList.splice(3, 0,
+          {
+            key: '专业',
+            value: res.data.gradeName
+          })
+      }
     },
     callback (key) {
       setTimeout(() => {

@@ -17,7 +17,7 @@
         <template v-slot:other4="action">
           <div>{{ action.record.gradeName}}{{ action.record.className}}</div>
         </template>
-           <template v-slot:actions="action">
+        <template v-slot:actions="action">
           <a-tooltip placement="topLeft" title="查看健康档案">
             <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="detail(action.record)"></a-button>
           </a-tooltip>
@@ -180,7 +180,7 @@ export default {
       }
       this.showList(searchObj)
     },
-     detail(record) {
+    detail(record) {
       this.$router.push({
         path: '/component/detail',
         query: {

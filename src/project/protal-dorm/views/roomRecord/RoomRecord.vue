@@ -84,13 +84,24 @@ export default {
       },
       total: 0,
       historyList: [],
-      isTab: true
+      isTab: true,
+      schoolType: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolType
     }
   },
   computed: {
     ...mapState('home', 'userInfo')
   },
-  mounted() {},
+  mounted() {
+    this.columns[3].dataIndex = 'schoolYearId'
+    if (this.schoolType === '8' && this.columns[4].dataIndex !== 'gradeName') {
+      this.columns.splice(4, 0,
+        {
+          title: '专业',
+          dataIndex: 'gradeName',
+          width: '8%'
+        })
+    }
+  },
   methods: {
     ...mapActions('dormRecord', ['getHistoryList']),
     async showTableList() {
@@ -110,12 +121,7 @@ export default {
       this.showTableList(this.searchList)
     },
     handleTreeClick(item) {
-      this.searchList.buildingCode = item.buildingCode
-      this.searchList.classCode = item.classCode
-      this.searchList.floorCode = item.floorCode
-      this.searchList.gradeCode = item.gradeCode
-      this.searchList.roomCode = item.roomCode
-      this.searchList.stageCode = item.stageCode ? item.stageCode : ''
+      this.searchList = this.concatObj(this.searchList, item)
       this.showTableList()
     }
   }

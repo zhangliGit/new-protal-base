@@ -281,10 +281,11 @@ export default {
   },
   async mounted() {
     if (this.userInfo.schoolType === '8') {
+      this.columns[2].dataIndex = 'schoolYearId'
       this.columns.splice(3, 0,
         {
           title: '专业',
-          dataIndex: 'subjectName',
+          dataIndex: 'gradeName',
           width: '7%'
         })
     }
