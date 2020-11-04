@@ -431,6 +431,14 @@ module.exports = {
         pathRewrite: {
           '^/ljj_high': ''
         }
+      },
+      '/wq_school': {
+        // target: 'http://192.168.1.236:8092/', // 王齐-招生迎新系统
+        target: 'http://192.168.1.236:8092/',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/wq_school': ''
+        }
       }
     }
   },

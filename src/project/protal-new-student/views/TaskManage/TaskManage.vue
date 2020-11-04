@@ -87,48 +87,6 @@ const searchLabel = [
     type: 'input',
     label: '任务名称',
     placeholder: '请输入任务名称'
-  },
-  {
-    list: [
-      {
-        key: '',
-        val: '全部'
-      },
-      {
-        key: '1',
-        val: '2020-2021'
-      },
-      {
-        key: '2',
-        val: '2019-2020'
-      },
-      {
-        key: '3',
-        val: '2018-2019'
-      }
-    ],
-    value: 'grade',
-    type: 'select',
-    label: '学年'
-  },
-  {
-    list: [
-      {
-        key: '',
-        val: '全部'
-      },
-      {
-        key: '1',
-        val: '已发布'
-      },
-      {
-        key: '2',
-        val: '草稿'
-      }
-    ],
-    value: 'status',
-    type: 'select',
-    label: '状态'
   }
 ]
 export default {
@@ -153,59 +111,41 @@ export default {
     }
   },
   computed: {
-    ...mapState('home', ['userInfo'])
+    ...mapState('home', ['userInfo', 'schoolYear'])
   },
   mounted() {
     this.showList()
+    const list = this.schoolYear.list || []
+    this.searchLabel.push({
+      list: list.map((item) => {
+        return {
+          key: item.id,
+          val: item.schoolYear
+        }
+      }),
+      value: 'grade',
+      type: 'select',
+      label: '学年'
+    })
   },
   methods: {
-    ...mapActions('home', ['getReserveList', 'delReserve']),
+    ...mapActions('home', ['getTaskList', 'getSchoolYear']),
     // 查询列表
     async showList() {
-      // const req = {
-      //   ...this.searchObj,
-      //   ...this.pageList,
-      //   schoolCode: this.userInfo.schoolCode,
-      //   type: '1'
-      // }
-      // const res = await this.getReserveList(req)
-      // console.log(res)
-      this.taskList = [
-        {
-          id: 1,
-          taskName: '武汉职业技术学院2020-2021软件技术专业招生计划',
-          grade: '2020级',
-          subject: '软件技术',
-          stuCount: 600,
-          endTIime: '2020-12-30',
-          code:
-            'http://canpoint-photo.oss-cn-beijing.aliyuncs.com/47801/2020/10/19/base/76b5c10347bf4e5185331bb917b762cb.jpg'
-        },
-        {
-          id: 2,
-          taskName: '武汉职业技术学院2020-2021软件技术专业招生计划',
-          grade: '2020级',
-          subject: '软件技术',
-          stuCount: 600,
-          endTIime: '2020-12-30',
-          code:
-            'http://canpoint-photo.oss-cn-beijing.aliyuncs.com/47801/2020/10/19/base/76b5c10347bf4e5185331bb917b762cb.jpg'
-        }
-      ]
-      // this.taskList = res.data.list
-      // this.taskList.map(el => {
-      //   el.placeName = el.placeName.replace(/,/g, '-')
-      // })
-      // this.total = res.data.total
+      const req = {
+        ...this.searchObj,
+        ...this.pageList,
+        schoolCode: this.userInfo.schoolCode
+      }
+      const res = await this.getTaskList(req)
+      this.taskList = res.data.records
+      this.total = res.data.total
     },
     // 点击搜搜-查询招生任务列表
     searchForm(values) {
-      console.log(values)
       this.searchObj = {
-        startDate: values.rangeTime ? values.rangeTime[0] : undefined,
-        endDate: values.rangeTime ? values.rangeTime[1] : undefined,
-        status: values.status,
-        description: values.description
+        taskName: values.taskName || '',
+        gradeNum: values.grade || ''
       }
       this.showList()
     },

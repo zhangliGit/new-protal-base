@@ -20,7 +20,7 @@
             @change="handleChangeGrade"
             style="width: 150px; margin-right: 20px"
           >
-            <a-select-option v-for="item in options" :key="item.value"> {{ item.label }} </a-select-option>
+            <a-select-option v-for="item in options" :key="item.id"> {{ item.schoolYear }} </a-select-option>
           </a-select>
           <span class="grade-warning">*确定已在基础数据中添加新学年及专业</span>
         </div>
@@ -97,20 +97,7 @@ export default {
       showProjectList: false,
       title: '选择专业',
       grade: '',
-      options: [
-        {
-          value: '2020',
-          label: '2020'
-        },
-        {
-          value: '2019',
-          label: '2019'
-        },
-        {
-          value: '2018',
-          label: '2018'
-        }
-      ],
+      options: [],
       projectList: [
         {
           projectName: '软件技术',
@@ -160,7 +147,7 @@ export default {
     }
   },
   computed: {
-    ...mapState('home', ['userInfo'])
+    ...mapState('home', ['userInfo', 'schoolYear'])
   },
   mounted() {
     this.maxHeight = window.screen.height - 280 + 'px'
@@ -186,9 +173,11 @@ export default {
         }
       ]
     }
+
+    this.options = this.schoolYear.list || []
   },
   methods: {
-    ...mapActions('home', ['addReserve']),
+    ...mapActions('home', ['addTask']),
     handleChangeCount(val, key) {
       if (!key) {
         return
@@ -235,28 +224,10 @@ export default {
     onChangeDate(time) {
       this.formData.endTime = time
     },
-    async showSiteList(type, id) {
-      this.siteList = []
-      let res = null
-      if (type) {
-        const req = {
-          parentId: id,
-          schoolCode: this.userInfo.schoolCode
-        }
-        res = await this.getChildSite(req)
-        res.data = res.data.list
-      } else {
-        const req = {
-          category: id,
-          schoolCode: this.userInfo.schoolCode
-        }
-        res = await this.getSiteList(req)
-      }
-    },
     // 提交
     handleSubmit(e) {
       e.preventDefault()
-      this.form.validateFields((err, values) => {
+      this.form.validateFields(async (err, values) => {
         if (!err) {
           if (this.selectList.length === 0) {
             this.$message.error('请选择专业')
@@ -274,6 +245,18 @@ export default {
             })
           }
           console.log(params)
+          const { endTime, grade, projectList, taskName } = params
+          const req = {
+            schoolCode: this.userInfo.schoolCode,
+            taskName,
+            closingDate: endTime,
+            createUserCode: this.userInfo.userCode,
+            createUserName: this.userInfo.userName,
+            gradeNum: grade,
+            majorList: []
+          }
+          const res = await this.addTask(req)
+          console.log(res)
         }
       })
     }

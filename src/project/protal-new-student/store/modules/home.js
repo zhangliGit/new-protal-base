@@ -51,7 +51,8 @@ const home = {
       userName: JSON.parse(window.sessionStorage.getItem('loginType')).userName,
       userCode: JSON.parse(window.sessionStorage.getItem('loginType')).userCode
     }),
-    welComeInfo: {}
+    welComeInfo: {},
+    schoolYear: JSON.parse(window.sessionStorage.getItem('schoolYear'))
   },
   actions: {
     ...actions,

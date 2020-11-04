@@ -2,8 +2,8 @@
   <div class="home-page page-layout qui-fx-ver">
     <div class="select-year">
       <a-select :value="selectYear" style="width: 120px" @change="handleChangeYear">
-        <a-select-option v-for="item in yearList" :value="item.value" :key="item.value">
-          {{ item.title }}
+        <a-select-option v-for="item in yearList" :value="item.id" :key="item.id">
+          {{ item.schoolYear }}
         </a-select-option>
       </a-select>
       <a-button
@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 import TableList from '@c/TableList'
 const columns = [
   {
@@ -78,17 +78,8 @@ export default {
   },
   data() {
     return {
-      yearList: [
-        {
-          value: '2020',
-          title: '2020级'
-        },
-        {
-          value: '2019',
-          title: '2019级'
-        }
-      ],
-      selectYear: '2020',
+      yearList: [],
+      selectYear: '',
       columns,
       title: '招生专业',
       taskList: [
@@ -142,8 +133,21 @@ export default {
   },
   mounted() {
     // this.showList()
+    this.getYear()
   },
   methods: {
+    ...mapActions('home', ['getSchoolYear']),
+    // 获取学年
+    async getYear() {
+      const req = {
+        schoolCode: this.userInfo.schoolCode
+      }
+      const res = await this.getSchoolYear(req)
+      if (res.code === 200) {
+        this.yearList = res.data.list || []
+        sessionStorage.setItem('schoolYear', JSON.stringify(res.data))
+      }
+    },
     handleChangeYear(value) {
       this.selectYear = value
     },
@@ -255,6 +259,6 @@ export default {
   color: #515a6e;
 }
 /deep/ .ant-table-tbody tr:hover {
-  background-color: #EFF0F9;
+  background-color: #eff0f9;
 }
 </style>
