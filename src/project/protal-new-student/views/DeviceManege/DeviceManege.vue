@@ -1,6 +1,6 @@
 <template>
   <div class="home page-layout qui-fx-ver">
-    <IssueRecord :visible="issueVisible" :title="title" @cancel="issueVisible = false" />
+    <IssueRecord :visible="issueVisible" :title="title" :deviceId="deviceId" @cancel="issueVisible = false" />
     <bind-student
       type="edu"
       chooseType="organize"
@@ -42,17 +42,17 @@
         ></a-button>
       </template>
       <template v-slot:actions="action">
-        <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="deleteList(action.record)">
+        <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="deleteDevice(action.record)">
           <template slot="title"> 确定解绑设备吗? </template>
           <a-tooltip placement="topLeft" title="解绑设备">
-            <a-button size="small" class="del-action-btn" icon="delete"></a-button>
+            <a-button size="small" class="del-action-btn" icon="unlock"></a-button>
           </a-tooltip>
         </a-popconfirm>
         <a-tooltip placement="topLeft" title="下发记录">
           <a-button
             size="small"
             class="export-btn"
-            icon="export"
+            icon="file"
             @click.stop="handelIssue(action.record.id)"
           ></a-button>
         </a-tooltip>
@@ -169,7 +169,7 @@ export default {
       taskList: [],
       signTag: false,
       searchObj: {},
-      id: 0
+      deviceId: ''
     }
   },
   computed: {
@@ -191,7 +191,7 @@ export default {
       // console.log(res)
       this.taskList = [
         {
-          id: 1,
+          id: '1',
           deviceName: '面板机1',
           bindStudent: 2222,
           deviceType: '面板机',
@@ -218,10 +218,12 @@ export default {
     addTask() {
       this.$router.push({ path: '/taskManage/addTask' })
     },
-    handelIssue() {
+    handelIssue(id) {
+      this.deviceId = id
       this.issueVisible = true
     },
-    async deleteList(record) {
+    // 解绑设备
+    async deleteDevice(record) {
       await this.delReserve(record.id)
       this.$message.success('删除成功')
       this.$tools.goNext(() => {
@@ -239,8 +241,8 @@ export default {
       this.bindStudent = {}
       this.studentTag = true
     },
+    // 表头绑定设备按钮
     bindDevClick() {
-      this.bindDevice = {}
       this.deviceTag = true
     },
     submitUser() {},

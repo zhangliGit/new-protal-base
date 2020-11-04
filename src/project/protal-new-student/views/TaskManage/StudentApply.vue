@@ -1,15 +1,6 @@
 <template>
   <div class="page-layout qui-fx goods">
-    <a-modal
-      :title="checkTitle"
-      :visible="checkVisible"
-      :confirm-loading="confirmLoading"
-      @ok="handleCheckOk"
-      @cancel="handleCheckCancel"
-    >
-      <p>{{ checkText }}</p>
-    </a-modal>
-    <submit-form ref="form" @submit-form="submitForm" :title="title" v-model="addFormStatus" :form-data="addFormDatas">
+    <submit-form ref="form" @submit-form="submitApply" :title="title" v-model="addFormStatus" :form-data="addFormDatas">
       <div slot="upload" class="qui-fx qui-fx-ac">
         <upload-multi is-check :length="1" v-model="fileList" type="face" :fileInfo="fileInfo"></upload-multi>
       </div>
@@ -40,7 +31,7 @@
               size="small"
               class="detail-action-btn"
               icon="ellipsis"
-              @click="detail(action.record.id)"
+              @click.stop="detail(action.record.id)"
             ></a-button>
           </a-tooltip>
         </template>
@@ -58,6 +49,7 @@ import GradeTree from '@c/GradeTree'
 import UploadMulti from '@c/UploadFace'
 import Tools from '@u/tools'
 import SubmitForm from '../../component/SubForm.vue'
+import { nation } from '@u/nation'
 const searchLabel = [
   {
     value: 'name',
@@ -88,7 +80,7 @@ const searchLabel = [
         val: '申请成功'
       }
     ],
-    value: 'state',
+    value: 'status',
     type: 'select',
     label: '申请状态'
   }
@@ -97,7 +89,16 @@ const addFormDatas = [
   {
     value: 'gradeName',
     initValue: [],
-    list: [],
+    list: [
+      {
+        key: '1',
+        val: '2020'
+      },
+      {
+        key: '2',
+        val: '2019'
+      }
+    ],
     type: 'select',
     label: '年级',
     placeholder: '请选择年级'
@@ -107,7 +108,9 @@ const addFormDatas = [
     initValue: '',
     type: 'input',
     label: '姓名',
-    placeholder: '请输入姓名'
+    max: 20,
+    placeholder: '请输入学生姓名(长度限制在20字符以内)',
+    message: '学生姓名限制在20字符以内'
   },
   {
     value: 'sex',
@@ -131,7 +134,9 @@ const addFormDatas = [
     initValue: '',
     type: 'input',
     label: '身份证号',
-    placeholder: '请输入身份证号'
+    placeholder: '请输入身份证号',
+    message: '身份证号码格式错误',
+    regular: 'idCard'
   },
   {
     value: 'identity',
@@ -157,20 +162,12 @@ const addFormDatas = [
   {
     value: 'nation',
     initValue: [],
-    list: [
-      {
-        key: '1',
-        val: '汉族'
-      },
-      {
-        key: '2',
-        val: '壮族'
-      },
-      {
-        key: '3',
-        val: '苗族'
+    list: nation.map((item) => {
+      return {
+        key: item.name,
+        val: item.name
       }
-    ],
+    }),
     type: 'select',
     label: '民族',
     placeholder: '请选择民族'
@@ -180,14 +177,30 @@ const addFormDatas = [
     initValue: '',
     type: 'input',
     label: '联系电话',
-    placeholder: '请输入电话号码'
+    placeholder: '请输入电话号码',
+    message: '电话号码格式错误',
+    regular: 'phone'
   },
   {
     value: 'project',
-    initValue: '',
-    type: 'input',
+    initValue: [],
+    list: [
+      {
+        key: '1',
+        val: '软件技术'
+      },
+      {
+        key: '2',
+        val: '软件测试'
+      },
+      {
+        key: '3',
+        val: '医学'
+      }
+    ],
+    type: 'select',
     label: '申请专业',
-    placeholder: '请输入专业名称'
+    placeholder: '请选择专业'
   },
   {
     value: 'source',
@@ -228,14 +241,18 @@ const addFormDatas = [
     initValue: '',
     type: 'input',
     label: '毕业学校',
-    placeholder: '请输入毕业学校'
+    max: 20,
+    placeholder: '请输入毕业学校',
+    message: '毕业学校名称限制在20字符内'
   },
   {
     value: 'health',
     initValue: '',
     type: 'input',
     label: '健康状况',
-    placeholder: '请输入健康状况'
+    max: 10,
+    placeholder: '请输入健康状况',
+    message: '健康状况限制在10字符内'
   },
   {
     value: 'houseType',
@@ -259,14 +276,18 @@ const addFormDatas = [
     initValue: '',
     type: 'input',
     label: '户口所在地区县以下详细地址',
-    placeholder: '请输入详细地址'
+    max: 30,
+    placeholder: '请输入详细地址',
+    message: '详细地址限制在30字符内'
   },
   {
     value: 'police',
     initValue: '',
     type: 'input',
     label: '所属派出所',
-    placeholder: '请输入所属派出所名称'
+    placeholder: '请输入所属派出所名称',
+    max: 20,
+    message: '派出所名称限制在20字符内'
   },
   {
     value: 'addressType',
@@ -294,28 +315,36 @@ const addFormDatas = [
     initValue: '',
     type: 'input',
     label: '家庭现住址',
-    placeholder: '请输入家庭现住址'
+    max: 20,
+    placeholder: '请输入家庭现住址',
+    message: '住址限制在20字符内'
   },
   {
     value: 'parentName',
     initValue: '',
     type: 'input',
     label: '家长姓名',
-    placeholder: '请输入家长姓名'
+    max: 20,
+    placeholder: '请输入家长姓名',
+    message: '家长姓名在20字符内'
   },
   {
     value: 'parentTel',
     initValue: '',
     type: 'input',
     label: '家长手机号',
-    placeholder: '请输入家长手机号'
+    placeholder: '请输入家长手机号',
+    message: '电话号码格式错误',
+    regular: 'phone'
   },
   {
     value: 'relation',
     initValue: '',
     type: 'input',
     label: '与本人关系',
-    placeholder: '请输入家长与本人关系'
+    max: 10,
+    placeholder: '请输入家长与本人关系',
+    message: '关系字数在10字符内'
   },
   {
     value: 'isGuardian',
@@ -431,26 +460,17 @@ export default {
         h: 120, // 高度
         w: 120 // 宽度
       },
-      confirmLoading: false,
-      checkResult: true,
-      checkTitle: '审核通过',
-      checkText: '确定通过新生入学申请吗？（录取）',
-      checkVisible: false,
       pageList: {
         page: 1,
         size: 20
       },
-      searchList: {
-        schoolCode: ''
-      },
+      searchList: {},
       total: 0,
       userList: [],
       chooseList: [],
       totalList: [],
       previewVisible: false,
-      detailList: {},
-      dateTime: '',
-      state: ''
+      detailList: {}
     }
   },
   computed: {
@@ -490,19 +510,17 @@ export default {
   methods: {
     ...mapActions('home', ['getPageList', 'recordDetail', 'downRecord']),
     async showList(searchObj = {}) {
-      this.searchList.schoolCode = this.userInfo.schoolCode
       this.searchList = Object.assign(this.searchList, this.pageList, searchObj)
       const res = await this.getPageList(this.searchList)
       this.userList = res.data.list
       this.total = res.data.total
     },
+    // 条件搜索
     searchForm(values) {
       this.pageList.page = 1
-      this.dateTime = values.date
-      this.state = values.state
       const searchObj = {
-        date: values.date,
-        state: values.state
+        name: values.name,
+        idCard: values.idCard
       }
       this.showList(searchObj)
     },
@@ -516,17 +534,19 @@ export default {
         }
       })
     },
+    // 选择树形列表
     select(item) {
       this.pageList.page = 1
       this.pageList.size = 20
-      if (typeof item.materialTypeId === 'number') {
-        this.searchList.materialTypeId = item.materialTypeId
-        this.searchList.materialId = ''
-      } else {
-        this.searchList.materialId = item.materialTypeId.split('^')[1]
-        this.searchList.materialTypeId = ''
-      }
-      this.showList()
+      console.log(item)
+      // if (typeof item.materialTypeId === 'number') {
+      //   this.searchList.materialTypeId = item.materialTypeId
+      //   this.searchList.materialId = ''
+      // } else {
+      //   this.searchList.materialId = item.materialTypeId.split('^')[1]
+      //   this.searchList.materialTypeId = ''
+      // }
+      // this.showList()
     },
     addClick() {
       this.addFormStatus = true
@@ -545,40 +565,22 @@ export default {
         })
       }
     },
-    submitForm() {
-      if (this.totalList.length === 0) {
-        this.$message.warning('请选择学生')
-        return
-      }
-      console.log(this.totalList)
+    // 提交新生申请添加
+    submitApply(item) {
+      console.log(item)
     },
-    // 审核通过、拒绝按钮
+    // 批量审核通过、拒绝按钮
     checkClick(val) {
-      if (val) {
-        this.checkTitle = '审核通过'
-        this.checkText = '确定通过新生入学申请吗？（录取）'
-        this.checkResult = true
-      } else {
-        this.checkTitle = '审核拒绝'
-        this.checkText = '确定拒绝新生入学申请吗？（不录取）'
-        this.checkResult = false
-      }
-      this.$nextTick(() => {
-        this.checkVisible = true
+      this.$confirm({
+        title: val ? '审核通过' : '审核拒绝',
+        content: val ? '确定通过新生入学申请吗？（录取）' : '确定拒绝新生入学申请吗？（不录取）',
+        onOk: () => {
+          console.log(this.chooseList) // 返回选择的id
+          return new Promise((resolve, reject) => {
+            setTimeout(Math.random() > 0.5 ? resolve : reject, 2000)
+          }).catch(() => console.log('Oops errors!'))
+        }
       })
-    },
-    // 打开审核弹框
-    handleCheckOpen() {
-      this.checkVisible = true
-    },
-    // 审核确认
-    handleCheckOk() {
-      console.log(this.checkResult)
-      this.checkVisible = false
-    },
-    // 取消审核 关闭弹框
-    handleCheckCancel() {
-      this.checkVisible = false
     }
   }
 }

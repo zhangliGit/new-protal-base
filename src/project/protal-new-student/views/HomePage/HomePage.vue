@@ -93,6 +93,7 @@ export default {
       title: '招生专业',
       taskList: [
         {
+          id: '1',
           subjectName: '软件技术',
           allCount: 600,
           applyCount: 500,
@@ -100,6 +101,7 @@ export default {
           isReport: '300/300'
         },
         {
+          id: '2',
           subjectName: '软件测试',
           allCount: 400,
           applyCount: 360,
@@ -139,7 +141,7 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
-    this.showList()
+    // this.showList()
   },
   methods: {
     handleChangeYear(value) {

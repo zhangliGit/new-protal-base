@@ -13,7 +13,7 @@
     <div>
       <search-form is-reset @search-form="searchForm" :search-label="searchLabel"> </search-form>
       <div class="btn">
-        <a-button class="export-btn" @click="checkClick">批量重发</a-button>
+        <a-button class="export-btn" @click="batchClick">批量重发</a-button>
       </div>
       <table-list
         isCheck
@@ -25,8 +25,13 @@
         :table-list="userList"
       >
         <template v-slot:actions="action">
-          <a-tooltip placement="topLeft" title="重发">
-            <a-button size="small" class="edit-action-btn" icon="edit" @click.stop="checkClick(action)"></a-button>
+          <a-tooltip placement="topLeft" title="重发" v-if="!action.record.result">
+            <a-button
+              size="small"
+              class="edit-action-btn"
+              icon="edit"
+              @click.stop="resetDevice('single', action.record.id)"
+            ></a-button>
           </a-tooltip>
         </template>
       </table-list>
@@ -92,7 +97,10 @@ const columns = [
   {
     title: '下发结果',
     dataIndex: 'result',
-    width: '10%'
+    width: '10%',
+    customRender: (text) => {
+      return text ? '下发成功' : '下发失败'
+    }
   },
   {
     title: '失败原因',
@@ -123,6 +131,10 @@ export default {
     projectList: {
       type: Array,
       default: () => []
+    },
+    deviceId: {
+      type: String,
+      default: ''
     }
   },
   components: {
@@ -136,19 +148,25 @@ export default {
       columns,
       totalList: [],
       chooseList: [],
+      pageList: {
+        page: 1,
+        size: 20
+      },
+      total: 0,
       userList: [
         {
           id: '1',
           name: '张三',
           time: '2020/10/10 12:12:00',
-          result: '下发成功',
-          reson: ''
+          result: 1,
+          reson: '',
+          disabled: true
         },
         {
           id: '2',
           name: '李四',
           time: '2020/10/10 12:12:00',
-          result: '下发失败',
+          result: 0,
           reson: '网络异常'
         }
       ]
@@ -170,6 +188,36 @@ export default {
     },
     selectProject(id) {
       this.$emit('clickSelect', id)
+    },
+    // 获取列表
+    showList() {},
+    // 批量重发
+    batchClick() {
+      if (this.totalList.length === 0) {
+        this.$message.error('请选择设备')
+        return
+      }
+      const ids = this.totalList.join(',')
+      this.resetDevice('batch', ids)
+    },
+    // 重发
+    resetDevice(type, id) {
+      this.$confirm({
+        title: '重新下发',
+        content: '确定重新下发吗？',
+        onOk: () => {
+          if (type === 'single') {
+            // 单个重发
+            console.log(id)
+          } else {
+            // 批量重发
+            console.log(this.chooseList)
+          }
+          return new Promise((resolve, reject) => {
+            setTimeout(Math.random() > 0.5 ? resolve : reject, 2000)
+          }).catch(() => console.log('Oops errors!'))
+        }
+      })
     },
     // 表格全选
     selectAll(item, type) {

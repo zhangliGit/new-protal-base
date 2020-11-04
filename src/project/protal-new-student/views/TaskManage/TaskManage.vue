@@ -1,7 +1,5 @@
 <template>
   <div class="home page-layout qui-fx-ver">
-    <sub-form ref="form" @submit-form="submitForm" :title="title" v-model="formStatus" :form-data="formData">
-    </sub-form>
     <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
       <div slot="left">
         <a-button icon="plus" class="add-btn" @click.stop="addTask">添加</a-button>
@@ -34,8 +32,6 @@ import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
 import SearchForm from '@c/SearchForm'
-import SubForm from '@c/SubmitForm'
-// import Tools from '@u/tools'
 const columns = [
   {
     title: '序号',
@@ -135,57 +131,25 @@ const searchLabel = [
     label: '状态'
   }
 ]
-const formData = [
-  {
-    value: 'taskName',
-    initValue: '',
-    type: 'input',
-    label: '任务名称',
-    placeholder: '请输入任务名称'
-  },
-  {
-    value: 'admissionTime',
-    initValue: [new Date().getFullYear()],
-    list: [
-      { key: new Date().getFullYear() + 1, val: new Date().getFullYear() + 1 },
-      { key: new Date().getFullYear(), val: new Date().getFullYear() },
-      { key: new Date().getFullYear() - 1, val: new Date().getFullYear() - 1 }
-    ],
-    type: 'select',
-    label: '年级',
-    placeholder: '请选择年级'
-  },
-  {
-    value: 'endTime',
-    type: 'singleTime',
-    label: '招生截止日期'
-  }
-]
 export default {
   name: 'TaskManage',
   components: {
     SearchForm,
     PageNum,
-    TableList,
-    SubForm
+    TableList
   },
   data() {
     return {
       title: '添加任务',
-      formStatus: false,
-      formData,
       columns,
       searchLabel,
-      searchList: {},
       pageList: {
         page: 1,
         size: 20
       },
       total: 0,
       taskList: [],
-      signTag: false,
-      searchObj: {},
-      id: 0
+      searchObj: {}
     }
   },
   computed: {
@@ -196,6 +160,7 @@ export default {
   },
   methods: {
     ...mapActions('home', ['getReserveList', 'delReserve']),
+    // 查询列表
     async showList() {
       // const req = {
       //   ...this.searchObj,
@@ -215,6 +180,16 @@ export default {
           endTIime: '2020-12-30',
           code:
             'http://canpoint-photo.oss-cn-beijing.aliyuncs.com/47801/2020/10/19/base/76b5c10347bf4e5185331bb917b762cb.jpg'
+        },
+        {
+          id: 2,
+          taskName: '武汉职业技术学院2020-2021软件技术专业招生计划',
+          grade: '2020级',
+          subject: '软件技术',
+          stuCount: 600,
+          endTIime: '2020-12-30',
+          code:
+            'http://canpoint-photo.oss-cn-beijing.aliyuncs.com/47801/2020/10/19/base/76b5c10347bf4e5185331bb917b762cb.jpg'
         }
       ]
       // this.taskList = res.data.list
@@ -223,6 +198,7 @@ export default {
       // })
       // this.total = res.data.total
     },
+    // 点击搜搜-查询招生任务列表
     searchForm(values) {
       console.log(values)
       this.searchObj = {
@@ -233,9 +209,11 @@ export default {
       }
       this.showList()
     },
+    // 点击添加 按钮
     addTask() {
       this.$router.push({ path: '/taskManage/addTask' })
     },
+    // 点击列表详情按钮
     goDetail(record) {
       const { id } = record
       if (!id) {
@@ -248,19 +226,14 @@ export default {
         }
       })
     },
+    // 删除招生任务
     async deleteList(record) {
-      await this.delReserve(record.id)
-      this.$message.success('删除成功')
-      this.$tools.goNext(() => {
-        this.showList()
-      })
-    },
-    showRecord(record) {
-      this.signTag = true
-      this.id = record.id
-    },
-    submitForm(values) {
-      console.log(values)
+      console.log(record.id)
+      // await this.delReserve(record.id)
+      // this.$message.success('删除成功')
+      // this.$tools.goNext(() => {
+      //   this.showList()
+      // })
     }
   }
 }

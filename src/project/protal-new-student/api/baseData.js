@@ -5,6 +5,9 @@
 import hostEnv from '@config/host-env'
 
 const baseData1Api = {
+  // 组织机构
+  getOrgBySchool: '/school/org/getSchoolRoot#getUrl', // 查询组织机构
+  getOrgList: '/school/org/detail#getUrl', // 通过组织结构Id查询组织结构
 
   // 年级管理
   getSchoolYear: '/schoolYearSemester/list#postForm', // 查询学年列表
@@ -12,7 +15,6 @@ const baseData1Api = {
 
   // 班级管理
   getClassData: '/classManage/list#post' // 查询班级列表
-
 }
 const baseData2Api = {
   // 文件上传

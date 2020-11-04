@@ -4,6 +4,7 @@
       type="edu"
       chooseType="organize"
       :assign-obj="assignStudent"
+      :classId="classId"
       is-check
       ref="form"
       v-if="studentTag"
@@ -105,13 +106,12 @@ export default {
       searchList: {
         schoolCode: ''
       },
+      classId: '',
       total: 0,
       userList: [],
       chooseList: [],
       totalList: [],
-      detailList: {},
-      dateTime: '',
-      state: ''
+      detailList: {}
     }
   },
   computed: {
@@ -121,7 +121,7 @@ export default {
     // this.showList()
     this.userList = [
       {
-        id: 1,
+        id: '1',
         name: '张学良',
         grade: '2020',
         project: '软件工程',
@@ -131,7 +131,7 @@ export default {
         studentCount: 45
       },
       {
-        id: 2,
+        id: '2',
         name: '张学良',
         grade: '2020',
         project: '软件工程',
@@ -153,8 +153,6 @@ export default {
     },
     searchForm(values) {
       this.pageList.page = 1
-      this.dateTime = values.date
-      this.state = values.state
       const searchObj = {
         date: values.date,
         state: values.state
@@ -171,17 +169,18 @@ export default {
         }
       })
     },
+    // 选择树形列表
     select(item) {
       this.pageList.page = 1
       this.pageList.size = 20
-      if (typeof item.materialTypeId === 'number') {
-        this.searchList.materialTypeId = item.materialTypeId
-        this.searchList.materialId = ''
-      } else {
-        this.searchList.materialId = item.materialTypeId.split('^')[1]
-        this.searchList.materialTypeId = ''
-      }
-      this.showList()
+      // if (typeof item.materialTypeId === 'number') {
+      //   this.searchList.materialTypeId = item.materialTypeId
+      //   this.searchList.materialId = ''
+      // } else {
+      //   this.searchList.materialId = item.materialTypeId.split('^')[1]
+      //   this.searchList.materialTypeId = ''
+      // }
+      // this.showList()
     },
     submitForm() {
       if (this.totalList.length === 0) {
@@ -190,8 +189,8 @@ export default {
       }
       console.log(this.totalList)
     },
-    assignStuClick() {
-      this.assignStudent = {}
+    assignStuClick(id) {
+      this.classId = id
       this.studentTag = true
     },
     submitUser() {}

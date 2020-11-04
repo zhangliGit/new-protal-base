@@ -149,23 +149,9 @@ export default {
       type: Boolean,
       default: false
     },
-    checkData: {
-      type: Array,
-      default: () => {
-        return []
-      }
-    },
-    teacherList: {
-      type: Array,
-      default: () => {
-        return []
-      }
-    },
-    managerList: {
-      type: Array,
-      default: () => {
-        return []
-      }
+    classId: {
+      type: String,
+      default: ''
     }
   },
   computed: {
@@ -201,7 +187,8 @@ export default {
           sex: '男',
           grade: '2020级',
           project: '软件技术',
-          photo: 'http://canpoint-photo.oss-cn-beijing.aliyuncs.com/47801/2020/10/19/base/76b5c10347bf4e5185331bb917b762cb.jpg'
+          photo:
+            'http://canpoint-photo.oss-cn-beijing.aliyuncs.com/47801/2020/10/19/base/76b5c10347bf4e5185331bb917b762cb.jpg'
         },
         {
           id: '2',
@@ -210,174 +197,21 @@ export default {
           sex: '男',
           grade: '2020级',
           project: '软件技术',
-          photo: 'http://canpoint-photo.oss-cn-beijing.aliyuncs.com/47801/2020/10/19/base/76b5c10347bf4e5185331bb917b762cb.jpg'
+          photo:
+            'http://canpoint-photo.oss-cn-beijing.aliyuncs.com/47801/2020/10/19/base/76b5c10347bf4e5185331bb917b762cb.jpg'
         }
       ],
       totalList: [],
       code: ''
     }
   },
-  created() {
-    this.code = this.type === 'edu' ? this.eduCode : this.schoolCode
-  },
-  async mounted() {
-    if (this.chooseType === 'attendance') {
-      const res = await $ajax.get({
-        url: `${hostEnv.lz_attendance}/attendance/group/bind/user/query`,
-        params: {
-          attendanceUserId: this.bindObj.id
-        }
-      })
-      const users = res.data
-      users.forEach((item) => {
-        this.chooseList.push(item.userCode)
-        this.totalList.push({
-          userCode: item.userCode,
-          userName: item.userName,
-          id: item.userCode
-        })
-      })
-      this.getUserList(true)
-    } else if (this.chooseType === 'door') {
-      const res = await $ajax.post({
-        url: `${hostEnv.zx_door}/setting/rule/user/list`,
-        params: {
-          pageNum: 1,
-          pageSize: 5000,
-          ruleGroupCode: this.bindObj.ruleGroupCode,
-          schoolCode: this.bindObj.schoolCode,
-          userGroupCode: this.bindObj.userGroupCode
-        }
-      })
-      const users = res.data.list
-      users.forEach((item) => {
-        this.chooseList.push(item.userCode)
-        this.totalList.push({
-          id: item.userCode,
-          userCode: item.userCode,
-          userName: item.userName
-        })
-      })
-      this.getUserList(true)
-    } else if (this.chooseType === 'organize') {
-      const res = await $ajax.get({
-        url: `${hostEnv.ljj_user_center}/userjob/query/by/schoolcode/and/jobcode`,
-        params: {
-          pageNum: 1,
-          pageSize: 5000,
-          schoolCode: this.bindObj.eduCode,
-          jobCode: this.bindObj.jobCode
-        }
-      })
-      const users = res.data
-      users.forEach((item) => {
-        this.chooseList.push(item.userCode)
-        this.totalList.push({
-          id: item.userCode,
-          userCode: item.userCode,
-          userName: item.userName
-        })
-      })
-      this.getUserList(true)
-    } else if (this.chooseType === 'school') {
-      const res = await $ajax.get({
-        url: `${hostEnv.ljj_user_center}/userjob/query/by/schoolcode/and/jobcode`,
-        params: {
-          pageNum: 1,
-          pageSize: 5000,
-          schoolCode: this.bindObj.schoolCode,
-          jobCode: this.bindObj.jobCode
-        }
-      })
-      const users = res.data
-      users.forEach((item) => {
-        this.chooseList.push(item.userCode)
-        this.totalList.push({
-          id: item.userCode,
-          userCode: item.userCode,
-          userName: item.userName
-        })
-      })
-      this.getUserList(true)
-    } else if (this.chooseType === 'dorm') {
-      const res = await $ajax.postJsonQuery({
-        url: `${hostEnv.ljj_dorm}/dorm/staff/building/list`,
-        params: {
-          page: 1,
-          size: 5000,
-          buildingCode: this.bindObj.buildingCode,
-          schoolCode: this.bindObj.schoolCode
-        }
-      })
-      const users = res.data.list
-      users.forEach((item) => {
-        this.chooseList.push(item.staffCode)
-        this.totalList.push({
-          id: item.id,
-          userCode: item.staffCode,
-          userName: item.staffName
-        })
-      })
-      this.getUserList(true)
-    } else if (this.chooseType === 'ncov') {
-      this.pageList.size = 5000
-      const res = await $ajax.get({
-        url: `${hostEnv.lz_ncov}/epidemic/group/bind/user/query`,
-        params: {
-          groupCode: this.bindObj.groupCode
-        }
-      })
-      const users = res.data
-      users.forEach((item) => {
-        this.chooseList.push(item.userCode)
-        this.totalList.push({
-          id: item.userCode,
-          userCode: item.userCode,
-          userName: item.userName
-        })
-      })
-      this.getUserList(true)
-    } else if (this.chooseType === 'common') {
-      this.teacherList.forEach((item) => {
-        this.chooseList.push(item.userCode || item.key)
-        this.totalList.push({
-          id: item.userCode || item.key,
-          userCode: item.userCode || item.key,
-          userName: item.userName || item.label
-        })
-      })
-      this.getUserList(true)
-    } else if (this.chooseType === 'class') {
-      const res = await $ajax.get({
-        url: `${hostEnv.zk_moral}/appraise/item/user/list/${this.bindObj.groupCode}`
-      })
-      const users = res.data
-      users.forEach((item) => {
-        this.chooseList.push(item.userCode)
-        this.totalList.push({
-          id: item.userCode,
-          userCode: item.userCode,
-          userName: item.userName
-        })
-      })
-      this.getUserList(true)
-    } else {
-      this.getUserList()
+  mounted() {
+    if (!this.classId) {
+      return
     }
-    this.managerList.forEach((item) => {
-      this.chooseList.push(item.userCode)
-      this.totalList.push({
-        ...item,
-        id: item.userCode
-      })
-    })
-    // this.getUserList()
+    this.getUserList()
   },
   methods: {
-    /**
-     * @description 门禁已绑定人查询
-     */
-    doorBindUser(page) {},
     changePage() {
       if (!this.chooseType) {
         this.getUserList(false)
@@ -386,48 +220,29 @@ export default {
       }
     },
     async getUserList(type = false) {
-      const res = await $ajax.post({
-        url: `${hostEnv.lz_user_center}/userinfo/teacher/user/queryTeacherInfo`,
-        params: {
-          orgCode: this.orgCode,
-          address: this.address,
-          deviceName: this.deviceName,
-          hasPhoto: this.hasPhoto,
-          schoolCode: this.code,
-          ...this.pageList
-        }
-      })
-      this.userList = res.data.list.map((item) => {
-        let id = item.id
-        if (type) id = item.userCode
-        if (type && this.chooseType === 'rule') {
-          id = item.id
-        }
-        return {
-          ...item,
-          id
-        }
-      })
-      this.total = res.data.total
-    },
-    defaultCode(item) {
-      this.orgCode = item.code[0]
-    },
-    select(item) {
-      this.pageList.page = 1
-      this.orgCode = item.code
-      if (this.chooseType) {
-        this.getUserList(true)
-      } else {
-        this.getUserList()
-      }
-    },
-    reset() {
-      this.confirmLoading = false
-      this.$emit('input', false)
-    },
-    error() {
-      this.confirmLoading = false
+      // const res = await $ajax.post({
+      //   url: `${hostEnv.lz_user_center}/userinfo/teacher/user/queryTeacherInfo`,
+      //   params: {
+      //     orgCode: this.orgCode,
+      //     address: this.address,
+      //     deviceName: this.deviceName,
+      //     hasPhoto: this.hasPhoto,
+      //     schoolCode: this.code,
+      //     ...this.pageList
+      //   }
+      // })
+      // this.userList = res.data.list.map((item) => {
+      //   let id = item.id
+      //   if (type) id = item.userCode
+      //   if (type && this.chooseType === 'rule') {
+      //     id = item.id
+      //   }
+      //   return {
+      //     ...item,
+      //     id
+      //   }
+      // })
+      // this.total = res.data.total
     },
     delUser(id, index) {
       this.totalList.splice(index, 1)
@@ -468,7 +283,8 @@ export default {
       }
     },
     submitOk() {
-      if (this.totalList.length === 0 && this.bindId === -1) {
+      console.log(this.totalList)
+      if (this.totalList.length === 0) {
         this.$message.warning('请选择人员')
         return
       }

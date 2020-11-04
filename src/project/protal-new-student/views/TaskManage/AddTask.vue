@@ -44,12 +44,9 @@
         />
       </a-form-item>
       <a-form-item :wrapper-col="{ span: 15, offset: 3 }">
-        <a-button
-          type="primary"
-          style="width: 100px; height: 40px; margin-top: 50px"
-          @click="handleSubmit"
-        >保存</a-button
-        >
+        <a-button type="primary" style="width: 100px; height: 40px; margin-top: 50px" @click="handleSubmit">
+          保存
+        </a-button>
       </a-form-item>
     </a-form>
     <select-project
@@ -188,20 +185,10 @@ export default {
           count: 555
         }
       ]
-      this.formData.taskName = '软件技术招生'
-      this.handleChangeGrade('2020')
-      this.formData.endTime = moment(new Date('2020-12-30'), 'YYYY/MM/DD')
     }
   },
   methods: {
-    ...mapActions('home', [
-      'getSiteList',
-      'getChildSite',
-      'addReserve',
-      'getReserveList',
-      'checkReserve',
-      'reserveDetail'
-    ]),
+    ...mapActions('home', ['addReserve']),
     handleChangeCount(val, key) {
       if (!key) {
         return
@@ -245,7 +232,9 @@ export default {
         return item
       })
     },
-    onChangeDate() {},
+    onChangeDate(time) {
+      this.formData.endTime = time
+    },
     async showSiteList(type, id) {
       this.siteList = []
       let res = null
