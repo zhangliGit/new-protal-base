@@ -44,7 +44,8 @@
       </a-col>
     </a-row>
     <div class="choose-user qui-fx">
-      <grade-tree isOnlyNewSchoolYear @select="select"></grade-tree>
+      <major-tree v-if="userInfo.schoolType === '8'" @select="select"></major-tree>
+      <grade-tree v-else isOnlyNewSchoolYear @select="select"></grade-tree>
       <div class="qui-fx-ver qui-fx-f1">
         <table-list
           :is-check="isCheck"
@@ -98,6 +99,7 @@ import TableList from './TableList'
 import $ajax from '@u/ajax-serve'
 import { mapState } from 'vuex'
 import GradeTree from './GradeTree'
+import MajorTree from './MajorTree'
 import hostEnv from '@config/host-env'
 const columns = [
   {
@@ -146,7 +148,8 @@ export default {
   components: {
     PageNum,
     TableList,
-    GradeTree
+    GradeTree,
+    MajorTree
   },
   props: {
     isTotal: {
@@ -199,7 +202,7 @@ export default {
     }
   },
   computed: {
-    ...mapState('home', ['schoolCode']),
+    ...mapState('home', ['schoolCode', 'userInfo']),
     status: {
       get() {
         return this.value
@@ -210,7 +213,8 @@ export default {
     }
   },
   async mounted() {
-    this.url = this.noBind
+    console.log('sss', this.userInfo)
+    this.url = this.userInfo.schoolType === '8' ? '/student/manage/list' : this.noBind
       ? '/userinfo/student/user/queryNoClassStudentInfos'
       : '/userinfo/student/user/queryStudentInfoList'
     if (this.chooseType === 'attendance') {
@@ -290,7 +294,8 @@ export default {
       columns,
       userList: [],
       totalList: [],
-      schoolYear: ''
+      schoolYear: '',
+      treeObj: {}
     }
   },
   methods: {
@@ -349,6 +354,10 @@ export default {
           gradeId: this.treeObj ? this.treeObj.gradeCode : '',
           classId: this.treeObj ? this.treeObj.classCode : '',
           schoolYearId: this.treeObj ? this.treeObj.schoolYearId : '',
+          subjectCode: this.userInfo.schoolType === '8' ? this.treeObj.subjectCode : '',
+          gradeCode: this.userInfo.schoolType === '8' ? this.treeObj.gradeCode : '',
+          grade: this.userInfo.schoolType === '8' ? this.treeObj.gradeName : '',
+          classCode: this.userInfo.schoolType === '8' ? this.treeObj.classCode : '',
           ...this.pageList
         }
       })
@@ -385,7 +394,6 @@ export default {
     },
     // 监听选中或取消
     clickRow(item, type) {
-      // console.log(item)
       if (type) {
         if (this.isCheck) {
           this.totalList.push({
@@ -396,9 +404,10 @@ export default {
             photoUrl: item.photoUrl,
             classCode: item.classCode,
             className: item.className,
-            gradeCode: item.gradeCode,
-            gradeName: item.gradeName,
-            schoolYearId: item.schoolYearId
+            gradeCode: this.userInfo.schoolType === '8' ? item.grade : item.gradeCode,
+            gradeName: this.userInfo.schoolType === '8' ? '' : item.gradeName,
+            schoolYearId: this.userInfo.schoolType === '8' ? '' : item.schoolYearId,
+            subjectCode: this.userInfo.schoolType === '8' ? item.subjectCode : ''
           })
         } else {
           this.totalList = [item]
@@ -413,6 +422,7 @@ export default {
         this.$message.warning('请选择人员')
         return
       }
+      console.log('this.totalList',this.totalList)
       this.confirmLoading = true
       this.$emit('submit', this.totalList)
     },

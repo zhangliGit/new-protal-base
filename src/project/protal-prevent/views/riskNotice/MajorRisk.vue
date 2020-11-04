@@ -23,39 +23,21 @@
           <img :src="detailInfo.photoUrl" alt="">
         </div>
         <div v-else>
-          <div>
-            <div class="info-box qui-fx">
-              <div class="info-title">部门：</div>
-              <div class="info-content qui-fx-f1">{{ detailInfo.deptName }}</div>
-            </div>
-            <div class="info-box qui-fx">
-              <div class="info-title">岗位：</div>
-              <div class="info-content qui-fx-f1">{{ detailInfo.responsibilityPostName }}</div>
-            </div>
-          </div>
           <div class="img-box qui-fx">
-            <div class="info-title">检查对象：</div>
-            <div class="info-content qui-fx-f1">{{ detailInfo.checkObject }}</div>
-          </div>
-          <div class="img-box qui-fx">
-            <div class="info-title">风险编号：</div>
-            <div class="info-content qui-fx-f1">{{ detailInfo.riskAssessmentId }}</div>
+            <div class="info-title">项目名称：</div>
+            <div class="info-content qui-fx-f1">{{ detailInfo.name }}</div>
           </div>
           <div class="img-box qui-fx">
             <div class="info-title">事故类型：</div>
-            <div class="info-content qui-fx-f1">{{ detailInfo.riskType }}</div>
+            <div class="info-content qui-fx-f1">{{ detailInfo.accidentResult }}</div>
           </div>
           <div class="img-box qui-fx">
-            <div class="info-title">潜在风险：</div>
-            <div class="info-content qui-fx-f1">{{ detailInfo.riskContent }}</div>
+            <div class="info-title">管控措施：</div>
+            <div class="info-content qui-fx-f1">{{ detailInfo.manageMeasures }}</div>
           </div>
           <div class="img-box qui-fx">
             <div class="info-title">应急处置：</div>
             <div class="info-content qui-fx-f1">{{ detailInfo.emergencyMeasure }}</div>
-          </div>
-          <div class="img-box qui-fx">
-            <div class="info-title">责任人：</div>
-            <div class="info-content qui-fx-f1">{{ detailInfo.emergencyUser }}</div>
           </div>
           <div class="img-box qui-fx">
             <div class="info-title">警示标识：</div>
@@ -265,8 +247,8 @@ export default {
             const opts = {
               centered: false,
               getImage(dataURL, signs) {
-                 console.log('11dataURL', dataURL);
-                 console.log('signs', signs);
+                console.log('11dataURL', dataURL)
+                console.log('signs', signs)
                 return new Promise((resolve, reject) => {
                   JSZipUtils.getBinaryContent(dataURL, (error, content) => {
                     if (error) {

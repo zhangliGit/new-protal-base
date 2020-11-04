@@ -25,7 +25,7 @@ const roomManage = {
       state
     }, params = {}) {
       const res = await $ajax.post({
-        url: baseApi.getStudentList,
+        url: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolType === '8' ? baseApi.getHighStu : baseApi.getStudentList,
         params
       })
       return resultBack(res)

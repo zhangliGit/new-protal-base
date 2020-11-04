@@ -68,7 +68,7 @@
               placement="left"
               okText="确定"
               cancelText="取消"
-              @confirm="del(1, action.record)"
+              @confirm="del(action.record)"
             >
               <template slot="title">您确定移除吗?</template>
               <a-tooltip placement="topLeft" title="移除">
@@ -190,7 +190,7 @@ export default {
         page: 1,
         size: 99999
       }
-      const res = await this.getHighTerm(req)
+      const res = await this.getHighGrade(req)
       if (res.data.records.length === 0) {
         return
       }
@@ -313,7 +313,7 @@ export default {
     },
     // 查询
     searchForm(value) {
-      this.pageList.page = 0
+      this.pageList.page = 1
       this.pageList.size = 20
       this.searchList = Object.assign(this.searchList, value)
       this._getHighStu()
