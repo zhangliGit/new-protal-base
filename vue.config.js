@@ -410,6 +410,13 @@ module.exports = {
           '^/hzz_tooken': ''
         }
       },
+      '/hzz_apply': {
+        target: 'http://192.168.2.242:11022/', // 胡周志-应用管理
+        changeOrigin: true,
+        pathRewrite: {
+          '^/hzz_apply': ''
+        }
+      },
       '/wxz_notice': {
         target: 'http://192.168.1.123:18090/', // 王选章-通知公告
         changeOrigin: true,

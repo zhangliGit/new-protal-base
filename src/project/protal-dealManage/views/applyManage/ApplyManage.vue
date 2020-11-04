@@ -6,24 +6,25 @@
       title="编辑应用"
       v-model="formStatus"
       :form-data="formData"
+      @onSearch="onSearch"
     ></submit-form>
     <search-form is-reset @search-form="searchForm" :search-label="searchLabel"></search-form>
     <div class="qui-fx-f1 qui-fx">
-      <table-list :page-list="pageList" :columns="columns" :table-list="orderList">
+      <table-list :page-list="pageList" :columns="columns" :table-list="applyList">
         <template v-slot:actions="action">
           <a-tooltip placement="topLeft" title="编辑">
             <a-button size="small" class="edit-action-btn" icon="form" @click.stop="edit(action.record)"></a-button>
           </a-tooltip>
-          <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="del(action.record)">
+          <!-- <a-popconfirm placement="left" okText="确定" cancelText="取消" @confirm="del(action.record)">
             <template slot="title">您确定删除吗?</template>
             <a-tooltip placement="topLeft" title="删除">
               <a-button size="small" class="del-action-btn" icon="delete"></a-button>
             </a-tooltip>
-          </a-popconfirm>
+          </a-popconfirm> -->
         </template>
       </table-list>
     </div>
-    <page-num v-model="pageList" :total="total" @change-page="_getOrderList"></page-num>
+    <page-num v-model="pageList" :total="total" @change-page="_getApplyList"></page-num>
   </div>
 </template>
 
@@ -33,35 +34,34 @@ import SearchForm from '@c/SearchForm'
 import SubmitForm from '@c/SubmitForm'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
-import Tools from '@u/tools'
+// import Tools from '@u/tools'
 const formData = [
   {
-    value: 'everydayConsume',
+    value: 'appName',
     initValue: '',
     type: 'input',
     label: '应用名称',
     placeholder: '请输入应用名称'
   },
   {
-    value: 'AppKey',
+    value: 'clientId',
     initValue: '',
     type: 'input',
     label: 'AppKey',
     disabled: true
   },
   {
-    value: 'AppSecret',
+    value: 'clientSecret',
     initValue: '',
     type: 'input-button',
     label: 'AppSecret',
-    disabled: true,
-    buttonText: '重置',
-    onSearch: function() {}
+    readonly: true,
+    buttonText: '重置'
   }
 ]
 const searchLabel = [
   {
-    value: 'orderId',
+    value: 'appName',
     type: 'input',
     label: '应用名称',
     placeholder: '请输入应用名称'
@@ -81,7 +81,7 @@ const searchLabel = [
         val: '已禁用'
       }
     ],
-    value: 'source',
+    value: 'status',
     type: 'select',
     label: '启用状态'
   }
@@ -96,20 +96,20 @@ const columns = [
   },
   {
     title: '应用名称',
-    dataIndex: 'orderId',
+    dataIndex: 'appName',
     width: '12%'
   },
   {
     title: 'AppKey',
-    dataIndex: 'orderSuccTime',
+    dataIndex: 'clientId',
     width: '12%'
   },
   {
     title: 'AppSecret',
-    dataIndex: 'remark',
+    dataIndex: 'clientSecret',
     width: '12%'
   },
-  {
+  /* {
     title: '添加人',
     dataIndex: 'userCode',
     width: '12%'
@@ -126,7 +126,7 @@ const columns = [
     title: '启用状态',
     dataIndex: 'discountAmount',
     width: '12%'
-  },
+  }, */
   {
     title: '操作',
     key: 'action',
@@ -156,29 +156,27 @@ export default {
         size: 20
       },
       total: 0,
-      orderList: []
+      applyList: []
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
-    this._getOrderList()
+    this._getApplyList()
   },
   methods: {
-    ...mapActions('home', ['getOrderList']),
+    ...mapActions('home', ['getApplyList', 'editApply']),
     /**
      * @description 获取列表
      */
-    async _getOrderList() {
-      const res = await this.getOrderList({
-        page: this.pageList.page,
-        size: this.pageList.size,
+    async _getApplyList() {
+      const res = await this.getApplyList({
+        ...this.pageList,
         status: this.searchObj.status || '',
-        orderId: this.searchObj.orderId || '',
-        source: this.searchObj.source || ''
+        appName: this.searchObj.appName || ''
       })
-      this.orderList = res.data.records
+      this.applyList = res.data.records
       this.total = res.data.total
     },
     /**
@@ -191,6 +189,7 @@ export default {
     },
     edit(record) {
       this.formStatus = true
+      this.appId = record.appId
       this.formData = this.$tools.fillForm(formData, record)
       this.record = record
     },
@@ -203,6 +202,42 @@ export default {
       })
     },
     submitForm(values) {
+      console.log(values)
+      const req = {
+        ...values,
+        appId: this.appId
+      }
+      this.editApply(req)
+        .then(() => {
+          this.$message.success('编辑成功')
+          this.$tools.goNext(() => {
+            this._getApplyList()
+            this.$refs.form.reset()
+          })
+        })
+        .catch(() => {
+          this.$refs.form.error()
+        })
+    },
+    /**
+     * @description 重置AppSecret
+     */
+    onSearch(value) {
+      this.formData[2].initValue = this.randomString(16)
+      console.log(this.formData[2].initValue)
+    },
+    /**
+     * @description 生成随机序列号
+     */
+    randomString(n) {
+      const str = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ9876543210'
+      let tmp = ''
+      let i = 0
+      const l = str.length
+      for (i = 0; i < n; i++) {
+        tmp += str.charAt(Math.floor(Math.random() * l))
+      }
+      return tmp
     }
   }
 }
