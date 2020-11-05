@@ -232,6 +232,11 @@ export default {
       }
     },
     submitForm(values) {
+      if (values.everydayConsume < 0 || values.singleConsume < 0) {
+        this.$message.warning('金额不能为负数')
+        this.$refs.form.error()
+        return
+      }
       const req = {
         ...values,
         schoolCode: this.schoolCode

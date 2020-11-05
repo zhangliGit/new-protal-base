@@ -8,7 +8,7 @@
         </template>
         <template v-slot:actions="action">
           <a-tag color="#2db7f5" @click="toDetail(action.record, 'cardDetails')">详情</a-tag>
-          <a-tag color="#2db7f5" @click="toDetail(action.record, 'cardOperationRecord')">操作记录</a-tag>
+          <a-tag color="#2db7f5" @click="toRecord(action.record, 'cardOperationRecord')">操作记录</a-tag>
         </template>
       </table-list>
     </div>
@@ -165,6 +165,9 @@ export default {
     toDetail(record, name) {
       window.localStorage.setItem('cardInfo', JSON.stringify(record))
       this.$router.push({ name, query: { id: record.id } })
+    },
+    toRecord(record, name) {
+      this.$router.push({ name, query: { name: record.userName } })
     }
   }
 }

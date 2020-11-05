@@ -90,19 +90,19 @@
     </show-dialog>
     <detail-show :detail-info="detailInfo" :title="detailTitle" :photoSrc="detail.photoUrl">
       <div>
-        <a-button @click="showCard(0)" v-if="detail.cardInfo.status === '1'" class="add-btn">挂失</a-button>
-        <a-button @click="showCard(1)" v-if="detail.cardInfo.status === '2'" class="export-btn">解挂</a-button>
+        <a-button @click="showCard(0)" v-if="detail.status !=='3' && detail.cardInfo.status === '1'" class="add-btn">挂失</a-button>
+        <a-button @click="showCard(1)" v-if="detail.status !=='3' && detail.cardInfo.status === '2'" class="export-btn">解挂</a-button>
         <a-button
           @click="showCard(2)"
-          v-if="detail.cardInfo.status === '1' || detail.cardInfo.status === '2'"
+          v-if="detail.status !=='3' && (detail.cardInfo.status === '1' || detail.cardInfo.status === '2')"
           class="export-all-btn"
         >换卡</a-button>
         <a-button
           @click="showCard(3)"
-          v-if="detail.cardInfo.status === '1' || detail.cardInfo.status === '2'"
+          v-if="detail.status !=='3' && (detail.cardInfo.status === '1' || detail.cardInfo.status === '2')"
           class="del-btn"
         >退卡</a-button>
-        <a-button @click="showCard(4)" v-if="detail.cardInfo.status === '0'" class="add-btn">开卡</a-button>
+        <a-button @click="showCard(4)" v-if="detail.status !=='3' && detail.cardInfo.status === '0'" class="add-btn">开卡</a-button>
       </div>
     </detail-show>
     <crad class="crad">
@@ -334,6 +334,10 @@ export default {
       }
       if (!this.recordRemark) {
         this.$message.warning('请输入备注')
+        return
+      }
+      if (this.detail.deposit < 0 || this.detail.balance < 0) {
+        this.$message.warning('金额不能为负数')
         return
       }
       this.$refs.cardForm.loading = true
