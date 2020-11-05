@@ -5,41 +5,31 @@
 import hostEnv from '@config/host-env'
 
 const baseData1Api = {
-  // 组织机构
-  getOrgBySchool: '/school/org/getSchoolRoot#getUrl', // 查询组织机构
-  getOrgList: '/school/org/detail#getUrl', // 通过组织结构Id查询组织结构
+  // 专业管理
+  highSubDetail: '/subject/manage/info#getUrl', // 根据id查询详情
+  getHighSub: '/subject/manage/list#post', // 列表查询
 
-  // 年级管理
-  getSchoolYear: '/schoolYearSemester/list#postForm', // 查询学年列表
-  getGradeData: '/grade/manage/list#postForm', // 查询年级列表
+  // 学年管理
+  highTermDetail: '/school/year/manage/detail#postForm', // 详情
+  getHighTerm: '/school/year/manage/list#post', // 列表
 
   // 班级管理
-  getClassData: '/classManage/list#post' // 查询班级列表
+  highClassDetail: '/class/manage/detail#get', // 详情
+  getHighClass: '/class/manage/list#post', // 列表查询
+  getHighNode: '/class/manage/node#get', // 班级节点查询
+  getHighGrade: '/class/manage/query/grade#get' // 查询年级
 }
+
 const baseData2Api = {
   // 文件上传
   addPhoto: '/file/uploadUserPhoto#post', // 上传照片
-  addFile: '/file/freeUpload#post', // 上传文件
-
-  // 场地管理
-  getSiteList: '/place/manage/getFirstStagePlaceList#get', // 查询场地信息列表
-  addSiteManage: '/place/manage/addPlaceManage#post', // 添加场地
-  editSiteManage: '/place/manage/updatePlaceManage#post', // 更新场地
-  getSiteById: '/place/manage/getPlaceManageById#getUrl', // 根据id获取场地信息
-  getChildSite: '/place/manage/getPlaceManageList#post', // 查询场地子节点列表
-  deleteSite: '/place/manage/delPlaceManageById#del', // 根据id删除场地
-
-  // 学科管理
-  addSub: '/subject/manage/add#post', // 添加学科信息
-  editSub: '/subject/manage/update#post', // 根据id更新学科信息
-  getSubById: '/subject/manage/getSubjectById#getUrl', // 根据id查询学科信息
-  getSubList: '/subject/manage/getSubjectList#post', // 查询学科列表
-  deleteSub: '/subject/manage/delSubjectById#del' // 根据id删除学科信息
+  addFile: '/file/freeUpload#post' // 上传文件
 }
 
 for (const val in baseData1Api) {
-  baseData1Api[val] = `${hostEnv.lz_user_center}${baseData1Api[val]}`
+  baseData1Api[val] = `${hostEnv.ljj_high}${baseData1Api[val]}`
 }
+
 for (const val in baseData2Api) {
   baseData2Api[val] = `${hostEnv.zk_school}${baseData2Api[val]}`
 }

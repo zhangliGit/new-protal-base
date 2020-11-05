@@ -68,15 +68,15 @@ const searchLabel = [
         val: '全部'
       },
       {
-        key: '0',
+        key: '1',
         val: '申请中'
       },
       {
-        key: '1',
+        key: '2',
         val: '申请失败'
       },
       {
-        key: '2',
+        key: '3',
         val: '申请成功'
       }
     ],
@@ -508,21 +508,30 @@ export default {
     ]
   },
   methods: {
-    ...mapActions('home', ['getPageList', 'recordDetail', 'downRecord']),
+    ...mapActions('home', ['getStudentList']),
     async showList(searchObj = {}) {
       this.searchList = Object.assign(this.searchList, this.pageList, searchObj)
-      const res = await this.getPageList(this.searchList)
+      const res = await this.getStudentList(this.searchList)
       this.userList = res.data.list
       this.total = res.data.total
     },
     // 条件搜索
     searchForm(values) {
+      const { idCard, name, status } = values
       this.pageList.page = 1
       const searchObj = {
-        name: values.name,
-        idCard: values.idCard
+        classCode: '', // 分配班级编码
+        finalMajorCode: '', // 分配专业编码
+        grade: 0, // 年级
+        hasCheckIn: true, // 报到状态 true:已报到；false:未报到
+        idNumber: idCard, // 身份证号
+        majorCode: '', // 	申请专业编码
+        majorName: '', // 申请专业名称
+        schoolCode: '', // 学校编码
+        state: status, // 申请状态 1:申请中；2：失败；3：成功
+        studentName: name // 学生姓名
       }
-      this.showList(searchObj)
+      // this.showList(searchObj)
     },
     // 去详情
     detail(id) {

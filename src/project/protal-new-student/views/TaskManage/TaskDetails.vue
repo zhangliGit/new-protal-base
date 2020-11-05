@@ -37,11 +37,11 @@ const columns = [
   },
   {
     title: '专业',
-    dataIndex: 'project'
+    dataIndex: 'majorName'
   },
   {
     title: '招生人数',
-    dataIndex: 'count'
+    dataIndex: 'studentNum'
   }
 ]
 export default {
@@ -78,23 +78,7 @@ export default {
           text: '2020/12/34 12:12:12'
         }
       ],
-      projectList: [
-        {
-          id: '1',
-          project: '语文',
-          count: 555
-        },
-        {
-          id: '2',
-          project: '软件技术',
-          count: 555
-        },
-        {
-          id: '3',
-          project: '科学与技术',
-          count: 555
-        }
-      ],
+      projectList: [],
       columns
     }
   },
@@ -102,24 +86,34 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
-    console.log(this.$route.query.id)
+    const id = this.$route.query.id
+    if (!id) {
+      this.$router.push({
+        path: '/taskManage'
+      })
+      return
+    }
+    this.showList(id)
   },
   methods: {
-    ...mapActions('home', ['getReserveList', 'delReserve']),
-    async showList() {
-      const req = {
-        ...this.searchObj,
-        ...this.pageList,
-        schoolCode: this.userInfo.schoolCode,
-        type: '1'
+    ...mapActions('home', ['taskDetailById']),
+    // 任务详情
+    async showList(id) {
+      const res = await this.taskDetailById(id)
+      console.log(res)
+      if (res && res.code === 200) {
+        const { taskName, closingDate, createTime, createUserName, gradeNum, majorList } = res.data
+        this.baseList = this.baseList.map((item, index) => {
+          const arr = [taskName, createTime, gradeNum, createUserName, closingDate]
+          return {
+            ...item,
+            text: arr[index]
+          }
+        })
+        this.projectList = majorList || []
       }
-      const res = await this.getReserveList(req)
-      this.bookingList = res.data.list
-      this.bookingList.map((el) => {
-        el.placeName = el.placeName.replace(/,/g, '-')
-      })
-      this.total = res.data.total
     },
+    // 编辑任务
     editMsg() {
       const id = this.$route.query.id
       this.$router.push({

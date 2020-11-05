@@ -6,6 +6,9 @@
       </div>
     </search-form>
     <table-list isZoom :page-list="pageList" :columns="columns" :table-list="taskList">
+      <template v-slot:other1="other1">
+        <span> {{ getYearName(other1.record.id) }} </span>
+      </template>
       <template v-slot:actions="action">
         <a-tooltip placement="topLeft" title="查看">
           <a-button
@@ -32,6 +35,7 @@ import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
 import SearchForm from '@c/SearchForm'
+import Tools from '@u/tools'
 const columns = [
   {
     title: '序号',
@@ -47,27 +51,33 @@ const columns = [
   },
   {
     title: '年级',
-    dataIndex: 'grade',
-    width: '10%'
+    dataIndex: 'gradeNum',
+    width: '10%',
+    scopedSlots: {
+      customRender: 'other1'
+    }
   },
   {
     title: '招生专业',
-    dataIndex: 'subject',
+    dataIndex: 'majorNum',
     width: '15%'
   },
   {
     title: '招生人数',
-    dataIndex: 'stuCount',
+    dataIndex: 'studentNum',
     width: '10%'
   },
   {
     title: '截止时间',
-    dataIndex: 'endTIime',
-    width: '20%'
+    dataIndex: 'closingDate',
+    width: '20%',
+    customRender: (text) => {
+      return Tools.getDate(text)
+    }
   },
   {
     title: '二维码',
-    dataIndex: 'code',
+    dataIndex: 'taskCode',
     width: '15%',
     scopedSlots: {
       customRender: 'codePic'
@@ -174,6 +184,21 @@ export default {
       // this.$tools.goNext(() => {
       //   this.showList()
       // })
+    },
+    // 获取学年名称
+    getYearName(id) {
+      console.log(this.schoolYear.list)
+      if (!this.schoolYear.list || this.schoolYear.list.length === 0) {
+        return ''
+      }
+      const list = this.schoolYear.list.filter((item) => {
+        return item.id !== id
+      })
+
+      if (list.length > 0) {
+        return list[0].schoolYear
+      }
+      return ''
     }
   }
 }

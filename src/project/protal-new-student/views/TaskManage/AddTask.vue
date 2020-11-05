@@ -97,7 +97,6 @@ export default {
       showProjectList: false,
       title: '选择专业',
       grade: '',
-      options: [],
       projectList: [
         {
           projectName: '软件技术',
@@ -147,7 +146,10 @@ export default {
     }
   },
   computed: {
-    ...mapState('home', ['userInfo', 'schoolYear'])
+    ...mapState('home', ['userInfo', 'schoolYear']),
+    options() {
+      return this.schoolYear.list || []
+    }
   },
   mounted() {
     this.maxHeight = window.screen.height - 280 + 'px'
@@ -173,8 +175,6 @@ export default {
         }
       ]
     }
-
-    this.options = this.schoolYear.list || []
   },
   methods: {
     ...mapActions('home', ['addTask']),
@@ -233,30 +233,30 @@ export default {
             this.$message.error('请选择专业')
             return
           }
-          const params = {
-            taskName: this.formData.taskName,
-            grade: this.form.getFieldValue('grade'),
-            endTime: new Date(this.formData.endTime).getTime(),
-            projectList: this.selectList.map((item) => {
-              return {
-                id: item.id,
-                count: item.count
-              }
-            })
-          }
-          console.log(params)
-          const { endTime, grade, projectList, taskName } = params
           const req = {
             schoolCode: this.userInfo.schoolCode,
-            taskName,
-            closingDate: endTime,
+            taskName: this.formData.taskName,
+            closingDate: new Date(this.formData.endTime).getTime(),
             createUserCode: this.userInfo.userCode,
             createUserName: this.userInfo.userName,
-            gradeNum: grade,
-            majorList: []
+            gradeNum: this.form.getFieldValue('grade'),
+            majorList: [
+              {
+                majorCode: 'xyyz001',
+                majorName: '软件开发',
+                studentNum: 500
+              }
+            ]
           }
           const res = await this.addTask(req)
-          console.log(res)
+          if (res && res.code === 200) {
+            this.$message.success('添加成功')
+            this.$router.push({
+              path: '/taskManage'
+            })
+          } else {
+            this.$message.error('添加失败')
+          }
         }
       })
     }

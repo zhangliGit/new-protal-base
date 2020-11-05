@@ -434,7 +434,7 @@ module.exports = {
       },
       '/wq_school': {
         // target: 'http://192.168.1.236:8092/', // 王齐-招生迎新系统
-        target: 'http://192.168.1.236:8092/',
+        target: 'http://192.168.2.242:8095/',
         changeOrigin: true,
         pathRewrite: {
           '^/wq_school': ''

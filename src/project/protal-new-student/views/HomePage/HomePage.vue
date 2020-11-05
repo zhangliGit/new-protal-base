@@ -136,13 +136,18 @@ export default {
     this.getYear()
   },
   methods: {
-    ...mapActions('home', ['getSchoolYear']),
+    ...mapActions('home', ['getHighTerm']),
     // 获取学年
     async getYear() {
       const req = {
-        schoolCode: this.userInfo.schoolCode
+        schoolCode: this.userInfo.schoolCode,
+        page: 1,
+        semesterName: '',
+        size: 100,
+        state: ''
       }
-      const res = await this.getSchoolYear(req)
+      const res = await this.getHighTerm(req)
+      console.log(res)
       if (res.code === 200) {
         this.yearList = res.data.list || []
         sessionStorage.setItem('schoolYear', JSON.stringify(res.data))

@@ -9,15 +9,18 @@ const zsApi = {
   // 招生任务
   getTaskList: '/recruitStudentTask/page#post', // 招生任务列表
   addTask: '/recruitStudentTask/add#post', // 添加招生任务
-  taskDetail: '/material/type/detail/#getWithPara', // ID查详情
-  delTask: '/material/type/delete#del' // 删除
+  editTask: '/recruitStudentTask/modify#post', // 修改招生任务
+  taskDetailById: '/recruitStudentTask/info#getUrl', // ID查详情
+  taskDetailByCode: '/recruitStudentTask/detail#getUrl', // Code查详情
+  delTask: '/recruitStudentTask/remove#del', // 删除 id
+  batchDelTask: '/recruitStudentTask/removes#del' // 批量删除 ids
 }
 
 const sqApi = {
   // 新生申请
-  getStudentList: '/material/name/getPage#post', // 学生列表
-  addStudent: '/material/name/addOrUpdate#post', // 新增学生
-  studentDetail: '/material/name/detail/#getWithPara', // ID查详情
+  getStudentList: '/recruitStudentInfo/page#post', // 学生列表
+  addStudent: '/recruitStudentInfo/add#post', // 新增学生
+  studentDetail: '/material/name/detail/#getUrl', // ID查详情
   singleCheck: '/material/name/delete#del', // 单个操作-通过/拒绝
   batchCheck: '/material/name/delete#del' // 批量操作-通过/拒绝
 }
