@@ -44,7 +44,7 @@
       </a-col>
     </a-row>
     <div class="choose-user qui-fx">
-      <major-tree v-if="userInfo.schoolType === '8'" @select="select"></major-tree>
+      <major-tree v-if="userInfo.schoolType === '8' || userInfo.schoolType === '9'" @select="select"></major-tree>
       <grade-tree v-else isOnlyNewSchoolYear @select="select"></grade-tree>
       <div class="qui-fx-ver qui-fx-f1">
         <table-list
@@ -214,7 +214,7 @@ export default {
   },
   async mounted() {
     console.log('sss', this.userInfo)
-    this.url = this.userInfo.schoolType === '8' ? '/student/manage/list' : this.noBind
+    this.url = (this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') ? '/student/manage/list' : this.noBind
       ? '/userinfo/student/user/queryNoClassStudentInfos'
       : '/userinfo/student/user/queryStudentInfoList'
     if (this.chooseType === 'attendance') {
@@ -354,10 +354,10 @@ export default {
           gradeId: this.treeObj ? this.treeObj.gradeCode : '',
           classId: this.treeObj ? this.treeObj.classCode : '',
           schoolYearId: this.treeObj ? this.treeObj.schoolYearId : '',
-          subjectCode: this.userInfo.schoolType === '8' ? this.treeObj.subjectCode : '',
-          gradeCode: this.userInfo.schoolType === '8' ? this.treeObj.gradeCode : '',
-          grade: this.userInfo.schoolType === '8' ? this.treeObj.gradeName : '',
-          classCode: this.userInfo.schoolType === '8' ? this.treeObj.classCode : '',
+          subjectCode: (this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') ? this.treeObj.subjectCode : '',
+          gradeCode: (this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') ? this.treeObj.gradeCode : '',
+          grade: (this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') ? this.treeObj.gradeName : '',
+          classCode: (this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') ? this.treeObj.classCode : '',
           ...this.pageList
         }
       })
@@ -404,10 +404,10 @@ export default {
             photoUrl: item.photoUrl,
             classCode: item.classCode,
             className: item.className,
-            gradeCode: this.userInfo.schoolType === '8' ? item.grade : item.gradeCode,
-            gradeName: this.userInfo.schoolType === '8' ? '' : item.gradeName,
-            schoolYearId: this.userInfo.schoolType === '8' ? '' : item.schoolYearId,
-            subjectCode: this.userInfo.schoolType === '8' ? item.subjectCode : ''
+            gradeCode: (this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') ? item.grade : item.gradeCode,
+            gradeName: (this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') ? '' : item.gradeName,
+            schoolYearId: (this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') ? '' : item.schoolYearId,
+            subjectCode: (this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') ? item.subjectCode : ''
           })
         } else {
           this.totalList = [item]

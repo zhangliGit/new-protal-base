@@ -1,6 +1,6 @@
 <template>
   <div class="page-layout qui-fx">
-    <major-tree v-if="userInfo.schoolType === '8'" @select="select"></major-tree>
+    <major-tree v-if="userInfo.schoolType === '8' || userInfo.schoolType === '9'" @select="select"></major-tree>
     <grade-tree v-else @select="select"></grade-tree>
     <div class="qui-fx-f1 qui-fx-ver">
       <search-form
@@ -162,7 +162,7 @@ export default {
     ])
   },
   mounted () {
-    if (this.userInfo.schoolType === '8' && this.columns[3].dataIndex !== 'gradeName') {
+    if ((this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') && this.columns[3].dataIndex !== 'gradeName') {
       this.columns[2].dataIndex = 'schoolYearId'
       this.columns.splice(3, 0,
         {
@@ -219,10 +219,10 @@ export default {
     select (item) {
       this.pageList.page = 1
       this.pageList.size = 20
-      this.searchList.schoolYearId = this.userInfo.schoolType === '8' ? item.gradeName : item.schoolYearId
-      this.searchList.gradeCode = this.userInfo.schoolType === '8' ? item.subjectCode : item.gradeCode
+      this.searchList.schoolYearId = (this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') ? item.gradeName : item.schoolYearId
+      this.searchList.gradeCode = (this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') ? item.subjectCode : item.gradeCode
       this.searchList.classCode = item.classCode
-      this.schoolYearId = this.userInfo.schoolType === '8' ? item.gradeName : item.schoolYearId
+      this.schoolYearId = (this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') ? item.gradeName : item.schoolYearId
       this.showList()
     },
     searchForm (values) {

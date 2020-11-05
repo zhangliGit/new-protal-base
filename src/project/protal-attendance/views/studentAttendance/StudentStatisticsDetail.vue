@@ -149,7 +149,7 @@ export default {
         },
         {
           key: '年级',
-          value: this.userInfo.schoolType === '8' ? res.data.schoolYearId : res.data.gradeName
+          value: (this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') ? res.data.schoolYearId : res.data.gradeName
         },
         {
           key: '班级',
@@ -160,7 +160,7 @@ export default {
         //   value: res.data.account
         // }
       ]
-      if (this.userInfo.schoolType === '8') {
+      if ((this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9')) {
         this.baseList.splice(3, 0,
           {
             key: '专业',

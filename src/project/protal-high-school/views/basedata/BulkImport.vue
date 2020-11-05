@@ -28,6 +28,7 @@
           <div class="qui-fx-f1 qui-fx">
             <a-select
               v-model="selectGrade"
+              @change="firstChange"
               style="width: calc(32% - 10px);margin-right:10px;"
               placeholder="请选择年级"
             >
@@ -159,8 +160,8 @@ export default {
       highClass: [],
       selectGrade: '',
       selectSubject: '',
-      selectClass: ''
-
+      selectClass: '',
+      gradeName: ''
     }
   },
   computed: {
@@ -175,8 +176,6 @@ export default {
     this.className = this.$route.query.className
     this.orgCode = this.$route.query.code
     this.orgName = this.$route.query.name
-    console.log(this.orgCode)
-    console.log(this.orgName)
     if (this.$route.query.type === 'teachers') {
       this.isTeacher = true
       this.fileUrl = `${hostEnv.lz_user_center}/userinfo/teacher/user/batTeacherAdd?schoolCode=${this.userInfo.schoolCode}&orgCode=${this.orgCode}&orgName=${this.orgName}`
@@ -190,12 +189,11 @@ export default {
   mounted () {
     if (this.state) {
       this.getGrade()
-      this._getSubjectList()
     }
   },
   methods: {
     ...mapActions('home', [
-      'downStudentsTemplate', 'downStudentsTemplate', 'getHighClass', 'getHighSub', 'getHighGrade'
+      'downStudentsTemplate', 'downStudentsTemplate', 'getHighClass', 'getHighGradeSub', 'getHighGrade'
     ]),
     beforeUpload (file) {
       console.log('file', file)
@@ -272,22 +270,20 @@ export default {
     async _getSubjectList() {
       this.secondList = []
       const req = {
-        page: 1,
-        size: 99999,
+        gradeName: this.gradeName,
         schoolCode: this.userInfo.schoolCode
       }
-      const res = await this.getHighSub(req)
-      if (res.data.records.length === 0) {
+      const res = await this.getHighGradeSub(req)
+      if (res.data.length === 0) {
         return
       }
-      this.highSubList = res.data.records
-      console.log('highSubList',this.highSubList)
-      res.data.records.forEach(ele => {
+      this.highSubList = res.data
+      res.data.forEach(ele => {
         this.secondList.push({ key: ele.subjectCode, val: ele.subjectName })
       })
       this.selectSubject = 0
       this.subjectCode = this.secondList[0].key
-      this._getHighClass(res.data.records[0].subjectCode)
+      this._getHighClass(res.data[0].subjectCode)
     },
     // 获取年级
     async getGrade() {
@@ -297,16 +293,25 @@ export default {
         return
       }
       this.highSubTerm = res.data
-      console.log('highSubTerm',this.highSubTerm)
       res.data.forEach(ele => {
         this.firstList.push({ key: ele.gradeCode, val: `${ele.gradeName}级` })
       })
       this.selectGrade = 0
       this.grade = res.data[0].gradeName
+      this.gradeName = res.data[0].gradeName
+      this._getSubjectList()
+    },
+    firstChange(value) {
+      if (value || value === 0) {
+        this.gradeName = this.highSubTerm[value].gradeName
+        this._getSubjectList()
+      }
     },
     // 点击专业获取班级
     secondChange(value) {
-      this._getHighClass(this.highSubList[value].subjectCode)
+      if (value || value === 0) {
+        this._getHighClass(this.highSubList[value].subjectCode)
+      }
     },
     // 查询班级列表
     async _getHighClass(subjectCode) {
@@ -319,7 +324,6 @@ export default {
       }
       const res = await this.getHighClass(req)
       this.highClass = res.data.records
-      console.log('highClass',this.highClass)
       if (res.data.records.length > 0) {
         res.data.records.forEach(ele => {
           this.threeList.push({ key: ele.id, val: ele.className })

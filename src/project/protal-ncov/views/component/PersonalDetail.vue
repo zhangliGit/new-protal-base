@@ -25,7 +25,7 @@
                 class="mar-b10"
                 :span="12"
                 v-else
-              >班级 : {{ schoolType === '8' ? detailInfo.schoolYearId : detailInfo.gradeName }}{{ schoolType === '8' ? detailInfo.gradeName : '' }}{{ detailInfo.className }}</a-col
+              >班级 : {{ (schoolType === '8' || schoolType === '9') ? detailInfo.schoolYearId : '' }}{{ detailInfo.gradeName }}{{ detailInfo.className }}</a-col
               >
               <a-col class="mar-b10" :span="12">建档时间 : {{ getDateTime(detailInfo.createTime) }}</a-col>
             </a-row>

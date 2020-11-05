@@ -93,7 +93,7 @@ export default {
   },
   mounted() {
     this.columns[3].dataIndex = 'schoolYearId'
-    if (this.schoolType === '8' && this.columns[4].dataIndex !== 'gradeName') {
+    if ((this.schoolType === '8' || this.schoolType === '9') && this.columns[4].dataIndex !== 'gradeName') {
       this.columns.splice(4, 0,
         {
           title: '专业',

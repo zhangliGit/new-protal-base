@@ -115,7 +115,7 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   async mounted () {
-    if (this.userInfo.schoolType === '8' && this.detailInfo[2].val !== 'gradeName') {
+    if ((this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') && this.detailInfo[2].val !== 'gradeName') {
       this.detailInfo.splice(2, 0,
         {
           key: '专业',
@@ -130,9 +130,9 @@ export default {
     ]),
     async showData () {
       const res = await this.getStudentLeaveDetail(this.$route.query.id)
-      const count = this.userInfo.schoolType === '8' ? 1 : 0
+      const count = (this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') ? 1 : 0
       this.detailInfo[0].val = res.data.userName
-      this.detailInfo[1].val = this.userInfo.schoolType === '8' ? res.data.schoolYearId : res.data.gradeName
+      this.detailInfo[1].val = (this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') ? res.data.schoolYearId : res.data.gradeName
       this.detailInfo[1 + count].val = res.data.gradeName
       this.detailInfo[2 + count].val = res.data.className
       this.detailInfo[3 + count].val = res.data.reason

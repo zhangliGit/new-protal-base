@@ -120,7 +120,8 @@ export default {
       highSubTerm: [],
       highClass: [],
       searchList: {},
-      userDetail: {}
+      userDetail: {},
+      gradeName: ''
     }
   },
   computed: {
@@ -171,17 +172,16 @@ export default {
       this.showList()
     },
     firstChange(value) {
-      console.log('value', value)
       if (value || value === 0) {
-        const gradeName = this.highSubTerm[value].gradeName
-        this._getSubjectList(gradeName)
+        this.gradeName = this.highSubTerm[value].gradeName
+        this._getSubjectList()
       }
     },
     // 获取专业
-    async _getSubjectList(gradeName) {
+    async _getSubjectList() {
       this.highStudent.formData[6].secondList = []
       const req = {
-        gradeName: gradeName,
+        gradeName: this.gradeName,
         schoolCode: this.userInfo.schoolCode
       }
       const res = await this.getHighGradeSub(req)
@@ -206,7 +206,8 @@ export default {
         schoolCode: this.userInfo.schoolCode,
         page: 1,
         size: 99999,
-        subjectCode: subjectCode
+        subjectCode: subjectCode,
+        gradeName: this.gradeName
       }
       const res = await this.getHighClass(req)
       this.highClass = res.data.records
