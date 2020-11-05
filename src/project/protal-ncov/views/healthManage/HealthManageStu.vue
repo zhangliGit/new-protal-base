@@ -16,12 +16,7 @@
           </a-tooltip>
         </template>
         <template v-slot:other4="action">
-          <div>{{ action.record.gradeName}}{{ action.record.className}}</div>
-        </template>
-        <template v-slot:actions="action">
-          <a-tooltip placement="topLeft" title="查看健康档案">
-            <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="detail(action.record)"></a-button>
-          </a-tooltip>
+          <div>{{ (userInfo.schoolType === '8' || userInfo.schoolType === '9') ? action.record.schoolYearId + '级' : '' }} {{ action.record.gradeName + action.record.className }}</div>
         </template>
       </table-list>
       <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
@@ -164,14 +159,6 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
-    if ((this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') && this.columns[3].dataIndex !== 'gradeName') {
-      this.columns.splice(3, 0,
-        {
-          title: '专业',
-          dataIndex: 'gradeName',
-          width: '10%'
-        })
-    }
     this.showList()
   },
   methods: {

@@ -153,7 +153,6 @@ export default {
   },
   mounted() {
     // this.showTableList()
-    console.log('this.columns',this.columns)
     this.schoolType = JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolType
     if ((this.schoolType === '8' || this.schoolType === '9') && this.columns[5].dataIndex !== 'gradeName') {
       this.columns.splice(5, 0,
