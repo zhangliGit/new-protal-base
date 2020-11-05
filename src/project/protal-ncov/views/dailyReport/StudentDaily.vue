@@ -1,7 +1,7 @@
 <template>
   <div class="page-layout qui-fx">
     <div class="page-left">
-      <major-tree v-if="userInfo.schoolType === '8'" @select="select"></major-tree>
+      <major-tree v-if="userInfo.schoolType === '8' || userInfo.schoolType === '9'" @select="select"></major-tree>
       <grade-tree v-else @select="select"></grade-tree>
     </div>
     <div class="qui-fx-f1 qui-fx-ver">
@@ -233,7 +233,7 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
-    if (this.userInfo.schoolType === '8') {
+    if ((this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') && this.columns1[4].dataIndex !== 'gradeName') {
       this.columns1.splice(4, 0,
         {
           title: '专业',
@@ -267,8 +267,8 @@ export default {
     select(value) {
       this.pageList.page = 1
       this.pageList.size = 20
-      this.searchList.schoolYearId = this.userInfo.schoolType === '8' ? value.gradeName : value.schoolYearId
-      this.searchList.gradeCode = this.userInfo.schoolType === '8' ? value.subjectCode : value.gradeCode
+      this.searchList.schoolYearId = (this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') ? value.gradeName : value.schoolYearId
+      this.searchList.gradeCode = (this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') ? value.subjectCode : value.gradeCode
       this.searchList.classCode = value.classCode
       if (this.tempList.length > 0) {
         this.showList()

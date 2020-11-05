@@ -22,8 +22,8 @@
             </a-radio-group>
           </div>
           <div class="left-tree">
-            <major-tree v-if="schoolType === '8' && current === 1" @select="select"></major-tree>
-            <grade-tree v-if="schoolType !== '8' && current === 1" @select="select"></grade-tree>
+            <major-tree v-if="(schoolType === '8' || schoolType === '9') && current === 1" @select="select"></major-tree>
+            <grade-tree v-if="(schoolType !== '8' || schoolType !== '9') && current === 1" @select="select"></grade-tree>
             <org-tree v-if="current === 0" @defaultCode="defaultCode" @select="orgSelect"></org-tree>
           </div>
         </div>
@@ -168,10 +168,10 @@ export default {
           gradeId: item.gradeCode,
           keyword: this.userName,
           hasDorm: '1',
-          subjectCode: this.schoolType === '8' ? item.subjectCode : '',
-          gradeCode: this.schoolType === '8' ? item.gradeCode : '',
-          grade: this.schoolType === '8' ? item.gradeName : '',
-          classCode: this.schoolType === '8' ? item.classCode : '',
+          subjectCode: (this.schoolType === '8' || this.schoolType === '9') ? item.subjectCode : '',
+          gradeCode: (this.schoolType === '8' || this.schoolType === '9') ? item.gradeCode : '',
+          grade: (this.schoolType === '8' || this.schoolType === '9') ? item.gradeName : '',
+          classCode: (this.schoolType === '8' || this.schoolType === '9') ? item.classCode : '',
           // sex: this.sex,
           page: 1,
           size: 10000000
@@ -199,9 +199,9 @@ export default {
                 userCode: item.userCode,
                 userName: item.userName,
                 userNo: item.workNo,
-                gradeCode: this.schoolType === '8' ? item.grade : item.gradeCode,
-                gradeName: this.schoolType === '8' ? '' : item.gradeName,
-                subjectCode: this.schoolType === '8' ? item.subjectCode : ''
+                gradeCode: (this.schoolType === '8' || this.schoolType === '9') ? item.grade : item.gradeCode,
+                gradeName: (this.schoolType === '8' || this.schoolType === '9') ? '' : item.gradeName,
+                subjectCode: (this.schoolType === '8' || this.schoolType === '9') ? item.subjectCode : ''
               }
             })
         })

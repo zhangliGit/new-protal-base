@@ -424,6 +424,7 @@ export default {
           gradeName: this.gradeName
         }
         console.log(req)
+        console.log(123455)
         this.addNewClass(req)
           .then(res => {
             this.$message.success('添加成功')

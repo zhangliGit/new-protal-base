@@ -1,6 +1,7 @@
 <template>
   <div class="page-layout qui-fx">
-    <grade-tree @select="select"></grade-tree>
+    <major-tree v-if="userInfo.schoolType === '8' || userInfo.schoolType === '9'" @select="select"></major-tree>
+    <grade-tree v-else @select="select"></grade-tree>
     <div class="qui-fx-f1 qui-fx-ver">
       <search-form is-reset @search-form="searchForm" :search-label="searchLabel"></search-form>
       <table-list :page-list="pageList" :columns="columns" :table-list="userList">
@@ -35,6 +36,7 @@ import PageNum from '@c/PageNum'
 import SearchForm from '@c/SearchForm'
 import GradeTree from '@c/GradeTree'
 import Tools from '@u/tools'
+import MajorTree from '@c/MajorTree'
 
 const searchLabel = [
   {
@@ -136,7 +138,8 @@ export default {
     TableList,
     SearchForm,
     PageNum,
-    GradeTree
+    GradeTree,
+    MajorTree
   },
   data() {
     return {
@@ -161,6 +164,14 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
+    if ((this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') && this.columns[3].dataIndex !== 'gradeName') {
+      this.columns.splice(3, 0,
+        {
+          title: '专业',
+          dataIndex: 'gradeName',
+          width: '10%'
+        })
+    }
     this.showList()
   },
   methods: {
@@ -192,9 +203,9 @@ export default {
     select(item) {
       this.pageList.page = 1
       this.pageList.size = 20
-      this.searchList.gradeCode = item.gradeCode
+      this.searchList.schoolYearId = (this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') ? item.gradeName : item.schoolYearId
+      this.searchList.gradeCode = (this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') ? item.subjectCode : item.gradeCode
       this.searchList.classCode = item.classCode
-      this.searchList.schoolYearId = item.schoolYearId
       this.showList()
     }
   }

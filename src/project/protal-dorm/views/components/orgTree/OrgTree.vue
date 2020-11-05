@@ -16,7 +16,7 @@
         <div class="tree-parent--header">
           <div class="tree-icon"></div>
           <span :class="['tree-title', { isActive: item.isActive }]" @click.stop="handleTitleClick(1, [item])">{{
-            (currentIndex === 1 && schoolType === '8') ? item.title : (currentIndex === 1 && schoolType !== '8') ? item.schoolYear + '学年' : item.categoryName
+            (currentIndex === 1 && (schoolType === '8' || schoolType === '9')) ? item.title : (currentIndex === 1 && (schoolType !== '8' || schoolType !== '9')) ? item.schoolYear + '学年' : item.categoryName
           }}</span>
           <div :class="['tree-ops', { isExpand: item.expand }]" @click.stop="handleParentOps(item)"></div>
         </div>
@@ -27,7 +27,7 @@
               <span
                 :class="['son-title', { isActive: elem.isActive }]"
                 @click.stop="handleTitleClick(2, [elem, item])"
-              >{{ (currentIndex === 1 && schoolType === '8') ? elem.title : (currentIndex === 1 && schoolType !== '8') ? elem.name : elem.categoryName }}</span
+              >{{ (currentIndex === 1 && (schoolType === '8' || schoolType === '9')) ? elem.title : (currentIndex === 1 && (schoolType !== '8' || schoolType !== '9')) ? elem.name : elem.categoryName }}</span
               >
               <div :class="['son-ops', { isExpand: elem.expand }]" @click.stop="handleSonOps(elem)" v-if="isRoom"></div>
             </div>
@@ -37,7 +37,7 @@
                 <span
                   :class="['subson-title', { isActive: el.isActive }]"
                   @click.stop="handleTitleClick(3, [el, elem, item])"
-                >{{ (currentIndex === 1 && schoolType === '8') ? el.title : (currentIndex === 1 && schoolType !== '8') ? el.className : el.categoryName }}</span
+                >{{ (currentIndex === 1 && (schoolType === '8' || schoolType === '9')) ? el.title : (currentIndex === 1 && (schoolType !== '8' || schoolType !== '9')) ? el.className : el.categoryName }}</span
                 >
               </div>
             </div>
@@ -151,11 +151,11 @@ export default {
           this.currentSelectNodeTitle = nodeList[0].categoryName
         } else {
           tag = 3
-          this.treeForm.stageCode = this.schoolType === '8' ? nodeList[0].code : nodeList[0].stageCode
-          this.treeForm.schoolYearId = this.schoolType === '8' ? nodeList[0].gradeName : ''
+          this.treeForm.stageCode = (this.schoolType === '8' || this.schoolType === '9') ? nodeList[0].code : nodeList[0].stageCode
+          this.treeForm.schoolYearId = (this.schoolType === '8' || this.schoolType === '9') ? nodeList[0].gradeName : ''
           this.treeForm.gradeCode = ''
           this.treeForm.classCode = ''
-          this.currentSelectNodeTitle = this.schoolType === '8' ? nodeList[0].title : nodeList[0].schoolYear + '学年'
+          this.currentSelectNodeTitle = (this.schoolType === '8' || this.schoolType === '9') ? nodeList[0].title : nodeList[0].schoolYear + '学年'
         }
       } else if (type === 2) {
         // son node
@@ -167,11 +167,11 @@ export default {
           this.currentSelectNodeTitle = `${nodeList[1].categoryName}${nodeList[0].categoryName}`
         } else {
           tag = 4
-          this.treeForm.gradeCode = this.schoolType === '8' ? nodeList[0].subjectCode : nodeList[0].gradeId
-          this.treeForm.schoolYearId = this.schoolType === '8' ? nodeList[0].gradeName : ''
+          this.treeForm.gradeCode = (this.schoolType === '8' || this.schoolType === '9') ? nodeList[0].subjectCode : nodeList[0].gradeId
+          this.treeForm.schoolYearId = (this.schoolType === '8' || this.schoolType === '9') ? nodeList[0].gradeName : ''
           this.treeForm.classCode = ''
           // this.currentSelectNodeTitle = `${nodeList[1].stageName}${nodeList[0].gradeName}`
-          this.currentSelectNodeTitle = this.schoolType === '8' ? nodeList[0].title : `${nodeList[0].name}`
+          this.currentSelectNodeTitle = (this.schoolType === '8' || this.schoolType === '9') ? nodeList[0].title : `${nodeList[0].name}`
         }
       } else if (type === 3) {
         // subson node
@@ -184,10 +184,10 @@ export default {
         } else {
           tag = 5
           this.treeForm.classCode = this.treeForm.classCode = nodeList[0].classCode
-          this.treeForm.gradeCode = this.schoolType === '8' ? nodeList[0].subjectCode : nodeList[0].gradeCode
-          this.treeForm.schoolYearId = this.schoolType === '8' ? nodeList[0].gradeName : ''
+          this.treeForm.gradeCode = (this.schoolType === '8' || this.schoolType === '9') ? nodeList[0].subjectCode : nodeList[0].gradeCode
+          this.treeForm.schoolYearId = (this.schoolType === '8' || this.schoolType === '9') ? nodeList[0].gradeName : ''
           // this.currentSelectNodeTitle = `${nodeList[2].stageName}${nodeList[1].gradeName} ${nodeList[0].className}`
-          this.currentSelectNodeTitle = this.schoolType === '8' ? `${nodeList[2].title} ${nodeList[1].title} ${nodeList[0].title}` : `${nodeList[1].name} ${nodeList[0].className}`
+          this.currentSelectNodeTitle = (this.schoolType === '8' || this.schoolType === '9') ? `${nodeList[2].title} ${nodeList[1].title} ${nodeList[0].title}` : `${nodeList[1].name} ${nodeList[0].className}`
         }
       }
       if (this.treeType === 0) {
@@ -311,7 +311,7 @@ export default {
       if (this.currentIndex === 0) {
         this.getDormTreeList()
       } else {
-        if (this.schoolType === '8') {
+        if ((this.schoolType === '8' || this.schoolType === '9') || this.schoolType === '9') {
           this._getHighNode()
         } else {
           this.getGradeTreeList()
@@ -396,7 +396,9 @@ export default {
           classCode: el.classCode,
           title: el.className,
           code: el.classCode,
-          key: el.classCode
+          key: el.classCode,
+          expand: false,
+          isActive: false
         }
       })
       return newData

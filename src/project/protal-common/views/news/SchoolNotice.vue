@@ -13,13 +13,13 @@
               <a-button icon="plus" class="add-btn" @click="addnotice(0)">发布公告</a-button>
             </div>
           </no-data>
-          <div class="notice-card qui-fx" v-for="item in recordList" :key="item.id">
-            <div class="qui-fx-f1 qui-fx-ver">
+          <div class="notice-card qui-fx u-bd-1px u-mar-b20 u-shadow" v-for="item in recordList" :key="item.id">
+            <div class="qui-fx-f1 qui-fx-ver u-padd-20">
               <p class="notice-title">{{ item.title }}</p>
-              <div class="qui-fx-f1 notice-info" style="text-indent:2em" v-if="item.content.length < 60">
+              <div class="qui-fx-f1 notice-info" v-if="item.content.length < 60">
                 {{ item.content }}
               </div>
-              <div class="qui-fx-f1 notice-info" style="text-indent:2em" v-if="item.content.length >= 60">
+              <div class="qui-fx-f1 notice-info" v-if="item.content.length >= 60">
                 {{ item.content.substring(0, 90) }}...
               </div>
               <div class="qui-fx-jsb notice-action">
@@ -200,15 +200,10 @@ export default {
 .notice-list {
   .notice-card {
     border-radius: 4px;
-    background-color: #fff;
-    padding: 20px 25px;
     float: left;
     width: 48.5%;
     margin-left: 1%;
-    overflow: hidden;
-    margin-bottom: 20px;
     height: 230px;
-    background-color: #f5f5f5;
   }
   .notice-title {
     font-size: 22px;
@@ -218,7 +213,7 @@ export default {
   }
   .notice-info {
     overflow: hidden;
-    font-size: 20px;
+    font-size: 18px;
   }
   .notice-action {
     margin-top: 20px;
@@ -226,6 +221,9 @@ export default {
       color: #c0c0c0;
       font-size: 13px;
     }
+  }
+  .u-padd-20 {
+    padding: 20px;
   }
 }
 </style>

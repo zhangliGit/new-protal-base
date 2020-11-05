@@ -122,7 +122,7 @@
             <p>姓名：{{ personDetail.userName }}</p>
             <p>性别：{{ personDetail.gender === '1' ? '男' : personDetail.gender === '2' ? '女' : '未知' }}</p>
             <p>学号：{{ personDetail.studentNo }}</p>
-            <p>班级：{{ schoolType === '8' ? `${personDetail.schoolYearId}级-${personDetail.gradeName}-${personDetail.className}` : personDetail.className }}</p>
+            <p>班级：{{ (schoolType === '8' || schoolType === '9')? `${personDetail.schoolYearId}级-${personDetail.gradeName}-${personDetail.className}` : personDetail.className }}</p>
             <p>
               班主任：{{ personDetail.teacherName ? personDetail.teacherName : '暂无' }} &nbsp;&nbsp; 联系电话：{{
                 personDetail.teacherPhone ? personDetail.teacherPhone : '暂无'

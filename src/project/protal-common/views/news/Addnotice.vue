@@ -1,7 +1,7 @@
 <template>
   <div class="set-group page-layout qui-fx-ver">
     <a-form :form="form">
-      <a-form-item label="公告标题：" :label-col="{ span: 5 }" :wrapper-col="{ span: 18 }">
+      <a-form-item label="公告标题：" :label-col="{ span: 5 }" :wrapper-col="{ span: 10 }">
         <a-input
           v-model="orders"
           maxlength="30"
@@ -12,7 +12,7 @@
           placeholder="最多不超过30字"
         />
       </a-form-item>
-      <a-form-item label="发布对象" :label-col="{ span: 5 }" :wrapper-col="{ span: 18 }" :required="true">
+      <a-form-item label="发布对象" :label-col="{ span: 5 }" :wrapper-col="{ span: 10 }" :required="true">
         <div>
           <a-tag @click="teacherSelect" style="background: #fff; borderStyle: dashed;">
             <a-icon type="plus" />添加教职工
@@ -34,7 +34,7 @@
           </template>
         </div>
       </a-form-item>
-      <a-form-item label="正文" :label-col="{ span: 5 }" :wrapper-col="{ span: 18 }">
+      <a-form-item label="正文" :label-col="{ span: 5 }" :wrapper-col="{ span: 10 }">
         <a-textarea
           style="height:200px"
           v-model="count"
@@ -46,10 +46,10 @@
           ]"
         />
       </a-form-item>
-      <a-form-item label="开启全屏通知" :label-col="{ span: 5 }" :wrapper-col="{ span: 18 }">
+      <a-form-item label="开启全屏通知" :label-col="{ span: 5 }" :wrapper-col="{ span: 10 }">
         <a-switch checked-children="开" un-checked-children="关" @change="change()" v-model="appForm.showFull" />
       </a-form-item>
-      <a-form-item label="全屏日期" :label-col="{ span: 5 }" :wrapper-col="{ span: 18 }" v-if="isShow">
+      <a-form-item label="全屏日期" :label-col="{ span: 5 }" :wrapper-col="{ span: 10 }" v-if="isShow">
         <a-range-picker
           v-decorator="[
             'time',
