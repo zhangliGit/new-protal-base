@@ -20,7 +20,7 @@
             @change="handleChangeGrade"
             style="width: 150px; margin-right: 20px"
           >
-            <a-select-option v-for="item in options" :key="item.id"> {{ item.schoolYear }} </a-select-option>
+            <a-select-option v-for="item in options" :key="item.id"> {{ item.gradeName }} </a-select-option>
           </a-select>
           <span class="grade-warning">*确定已在基础数据中添加新学年及专业</span>
         </div>
@@ -29,7 +29,11 @@
         <a-button type="primary" @click="selectProject"> 选择专业 </a-button>
         <a-table :columns="columns" :data-source="selectList" :pagination="false">
           <template slot="inputCount" slot-scope="count, record">
-            <a-input :value="count" type="number" @change="(e) => handleChangeCount(e.target.value, record.id)" />
+            <a-input
+              :value="count"
+              type="number"
+              @change="(e) => handleChangeCount(e.target.value, record.subjectCode)"
+            />
           </template>
         </a-table>
       </a-form-item>
@@ -53,6 +57,7 @@
       :title="title"
       :visible="showProjectList"
       :projectList="projectList"
+      :grade="grade"
       @submit="getProjectList"
       @cancel="cancelProject"
       @clickSelect="clickSelect"
@@ -65,10 +70,11 @@ import TableList from '@c/TableList'
 import SelectProject from '../../component/SelectProject.vue'
 import { mapState, mapActions } from 'vuex'
 import moment from 'moment'
+import Tools from '@u/tools'
 const columns = [
   {
     title: '专业',
-    dataIndex: 'projectName'
+    dataIndex: 'subjectName'
   },
   {
     title: '招生人数',
@@ -97,93 +103,51 @@ export default {
       showProjectList: false,
       title: '选择专业',
       grade: '',
-      projectList: [
-        {
-          projectName: '软件技术',
-          id: '1',
-          checked: false,
-          count: 0
-        },
-        {
-          projectName: '软件测试',
-          id: '2',
-          checked: false,
-          count: 0
-        },
-        {
-          projectName: '语文',
-          id: '3',
-          checked: false,
-          count: 0
-        },
-        {
-          projectName: '数学',
-          id: '4',
-          checked: false,
-          count: 0
-        },
-        {
-          projectName: '英语',
-          id: '5',
-          checked: false,
-          count: 0
-        },
-        {
-          projectName: '化学',
-          id: '6',
-          checked: false,
-          count: 0
-        },
-        {
-          projectName: '社会学',
-          id: '7',
-          checked: false,
-          count: 0
-        }
-      ],
+      projectList: [],
       selectList: [],
       columns
     }
   },
   computed: {
-    ...mapState('home', ['userInfo', 'schoolYear']),
+    ...mapState('home', ['userInfo', 'gradeList']),
     options() {
-      return this.schoolYear.list || []
+      return this.gradeList || []
     }
   },
-  mounted() {
+  async mounted() {
     this.maxHeight = window.screen.height - 280 + 'px'
-    const taskId = this.$route.query.id
-    const count = this.$route.query.count || 500
+    const taskId = Number(this.$route.query.id)
     if (taskId) {
-      this.projectList = this.projectList.map((item) => {
-        if (item.id === taskId) {
+      const res = await this.taskDetailById(taskId)
+      if (res && res.data) {
+        this.grade = res.data.gradeNum
+        this.form.setFieldsValue({
+          taskName: res.data.taskName,
+          grade: res.data.gradeNum,
+          endTime: moment(res.data.closingDate)
+        })
+        const selectList = res.data.majorList.map((item) => {
           return {
             ...item,
-            checked: true,
-            count
+            subjectCode: item.majorCode,
+            subjectName: item.majorName,
+            count: item.studentNum,
+            checked: true
           }
-        }
-        return item
-      })
-      this.selectList = [
-        {
-          projectName: '软件技术',
-          id: '1',
-          checked: false,
-          count: 555
-        }
-      ]
+        })
+        this.selectList = selectList
+        this.getGrade(res.data.gradeNum, selectList)
+      }
     }
   },
   methods: {
-    ...mapActions('home', ['addTask']),
-    handleChangeCount(val, key) {
-      if (!key) {
+    ...mapActions('home', ['addTask', 'getGradeList', 'taskDetailById', 'editTask']),
+    handleChangeCount(val, subjectCode) {
+      if (!subjectCode) {
         return
       }
       this.selectList = this.selectList.map((item) => {
-        if (item.id === key) {
+        if (item.subjectCode === subjectCode) {
           return {
             ...item,
             count: Number(val)
@@ -195,10 +159,14 @@ export default {
     changeTaskName(e) {
       this.formData.taskName = e.target.value
     },
+    // 切换年级
     handleChangeGrade(val) {
       this.form.setFieldsValue({
         grade: val
       })
+      const gradeName = Tools.getGradeName(val, this.gradeList)
+      this.grade = gradeName
+      this.getGrade(gradeName, this.selectList)
     },
     selectProject() {
       this.showProjectList = true
@@ -210,9 +178,10 @@ export default {
     cancelProject() {
       this.showProjectList = false
     },
-    clickSelect(id) {
+    // 选择专业
+    clickSelect(majorCode) {
       this.projectList = this.projectList.map((item) => {
-        if (item.id === id) {
+        if (item.subjectCode === majorCode) {
           return {
             ...item,
             checked: !item.checked
@@ -221,8 +190,54 @@ export default {
         return item
       })
     },
+    // 改变时间
     onChangeDate(time) {
       this.formData.endTime = time
+    },
+    // 获取年级下专业列表
+    async getGrade(gradeName, selectList = []) {
+      const req = {
+        schoolCode: this.userInfo.schoolCode,
+        gradeName
+      }
+      const res = await this.getGradeList(req)
+      if (res && res.code === 200) {
+        const list =
+          res.data.length === 0
+            ? []
+            : res.data.map((item) => {
+              return {
+                ...item,
+                count: 0,
+                checked: false
+              }
+            })
+        if (list.length === 0) {
+          this.projectList = list
+        } else {
+          this.projectList = [
+            ...list.map((item) => {
+              return {
+                ...item,
+                checked: this.filterData(item.subjectCode, selectList).checked || false,
+                count: this.filterData(item.subjectCode, selectList).studentNum || 0
+              }
+            })
+          ]
+        }
+      }
+    },
+    filterData(subjectCode, list) {
+      if (!subjectCode || list.length === 0) {
+        return []
+      }
+      const arr = list.filter((item) => {
+        return item.subjectCode === subjectCode
+      })
+      if (arr.length > 0) {
+        return arr[0]
+      }
+      return []
     },
     // 提交
     handleSubmit(e) {
@@ -233,20 +248,44 @@ export default {
             this.$message.error('请选择专业')
             return
           }
+          const taskId = Number(this.$route.query.id)
+          if (taskId) {
+            const params = {
+              closingDate: new Date(`${Tools.getDate(new Date(this.formData.endTime), 1)} 23:59:59`).getTime(),
+              gradeNum: Tools.getGradeName(this.form.getFieldValue('grade'), [...this.gradeList]) || this.grade,
+              id: taskId,
+              majorList: this.selectList.map((item) => {
+                return {
+                  majorCode: item.subjectCode,
+                  majorName: item.subjectName,
+                  studentNum: item.count
+                }
+              }),
+              taskName: this.form.getFieldValue('taskName')
+            }
+            const result = await this.editTask(params)
+            if (result.code === 200) {
+              this.$message.success('添加成功')
+              this.$router.push({
+                path: '/taskManage'
+              })
+            }
+            return
+          }
           const req = {
             schoolCode: this.userInfo.schoolCode,
             taskName: this.formData.taskName,
-            closingDate: new Date(this.formData.endTime).getTime(),
+            closingDate: new Date(`${Tools.getDate(new Date(this.formData.endTime), 1)} 23:59:59`).getTime(),
             createUserCode: this.userInfo.userCode,
             createUserName: this.userInfo.userName,
-            gradeNum: this.form.getFieldValue('grade'),
-            majorList: [
-              {
-                majorCode: 'xyyz001',
-                majorName: '软件开发',
-                studentNum: 500
+            gradeNum: Tools.getGradeName(this.form.getFieldValue('grade'), [...this.gradeList]),
+            majorList: this.selectList.map((item) => {
+              return {
+                majorCode: item.subjectCode,
+                majorName: item.subjectName,
+                studentNum: item.count
               }
-            ]
+            })
           }
           const res = await this.addTask(req)
           if (res && res.code === 200) {

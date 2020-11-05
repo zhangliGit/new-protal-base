@@ -7,7 +7,7 @@
     </search-form>
     <table-list isZoom :page-list="pageList" :columns="columns" :table-list="taskList">
       <template v-slot:other1="other1">
-        <span> {{ getYearName(other1.record.id) }} </span>
+        <span> {{ other1.record.gradeNum }} </span>
       </template>
       <template v-slot:actions="action">
         <a-tooltip placement="topLeft" title="查看">
@@ -121,25 +121,30 @@ export default {
     }
   },
   computed: {
-    ...mapState('home', ['userInfo', 'schoolYear'])
+    ...mapState('home', ['userInfo', 'gradeList'])
   },
   mounted() {
-    this.showList()
-    const list = this.schoolYear.list || []
-    this.searchLabel.push({
-      list: list.map((item) => {
-        return {
-          key: item.id,
-          val: item.schoolYear
+    const list = [...this.gradeList] || []
+    this.searchLabel = [
+      ...this.searchLabel,
+      ...[
+        {
+          list: list.map((item) => {
+            return {
+              key: item.id,
+              val: item.gradeName
+            }
+          }),
+          value: 'grade',
+          type: 'select',
+          label: '年级'
         }
-      }),
-      value: 'grade',
-      type: 'select',
-      label: '学年'
-    })
+      ]
+    ]
+    this.showList()
   },
   methods: {
-    ...mapActions('home', ['getTaskList', 'getSchoolYear']),
+    ...mapActions('home', ['getTaskList', 'delTask']),
     // 查询列表
     async showList() {
       const req = {
@@ -178,27 +183,22 @@ export default {
     },
     // 删除招生任务
     async deleteList(record) {
-      console.log(record.id)
-      // await this.delReserve(record.id)
-      // this.$message.success('删除成功')
-      // this.$tools.goNext(() => {
-      //   this.showList()
-      // })
+      if (!record.id) {
+        return
+      }
+      const res = await this.delTask(record.id)
+      if (res && res.code === 200) {
+        this.$message.success('删除成功')
+        this.$tools.goNext(() => {
+          this.showList()
+        })
+      } else {
+        this.$message.error('删除失败')
+      }
     },
-    // 获取学年名称
-    getYearName(id) {
-      console.log(this.schoolYear.list)
-      if (!this.schoolYear.list || this.schoolYear.list.length === 0) {
-        return ''
-      }
-      const list = this.schoolYear.list.filter((item) => {
-        return item.id !== id
-      })
-
-      if (list.length > 0) {
-        return list[0].schoolYear
-      }
-      return ''
+    // 获取年级
+    getGradeName(id) {
+      return Tools.getGradeName(id, this.gradeList)
     }
   }
 }

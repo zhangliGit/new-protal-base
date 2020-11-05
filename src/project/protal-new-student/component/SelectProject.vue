@@ -11,11 +11,11 @@
   >
     <div>
       <a-row>
-        <a-col :span="5"> 2020级专业： </a-col>
+        <a-col :span="5"> {{ grade }}级专业： </a-col>
         <a-col :span="17">
           <div class="checkbox-list">
-            <div v-for="item in projectList" :key="item.id" class="checkbox-item">
-              <a-checkbox :checked="item.checked" @change="selectProject(item.id)"> {{ item.projectName }} </a-checkbox>
+            <div v-for="item in projectList" :key="item.subjectCode" class="checkbox-item">
+              <a-checkbox :checked="item.checked" @change="selectProject(item.subjectCode)"> {{ item.subjectName }} </a-checkbox>
             </div>
           </div>
         </a-col>
@@ -38,6 +38,10 @@ export default {
     projectList: {
       type: Array,
       default: () => []
+    },
+    grade: {
+      type: [String, Number],
+      default: ''
     }
   },
   data() {

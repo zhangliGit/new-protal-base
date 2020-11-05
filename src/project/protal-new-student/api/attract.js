@@ -12,7 +12,7 @@ const zsApi = {
   editTask: '/recruitStudentTask/modify#post', // 修改招生任务
   taskDetailById: '/recruitStudentTask/info#getUrl', // ID查详情
   taskDetailByCode: '/recruitStudentTask/detail#getUrl', // Code查详情
-  delTask: '/recruitStudentTask/remove#del', // 删除 id
+  delTask: '/recruitStudentTask/remove#getUrl', // 删除 id
   batchDelTask: '/recruitStudentTask/removes#del' // 批量删除 ids
 }
 

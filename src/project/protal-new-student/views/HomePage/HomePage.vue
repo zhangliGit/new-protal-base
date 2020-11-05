@@ -1,9 +1,9 @@
 <template>
   <div class="home-page page-layout qui-fx-ver">
     <div class="select-year">
-      <a-select :value="selectYear" style="width: 120px" @change="handleChangeYear">
-        <a-select-option v-for="item in yearList" :value="item.id" :key="item.id">
-          {{ item.schoolYear }}
+      <a-select :value="selectYear" style="width: 100px" @change="handleChangeYear">
+        <a-select-option v-for="item in gradeList" :value="item.id" :key="item.id">
+          {{ item.gradeName }}
         </a-select-option>
       </a-select>
       <a-button
@@ -78,7 +78,7 @@ export default {
   },
   data() {
     return {
-      yearList: [],
+      gradeList: [],
       selectYear: '',
       columns,
       title: '招生专业',
@@ -132,31 +132,27 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
-    // this.showList()
     this.getYear()
   },
   methods: {
-    ...mapActions('home', ['getHighTerm']),
-    // 获取学年
+    ...mapActions('home', ['getGrade']),
+    // 获取年级
     async getYear() {
       const req = {
-        schoolCode: this.userInfo.schoolCode,
-        page: 1,
-        semesterName: '',
-        size: 100,
-        state: ''
+        schoolCode: this.userInfo.schoolCode
       }
-      const res = await this.getHighTerm(req)
-      console.log(res)
+      const res = await this.getGrade(req)
       if (res.code === 200) {
-        this.yearList = res.data.list || []
-        sessionStorage.setItem('schoolYear', JSON.stringify(res.data))
+        this.gradeList = res.data || []
+        sessionStorage.setItem('gradeList', JSON.stringify(res.data))
       }
     },
     handleChangeYear(value) {
       this.selectYear = value
     },
-    changeGrade() {}
+    changeGrade() {
+      this.getYear()
+    }
   }
 }
 </script>

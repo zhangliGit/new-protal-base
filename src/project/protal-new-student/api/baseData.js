@@ -6,12 +6,10 @@ import hostEnv from '@config/host-env'
 
 const baseData1Api = {
   // 专业管理
-  highSubDetail: '/subject/manage/info#getUrl', // 根据id查询详情
-  getHighSub: '/subject/manage/list#post', // 列表查询
+  getGradeList: '/class/manage/query/subject/by/grade#get', // 年级下专业列表查询
 
   // 学年管理
-  highTermDetail: '/school/year/manage/detail#postForm', // 详情
-  getHighTerm: '/school/year/manage/list#post', // 列表
+  getGrade: '/class/manage/query/grade#get', // 年级列表
 
   // 班级管理
   highClassDetail: '/class/manage/detail#get', // 详情
