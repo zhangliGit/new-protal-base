@@ -144,7 +144,7 @@ export default {
     this.detail = JSON.parse(window.localStorage.getItem('cardInfo'))
     this.query = this.$route.query.name
     if (this.query) {
-      this.searchList.userName = this.detail.userName
+      this.searchList.userName = this.query
     }
     this._getCardRecord()
   },
