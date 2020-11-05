@@ -49,11 +49,7 @@
       <a-row class="u-padd-10">
         <a-col :span="6" class="u-tx-r">账户余额：</a-col>
         <a-col :span="16">
-          <a-input
-            :readonly="detail.cardInfo.status !== '0'"
-            v-model="detail.balance"
-            placeholder="请输入账户余额"
-          />
+          {{ detail.balance }}
         </a-col>
       </a-row>
       <a-row class="u-padd-10">
@@ -130,7 +126,7 @@
       <div slot="title" class="u-fx-ac u-fx-jsb">
         <div>卡片信息</div>
         <div>
-          <a-button @click="seeHistory" class="add-btn" v-if="detail.cardInfo.status !== '0'">查看历史卡片</a-button>
+          <a-button @click="seeHistory" class="add-btn" v-if="detail.status !=='3'">查看历史卡片</a-button>
         </div>
       </div>
       <div slot="content">
@@ -336,7 +332,7 @@ export default {
         this.$message.warning('请输入备注')
         return
       }
-      if (this.detail.deposit < 0 || this.detail.balance < 0) {
+      if (this.detail.deposit < 0) {
         this.$message.warning('金额不能为负数')
         return
       }
@@ -350,6 +346,7 @@ export default {
           recordRemark: this.recordRemark
         })
         this.$message.success('操作成功')
+        this.recordRemark = ''
         this.cardTag = false
         this.$tools.goNext(() => {
           this._showDetail()
