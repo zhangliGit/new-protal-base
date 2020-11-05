@@ -230,7 +230,7 @@ export default {
     handleSonOps(item) {
       // console.log('son ops', this.currentIndex, this.currentTab)
       item.expand = !item.expand
-      if (this.schoolType !== '8') {
+      if (this.schoolType !== '8' || this.schoolType !== '9') {
         if (this.currentIndex === 0 && item.subSonList.length === 0) {
           this.getDormSubsonNode(item)
         } else if (this.currentIndex === 1 && item.subSonList.length === 0) {
@@ -279,7 +279,7 @@ export default {
     },
     handleParentOps(item) {
       item.expand = !item.expand
-      if (this.schoolType !== '8') {
+      if (this.schoolType !== '8' || this.schoolType !== '9') {
         if (this.currentIndex === 0) {
           this.getDormSonNode(item)
         } else if (this.currentIndex === 1 && item.sonNodeList.length === 0) {
