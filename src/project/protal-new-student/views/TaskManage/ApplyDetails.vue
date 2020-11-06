@@ -47,10 +47,7 @@
       <div class="base-message message">
         <div class="title">基本信息</div>
         <div class="base-photo">
-          <img
-            src="http://canpoint-photo.oss-cn-beijing.aliyuncs.com/47801/2020/10/19/base/76b5c10347bf4e5185331bb917b762cb.jpg"
-            alt=""
-          />
+          <img :src="photoUrl" alt="" />
         </div>
         <div class="base-msg-table msg-table">
           <div class="table-list">
@@ -424,9 +421,11 @@ export default {
         h: 120, // 高度
         w: 120 // 宽度
       },
+      photoUrl: '',
       checkTitle: '审核',
       checkVisible: false,
       confirmLoading: false,
+      applyId: '',
       checkData: {
         result: '1',
         checkText: ''
@@ -435,148 +434,148 @@ export default {
         {
           id: '1',
           name: '姓名',
-          text: '张三'
+          text: ''
         },
         {
           id: '2',
           name: '申请状态',
-          text: '申请中'
+          text: ''
         },
         {
           id: '3',
           name: '性别',
-          text: '男'
+          text: ''
         },
         {
           id: '4',
           name: '政治面貌',
-          text: '群众'
+          text: ''
         },
         {
           id: '5',
           name: '身份证号',
-          text: '420324199869696363'
+          text: ''
         },
         {
           id: '6',
           name: '民族',
-          text: '汉'
+          text: ''
         },
         {
           id: '7',
           name: '年级',
-          text: '2020级'
+          text: ''
         },
         {
           id: '8',
           name: '学生来源',
-          text: '应届'
+          text: ''
         },
         {
           id: '9',
           name: '申请专业',
-          text: '摄像'
+          text: ''
         },
         {
           id: '10',
           name: '招生对象',
-          text: '应届初中'
+          text: ''
         },
         {
           id: '11',
           name: '联系电话',
-          text: '15633333333'
+          text: ''
         },
         {
           id: '12',
           name: '毕业学校',
-          text: '武汉三中'
+          text: ''
         },
         {
           id: '13',
           name: '申请时间',
-          text: '2020/12/01 12:00:00'
+          text: ''
         },
         {
           id: '14',
           name: '健康状况',
-          text: '良好'
+          text: ''
         }
       ],
       baseListTwo: [
         {
           id: '1',
           name: '户口性质',
-          text: '农业'
+          text: ''
         },
         {
           id: '2',
           name: '家长姓名',
-          text: '张起灵'
+          text: ''
         },
         {
           id: '3',
           name: '户口所在地区县一下详细地址',
-          text: '陕西省安康市旬阳县XX村'
+          text: ''
         },
         {
           id: '4',
           name: '家长手机号',
-          text: '13111111111'
+          text: ''
         },
         {
           id: '5',
           name: '所属派出所',
-          text: '旬阳派出所'
+          text: ''
         },
         {
           id: '6',
           name: '与本人关系',
-          text: '父子'
+          text: ''
         },
         {
           id: '7',
           name: '学生居住地类型',
-          text: '农村'
+          text: ''
         },
         {
           id: '8',
           name: '是否监护人',
-          text: '是'
+          text: ''
         },
         {
           id: '9',
           name: '家庭现住址',
-          text: '旬阳县XX镇XX村'
+          text: ''
         }
       ],
       baseListThree: [
         {
           id: '1',
           name: '意向程度',
-          text: '高'
+          text: ''
         },
         {
           id: '2',
           name: '备注',
-          text: '张起灵XXX'
+          text: ''
         }
       ],
       checkInfo: [
         {
           id: '1',
           name: '审核意见',
-          text: '通过'
+          text: ''
         },
         {
           id: '2',
           name: '审核人',
-          text: '曹操'
+          text: ''
         },
         {
           id: '3',
           name: '审核时间',
-          text: '2020/10/17 12:36:00'
+          text: ''
         }
       ]
     }
@@ -585,23 +584,101 @@ export default {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
-    console.log(this.$route.query.id)
+    this.applyId = this.$route.query.id
+    this.showList(this.$route.query.id)
   },
   methods: {
-    ...mapActions('home', ['getReserveList', 'delReserve']),
-    async showList() {
-      const req = {
-        ...this.searchObj,
-        ...this.pageList,
-        schoolCode: this.userInfo.schoolCode,
-        type: '1'
+    ...mapActions('home', ['studentDetail']),
+    async showList(id) {
+      const res = await this.studentDetail(id)
+      if (res && res.code === 200) {
+        const {
+          photoUrl,
+          studentName,
+          state,
+          gender,
+          politicalOutlook,
+          idNumber,
+          nationality,
+          grade,
+          studentSource,
+          majorName,
+          enrollmentTarget,
+          mobile,
+          graduationSchool,
+          createTime,
+          healthyState,
+          registrationNature,
+          parentName,
+          homeAddress,
+          parentMobile,
+          policeStation,
+          relationship,
+          residentialType,
+          hasGuardian,
+          registrationAddress,
+          intentionDegree,
+          remark,
+          auditOpinion,
+          auditor,
+          auditTime
+        } = res.data
+        this.photoUrl = photoUrl
+        const baseOne = [
+          studentName,
+          this.getState(state),
+          gender === '0' ? '男' : '女',
+          politicalOutlook,
+          idNumber,
+          nationality,
+          grade,
+          studentSource,
+          majorName,
+          enrollmentTarget,
+          mobile,
+          graduationSchool,
+          createTime,
+          healthyState
+        ]
+        const baseTwo = [
+          registrationNature,
+          parentName,
+          homeAddress,
+          parentMobile,
+          policeStation,
+          relationship,
+          residentialType,
+          hasGuardian ? '是' : '否',
+          registrationAddress
+        ]
+        const baseThree = [intentionDegree, remark]
+        const checkArr = [auditOpinion, auditor, auditTime]
+        this.baseListOne = this.baseListOne.map((item, index) => {
+          return {
+            ...item,
+            text: baseOne[index]
+          }
+        })
+        this.baseListTwo = this.baseListTwo.map((item, index) => {
+          return {
+            ...item,
+            text: baseTwo[index]
+          }
+        })
+        this.baseListThree = this.baseListThree.map((item, index) => {
+          return {
+            ...item,
+            text: baseThree[index]
+          }
+        })
+        this.checkInfo = this.checkInfo.map((item, index) => {
+          return {
+            ...item,
+            text: checkArr[index]
+          }
+        })
       }
-      const res = await this.getReserveList(req)
-      this.bookingList = res.data.list
-      this.bookingList.map((el) => {
-        el.placeName = el.placeName.replace(/,/g, '-')
-      })
-      this.total = res.data.total
+      console.log(res)
     },
     // 打开审核弹框
     checkClick() {
@@ -626,6 +703,20 @@ export default {
         return
       }
       console.log(this.totalList)
+    },
+    // 获取申请状态
+    getState(state) {
+      const status = Number(state)
+      if (status === 1) {
+        return '申请中'
+      }
+      if (status === 2) {
+        return '申请失败'
+      }
+      if (status === 3) {
+        return '申请成功'
+      }
+      return '未知'
     }
   }
 }

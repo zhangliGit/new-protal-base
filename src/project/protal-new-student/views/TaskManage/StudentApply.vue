@@ -416,7 +416,7 @@ const columns = [
   },
   {
     title: '人脸照片',
-    dataIndex: 'photo',
+    dataIndex: 'photoUrl',
     width: '10%',
     scopedSlots: {
       customRender: 'photoPic'

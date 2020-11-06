@@ -20,7 +20,7 @@ const sqApi = {
   // 新生申请
   getStudentList: '/recruitStudentInfo/page#post', // 学生列表
   addStudent: '/recruitStudentInfo/add#post', // 新增学生
-  studentDetail: '/material/name/detail/#getUrl', // ID查详情
+  studentDetail: '/recruitStudentInfo/info#getUrl', // ID查详情
   singleCheck: '/material/name/delete#del', // 单个操作-通过/拒绝
   batchCheck: '/material/name/delete#del' // 批量操作-通过/拒绝
 }
