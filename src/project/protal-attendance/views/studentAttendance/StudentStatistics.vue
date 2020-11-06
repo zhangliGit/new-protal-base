@@ -97,7 +97,14 @@ export default {
   },
   async mounted() {
     if ((this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') && this.columns[4].dataIndex !== 'gradeName') {
-      this.columns[3].dataIndex = 'schoolYearId'
+      this.columns[3] = {
+        title: '年级',
+        dataIndex: 'schoolYearId',
+        width: '10%',
+        customRender: text => {
+          return text + '级'
+        }
+      }
       this.columns.splice(4, 0,
         {
           title: '专业',

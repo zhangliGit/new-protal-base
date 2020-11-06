@@ -198,13 +198,18 @@ export default {
     async getGrade() {
       this.highDetail.formData[0].firstList = []
       const res = await this.getHighGrade({ schoolCode: this.userInfo.schoolCode })
+      this.highSubTerm = res.data
       if (res.data.length === 0) {
+        this.highDetail.formData[0].initValue1 = []
+        this.highDetail.formData[0].initValue2 = []
+        this.highDetail.formData[0].initValue3 = []
         return
       }
-      this.highSubTerm = res.data
       res.data.forEach(ele => {
         this.highDetail.formData[0].firstList.push({ key: ele.gradeCode, val: `${ele.gradeName}级` })
       })
+      this.gradeName = res.data[0].gradeName
+      this._getSubjectList()
     },
     firstChange(value) {
       if (value || value === 0) {
@@ -220,13 +225,17 @@ export default {
         schoolCode: this.userInfo.schoolCode
       }
       const res = await this.getHighGradeSub(req)
+      this.highSubList = res.data
       if (res.data.length === 0) {
+        this.highDetail.formData[0].initValue2 = []
+        this.highDetail.formData[0].initValue3 = []
         return
       }
-      this.highSubList = res.data
       res.data.forEach(ele => {
         this.highDetail.formData[0].secondList.push({ key: ele.subjectCode, val: ele.subjectName })
       })
+      this.highDetail.formData[0].initValue2 = [0]
+      this._getHighClass(this.highSubList[0].subjectCode)
     },
     // 点击专业获取班级
     secondChange(value) {
@@ -241,15 +250,19 @@ export default {
         schoolCode: this.userInfo.schoolCode,
         page: 1,
         size: 99999,
-        subjectCode: subjectCode
+        subjectCode: subjectCode,
+        gradeName: this.gradeName
       }
       const res = await this.getHighClass(req)
       this.highClass = res.data.records
-      if (res.data.records.length > 0) {
-        res.data.records.forEach(ele => {
-          this.highDetail.formData[0].threeList.push({ key: ele.id, val: ele.className })
-        })
+      if (res.data.records.length === 0) {
+        this.highDetail.formData[0].initValue3 = []
+        return
       }
+      res.data.records.forEach(ele => {
+        this.highDetail.formData[0].threeList.push({ key: ele.id, val: ele.className })
+      })
+      this.highDetail.formData[0].initValue3 = [0]
     },
     toAdd(val) {
       this.$refs.newStudent.formStatus = val
