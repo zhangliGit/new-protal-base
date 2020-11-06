@@ -52,7 +52,7 @@ const home = {
       userCode: JSON.parse(window.sessionStorage.getItem('loginType')).userCode
     }),
     welComeInfo: {},
-    gradeList: JSON.parse(window.sessionStorage.getItem('gradeList'))
+    gradeList: JSON.parse(window.sessionStorage.getItem('gradeList') || '[]')
   },
   actions: {
     ...actions,

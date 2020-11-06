@@ -124,22 +124,20 @@ export default {
     ...mapState('home', ['userInfo', 'gradeList'])
   },
   mounted() {
-    const list = [...this.gradeList] || []
+    const list = this.gradeList
     this.searchLabel = [
       ...this.searchLabel,
-      ...[
-        {
-          list: list.map((item) => {
-            return {
-              key: item.id,
-              val: item.gradeName
-            }
-          }),
-          value: 'grade',
-          type: 'select',
-          label: '年级'
-        }
-      ]
+      {
+        list: list.map((item) => {
+          return {
+            key: item.id,
+            val: item.gradeName
+          }
+        }),
+        value: 'grade',
+        type: 'select',
+        label: '年级'
+      }
     ]
     this.showList()
   },

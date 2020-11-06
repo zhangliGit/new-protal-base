@@ -45,7 +45,7 @@ import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
 import SearchForm from '@c/SearchForm'
-import GradeTree from '@c/GradeTree'
+import GradeTree from '@c/HighGradeTree'
 import UploadMulti from '@c/UploadFace'
 import Tools from '@u/tools'
 import SubmitForm from '../../component/SubForm.vue'
@@ -89,16 +89,7 @@ const addFormDatas = [
   {
     value: 'gradeName',
     initValue: [],
-    list: [
-      {
-        key: '1',
-        val: '2020'
-      },
-      {
-        key: '2',
-        val: '2019'
-      }
-    ],
+    list: [],
     type: 'select',
     label: '年级',
     placeholder: '请选择年级'
@@ -117,11 +108,11 @@ const addFormDatas = [
     initValue: '1',
     list: [
       {
-        key: '1',
+        key: '0',
         val: '男'
       },
       {
-        key: '2',
+        key: '1',
         val: '女'
       }
     ],
@@ -184,20 +175,7 @@ const addFormDatas = [
   {
     value: 'project',
     initValue: [],
-    list: [
-      {
-        key: '1',
-        val: '软件技术'
-      },
-      {
-        key: '2',
-        val: '软件测试'
-      },
-      {
-        key: '3',
-        val: '医学'
-      }
-    ],
+    list: [],
     type: 'select',
     label: '申请专业',
     placeholder: '请选择专业'
@@ -380,7 +358,7 @@ const columns = [
   },
   {
     title: '姓名',
-    dataIndex: 'name',
+    dataIndex: 'studentName',
     width: '8%'
   },
   {
@@ -390,17 +368,20 @@ const columns = [
   },
   {
     title: '申请专业',
-    dataIndex: 'project',
+    dataIndex: 'majorName',
     width: '10%'
   },
   {
     title: '性别',
-    dataIndex: 'sex',
-    width: '5%'
+    dataIndex: 'gender',
+    width: '5%',
+    customRender: (text) => {
+      return text === 0 || text === '0' ? '男' : '女'
+    }
   },
   {
     title: '身份证号',
-    dataIndex: 'idCard',
+    dataIndex: 'idNumber',
     width: '8%'
   },
   {
@@ -418,8 +399,20 @@ const columns = [
   },
   {
     title: '申请状态',
-    dataIndex: 'status',
-    width: '8%'
+    dataIndex: 'state',
+    width: '8%',
+    customRender: (text) => {
+      if (text === 1 || text === '1') {
+        return '申请中'
+      }
+      if (text === 2 || text === '2') {
+        return '申请失败'
+      }
+      if (text === 3 || text === '3') {
+        return '申请成功'
+      }
+      return ''
+    }
   },
   {
     title: '人脸照片',
@@ -470,68 +463,72 @@ export default {
       chooseList: [],
       totalList: [],
       previewVisible: false,
-      detailList: {}
+      detailList: {},
+      subjectList: [],
+      grade: '', // 年级名称
+      majorCode: '', // 	申请专业编码
+      majorName: '' // 申请专业名称
     }
   },
   computed: {
-    ...mapState('home', ['userInfo'])
+    ...mapState('home', ['userInfo', 'gradeList'])
   },
+  watch: {},
   mounted() {
-    // this.showList()
-    this.userList = [
-      {
-        id: 1,
-        name: '张学良',
-        grade: '2020',
-        project: '软件工程',
-        sex: '男',
-        idCard: '420333199563632020',
-        mobile: '13699996666',
-        createTime: 56565656565,
-        status: '1',
-        photo:
-          'http://canpoint-photo.oss-cn-beijing.aliyuncs.com/47801/2020/10/19/base/76b5c10347bf4e5185331bb917b762cb.jpg'
-      },
-      {
-        id: 2,
-        name: '张学良',
-        grade: '2020',
-        project: '软件工程',
-        sex: '男',
-        idCard: '420333199563632020',
-        mobile: '13699996666',
-        createTime: 56565656565,
-        status: '1',
-        photo:
-          'http://canpoint-photo.oss-cn-beijing.aliyuncs.com/47801/2020/10/19/base/76b5c10347bf4e5185331bb917b762cb.jpg'
+    this.addFormDatas[0].list = this.gradeList.map((item) => {
+      return {
+        key: item.gradeCode,
+        val: item.gradeName
       }
-    ]
+    })
+    this.showList()
   },
   methods: {
-    ...mapActions('home', ['getStudentList']),
+    ...mapActions('home', ['getStudentList', 'getStudentList']),
     async showList(searchObj = {}) {
       this.searchList = Object.assign(this.searchList, this.pageList, searchObj)
-      const res = await this.getStudentList(this.searchList)
-      this.userList = res.data.list
-      this.total = res.data.total
+      const req = {
+        ...this.searchList,
+        classCode: '', // 分配班级编码
+        finalMajorCode: '', // 分配专业编码
+        grade: Number(this.grade), // 年级
+        majorCode: this.majorCode, // 	申请专业编码
+        majorName: this.majorName, // 申请专业名称
+        schoolCode: this.userInfo.schoolCode // 学校编码
+      }
+      console.log(req)
+      const res = await this.getStudentList(req)
+      if (res && res.code === 200) {
+        this.userList = res.data.records
+        this.total = res.data.total
+      }
+    },
+    // 获取年级下专业列表
+    async getGrade(gradeName) {
+      const req = {
+        schoolCode: this.userInfo.schoolCode,
+        gradeName
+      }
+      const res = await this.getGradeList(req)
+      if (res && res.code === 200) {
+        this.subjectList = res.data.map((item) => {
+          return {
+            key: item.subjectCode,
+            val: item.subjectName
+          }
+        })
+      }
     },
     // 条件搜索
     searchForm(values) {
       const { idCard, name, status } = values
       this.pageList.page = 1
       const searchObj = {
-        classCode: '', // 分配班级编码
-        finalMajorCode: '', // 分配专业编码
-        grade: 0, // 年级
-        hasCheckIn: true, // 报到状态 true:已报到；false:未报到
         idNumber: idCard, // 身份证号
-        majorCode: '', // 	申请专业编码
-        majorName: '', // 申请专业名称
-        schoolCode: '', // 学校编码
         state: status, // 申请状态 1:申请中；2：失败；3：成功
         studentName: name // 学生姓名
       }
-      // this.showList(searchObj)
+      this.showList(searchObj)
     },
     // 去详情
     detail(id) {
@@ -545,17 +542,16 @@ export default {
     },
     // 选择树形列表
     select(item) {
+      console.log(item)
       this.pageList.page = 1
       this.pageList.size = 20
-      console.log(item)
-      // if (typeof item.materialTypeId === 'number') {
-      //   this.searchList.materialTypeId = item.materialTypeId
-      //   this.searchList.materialId = ''
-      // } else {
-      //   this.searchList.materialId = item.materialTypeId.split('^')[1]
-      //   this.searchList.materialTypeId = ''
-      // }
-      // this.showList()
+      const { gradeCode, title, schoolYearName } = item
+      this.majorCode = gradeCode
+      this.majorName = title
+      this.grade = schoolYearName
+      this.$nextTick(() => {
+        this.showList()
+      })
     },
     addClick() {
       this.addFormStatus = true
@@ -577,6 +573,33 @@ export default {
     // 提交新生申请添加
     submitApply(item) {
       console.log(item)
+      const req = {
+        enrollmentTarget: '',
+        gender: '',
+        grade: 0,
+        graduationSchool: '',
+        hasGuardian: true,
+        healthyState: '',
+        homeAddress: '',
+        idNumber: '',
+        majorCode: '',
+        majorName: '',
+        mobile: '',
+        nationality: '',
+        parentMobile: '',
+        parentName: '',
+        photoUrl: '',
+        policeStation: '',
+        politicalOutlook: '',
+        registrationAddress: '',
+        registrationNature: '',
+        relationship: '',
+        residentialType: '',
+        schoolCode: '',
+        schoolName: '',
+        studentName: '',
+        studentSource: ''
+      }
     },
     // 批量审核通过、拒绝按钮
     checkClick(val) {
