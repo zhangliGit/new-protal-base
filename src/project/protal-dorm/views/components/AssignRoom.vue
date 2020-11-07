@@ -23,7 +23,7 @@
           </div>
           <div class="left-tree">
             <major-tree v-if="(schoolType === '8' || schoolType === '9') && current === 1" @select="select"></major-tree>
-            <grade-tree v-if="(schoolType !== '8' || schoolType !== '9') && current === 1" @select="select"></grade-tree>
+            <grade-tree v-if="(schoolType !== '8' && schoolType !== '9') && current === 1" @select="select"></grade-tree>
             <org-tree v-if="current === 0" @defaultCode="defaultCode" @select="orgSelect"></org-tree>
           </div>
         </div>
