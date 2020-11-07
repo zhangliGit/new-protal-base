@@ -16,7 +16,7 @@
         <div class="tree-parent--header">
           <div class="tree-icon"></div>
           <span :class="['tree-title', { isActive: item.isActive }]" @click.stop="handleTitleClick(1, [item])">{{
-            currentIndex == 0 ? item.categoryName : item.schoolYear + '学年'
+            (currentIndex === 1 && (schoolType === '8' || schoolType === '9')) ? item.title : (currentIndex === 1 && (schoolType !== '8' || schoolType !== '9')) ? item.schoolYear + '学年' : item.categoryName
           }}</span>
           <div :class="['tree-ops', { isExpand: item.expand }]" @click.stop="handleParentOps(item)"></div>
         </div>
@@ -27,7 +27,7 @@
               <span
                 :class="['son-title', { isActive: elem.isActive }]"
                 @click.stop="handleTitleClick(2, [elem, item])"
-              >{{ currentIndex == 0 ? elem.categoryName : elem.name }}</span
+              >{{ (currentIndex === 1 && (schoolType === '8' || schoolType === '9')) ? elem.title : (currentIndex === 1 && (schoolType !== '8' || schoolType !== '9')) ? elem.name : elem.categoryName }}</span
               >
               <div :class="['son-ops', { isExpand: elem.expand }]" @click.stop="handleSonOps(elem)" v-if="isRoom"></div>
             </div>
@@ -37,7 +37,7 @@
                 <span
                   :class="['subson-title', { isActive: el.isActive }]"
                   @click.stop="handleTitleClick(3, [el, elem, item])"
-                >{{ currentIndex == 0 ? el.categoryName : el.className }}</span
+                >{{ (currentIndex === 1 && (schoolType === '8' || schoolType === '9')) ? el.title : (currentIndex === 1 && (schoolType !== '8' || schoolType !== '9')) ? el.className : el.categoryName }}</span
                 >
               </div>
             </div>
@@ -70,7 +70,7 @@ export default {
         },
         {
           name: 1,
-          title: '年级班级'
+          title: '班级'
         }
       ],
       topTreeList: [],
@@ -83,7 +83,8 @@ export default {
         gradeCode: '',
         roomCode: '',
         stageCode: ''
-      }
+      },
+      schoolType: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolType
     }
   },
   props: {
@@ -109,7 +110,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('orgTree', ['getBuildNode', 'getBuildChildNode', 'getSchoolStage', 'getStageGrade', 'getGradeClass']),
+    ...mapActions('orgTree', ['getHighNode', 'getBuildNode', 'getBuildChildNode', 'getSchoolStage', 'getStageGrade', 'getGradeClass']),
     getDormTreeList() {
       this.getBuildNode(sessionStorage.getItem('schoolScheme')).then(res => {
         // console.log('res++', res)
@@ -140,7 +141,6 @@ export default {
       this.treeForm.stageCode = ''
     },
     handleTitleClick(type, nodeList, treeType) {
-      console.log(nodeList)
       this.resetForm()
       var tag = ''
       if (type === 1) {
@@ -151,8 +151,11 @@ export default {
           this.currentSelectNodeTitle = nodeList[0].categoryName
         } else {
           tag = 3
-          this.treeForm.stageCode = nodeList[0].stageCode
-          this.currentSelectNodeTitle = nodeList[0].schoolYear + '学年'
+          this.treeForm.stageCode = (this.schoolType === '8' || this.schoolType === '9') ? nodeList[0].code : nodeList[0].stageCode
+          this.treeForm.schoolYearId = (this.schoolType === '8' || this.schoolType === '9') ? nodeList[0].gradeName : ''
+          this.treeForm.gradeCode = ''
+          this.treeForm.classCode = ''
+          this.currentSelectNodeTitle = (this.schoolType === '8' || this.schoolType === '9') ? nodeList[0].title : nodeList[0].schoolYear + '学年'
         }
       } else if (type === 2) {
         // son node
@@ -164,9 +167,11 @@ export default {
           this.currentSelectNodeTitle = `${nodeList[1].categoryName}${nodeList[0].categoryName}`
         } else {
           tag = 4
-          this.treeForm.gradeCode = nodeList[0].gradeId
+          this.treeForm.gradeCode = (this.schoolType === '8' || this.schoolType === '9') ? nodeList[0].subjectCode : nodeList[0].gradeId
+          this.treeForm.schoolYearId = (this.schoolType === '8' || this.schoolType === '9') ? nodeList[0].gradeName : ''
+          this.treeForm.classCode = ''
           // this.currentSelectNodeTitle = `${nodeList[1].stageName}${nodeList[0].gradeName}`
-          this.currentSelectNodeTitle = `${nodeList[0].name}`
+          this.currentSelectNodeTitle = (this.schoolType === '8' || this.schoolType === '9') ? nodeList[0].title : `${nodeList[0].name}`
         }
       } else if (type === 3) {
         // subson node
@@ -178,10 +183,11 @@ export default {
           this.currentSelectNodeTitle = `${nodeList[2].categoryName}${nodeList[1].categoryName} ${nodeList[0].categoryName}`
         } else {
           tag = 5
-          this.treeForm.classCode = nodeList[0].classCode
-          this.treeForm.gradeCode = nodeList[0].gradeCode
+          this.treeForm.classCode = this.treeForm.classCode = nodeList[0].classCode
+          this.treeForm.gradeCode = (this.schoolType === '8' || this.schoolType === '9') ? nodeList[0].subjectCode : nodeList[0].gradeCode
+          this.treeForm.schoolYearId = (this.schoolType === '8' || this.schoolType === '9') ? nodeList[0].gradeName : ''
           // this.currentSelectNodeTitle = `${nodeList[2].stageName}${nodeList[1].gradeName} ${nodeList[0].className}`
-          this.currentSelectNodeTitle = `${nodeList[1].name} ${nodeList[0].className}`
+          this.currentSelectNodeTitle = (this.schoolType === '8' || this.schoolType === '9') ? `${nodeList[2].title} ${nodeList[1].title} ${nodeList[0].title}` : `${nodeList[1].name} ${nodeList[0].className}`
         }
       }
       if (this.treeType === 0) {
@@ -224,10 +230,12 @@ export default {
     handleSonOps(item) {
       // console.log('son ops', this.currentIndex, this.currentTab)
       item.expand = !item.expand
-      if (this.currentIndex === 0 && item.subSonList.length === 0) {
-        this.getDormSubsonNode(item)
-      } else if (this.currentIndex === 1 && item.subSonList.length === 0) {
-        this.getSubsonNode(item)
+      if (this.schoolType !== '8' || this.schoolType !== '9') {
+        if (this.currentIndex === 0 && item.subSonList.length === 0) {
+          this.getDormSubsonNode(item)
+        } else if (this.currentIndex === 1 && item.subSonList.length === 0) {
+          this.getSubsonNode(item)
+        }
       }
     },
     getSubsonNode(data) {
@@ -270,12 +278,13 @@ export default {
         })
     },
     handleParentOps(item) {
-      // console.log('parent ops', this.currentTab, this.currentIndex)
       item.expand = !item.expand
-      if (this.currentIndex === 0) {
-        this.getDormSonNode(item)
-      } else if (this.currentIndex === 1 && item.sonNodeList.length === 0) {
-        this.getSonNode(item)
+      if (this.schoolType !== '8' || this.schoolType !== '9') {
+        if (this.currentIndex === 0) {
+          this.getDormSonNode(item)
+        } else if (this.currentIndex === 1 && item.sonNodeList.length === 0) {
+          this.getSonNode(item)
+        }
       }
     },
     getSonNode(data) {
@@ -302,13 +311,101 @@ export default {
       if (this.currentIndex === 0) {
         this.getDormTreeList()
       } else {
-        this.getGradeTreeList()
+        if ((this.schoolType === '8' || this.schoolType === '9') || this.schoolType === '9') {
+          this._getHighNode()
+        } else {
+          this.getGradeTreeList()
+        }
       }
+    },
+    // 获取中职节点数据
+    _getHighNode() {
+      this.getHighNode({ schoolCode: sessionStorage.getItem('schoolScheme') })
+        .then(res => {
+          if (res.data.length !== 0) {
+            const selectObj = {
+              title: res.data[0].gradeName + '级',
+              code: res.data[0].gradeCode,
+              key: res.data[0].gradeCode,
+              gradeName: res.data[0].gradeName,
+              gradeCode: res.data[0].gradeCode,
+              subjectCode: '',
+              classCode: ''
+            }
+            this.defaultSelectedKeys = [res.data[0].gradeCode]
+            this.topTreeList = res.data.map((item) => {
+              return {
+                gradeName: item.gradeName,
+                gradeCode: item.gradeCode,
+                subjectCode: '',
+                classCode: '',
+                title: item.gradeName + '级',
+                code: item.gradeCode,
+                key: item.gradeCode,
+                sonNodeList: item.subjectNodeDtos ? this.filterSub(item.subjectNodeDtos) : [],
+                expand: false,
+                isActive: false
+              }
+            })
+            if (this.isSelect) {
+              this.handleTitleClick(1, [this.topTreeList[0]], 0)
+            }
+            this.$emit('select', selectObj)
+          } else {
+            const selectObj = {
+              title: '',
+              code: '',
+              key: '',
+              gradeName: '',
+              gradeCode: '',
+              subjectCode: '',
+              classCode: ''
+            }
+            this.$emit('select', selectObj)
+          }
+        })
+        .catch(err => {
+          this.$message.error(err.message)
+        })
+    },
+    // 处理专业节点
+    filterSub(data) {
+      const newData = data.map(el => {
+        return {
+          gradeName: el.gradeName,
+          gradeCode: el.gradeCode,
+          subjectCode: el.subjectCode,
+          classCode: '',
+          title: el.subjectName,
+          code: el.subjectCode,
+          key: el.subjectCode,
+          subSonList: el.classNodeDtos ? this.filterClass(el.classNodeDtos, el.gradeCode, el.gradeName, el.subjectCode) : [],
+          expand: false,
+          isActive: false
+        }
+      })
+      return newData
+    },
+    // 处理班级节点
+    filterClass(data, gradeCode, gradeName, subjectCode) {
+      const newData = data.map(el => {
+        return {
+          gradeName: gradeName,
+          gradeCode: gradeCode,
+          subjectCode: subjectCode,
+          classCode: el.classCode,
+          title: el.className,
+          code: el.classCode,
+          key: el.classCode,
+          expand: false,
+          isActive: false
+        }
+      })
+      return newData
     },
     getGradeTreeList() {
       this.getSchoolStage({ schoolCode: sessionStorage.getItem('schoolScheme') })
         .then(res => {
-          console.log('res++++', res)
           this.topTreeList = res.data.list.filter(item => {
             return item.semester === '下学期'
           })
@@ -330,7 +427,6 @@ export default {
               this.handleTitleClick(1, [this.topTreeList[0]], 0)
             }
           }
-          console.log(this.topTreeList)
         })
         .catch(err => {
           this.$message.error(err.message)

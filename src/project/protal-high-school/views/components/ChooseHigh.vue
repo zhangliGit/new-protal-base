@@ -14,10 +14,10 @@
       style="margin-bottom: 15px"
     >
       <a-col>
-        <span>姓名/学号：</span>
-        <a-input v-model="keyword" style="width: 120px; margin-right: 10px" placeholder="请输入" />
+        <span>姓名：</span>
+        <a-input v-model="userName" style="width: 120px; margin-right: 10px" placeholder="请输入" />
         <span>学号：</span>
-        <a-input v-model="keyword" style="width: 120px; margin-right: 10px" placeholder="请输入" />
+        <a-input v-model="workNo" style="width: 120px; margin-right: 10px" placeholder="请输入" />
         <span>走住读类型：</span>
         <a-select style="width: 120px; margin-right: 10px" v-model="hasDorm">
           <a-select-option value>全部</a-select-option>
@@ -25,6 +25,11 @@
           <a-select-option value="0">走读</a-select-option>
         </a-select>
         <a-button type="primary" @click="getStudentList(chooseType !== '')">查询</a-button>
+        <a-button
+          style="background:#e8e8e8;color:#999"
+          type="default"
+          class="u-mar-l10"
+          @click="replace(chooseType !== '')">重置</a-button>
       </a-col>
       <a-col style="margin-left: 45px; line-height: 35px">
         <span>
@@ -211,7 +216,8 @@ export default {
       },
       sex: '',
       hasDorm: '',
-      keyword: '',
+      userName: '',
+      workNo: '',
       hasPhoto: '',
       total: 0,
       columns,
@@ -232,6 +238,9 @@ export default {
     async getStudentList(type = false) {
       this.searchList.schoolCode = this.userInfo.schoolCode
       this.searchList.hasClass = '0'
+      this.searchList.hasDorm = this.hasDorm
+      this.searchList.userName = this.userName
+      this.searchList.workNo = this.workNo
       this.searchList = Object.assign(this.searchList, this.pageList)
       const res = await this.getHighStu(this.searchList)
       this.userList = res.data.list.map(item => {
@@ -298,6 +307,12 @@ export default {
     },
     newStudent() {
       this.$emit('toAdd', true)
+    },
+    replace() {
+      this.userName = ''
+      this.workNo = ''
+      this.hasDorm = ''
+      this.getStudentList()
     }
   }
 }

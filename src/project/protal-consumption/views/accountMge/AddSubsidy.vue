@@ -92,7 +92,7 @@
       <a-form-item label="每人发放金额">
         <a-input
           type="number"
-          :min="0"
+          :min="1"
           :max="99999"
           :disabled="readOnlyTag"
           v-decorator="[
@@ -471,6 +471,10 @@ export default {
       console.log(this.value)
       if (this.classList.length === 0 && this.value.length === 0) {
         this.$message.warning('请选择补助发放对象')
+        return
+      }
+      if (this.detail.grantTotalBalance <= 0) {
+        this.$message.warning('请输入有效的补助金额')
         return
       }
       this.loading = true

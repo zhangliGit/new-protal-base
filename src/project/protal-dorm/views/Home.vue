@@ -82,6 +82,9 @@
         style="height:550px"
         :rowKey="(record,index) => index"
       >
+        <template slot="other1" slot-scope="text, record, index">
+          <div>{{ (schoolType === '8' || schoolType === '9')? `${text.schoolYearId}级${text.gradeName}${text.className}` : text.className }}</div>
+        </template>
         <template slot="number" slot-scope="text, record, index">
           <span>{{ (searchForm.page - 1) * searchForm.size + (index + 1) }}</span>
         </template>
@@ -122,17 +125,17 @@
             <p>姓名：{{ personDetail.userName }}</p>
             <p>性别：{{ personDetail.gender === '1' ? '男' : personDetail.gender === '2' ? '女' : '未知' }}</p>
             <p>学号：{{ personDetail.studentNo }}</p>
-            <p>班级：{{ personDetail.className }}</p>
+            <p>班级：{{ (schoolType === '8' || schoolType === '9')? `${personDetail.schoolYearId}级${personDetail.gradeName}${personDetail.className}` : personDetail.className }}</p>
             <p>
               班主任：{{ personDetail.teacherName ? personDetail.teacherName : '暂无' }} &nbsp;&nbsp; 联系电话：{{
-              personDetail.teacherPhone ? personDetail.teacherPhone : '暂无'
+                personDetail.teacherPhone ? personDetail.teacherPhone : '暂无'
               }}
             </p>
             <div v-if="personDetail.parentsList && personDetail.parentsList.length > 0">
               <div v-for="list in personDetail.parentsList" :key="list.parentsPhone">
                 <p>
                   {{ list.relation | getParentType }}：{{ list.parentsName }} &nbsp;&nbsp; 联系电话：{{
-                  list.parentsPhone
+                    list.parentsPhone
                   }}
                 </p>
               </div>
@@ -189,7 +192,7 @@
                 <img :src="shijian" />
                 <span>
                   应归时间：{{
-                  personStatusDetail.shouldReturnTime ? personStatusDetail.shouldReturnTime : '暂无'
+                    personStatusDetail.shouldReturnTime ? personStatusDetail.shouldReturnTime : '暂无'
                   }}
                 </span>
               </div>
@@ -263,9 +266,11 @@ const columns = [
   },
   {
     title: '班级',
-    dataIndex: 'className',
-    width: '15%',
-    align: 'center'
+    width: '18%',
+    align: 'center',
+    scopedSlots: {
+      customRender: 'other1'
+    }
   },
   {
     title: '班主任/联系电话',
@@ -341,7 +346,8 @@ export default {
       searchForm: {
         page: 1
       },
-      params: {}
+      params: {},
+      schoolType: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolType
     }
   },
   filters: {

@@ -1,6 +1,7 @@
 <template>
   <div class="page-layout qui-fx">
-    <grade-tree @select="select"></grade-tree>
+    <major-tree v-if="userInfo.schoolType === '8' || userInfo.schoolType === '9'" @select="select"></major-tree>
+    <grade-tree v-else @select="select"></grade-tree>
     <div class="qui-fx-f1 qui-fx-ver">
       <search-form isReset @search-form="searchForm" :search-label="searchLabel">
         <div slot="left">
@@ -46,6 +47,7 @@ import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
 import columns from '../../assets/js/table/studentStatistics'
 import hostEnv from '@config/host-env'
+import MajorTree from '@c/MajorTree'
 const searchLabel = [
   {
     value: 'searchKey', // 表单属性
@@ -65,7 +67,8 @@ export default {
     GradeTree,
     SearchForm,
     TableList,
-    PageNum
+    PageNum,
+    MajorTree
   },
   data() {
     return {
@@ -93,6 +96,22 @@ export default {
     ])
   },
   async mounted() {
+    if ((this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') && this.columns[4].dataIndex !== 'gradeName') {
+      this.columns[3] = {
+        title: '年级',
+        dataIndex: 'schoolYearId',
+        width: '10%',
+        customRender: text => {
+          return text + '级'
+        }
+      }
+      this.columns.splice(4, 0,
+        {
+          title: '专业',
+          dataIndex: 'gradeName',
+          width: '8%'
+        })
+    }
     this.searchList.schoolCode = this.userInfo.schoolCode
     this.showList()
   },
@@ -117,8 +136,8 @@ export default {
     select(item) {
       this.pageList.page = 1
       this.pageList.size = 20
-      this.searchList.schoolYearId = item.schoolYearId
-      this.searchList.gradeCode = item.gradeCode
+      this.searchList.schoolYearId = (this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') ? item.gradeName : item.schoolYearId
+      this.searchList.gradeCode = (this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') ? item.subjectCode : item.gradeCode
       this.searchList.classCode = item.classCode
       this.showList()
     },

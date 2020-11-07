@@ -5,6 +5,7 @@ import realBedApi from './realBed'
 import timeSetApi from './timeSet'
 import baseApi from './base'
 import deviceApi from './device'
+import highApi from './high'
 
 const api = {
   ...homeApi,
@@ -13,6 +14,7 @@ const api = {
   ...realBedApi,
   ...timeSetApi,
   ...baseApi,
-  ...deviceApi
+  ...deviceApi,
+  ...highApi
 }
 export default api

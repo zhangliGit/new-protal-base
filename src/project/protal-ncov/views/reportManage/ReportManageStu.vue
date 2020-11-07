@@ -1,7 +1,8 @@
 <template>
   <div class="page-layout qui-fx">
     <div class="page-left">
-      <grade-tree @select="select"></grade-tree>
+      <major-tree v-if="userInfo.schoolType === '8' || userInfo.schoolType === '9'" @select="select"></major-tree>
+      <grade-tree v-else @select="select"></grade-tree>
     </div>
     <div class="qui-fx-f1 qui-fx-ver">
       <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
@@ -17,7 +18,7 @@
           </a-tooltip>
         </template>
         <template v-slot:other4="action">
-          <div>{{ action.record.gradeName }}{{ action.record.className }}</div>
+          <div>{{ (userInfo.schoolType === '8' || userInfo.schoolType === '9') ? action.record.schoolYearId + '级' : '' }} {{ action.record.gradeName + action.record.className }}</div>
         </template>
         <template v-slot:other5="action">
           <div v-if="action.record.enableFever === false">{{ action.record.enableFever ? '发热' : '未发热' }}</div>
@@ -39,7 +40,7 @@ import GradeTree from '@c/GradeTree'
 import PageNum from '@c/PageNum'
 import Tools from '@u/tools'
 import AddReports from '../component/AddReports'
-
+import MajorTree from '@c/MajorTree'
 const searchLabel = [
   {
     value: 'userName',
@@ -75,7 +76,7 @@ const searchLabel = [
 const columns = [
   {
     title: '序号',
-    width: '6%',
+    width: '8%',
     scopedSlots: {
       customRender: 'index'
     }
@@ -164,7 +165,8 @@ export default {
     TableList,
     SearchForm,
     PageNum,
-    AddReports
+    AddReports,
+    MajorTree
   },
   data() {
     return {
@@ -189,7 +191,6 @@ export default {
   computed: {
     ...mapState('home', ['userInfo'])
   },
-  mounted() {},
   methods: {
     ...mapActions('home', ['getReportInfoList', 'addReport']),
     addApp() {
@@ -202,9 +203,8 @@ export default {
     select(item) {
       this.pageList.page = 1
       this.pageList.size = 20
-      this.searchList.gradeCode = item.gradeCode
-      this.searchList.classCode = item.classCode
-      this.searchList.schoolYearId = item.schoolYearId
+      this.searchList.schoolYearId = (this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') ? item.gradeName : item.schoolYearId
+      this.searchList.gradeCode = (this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') ? item.subjectCode : item.gradeCode
       this.showList()
     },
     async showList(searchObj = {}) {
@@ -247,6 +247,7 @@ export default {
     },
     searchForm(values) {
       this.pageList.page = 1
+      this.pageList.size = 20
       this.startDate = values.rangeTime[0]
       this.endDate = values.rangeTime[1]
       const searchObj = {

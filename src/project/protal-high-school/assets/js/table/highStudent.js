@@ -121,25 +121,25 @@ const highStudent = {
       type: 'select',
       label: '照片'
     },
-    {
-      list: [
-        {
-          key: '',
-          val: '全部'
-        },
-        {
-          key: 1,
-          val: '已分班'
-        },
-        {
-          key: 0,
-          val: '未分班'
-        }
-      ],
-      value: 'hasClass',
-      type: 'select',
-      label: '班级'
-    },
+    // {
+    //   list: [
+    //     {
+    //       key: '',
+    //       val: '全部'
+    //     },
+    //     {
+    //       key: 1,
+    //       val: '已分班'
+    //     },
+    //     {
+    //       key: 0,
+    //       val: '未分班'
+    //     }
+    //   ],
+    //   value: 'hasClass',
+    //   type: 'select',
+    //   label: '班级'
+    // },
     {
       list: [
         {

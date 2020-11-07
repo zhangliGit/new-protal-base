@@ -41,6 +41,7 @@ let img_download = ''
 let oss_upload = ''
 let hzz_ecard = ''
 let hzz_deal = ''
+let hzz_apply = ''
 let hzz_tooken = ''
 let wxz_notice = ''
 let ljj_high = ''
@@ -85,6 +86,7 @@ if (ConfigEnv === 'test') {
   oss_upload = '/oss_upload'
   hzz_ecard = '/hzz_ecard'
   hzz_deal = '/hzz_deal'
+  hzz_apply = '/hzz_apply'
   hzz_tooken = '/hzz_tooken'
   wxz_notice = '/wxz_notice'
   ljj_high = '/ljj_high'
@@ -129,6 +131,7 @@ if (ConfigEnv === 'test') {
   oss_upload = '/oss_upload'
   hzz_ecard = '/hzz_ecard'
   hzz_deal = '/hzz_deal'
+  hzz_apply = '/hzz_apply'
   hzz_tooken = '/hzz_tooken'
   wxz_notice = '/wxz_notice'
   ljj_high = '/ljj_high'
@@ -173,6 +176,7 @@ if (ConfigEnv === 'test') {
   oss_upload = '/oss_upload'
   hzz_ecard = '/hzz_ecard'
   hzz_deal = '/hzz_deal'
+  hzz_apply = '/hzz_apply'
   hzz_tooken = '/hzz_tooken'
   wxz_notice = '/wxz_notice'
   ljj_high = '/ljj_high'
@@ -219,6 +223,7 @@ export default {
   oss_upload,
   hzz_ecard,
   hzz_deal,
+  hzz_apply,
   hzz_tooken,
   wxz_notice,
   oss_upload,

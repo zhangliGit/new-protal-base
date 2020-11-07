@@ -1,7 +1,8 @@
 <template>
   <div class="page-layout qui-fx">
     <div class="page-left">
-      <grade-tree @select="select"></grade-tree>
+      <major-tree v-if="schoolType === '8' || schoolType === '9'" @select="select"></major-tree>
+      <grade-tree v-else @select="select"></grade-tree>
     </div>
     <div class="qui-fx-f1 qui-fx-ver">
       <div class="search-form mar-t10 qui-fx-jsb">
@@ -41,6 +42,9 @@
           :table-list="userList"
           :rowKey="(record, index) => index"
         >
+          <template slot="other1" slot-scope="text">
+            <div>{{ (schoolType === '8' || schoolType === '9') ? text.record.schoolYearId + '级' : '' }} {{ text.record.gradeName + text.record.className }}</div>
+          </template>
           <template slot="other5" slot-scope="text">
             <div :class="text.record.enableFever ? 'temp-color' : ''">{{ text.record.temperature }}</div>
           </template>
@@ -58,6 +62,7 @@ import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
 import moment from 'moment'
 import GradeTree from '@c/GradeTree'
+import MajorTree from '@c/MajorTree'
 const columns1 = [
   {
     title: '序号',
@@ -97,8 +102,8 @@ const columns1 = [
     title: '班级',
     dataIndex: 'className',
     width: '10%',
-    customRender: (text, record) => {
-      return record.gradeName + record.className
+    scopedSlots: {
+      customRender: 'other1'
     }
   },
   {
@@ -194,7 +199,8 @@ export default {
   components: {
     TableList,
     PageNum,
-    GradeTree
+    GradeTree,
+    MajorTree
   },
   data() {
     return {
@@ -223,13 +229,15 @@ export default {
       timeType: '1',
       statusType: '1',
       tempList: [],
-      thermometryDate: this.$tools.getDate(new Date(), 1)
+      thermometryDate: this.$tools.getDate(new Date(), 1),
+      schoolType: ''
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
+    this.schoolType = this.userInfo.schoolType
     this.searchList.schoolCode = this.userInfo.schoolCode
     this.planListGet()
   },
@@ -256,8 +264,8 @@ export default {
     select(value) {
       this.pageList.page = 1
       this.pageList.size = 20
-      this.searchList.schoolYearId = value.schoolYearId
-      this.searchList.gradeCode = value.gradeCode
+      this.searchList.schoolYearId = (this.schoolType === '8' || this.schoolType === '9') ? value.gradeName : value.schoolYearId
+      this.searchList.gradeCode = (this.schoolType === '8' || this.schoolType === '9') ? value.subjectCode : value.gradeCode
       this.searchList.classCode = value.classCode
       if (this.tempList.length > 0) {
         this.showList()
@@ -267,6 +275,8 @@ export default {
       }
     },
     async showList() {
+      this.pageList.page = 1
+      this.pageList.size = 20
       this.searchList = Object.assign(this.searchList, this.pageList)
       const res = await this.getReport(this.searchList)
       this.userList = res.data.list

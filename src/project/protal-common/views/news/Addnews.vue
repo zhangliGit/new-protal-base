@@ -1,7 +1,7 @@
 <template>
   <div class="set-group page-layout qui-fx-ver">
     <a-form :form="form" :style="{ maxHeight: maxHeight, overflow: 'auto' }">
-      <a-form-item label="新闻标题：" :label-col="{ span: 5 }" :wrapper-col="{ span: 18 }">
+      <a-form-item label="新闻标题：" :label-col="{ span: 5 }" :wrapper-col="{ span: 10 }">
         <a-input
           v-model="orders"
           maxlength="30"
@@ -12,7 +12,7 @@
           placeholder="最多不超过30字"
         />
       </a-form-item>
-      <a-form-item label="摘要" :label-col="{ span: 5 }" :wrapper-col="{ span: 18 }">
+      <a-form-item label="摘要" :label-col="{ span: 5 }" :wrapper-col="{ span: 10 }">
         <a-textarea
           placeholder="请输入摘要"
           v-decorator="[

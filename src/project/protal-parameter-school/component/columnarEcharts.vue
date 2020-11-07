@@ -40,6 +40,9 @@ export default {
   created() {
   },
   watch: {
+    data(val) {
+      this.initData(this.data, this.legendData)
+    }
   },
   methods: {
     fomartData(val) {
@@ -132,7 +135,6 @@ export default {
           }
         }
       })
-      console.log(option)
       var myChart1 = echarts.init(this.$refs.chart, 'shine')
       myChart1.setOption(option)
     }
