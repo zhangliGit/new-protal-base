@@ -4,7 +4,11 @@
       type="edu"
       chooseType="organize"
       :assign-obj="assignStudent"
-      :classId="classId"
+      :grade="grade"
+      :classCode="classCode"
+      :className="className"
+      :subjectCode="subjectCode"
+      :subjectName="subjectName"
       is-check
       ref="form"
       v-if="studentTag"
@@ -13,7 +17,7 @@
       title="分配学生"
     ></assign-student>
     <div class="page-left">
-      <grade-tree @select="select"></grade-tree>
+      <major-tree @select="select"></major-tree>
     </div>
     <div class="qui-fx-f1 qui-fx-ver">
       <table-list isZoom v-model="chooseList" :page-list="pageList" :columns="columns" :table-list="userList">
@@ -23,7 +27,7 @@
               size="small"
               class="edit-action-btn"
               icon="form"
-              @click.stop="assignStuClick(action.record.id)"
+              @click.stop="assignStuClick(action.record)"
             ></a-button>
           </a-tooltip>
         </template>
@@ -36,7 +40,7 @@
 import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
-import GradeTree from '@c/HighGradeTree'
+import MajorTree from '@c/MajorTree'
 import AssignStudent from '../../component/AssignStudent.vue'
 
 const columns = [
@@ -90,7 +94,7 @@ export default {
   components: {
     TableList,
     PageNum,
-    GradeTree,
+    MajorTree,
     AssignStudent
   },
   data() {
@@ -106,15 +110,18 @@ export default {
       searchList: {
         schoolCode: ''
       },
-      classId: '',
       total: 0,
       userList: [],
       chooseList: [],
       totalList: [],
       detailList: {},
       grade: '',
-      majorCode: '',
-      majorName: ''
+      classCode: '',
+      className: '',
+      subjectCode: '',
+      subjectName: '',
+      studentList: [],
+      studentCount: 0
     }
   },
   computed: {
@@ -124,15 +131,12 @@ export default {
     // this.showList()
   },
   methods: {
-    ...mapActions('home', ['getHighClass', 'recordDetail', 'downRecord']),
+    ...mapActions('home', ['getHighClass', 'recordDetail', 'downRecord', 'getStudentList']),
     async showList(searchObj = {}) {
       this.searchList.schoolCode = this.userInfo.schoolCode
       this.searchList = Object.assign(this.searchList, this.pageList, searchObj)
-      this.searchList.gradeName = this.grade
-      this.searchList.subjectCode = this.majorCode
       const res = await this.getHighClass(this.searchList)
-      console.log(res)
-      this.userList = res.data || []
+      this.userList = res.data.records || []
       this.total = res.data.length
     },
     searchForm(values) {
@@ -143,25 +147,15 @@ export default {
       }
       this.showList(searchObj)
     },
-    // 去详情
-    detail(id) {
-      console.log(id)
-      this.$router.push({
-        path: `/studentManage/studentDetails`,
-        query: {
-          id
-        }
-      })
-    },
     // 选择树形列表
     select(item) {
-      console.log(item)
       this.pageList.page = 1
       this.pageList.size = 20
-      const { gradeCode, title, schoolYearName } = item
-      this.majorCode = gradeCode
-      this.majorName = title
-      this.grade = Number(schoolYearName)
+      this.searchList.gradeCode = item.gradeCode
+      this.searchList.gradeName = item.gradeName
+      this.searchList.grade = item.gradeName
+      this.searchList.subjectCode = item.subjectCode || ''
+      this.searchList.classCode = item.classCode || ''
       this.$nextTick(() => {
         this.showList()
       })
@@ -173,11 +167,21 @@ export default {
       }
       console.log(this.totalList)
     },
-    assignStuClick(id) {
-      this.classId = id
+    // 点击分班按钮
+    async assignStuClick(item) {
+      console.log(item)
+      const { gradeName, classCode, className, subjectCode, subjectName } = item
+      this.grade = gradeName
+      this.classCode = classCode
+      this.className = className
+      this.subjectCode = subjectCode
+      this.subjectName = subjectName
       this.studentTag = true
     },
-    submitUser() {}
+    submitUser() {
+      this.showList()
+      this.studentTag = false
+    }
   }
 }
 </script>

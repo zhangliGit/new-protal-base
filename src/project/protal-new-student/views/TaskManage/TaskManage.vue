@@ -130,7 +130,7 @@ export default {
       {
         list: list.map((item) => {
           return {
-            key: item.id,
+            key: Number(item.gradeName),
             val: item.gradeName
           }
         }),

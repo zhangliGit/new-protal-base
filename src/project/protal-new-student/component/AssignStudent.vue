@@ -11,10 +11,10 @@
     <a-row type="flex" justify="end" style="margin-bottom: 15px; margin-right: 215px">
       <a-col>
         <span>申请专业：</span>
-        <a-input v-model="address" style="width: 120px; margin-right: 10px" placeholder="请输入专业名称" />
+        <a-input v-model="ProjectName" style="width: 120px; margin-right: 10px" placeholder="请输入专业名称" />
         <span>学生姓名：</span>
-        <a-input v-model="deviceName" style="width: 120px; margin-right: 10px" placeholder="请输入学生姓名" />
-        <a-button type="primary" @click="getUserList(chooseType !== '')">查询</a-button>
+        <a-input v-model="studentName" style="width: 120px; margin-right: 10px" placeholder="请输入学生姓名" />
+        <a-button type="primary" @click="getUserList">查询</a-button>
       </a-col>
     </a-row>
     <div class="choose-user qui-fx">
@@ -37,7 +37,7 @@
           :mar-bot="0"
           size="small"
           :total="total"
-          @change-page="changePage"
+          @change-page="getUserList"
         ></page-num>
       </div>
       <div class="user-box qui-fx-ver" v-show="isTotal">
@@ -62,9 +62,7 @@
 import PageNum from '@c/PageNum'
 import TableList from '@c/TableList'
 import GradeTree from './HighGradeTree'
-import $ajax from '@u/ajax-serve'
-import { mapState } from 'vuex'
-import hostEnv from '@config/host-env'
+import { mapState, mapActions } from 'vuex'
 const columns = [
   {
     title: '序号',
@@ -80,27 +78,33 @@ const columns = [
   },
   {
     title: '身份证号码',
-    dataIndex: 'idCard',
+    dataIndex: 'idNumber',
     width: '10%'
   },
   {
     title: '性别',
-    dataIndex: 'sex',
-    width: '8%'
+    dataIndex: 'gender',
+    width: '8%',
+    customRender: (text) => {
+      return text === 0 ? '男' : '女'
+    }
   },
   {
     title: '年级',
     dataIndex: 'grade',
-    width: '10%'
+    width: '10%',
+    customRender: (text) => {
+      return `${text}级`
+    }
   },
   {
     title: '申请专业',
-    dataIndex: 'project',
+    dataIndex: 'majorName',
     width: '15%'
   },
   {
     title: '人脸照片',
-    dataIndex: 'photo',
+    dataIndex: 'photoUrl',
     width: '10%',
     scopedSlots: {
       customRender: 'photoPic'
@@ -149,7 +153,23 @@ export default {
       type: Boolean,
       default: false
     },
-    classId: {
+    grade: {
+      type: [String, Number],
+      default: ''
+    },
+    classCode: {
+      type: String,
+      default: ''
+    },
+    className: {
+      type: String,
+      default: ''
+    },
+    subjectCode: {
+      type: String,
+      default: ''
+    },
+    subjectName: {
       type: String,
       default: ''
     }
@@ -168,8 +188,8 @@ export default {
   data() {
     return {
       hasPhoto: '',
-      address: '',
-      deviceName: '',
+      ProjectName: '',
+      studentName: '',
       confirmLoading: false,
       orgCode: '',
       chooseList: [],
@@ -179,70 +199,30 @@ export default {
       },
       total: 0,
       columns,
-      userList: [
-        {
-          id: '1',
-          studentName: '学生1',
-          idCard: '423324199563251020',
-          sex: '男',
-          grade: '2020级',
-          project: '软件技术',
-          photo:
-            'http://canpoint-photo.oss-cn-beijing.aliyuncs.com/47801/2020/10/19/base/76b5c10347bf4e5185331bb917b762cb.jpg'
-        },
-        {
-          id: '2',
-          studentName: '学生2',
-          idCard: '423324199563251020',
-          sex: '男',
-          grade: '2020级',
-          project: '软件技术',
-          photo:
-            'http://canpoint-photo.oss-cn-beijing.aliyuncs.com/47801/2020/10/19/base/76b5c10347bf4e5185331bb917b762cb.jpg'
-        }
-      ],
+      userList: [],
       totalList: [],
       code: ''
     }
   },
   mounted() {
-    if (!this.classId) {
-      return
-    }
     this.getUserList()
   },
   methods: {
-    changePage() {
-      if (!this.chooseType) {
-        this.getUserList(false)
-      } else {
-        this.getUserList(true)
+    ...mapActions('home', ['getStudentList', 'assignClass']),
+    // 查询学生列表
+    async getUserList() {
+      const req = {
+        grade: this.grade,
+        state: 3,
+        schoolCode: this.schoolCode,
+        majorName: this.ProjectName,
+        studentName: this.studentName
       }
-    },
-    async getUserList(type = false) {
-      // const res = await $ajax.post({
-      //   url: `${hostEnv.lz_user_center}/userinfo/teacher/user/queryTeacherInfo`,
-      //   params: {
-      //     orgCode: this.orgCode,
-      //     address: this.address,
-      //     deviceName: this.deviceName,
-      //     hasPhoto: this.hasPhoto,
-      //     schoolCode: this.code,
-      //     ...this.pageList
-      //   }
-      // })
-      // this.userList = res.data.list.map((item) => {
-      //   let id = item.id
-      //   if (type) id = item.userCode
-      //   if (type && this.chooseType === 'rule') {
-      //     id = item.id
-      //   }
-      //   return {
-      //     ...item,
-      //     id
-      //   }
-      // })
-      // this.total = res.data.total
+      const res = await this.getStudentList(req)
+      if (res && res.code === 200) {
+        this.userList = res.data.records || []
+        this.total = res.data.total
+      }
     },
     delUser(id, index) {
       this.totalList.splice(index, 1)
@@ -282,14 +262,25 @@ export default {
         this.totalList.splice(index, 1)
       }
     },
-    submitOk() {
+    async submitOk() {
       console.log(this.totalList)
       if (this.totalList.length === 0) {
         this.$message.warning('请选择人员')
         return
       }
       this.confirmLoading = true
-      this.$emit('submit', this.totalList)
+      const req = {
+        classCode: this.classCode,
+        className: this.className,
+        finalMajorCode: this.subjectCode,
+        finalMajorName: this.subjectName,
+        ids: this.totalList.map((item) => {
+          return item.id
+        })
+      }
+      const res = await this.assignClass(req)
+      console.log(res)
+      this.$emit('submit')
     }
   }
 }

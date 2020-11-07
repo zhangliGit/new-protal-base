@@ -32,6 +32,7 @@
             <a-input
               :value="count"
               type="number"
+              min="0"
               @change="(e) => handleChangeCount(e.target.value, record.subjectCode)"
             />
           </template>
@@ -136,12 +137,14 @@ export default {
           }
         })
         this.selectList = selectList
-        this.getGrade(res.data.gradeNum, selectList)
+        this.getGrade(selectList)
       }
+    } else {
+      this.getGrade()
     }
   },
   methods: {
-    ...mapActions('home', ['addTask', 'getGradeList', 'taskDetailById', 'editTask']),
+    ...mapActions('home', ['addTask', 'getAllGrade', 'taskDetailById', 'editTask']),
     handleChangeCount(val, subjectCode) {
       if (!subjectCode) {
         return
@@ -166,7 +169,6 @@ export default {
       })
       const gradeName = Tools.getGradeName(val, this.gradeList)
       this.grade = gradeName
-      this.getGrade(gradeName, this.selectList)
     },
     selectProject() {
       this.showProjectList = true
@@ -194,18 +196,21 @@ export default {
     onChangeDate(time) {
       this.formData.endTime = time
     },
-    // 获取年级下专业列表
-    async getGrade(gradeName, selectList = []) {
+    // 获取专业列表
+    async getGrade(selectList = []) {
       const req = {
         schoolCode: this.userInfo.schoolCode,
-        gradeName
+        subjectName: '',
+        page: 1,
+        size: 1000
       }
-      const res = await this.getGradeList(req)
+      const res = await this.getAllGrade(req)
+      console.log(res)
       if (res && res.code === 200) {
         const list =
-          res.data.length === 0
+          res.data.records.length === 0
             ? []
-            : res.data.map((item) => {
+            : res.data.records.map((item) => {
               return {
                 ...item,
                 count: 0,

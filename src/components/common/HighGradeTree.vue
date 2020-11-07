@@ -91,7 +91,7 @@ export default {
       const gradeName = nowGrade.length === 0 ? '' : nowGrade[0].gradeName
       const selectObj = {
         schoolYearId: tree.selectedNodes[0].data.props.schoolYearId,
-        schoolYearName: gradeName,
+        gradeName: gradeName,
         title: isTopLevel ? '' : tree.selectedNodes[0].data.props.title,
         gradeCode: isTopLevel ? '' : tree.selectedNodes[0].data.props.gradeCode,
         classCode: tree.selectedNodes[0].data.props.classCode,
@@ -117,15 +117,11 @@ export default {
         this.noData = false
       }
       this.gradeList = res.data
-      console.log(res.data)
       this.defaultSelectedKeys = [this.gradeList[0].id]
       this.schoolYear = this.gradeList[0].id
       this.schoolYearName = this.gradeList[0].gradeName
       const selectObj = {
-        schoolYearName: this.gradeList[0].gradeName,
-        title: '',
-        gradeCode: '',
-        classCode: '',
+        ...res.data,
         isNewYear: true
       }
       this.treeData = this.gradeList.map((item) => {

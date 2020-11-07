@@ -7,12 +7,13 @@ import hostEnv from '@config/host-env'
 const baseData1Api = {
   // 专业管理
   getGradeList: '/class/manage/query/subject/by/grade#get', // 年级下专业列表查询
+  getAllGrade: '/subject/manage/list#post', // 获取所有专业
 
   // 学年管理
   getGrade: '/class/manage/query/grade#get', // 年级列表
 
   // 班级管理
-  getHighClass: '/class/manage/query/class/by/subject#get' // 查询年级专业下班级列表
+  getHighClass: '/class/manage/list#post' // 查询班级列表
 }
 
 const baseData2Api = {
