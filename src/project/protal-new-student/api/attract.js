@@ -7,6 +7,7 @@ import hostEnv from '@config/host-env'
 
 const zsApi = {
   // 招生任务
+  getHomeData: '/recruitStudentTask/statistics#getUrl', // 招生统计
   getTaskList: '/recruitStudentTask/page#post', // 招生任务列表
   addTask: '/recruitStudentTask/add#post', // 添加招生任务
   editTask: '/recruitStudentTask/modify#post', // 修改招生任务
@@ -31,9 +32,14 @@ const glApi = {
   assignClass: '/recruitStudentInfo/student/to/class#post', // 分班
 
   // 设备管理
-  getDeviceList: '/deviceManage/page#post', // 设备列表
+  getDeviceList: '/deviceManage/page#post', // 获取已绑定设备列表
   bindDevices: '/deviceManage/bind/device#post', // 绑定设备
-  unbindDevices: '/deviceManage/unbind/device#getUrl' // 解绑设备
+  unbindDevices: '/deviceManage/unbind/device#getUrl', // 解绑设备
+  getDeviceRecord: '/deviceManage/user/list#getUrl' // 下发记录
+}
+
+const deviceApi = {
+  getBaseDevice: '/device/info/queryDeviceInfos#post' // 获取所有设备列表
 }
 for (const val in zsApi) {
   zsApi[val] = `${hostEnv.wq_school}${zsApi[val]}`
@@ -44,8 +50,12 @@ for (const val in sqApi) {
 for (const val in glApi) {
   glApi[val] = `${hostEnv.wq_school}${glApi[val]}`
 }
+for (const val in deviceApi) {
+  deviceApi[val] = `${hostEnv.wxz_control}${deviceApi[val]}`
+}
 export default {
   ...zsApi,
   ...sqApi,
-  ...glApi
+  ...glApi,
+  ...deviceApi
 }

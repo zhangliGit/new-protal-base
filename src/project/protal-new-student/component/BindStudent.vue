@@ -62,7 +62,7 @@
 <script>
 import PageNum from '@c/PageNum'
 import TableList from '@c/TableList'
-import GradeTree from '@c/GradeTree'
+import GradeTree from './HighGradeTree'
 import $ajax from '@u/ajax-serve'
 import { mapState } from 'vuex'
 import hostEnv from '@config/host-env'
@@ -360,10 +360,6 @@ export default {
     // this.getUserList()
   },
   methods: {
-    /**
-     * @description 门禁已绑定人查询
-     */
-    doorBindUser(page) {},
     changePage() {
       if (!this.chooseType) {
         this.getUserList(false)

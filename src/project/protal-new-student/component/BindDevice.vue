@@ -14,7 +14,7 @@
         <a-input v-model="address" style="width: 120px; margin-right: 10px" placeholder="请输入安装位置" />
         <span>设备名称：</span>
         <a-input v-model="deviceName" style="width: 120px; margin-right: 10px" placeholder="请输入设备名称" />
-        <a-button type="primary" @click="getUserList(chooseType !== '')">查询</a-button>
+        <a-button type="primary" @click="getDeviceList(chooseType !== '')">查询</a-button>
       </a-col>
     </a-row>
     <div class="choose-user qui-fx">
@@ -28,7 +28,7 @@
           :columns="columns"
           @clickRow="clickRow"
           @selectAll="selectAll"
-          :table-list="userList"
+          :table-list="deviceList"
         ></table-list>
         <page-num
           :jumper="false"
@@ -61,10 +61,8 @@
 <script>
 import PageNum from '@c/PageNum'
 import TableList from '@c/TableList'
-import GradeTree from '@c/GradeTree'
-import $ajax from '@u/ajax-serve'
-import { mapState } from 'vuex'
-import hostEnv from '@config/host-env'
+import { mapActions, mapState } from 'vuex'
+import Tools from '@u/tools'
 const columns = [
   {
     title: '序号',
@@ -81,30 +79,35 @@ const columns = [
   {
     title: '设备类型',
     dataIndex: 'deviceType',
-    width: '10%'
+    width: '10%',
+    customRender: (text) => {
+      return Tools.deviceTypeName(text)
+    }
   },
   {
     title: '安装位置',
-    dataIndex: 'address',
+    dataIndex: 'snapSite',
     width: '20%'
   },
   {
     title: '设备IP',
-    dataIndex: 'ip',
+    dataIndex: 'deviceIp',
     width: '10%'
   },
   {
     title: '状态',
-    dataIndex: 'status',
-    width: '8%'
+    dataIndex: 'deviceStatus',
+    width: '8%',
+    customRender: (text) => {
+      return text === 1 ? '在线' : '离线'
+    }
   }
 ]
 export default {
   name: 'BindDevice',
   components: {
     PageNum,
-    TableList,
-    GradeTree
+    TableList
   },
   props: {
     isTotal: {
@@ -167,74 +170,37 @@ export default {
       },
       total: 0,
       columns,
-      userList: [
-        {
-          id: '1',
-          deviceName: '设备1',
-          deviceType: '面板机',
-          address: '校南门',
-          ip: '172.169.1.12',
-          status: '运行正常'
-        },
-        {
-          id: '2',
-          deviceName: '设备2',
-          deviceType: '面板机',
-          address: '校北门',
-          ip: '172.169.1.13',
-          status: '运行正常'
-        }
-      ],
+      deviceList: [],
       totalList: []
     }
   },
   mounted() {
-    this.getUserList()
+    this.getDeviceList()
   },
   methods: {
+    ...mapActions('home', ['getBaseDevice', 'bindDevices']),
     changePage() {
       if (!this.chooseType) {
-        this.getUserList(false)
+        this.getDeviceList(false)
       } else {
-        this.getUserList(true)
+        this.getDeviceList(true)
       }
     },
-    async getUserList() {
-      // const res = await $ajax.post({
-      //   url: `${hostEnv.lz_user_center}/userinfo/teacher/user/queryTeacherInfo`,
-      //   params: {
-      //     orgCode: this.orgCode,
-      //     address: this.address,
-      //     deviceName: this.deviceName,
-      //     hasPhoto: this.hasPhoto,
-      //     schoolCode: this.code,
-      //     ...this.pageList
-      //   }
-      // })
-      // this.userList = res.data.list.map((item) => {
-      //   let id = item.id
-      //   if (type) id = item.userCode
-      //   if (type && this.chooseType === 'rule') {
-      //     id = item.id
-      //   }
-      //   return {
-      //     ...item,
-      //     id
-      //   }
-      // })
-      // this.total = res.data.total
+    async getDeviceList() {
+      const req = {
+        schoolCode: this.schoolCode,
+        deviceName: this.deviceName,
+        deviceType: '',
+        ...this.pageList
+      }
+      const res = await this.getBaseDevice(req)
+      if (res && res.code === 200) {
+        this.deviceList = res.data.list
+        this.total = res.data.total
+      }
     },
     defaultCode(item) {
       this.orgCode = item.code[0]
-    },
-    select(item) {
-      this.pageList.page = 1
-      this.orgCode = item.code
-      if (this.chooseType) {
-        this.getUserList(true)
-      } else {
-        this.getUserList()
-      }
     },
     reset() {
       this.confirmLoading = false
@@ -264,14 +230,10 @@ export default {
       if (type) {
         if (this.isCheck) {
           this.totalList.push({
-            id: item.id,
-            userCode: item.userCode,
+            address: item.snapSite,
             deviceName: item.deviceName,
-            orgCode: item.orgCode,
-            orgName: item.orgName,
-            photoUrl: item.photoUrl,
-            sex: item.sex,
-            mobile: item.mobile
+            deviceType: item.deviceType,
+            snCode: item.deviceSn
           })
         } else {
           this.totalList = [item]
@@ -281,13 +243,19 @@ export default {
         this.totalList.splice(index, 1)
       }
     },
-    submitOk() {
-      if (this.totalList.length === 0 && this.bindId === -1) {
-        this.$message.warning('请选择人员')
+    async submitOk() {
+      if (this.totalList.length === 0) {
+        this.$message.warning('请选择设备')
         return
       }
-      this.confirmLoading = true
-      this.$emit('submit', this.totalList)
+      const req = {
+        deviceList: this.totalList,
+        schoolCode: this.schoolCode
+      }
+      const res = await this.bindDevices(req)
+      if (res && res.code === 200) {
+        this.$emit('submit')
+      }
     }
   }
 }

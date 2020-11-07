@@ -8,7 +8,6 @@
     :destroyOnClose="true"
     :width="width"
     :footer="null"
-    @ok="addHandle"
   >
     <div>
       <search-form is-reset @search-form="searchForm" :search-label="searchLabel"> </search-form>
@@ -22,7 +21,7 @@
         :page-list="pageList"
         @selectAll="selectAll"
         :columns="columns"
-        :table-list="userList"
+        :table-list="issueList"
       >
         <template v-slot:actions="action">
           <a-tooltip placement="topLeft" title="重发" v-if="!action.record.result">
@@ -86,7 +85,7 @@ const columns = [
   },
   {
     title: '人员',
-    dataIndex: 'name',
+    dataIndex: 'studentName',
     width: '10%'
   },
   {
@@ -133,8 +132,12 @@ export default {
       default: () => []
     },
     deviceId: {
-      type: String,
+      type: [String, Number],
       default: ''
+    },
+    issueList: {
+      type: Array,
+      default: () => []
     }
   },
   components: {
@@ -175,16 +178,17 @@ export default {
   computed: {
     ...mapState('home', ['userInfo'])
   },
-  mounted() {},
+  mounted() {
+    console.log('1111')
+  },
+  watch: {
+    deviceId(newval, oldval) {
+      console.log(newval, oldval)
+    }
+  },
   methods: {
     cancelSelect() {
       this.$emit('cancel')
-    },
-    addHandle() {
-      const list = this.projectList.filter((item) => {
-        return item.checked === true
-      })
-      this.$emit('submit', list)
     },
     selectProject(id) {
       this.$emit('clickSelect', id)

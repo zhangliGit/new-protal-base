@@ -1,6 +1,12 @@
 <template>
   <div class="home page-layout qui-fx-ver">
-    <IssueRecord :visible="issueVisible" :title="title" :deviceId="deviceId" @cancel="issueVisible = false" />
+    <IssueRecord
+      :visible="issueVisible"
+      :title="title"
+      :issueList="issueList"
+      :deviceId="deviceId"
+      @cancel="issueVisible = false"
+    />
     <bind-student
       type="edu"
       chooseType="organize"
@@ -49,12 +55,7 @@
           </a-tooltip>
         </a-popconfirm>
         <a-tooltip placement="topLeft" title="下发记录">
-          <a-button
-            size="small"
-            class="export-btn"
-            icon="file"
-            @click.stop="handelIssue(action.record.id)"
-          ></a-button>
+          <a-button size="small" class="export-btn" icon="file" @click.stop="handelIssue(action.record.id)"></a-button>
         </a-tooltip>
       </template>
     </table-list>
@@ -131,7 +132,15 @@ const searchLabel = [
   {
     list: [
       {
-        key: '面板机',
+        key: '',
+        val: '全部'
+      },
+      {
+        key: 1,
+        val: '相机'
+      },
+      {
+        key: 2,
         val: '面板机'
       }
     ],
@@ -169,7 +178,8 @@ export default {
       deviceList: [],
       signTag: false,
       searchObj: {},
-      deviceId: ''
+      deviceId: '',
+      issueList: []
     }
   },
   computed: {
@@ -179,7 +189,7 @@ export default {
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getDeviceList', 'bindDevices', 'unbindDevices']),
+    ...mapActions('home', ['getDeviceList', 'bindDevices', 'unbindDevices', 'getDeviceRecord']),
     async showList() {
       const req = {
         ...this.searchObj,
@@ -202,14 +212,19 @@ export default {
     addTask() {
       this.$router.push({ path: '/taskManage/addTask' })
     },
-    handelIssue(id) {
+    // 点击下发记录
+    async handelIssue(id) {
       this.deviceId = id
-      this.issueVisible = true
+      const res = await this.getDeviceRecord(id)
+      if (res && res.code === 200) {
+        this.issueList = res.data || []
+        this.issueVisible = true
+      }
     },
     // 解绑设备
     async deleteDevice(record) {
       await this.unbindDevices(record.id)
-      this.$message.success('删除成功')
+      this.$message.success('解绑成功')
       this.$tools.goNext(() => {
         this.showList()
       })
@@ -230,7 +245,10 @@ export default {
       this.deviceTag = true
     },
     submitUser() {},
-    submitDevice() {}
+    submitDevice() {
+      this.deviceTag = false
+      this.showList()
+    }
   }
 }
 </script>

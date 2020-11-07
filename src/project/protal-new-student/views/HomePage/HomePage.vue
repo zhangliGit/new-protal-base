@@ -3,7 +3,7 @@
     <div class="select-year">
       <a-select :value="selectYear" style="width: 100px" @change="handleChangeYear">
         <a-select-option v-for="item in gradeList" :value="item.id" :key="item.id">
-          {{ item.gradeName }}
+          {{ item.gradeName }}级
         </a-select-option>
       </a-select>
       <a-button
@@ -46,22 +46,22 @@ import TableList from '@c/TableList'
 const columns = [
   {
     title: '专业名称',
-    dataIndex: 'subjectName',
+    dataIndex: 'majorName',
     align: 'center'
   },
   {
     title: '招生人数',
-    dataIndex: 'allCount',
+    dataIndex: 'studentNum',
     align: 'center'
   },
   {
     title: '申请人数',
-    dataIndex: 'applyCount',
+    dataIndex: 'applyForNum',
     align: 'center'
   },
   {
     title: '录取人数',
-    dataIndex: 'enterCount',
+    dataIndex: 'receiveNum',
     align: 'center'
   },
   {
@@ -80,26 +80,10 @@ export default {
     return {
       gradeList: [],
       selectYear: '',
+      gradeName: '',
       columns,
       title: '招生专业',
-      taskList: [
-        {
-          id: '1',
-          subjectName: '软件技术',
-          allCount: 600,
-          applyCount: 500,
-          enterCount: 458,
-          isReport: '300/300'
-        },
-        {
-          id: '2',
-          subjectName: '软件测试',
-          allCount: 400,
-          applyCount: 360,
-          enterCount: 350,
-          isReport: '300/300'
-        }
-      ],
+      taskList: [],
       viewList: [
         {
           id: 'planCount',
@@ -135,7 +119,7 @@ export default {
     this.getYear()
   },
   methods: {
-    ...mapActions('home', ['getGrade']),
+    ...mapActions('home', ['getGrade', 'getHomeData']),
     // 获取年级
     async getYear() {
       const req = {
@@ -145,13 +129,43 @@ export default {
       if (res.code === 200) {
         this.gradeList = res.data || []
         sessionStorage.setItem('gradeList', JSON.stringify(res.data))
+        if (res.data.length > 0) {
+          this.selectYear = res.data[0].id
+          this.gradeName = res.data[0].gradeName
+          this.getData(res.data[0].gradeName)
+        }
       }
     },
     handleChangeYear(value) {
+      const data = this.gradeList.filter((item) => {
+        return item.id === value
+      })
+      if (data.length > 0) {
+        this.gradeName = Number(data[0].gradeName)
+      }
       this.selectYear = value
     },
     changeGrade() {
-      this.getYear()
+      this.getData(this.gradeName)
+    },
+    async getData(grade) {
+      const res = await this.getHomeData(`${this.userInfo.schoolCode}/${grade}`)
+      if (res && res.code === 200) {
+        const { totalApplyForNum, totalCheckInNum, totalReceiveNum, totalStudentNum, majorList } = res.data
+        const list = [totalStudentNum, totalApplyForNum, totalReceiveNum, totalCheckInNum]
+        this.viewList = this.viewList.map((item, index) => {
+          return {
+            ...item,
+            count: list[index]
+          }
+        })
+        this.taskList = majorList.map((item) => {
+          return {
+            ...item,
+            isReport: `${item.checkInNum}/${item.notCheckInNum}`
+          }
+        })
+      }
     }
   }
 }
