@@ -60,9 +60,7 @@
           <div class="img-box qui-fx">
             <div class="info-title">警示标识：</div>
             <div class="info-content info-img qui-fx-f1">
-              <!-- {{ detailInfo.signs }}  -->
-              <!-- <img v-for="(list,index) in detailInfo.signs" :key="index" :src="list" alt /> -->
-              <img :src="detailInfo.signs" alt />
+              <img v-for="(list,index) in detailInfo.signs" :key="index" :src="list" alt />
             </div>
           </div>
         </div>
@@ -74,12 +72,8 @@
 </template>
 
 <script>
+import $ajax from '@u/ajax-serve'
 import NoData from '@c/NoData'
-import ImageModule from 'docxtemplater-image-module-free'
-import docxtemplater from 'docxtemplater'
-import PizZip from 'pizzip'
-import JSZipUtils from 'jszip-utils'
-import { saveAs } from 'file-saver'
 import hostEnv from '@config/host-env'
 import { mapState, mapActions } from 'vuex'
 import ChoosePost from '@c/choose/ChoosePost'
@@ -133,30 +127,12 @@ export default {
     this.reqUrl = `${hostEnv.zk_school}/file/freeUpload?schoolCode=${this.userInfo.schoolCode}`
     this.params.schoolCode = this.userInfo.schoolCode
     this.showDetail()
-    this.imageUrlToBase64()
   },
   methods: {
-    ...mapActions('home', ['riskCard', 'saveRiskGroup', 'riskFileList', 'addRiskFile', 'delRiskFile', 'riskUpload']),
-    imageUrlToBase64() {
-      // 一定要设置为let，不然图片不显示
-      const image = new Image()
-      // 解决跨域问题
-      image.setAttribute('crossOrigin', 'anonymous')
-      const imageUrl = `${hostEnv.img_download}/security/2020/09/04/base/6af5f9d4f32c4790a7220857fc7e20f9.png`
-      image.src = imageUrl
-      // image.onload为异步加载
-      image.onload = () => {
-        var canvas = document.createElement('canvas')
-        canvas.width = image.width
-        canvas.height = image.height
-        var context = canvas.getContext('2d')
-        context.drawImage(image, 0, 0, image.width, image.height)
-        var quality = 0.8
-        // 这里的dataurl就是base64类型
-        this.dataURL = canvas.toDataURL('image/jpeg', quality)// 使用toDataUrl将图片转换成jpeg的格式,不要把图片压缩成png，因为压缩成png后base64的字符串可能比不转换前的长！
-        console.log('dataURL', this.dataURL)
-      }
-    },
+    ...mapActions('home', [
+      'riskCard', 'saveRiskGroup', 'riskFileList', 'addRiskFile',
+      'delRiskFile', 'riskUpload', 'postCardLoad'
+    ]),
     async showDetail() {
       const req = {
         ...this.pageList,
@@ -164,10 +140,6 @@ export default {
       }
       const res = await this.riskCard(req)
       this.detailInfo = res.data.records[0]
-      this.detailInfo.signs = res.data.records[0].signs[0]
-      // this.detailInfo.signs = this.dataURL
-      // this.detailInfo.signs = `${hostEnv.img_download}/security/2020/09/04/base/6af5f9d4f32c4790a7220857fc7e20f9.png`
-      console.log('signs', this.detailInfo.signs)
       this.total = res.data.total
     },
     async _riskFileList(info) {
@@ -238,86 +210,18 @@ export default {
       }
     },
     exportWord() {
-      if (this.detailInfo && JSON.stringify(this.detailInfo) !== {}) {
-        if (this.detailInfo.photoUrl) {
-          const url = `${hostEnv.zx_subject}/file/downLoad/doc?url=${this.detailInfo.photoUrl}`
-          window.open(url)
-        } else {
-        // 读取并获得模板文件的二进制内容
-          JSZipUtils.getBinaryContent('input.docx', (error, content) => {
-            console.log('1212q', this.detailInfo.signs)
-            // model.docx是模板。我们在导出的时候，会根据此模板来导出对应的数据
-            // 抛出异常
-            if (error) {
-              throw error
-            }
-            // const opts = {}
-            // opts.centered = true
-            // const url = this.dataURL
-            // const url = ' http://canpoint-file.oss-cn-beijing.aliyuncs.com/security/2020/09/04/base/6af5f9d4f32c4790a7220857fc7e20f9.png'
-            // opts.getImage = (a,url,signs) => {
-            //   return this.dataURL
-            // // return `${hostEnv.img_download}/security/2020/09/04/base/6af5f9d4f32c4790a7220857fc7e20f9.png`
-            // }
-            // opts.getSize = () => {
-            //   return [600, 400]// 这里可更改输出的图片宽和高
-            // }
-            const opts = {
-              centered: false,
-              getImage(dataURL, signs) {
-                 console.log('11dataURL', dataURL);
-                 console.log('signs', signs);
-                return new Promise((resolve, reject) => {
-                  JSZipUtils.getBinaryContent(dataURL, (error, content) => {
-                    if (error) {
-                      return reject(error)
-                    }
-                    return resolve(content)
-                  })
-                })
-              },
-              getSize(img, dataURL, signs) {
-                return [470, 210]
-                // return new Promise((resolve, reject) => {
-
-              // });
-              }
-            }
-            const imageModule = new ImageModule(opts)
-            // 创建一个PizZip实例，内容为模板的内容
-            const zip = new PizZip(content)
-            // 创建并加载docxtemplater实例对象
-            const doc = new docxtemplater().loadZip(zip).attachModule(imageModule)
-            // const doc = new docxtemplater().loadZip(zip)
-            doc.setData({
-              ...this.detailInfo
-            })
-
-            try {
-            // 用模板变量的值替换所有模板变量
-              doc.render()
-            } catch (error) {
-            // 抛出异常
-              const e = {
-                message: error.message,
-                name: error.name,
-                stack: error.stack,
-                properties: error.properties
-              }
-              console.log(JSON.stringify({ error: e }))
-              throw error
-            }
-
-            // 生成一个代表docxtemplater对象的zip文件（不是一个真实的文件，而是在内存中的表示）
-            const out = doc.getZip().generate({
-              type: 'blob',
-              mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-            })
-            // 将目标文件对象保存为目标类型的文件，并命名
-            saveAs(out, '岗位风险告知卡.docx')
-          })
-        }
-      }
+      fetch(`${hostEnv.lz_safe}/riskNoticeCard/download/${this.detailInfo.id}`, {
+        method: 'Get',
+        mode: 'cors'
+      })
+        .then(function(response) {
+          return response.text()
+        })
+        .then(function(myJson) {
+          const blob = new Blob([myJson], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8' })
+          const objectUrl = URL.createObjectURL(blob)
+          window.location.href = objectUrl
+        })
     }
   }
 }
