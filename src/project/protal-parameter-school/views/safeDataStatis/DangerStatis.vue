@@ -100,7 +100,7 @@
 <script>
 import moment from 'moment'
 import PreEcharts from '../../component/PreEcharts'
-import columnarEcharts from '../../component/columnarEcharts'
+import ColumnarEcharts from '../../component/ColumnarEcharts'
 import Top5Table from '../../component/Top5Table'
 import { mapState, mapActions } from 'vuex'
 const columns = [
@@ -133,7 +133,7 @@ export default {
   components: {
     PreEcharts,
     Top5Table,
-    columnarEcharts
+    ColumnarEcharts
   },
   data() {
     return {
@@ -156,7 +156,7 @@ export default {
   async mounted() {
   },
   methods: {
-    ...mapActions('home', ['schDangerStatis', 'getEduCode', 'underSchoolList', 'treeView', 'statistics', 'pageStatistics']),
+    ...mapActions('home', ['schDangerStatis', 'treeView', 'statistics', 'pageStatistics']),
     // 月日期选择器
     disabledStartMonth(startValue) {
       if (startValue.valueOf() > new Date()) return true
@@ -219,10 +219,10 @@ export default {
       position: relative;
       .line{
         position: absolute;
-        left:0;
+        left:2px;
         top: 50%;
         transform: translate(-50%,-50%);
-        width: 2px;
+        width: 4px;
         height: 13px;
         background: #9698D6;
       }

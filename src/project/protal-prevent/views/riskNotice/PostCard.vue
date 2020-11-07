@@ -265,8 +265,8 @@ export default {
             const opts = {
               centered: false,
               getImage(dataURL, signs) {
-                 console.log('11dataURL', dataURL);
-                 console.log('signs', signs);
+                console.log('11dataURL', dataURL)
+                console.log('signs', signs)
                 return new Promise((resolve, reject) => {
                   JSZipUtils.getBinaryContent(dataURL, (error, content) => {
                     if (error) {
@@ -292,7 +292,6 @@ export default {
             doc.setData({
               ...this.detailInfo
             })
-
             try {
             // 用模板变量的值替换所有模板变量
               doc.render()

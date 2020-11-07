@@ -53,9 +53,13 @@
           <div class="title u-mar-l20 u-padd-l10">日常巡查任务总数
             <div class="line"></div>
           </div>
+          <!-- :legendData="['巡检任务总数','已巡查人数','已巡查任务数']" -->
           <polyline-echarts
             v-if="lineChartList.length>0"
-            :legendData="['巡检任务总数','已巡查人数','已巡查任务数']"
+            :legendData="[{name:'巡检任务总数',value:'allTaskCount',color:'#F5B111FF',middleColor:'#fcf8eb'},
+                          {name:'已巡查人数',value:'donePersonCount',color:'#00A35F',middleColor:'#e6f6ef'},
+                          {name:'已巡查任务数',value:'doneTaskCount',color:'#0084FF',middleColor:'#e6f3ff'},
+            ]"
             :data="lineChartList"
             id="DailyStatis1"
           ></polyline-echarts>
@@ -126,13 +130,13 @@
 <script>
 import moment from 'moment'
 import PreEcharts from '../../component/PreEcharts'
-import polylineEcharts from '../../component/polylineEcharts'
+import PolylineEcharts from '../../component/PolylineEcharts'
 import { mapState, mapActions } from 'vuex'
 export default {
   name: 'DailyStatis',
   components: {
     PreEcharts,
-    polylineEcharts
+    PolylineEcharts
   },
   data() {
     return {
@@ -153,7 +157,7 @@ export default {
   async mounted() {
   },
   methods: {
-    ...mapActions('home', ['schDailyStatis', 'claroomRemove', 'claroomRemoves', 'treeView', 'statistics', 'pageStatistics']),
+    ...mapActions('home', ['schDailyStatis']),
     // 月日期选择器
     disabledStartMonth(startValue) {
       if (startValue.valueOf() > new Date()) return true
@@ -211,10 +215,10 @@ export default {
       position: relative;
       .line{
         position: absolute;
-        left:0;
+        left:2px;
         top: 50%;
         transform: translate(-50%,-50%);
-        width: 2px;
+        width: 4px;
         height: 13px;
         background: #9698D6;
       }

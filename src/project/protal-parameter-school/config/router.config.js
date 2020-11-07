@@ -1,7 +1,6 @@
 // eslint-disable-next-line
 import {
-  BasicLayout,
-  RouteView
+  BasicLayout
 } from '../layouts'
 import safeDataStatis from './safeDataStatis'
 export const asyncRouterMap = [{
@@ -20,6 +19,15 @@ export const asyncRouterMap = [{
       component: () => import('../views/SafetyRating.vue'),
       meta: {
         title: '安全评分'
+      }
+    },
+    {
+      path: '/safetyRating/rule',
+      name: 'rule',
+      component: () => import('../views/rule.vue'),
+      meta: {
+        title: '积分规则',
+        isHide: true
       }
     },
     {
