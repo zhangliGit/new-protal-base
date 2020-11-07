@@ -153,6 +153,15 @@ export default {
   },
   mounted() {
     // this.showTableList()
+    this.schoolType = JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolType
+    if ((this.schoolType === '8' || this.schoolType === '9') && this.columns[5].dataIndex !== 'gradeName') {
+      this.columns.splice(5, 0,
+        {
+          title: '专业',
+          dataIndex: 'gradeName',
+          width: '8%'
+        })
+    }
   },
   methods: {
     ...mapActions('inoutRecord', ['getRecordList']),
@@ -175,13 +184,13 @@ export default {
       this.showTableList(this.searchList)
     },
     handleTreeClick(item) {
-      console.log(item)
-      this.searchList.buildingCode = item.buildingCode
-      this.searchList.classCode = item.classCode
-      this.searchList.floorCode = item.floorCode
-      this.searchList.gradeCode = item.gradeCode
-      this.searchList.roomCode = item.roomCode
-      this.searchList.stageCode = item.stageCode ? item.stageCode : ''
+      this.searchList = this.concatObj(this.searchList, item)
+      // this.searchList.buildingCode = item.buildingCode
+      // this.searchList.classCode = item.classCode
+      // this.searchList.floorCode = item.floorCode
+      // this.searchList.gradeCode = item.gradeCode
+      // this.searchList.roomCode = item.roomCode
+      // this.searchList.stageCode = item.stageCode ? item.stageCode : ''
       this.showTableList()
     },
     getInOrOut(type) {

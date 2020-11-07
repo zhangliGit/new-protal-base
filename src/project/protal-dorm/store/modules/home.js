@@ -32,6 +32,7 @@ const home = {
   state: {
     userInfo: userInfo,
     schoolCode: window.sessionStorage.getItem('schoolScheme'),
+    schoolType: userInfo.schoolType,
     totalInfo: {},
     numberListDetail: {},
     accessUsersList: [],

@@ -12,22 +12,24 @@
         </div>
         <div class="stu_dent">
           <div class="u-padd-20 ">
-            <div
-              @click="checkSingle(index)"
-              :class="['choose-person', { 'choose-person-ok': person.check }]"
-              v-for="(person, index) in studentsList"
-              :key="index"
-              class="stu-info u-padd-20 "
-            >
-              <a-badge :count="person.count" show-zero>
-                <div class="student-img">
-                  <img v-if="!person.photoUrl" :src="infoImg" alt="" />
-                  <img v-else :src="person.photoUrl" alt="" />
-                </div>
-              </a-badge>
+            <draggable @end="dragEnd" element="ul" v-model="studentsList">
+              <div
+                @click="checkSingle(index)"
+                :class="['choose-person', { 'choose-person-ok': person.check }]"
+                v-for="(person, index) in studentsList"
+                :key="index"
+                class="stu-info u-padd-20 "
+              >
+                <a-badge :count="person.count" show-zero>
+                  <div class="student-img">
+                    <img v-if="!person.photoUrl" :src="infoImg" alt="" />
+                    <img v-else :src="person.photoUrl" alt="" />
+                  </div>
+                </a-badge>
 
-              <div class="code">{{ person.userName }}</div>
-            </div>
+                <div class="code">{{ person.userName }}</div>
+              </div>
+            </draggable>
           </div>
         </div>
       </div>
@@ -69,12 +71,14 @@ import { mapState, mapActions } from 'vuex'
 import ClassTree from '@c/ClassTree'
 import { Badge } from 'ant-design-vue'
 import infoImg from '../../assets/img/nouser.jpg'
+import draggable from 'vuedraggable'
 
 export default {
   name: 'Duty',
   components: {
     ClassTree,
-    ABadge: Badge
+    ABadge: Badge,
+    draggable
   },
   data() {
     return {
@@ -134,6 +138,7 @@ export default {
   mounted() {},
   methods: {
     ...mapActions('home', ['getStudentList', 'getdutyList', 'addonDuty', 'updateDuty', 'delDuty']),
+    dragEnd(evt) {},
     select(item) {
       console.log(item)
       this.gradeCode = item.gradeCode
@@ -401,7 +406,7 @@ li {
 .info-img {
   width: 50px;
   height: 50px;
-  margin-left: 24.5%;
+  margin-left: 30%;
   margin-top: 7%;
   img {
     width: 100%;

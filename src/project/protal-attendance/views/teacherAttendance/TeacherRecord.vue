@@ -301,4 +301,8 @@ export default {
 }
 </script>
 <style lang="less" scoped>
+/deep/ ::-webkit-scrollbar {
+  width: 3px!important;
+  height: 10px!important;
+}
 </style>

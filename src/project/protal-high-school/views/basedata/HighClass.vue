@@ -139,7 +139,7 @@
 import highClass from '../../assets/js/table/highClass.js'
 import { mapState, mapActions } from 'vuex'
 import ClassTable from '../components/ClassTable'
-import MajorTree from '../components/MajorTree'
+import MajorTree from '@c/MajorTree'
 import GradeTree from '@c/GradeTree'
 import PageNum from '@c/PageNum'
 import SubmitForm from '../components/SubForm'
@@ -176,7 +176,8 @@ export default {
       highSubList: [],
       highSubTerm: [],
       searchList: {},
-      bindList: {}
+      bindList: {},
+      isShow: false
     }
   },
   computed: {
@@ -202,8 +203,8 @@ export default {
       }
       this.highSubTerm = res.data
       res.data.forEach(ele => {
-        this.highClass.formData[0].list.push({ key: ele.gradeCode, val: `${ele.gradeName.split('-')[0]}级` })
-        this.highClass.formDatas[0].list.push({ key: ele.gradeCode, val: `${ele.gradeName.split('-')[0]}级` })
+        this.highClass.formData[0].list.push({ key: ele.gradeCode, val: `${ele.gradeName}级` })
+        this.highClass.formDatas[0].list.push({ key: ele.gradeCode, val: `${ele.gradeName}级` })
       })
     },
     // 获取专业
@@ -236,15 +237,20 @@ export default {
       }
       this.classList = res.data.records
       this.total = res.data.total
+      this.isShow = false
     },
     // 选中年级
     select(item) {
-      this.searchList.gradeCode = item.gradeCode
-      this.searchList.gradeName = item.gradeName
-      this.searchList.grade = item.gradeName
-      this.searchList.subjectCode = item.subjectCode || ''
-      this.searchList.classCode = item.classCode || ''
-      this.showList()
+      if (this.isShow) {
+        this.showList()
+      } else {
+        this.searchList.gradeCode = item.gradeCode
+        this.searchList.gradeName = item.gradeName
+        this.searchList.grade = item.gradeName
+        this.searchList.subjectCode = item.subjectCode || ''
+        this.searchList.classCode = item.classCode || ''
+        this.showList()
+      }
     },
     // 模糊查询
     searchForm(values) {
@@ -269,7 +275,8 @@ export default {
         this.highClass.formDatas[0].disabled = false
         this.highClass.formDatas[0].initValue = this.searchList.gradeCode
         if (this.searchList.subjectCode) {
-          this.highClass.formDatas[1].initValue = this.highSubList.filter(el => el.subjectCode === this.searchList.subjectCode)[0].subjectName
+          this.highClass.formDatas[1].initValue = this.searchList.subjectCode
+          // this.highClass.formDatas[1].initValue = this.highSubList.filter(el => el.subjectCode === this.searchList.subjectCode)[0].subjectName
         } else {
           this.highClass.formDatas[1].initValue = []
         }
@@ -279,7 +286,8 @@ export default {
         this.highClass.formData[1].disabled = false
         this.highClass.formData[0].initValue = this.searchList.gradeCode
         if (this.searchList.subjectCode) {
-          this.highClass.formData[1].initValue = this.highSubList.filter(el => el.subjectCode === this.searchList.subjectCode)[0].subjectName
+          this.highClass.formData[1].initValue = this.searchList.subjectCode
+          // this.highClass.formData[1].initValue = this.highSubList.filter(el => el.subjectCode === this.searchList.subjectCode)[0].subjectName
         } else {
           this.highClass.formData[1].initValue = []
         }
@@ -301,8 +309,8 @@ export default {
         await this.delHighClass({ id: record.id })
         this.$message.success('删除成功')
         this.$tools.goNext(() => {
+          this.isShow = true
           this.$refs.majorTree.initMenu()
-          this.showList()
         })
         // 批量解绑
       } else {
@@ -324,7 +332,8 @@ export default {
         this.$message.success('操作成功')
         this.chooseList = []
         this.$tools.goNext(() => {
-          this.showList()
+          this.isShow = true
+          this.$refs.majorTree.initMenu()
         })
       })
     },
@@ -368,14 +377,16 @@ export default {
         values.schoolCode = this.userInfo.schoolCode
         values.gradeName = this.highSubTerm.filter(el => el.gradeCode === values.gradeCode)[0].gradeName
         if (this.type === 0) {
+          console.log('values', values)
+          // return
           values.subjectName = this.highSubList.filter(el => el.subjectCode === values.subjectCode)[0].subjectName
           this.addHighClass(values)
             .then(res => {
               this.$message.success('添加成功')
               this.$tools.goNext(() => {
-                this.showList()
-                this.$refs.form.reset()
+                this.isShow = true
                 this.$refs.majorTree.initMenu()
+                this.$refs.form.reset()
               })
             })
             .catch(() => {
@@ -386,7 +397,7 @@ export default {
           this.highClassBind(values).then(res => {
             this.$message.success('编辑成功')
             this.$tools.goNext(() => {
-              this.showList()
+              this.isShow = true
               this.$refs.majorTree.initMenu()
               this.$refs.form.reset()
             })
@@ -395,11 +406,12 @@ export default {
               this.$refs.form.error()
             })
         } else if (this.type === 2) {
+          values.subjectName = this.highSubList.filter(el => el.subjectCode === values.subjectCode)[0].subjectName
           this.addHighClasses(values)
             .then(res => {
               this.$message.success('添加成功')
               this.$tools.goNext(() => {
-                this.showList()
+                this.isShow = true
                 this.$refs.majorTree.initMenu()
                 this.$refs.form.reset()
               })

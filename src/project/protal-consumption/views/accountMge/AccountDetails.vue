@@ -498,12 +498,12 @@ export default {
      * @description 提交充值
      */
     async submit() {
-      if (this.tag === 1 && (!this.detail.rechargeAmount || Number(this.detail.rechargeAmount) === 0)) {
-        this.$message.warning('请输入充值金额')
+      if (this.tag === 1 && (!this.detail.rechargeAmount || Number(this.detail.rechargeAmount) <= 0)) {
+        this.$message.warning('请输入有效的充值金额')
         return
       }
-      if (this.tag === 2 && (!this.detail.subsidyAmount || Number(this.detail.subsidyAmount) === 0)) {
-        this.$message.warning('请输入补助金额')
+      if (this.tag === 2 && (!this.detail.subsidyAmount || Number(this.detail.subsidyAmount) <= 0)) {
+        this.$message.warning('请输入有效的补助金额')
         return
       }
       if ((this.tag === 2 || this.tag === 3) && this.recordRemark === '') {
@@ -588,19 +588,19 @@ export default {
       this.detail.discount = ''
     },
     async ruleEdit() {
-      if (!this.detail.everydayConsume) {
+      if (!this.detail.everydayConsume || this.detail.everydayConsume < 0) {
         this.$message.warning('请输入每日消费限额')
         return
       }
-      if (!this.detail.singleConsume) {
+      if (!this.detail.singleConsume || this.detail.singleConsume < 0) {
         this.$message.warning('请输入单次消费限额')
         return
       }
-      if (this.detail.preferType === '2' && !this.detail.remit) {
+      if (this.detail.preferType === '2' && (!this.detail.remit || this.detail.remit < 0)) {
         this.$message.warning('请输入减免金额')
         return
       }
-      if (this.detail.preferType === '1' && !this.detail.discount) {
+      if (this.detail.preferType === '1' && (!this.detail.discount || this.detail.discount < 0)) {
         this.$message.warning('请输入折扣比例')
         return
       }

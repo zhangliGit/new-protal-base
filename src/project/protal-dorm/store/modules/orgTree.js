@@ -18,6 +18,20 @@ const orgTree = {
   },
   actions: {
     /**
+      * @des 获取中职年级专业班级
+      */
+    async getHighNode ({
+      commit,
+      state
+    }, params = {}) {
+      // console.log('param', params)
+      const res = await $ajax.get({
+        url: apiList.getHighNode,
+        params
+      })
+      return resultBack(res)
+    },
+    /**
      * @des 获取楼栋节点
      */
     async getBuildNode ({

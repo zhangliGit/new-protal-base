@@ -368,8 +368,8 @@ module.exports = {
         }
       },
       '/ljj_people': {
-        target: 'http://192.168.1.76:11002/', // 刘继杰-局端安全任务根据选中的学校职务查人
-        // target: 'http://192.168.2.242:11002/',
+        // target: 'http://192.168.1.76:11002/', // 刘继杰-局端安全任务根据选中的学校职务查人
+        target: 'http://192.168.2.242:11002/',
         changeOrigin: true,
         pathRewrite: {
           '^/ljj_people': ''
@@ -410,6 +410,13 @@ module.exports = {
           '^/hzz_tooken': ''
         }
       },
+      '/hzz_apply': {
+        target: 'http://192.168.2.242:11022/', // 胡周志-应用管理
+        changeOrigin: true,
+        pathRewrite: {
+          '^/hzz_apply': ''
+        }
+      },
       '/wxz_notice': {
         target: 'http://192.168.1.123:18090/', // 王选章-通知公告
         changeOrigin: true,
@@ -418,8 +425,8 @@ module.exports = {
         }
       },
       '/ljj_high': {
-        // target: 'http://192.168.2.242:8092/', // 柳继杰-高校
-        target: 'http://192.168.1.76:8092/', // 柳继杰-高校
+        target: 'http://192.168.2.242:8092/', // 柳继杰-高校
+        // target: 'http://192.168.1.76:8092/', // 柳继杰-高校
         changeOrigin: true,
         pathRewrite: {
           '^/ljj_high': ''

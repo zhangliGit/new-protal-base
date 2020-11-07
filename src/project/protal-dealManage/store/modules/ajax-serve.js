@@ -20,7 +20,7 @@ axios.defaults.timeout = 15000
 axios.defaults.withCredentials = true // 让ajax携带cookie
 
 // 设置公用请求头
-axios.defaults.headers.common['Authorization'] = window.sessionStorage.getItem('Authorization')
+axios.defaults.headers.common['Authorization'] = window.localStorage.getItem('Authorization')
 
 // 拦截请求
 axios.interceptors.request.use(
@@ -29,7 +29,7 @@ axios.interceptors.request.use(
       if (config.url.indexOf('token') !== -1) {
         resolve(config)
       } else {
-        if (!window.sessionStorage.getItem('Authorization')) {
+        if (!window.localStorage.getItem('Authorization')) {
           if (isRefreshing) {
             refreshTokenRequst()
           }
@@ -69,7 +69,7 @@ function refreshTokenRequst() {
     .then(response => {
       const Authorization = response.data.tokenType + ' ' + response.data.value
       console.log(Authorization)
-      window.sessionStorage.setItem('Authorization', Authorization)
+      window.localStorage.setItem('Authorization', Authorization)
       window.location.reload()
       isRefreshing = true
     })

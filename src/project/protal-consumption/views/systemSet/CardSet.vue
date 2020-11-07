@@ -58,12 +58,12 @@ const columns = [
   {
     title: '身份',
     dataIndex: 'userType',
-    width: '10%'
+    width: '20%'
   },
   {
     title: '优惠类型',
     dataIndex: 'preferType',
-    width: '15%',
+    width: '20%',
     scopedSlots: {
       customRender: 'other1'
     }
@@ -71,12 +71,12 @@ const columns = [
   {
     title: '每日消费限额',
     dataIndex: 'everydayConsume',
-    width: '15%'
+    width: '20%'
   },
   {
     title: '单次消费限额',
     dataIndex: 'singleConsume',
-    width: '15'
+    width: '20%'
   },
   {
     title: '操作',
@@ -232,6 +232,11 @@ export default {
       }
     },
     submitForm(values) {
+      if (values.everydayConsume < 0 || values.singleConsume < 0) {
+        this.$message.warning('金额不能为负数')
+        this.$refs.form.error()
+        return
+      }
       const req = {
         ...values,
         schoolCode: this.schoolCode

@@ -50,7 +50,8 @@ const home = {
       schoolCode: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolCode,
       schoolName: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolName,
       schoolId: JSON.parse(window.sessionStorage.getItem('loginInfo')).id,
-      userCode: JSON.parse(window.sessionStorage.getItem('loginType')).userCode
+      userCode: JSON.parse(window.sessionStorage.getItem('loginType')).userCode,
+      schoolType: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolType
     })
   },
   actions: {

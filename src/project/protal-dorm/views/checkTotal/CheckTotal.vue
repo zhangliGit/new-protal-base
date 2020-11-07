@@ -98,7 +98,7 @@ const columns = [
     title: '序号',
     dataIndex: 'index',
     key: 'index',
-    width: '5%',
+    width: '10%',
     scopedSlots: {
       customRender: 'number'
     },
@@ -108,21 +108,21 @@ const columns = [
     title: '日期',
     dataIndex: 'wdate',
     key: 'wdate',
-    width: '19%',
+    width: '20%',
     align: 'center'
   },
   {
     slots: { title: 'customTitle' },
     dataIndex: 'dormName',
     key: 'dormName',
-    width: '19%',
+    width: '20%',
     align: 'center'
   },
   {
     title: '在寝人数',
     dataIndex: 'realNum',
     key: 'realNum',
-    width: '19%',
+    width: '15%',
     scopedSlots: {
       customRender: 'realNum'
     },
@@ -132,7 +132,7 @@ const columns = [
     title: '不在寝人数',
     key: 'excNum',
     dataIndex: 'excNum',
-    width: '19%',
+    width: '15%',
     scopedSlots: {
       customRender: 'excNum'
     },
@@ -142,7 +142,7 @@ const columns = [
     title: '请假人数',
     key: 'leaveNum',
     dataIndex: 'leaveNum',
-    width: '19%',
+    width: '15%',
     scopedSlots: {
       customRender: 'leaveNum'
     },
@@ -203,7 +203,8 @@ export default {
         roomCode: this.searchForm.roomCode, // 房间编码
         schoolCode: this.searchForm.schoolCode, // 学校编码 必填
         stageCode: this.searchForm.stageCode, // 学阶编码
-        wdate: date // 哪一天的详情数据 必填
+        wdate: date, // 哪一天的详情数据 必填
+        schoolYearId: this.searchForm.schoolYearId ? this.searchForm.schoolYearId : ''
       }).then(res => {
         this.konwTableDetail = res.data
         this.dialogTitle = this.currentTabItem.taskName + '-' + dormName + '-' + title + num + '人' + '(' + date + ')'
@@ -234,7 +235,6 @@ export default {
         this.searchForm.startDate = this.searchTime[0]
         this.searchForm.endDate = this.searchTime[1]
       }
-
       this.getCheckStatisticsList(req).then(res => {
         this.knowTableData = res.data
         this.knowTableData.forEach((item, index) => {
@@ -377,7 +377,8 @@ export default {
       this.getDormType()
     }
   },
-  mounted() {}
+  mounted() {
+  }
 }
 </script>
 <style lang="less" scoped>

@@ -17,12 +17,13 @@
                 :value="item.name"
                 :key="index"
                 v-for="(item, index) in tabList"
-                >{{ item.title }}</a-radio-button
+              >{{ item.title }}</a-radio-button
               >
             </a-radio-group>
           </div>
           <div class="left-tree">
-            <grade-tree v-if="current === 1" @select="select"></grade-tree>
+            <major-tree v-if="(schoolType === '8' || schoolType === '9') && current === 1" @select="select"></major-tree>
+            <grade-tree v-if="(schoolType !== '8' && schoolType !== '9') && current === 1" @select="select"></grade-tree>
             <org-tree v-if="current === 0" @defaultCode="defaultCode" @select="orgSelect"></org-tree>
           </div>
         </div>
@@ -81,6 +82,7 @@
 <script>
 import GradeTree from '@c/GradeTree'
 import OrgTree from '@c/OrgTree'
+import MajorTree from '@c/MajorTree'
 // import TeacherTree from './orgTree/TeacherTree'
 import { mapState, mapActions } from 'vuex'
 export default {
@@ -88,7 +90,8 @@ export default {
   components: {
     // TeacherTree
     GradeTree,
-    OrgTree
+    OrgTree,
+    MajorTree
   },
   props: {
     chooseId: {
@@ -142,7 +145,8 @@ export default {
         }
       ],
       selectItem: {},
-      orgSelectItemt: {}
+      orgSelectItemt: {},
+      schoolType: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolType
     }
   },
   methods: {
@@ -164,6 +168,10 @@ export default {
           gradeId: item.gradeCode,
           keyword: this.userName,
           hasDorm: '1',
+          subjectCode: (this.schoolType === '8' || this.schoolType === '9') ? item.subjectCode : '',
+          gradeCode: (this.schoolType === '8' || this.schoolType === '9') ? item.gradeCode : '',
+          grade: (this.schoolType === '8' || this.schoolType === '9') ? item.gradeName : '',
+          classCode: (this.schoolType === '8' || this.schoolType === '9') ? item.classCode : '',
           // sex: this.sex,
           page: 1,
           size: 10000000
@@ -185,14 +193,15 @@ export default {
                 classCode: item.classCode,
                 className: item.className,
                 gender: item.sex,
-                gradeCode: item.gradeCode,
-                gradeName: item.gradeName,
                 photoSrc: item.photoUrl,
                 stageCode: item.stageCode,
                 stageName: item.stage,
                 userCode: item.userCode,
                 userName: item.userName,
-                userNo: item.workNo
+                userNo: item.workNo,
+                gradeCode: (this.schoolType === '8' || this.schoolType === '9') ? item.grade : item.gradeCode,
+                gradeName: (this.schoolType === '8' || this.schoolType === '9') ? '' : item.gradeName,
+                subjectCode: (this.schoolType === '8' || this.schoolType === '9') ? item.subjectCode : ''
               }
             })
         })

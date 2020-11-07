@@ -112,7 +112,7 @@ export default {
       this.userName = values[0].userName
       this.workNo = values[0].workNo
       this.className = values[0].className
-      this.gradeName = values[0].gradeName
+      this.gradeName = (this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') ? values[0].grade + '级' + values[0].subjectName + values[0].className : values[0].gradeName
       this.userCode = values[0].userCode
       this.groupList = []
       values.forEach(ele => {

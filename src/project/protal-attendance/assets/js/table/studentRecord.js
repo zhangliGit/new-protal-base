@@ -12,11 +12,11 @@ const studentRecord = [
     width: '8%'
   },
   {
-    title: '年级',
+    title: '班级',
     dataIndex: 'gradeName',
-    width: '8%',
-    customRender: (text, record) => {
-      return `${record.gradeName}${record.className}`
+    width: '12%',
+    scopedSlots: {
+      customRender: 'other3'
     }
   },
   {
@@ -98,7 +98,7 @@ const studentRecord = [
   },
   {
     title: '操作',
-    width: '15%',
+    width: '13%',
     scopedSlots: {
       customRender: 'action'
     }

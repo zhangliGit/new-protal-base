@@ -17,7 +17,7 @@
         <div>
           <p>姓名：{{ person.userName }}</p>
           <p>性别：{{ person.gender == '1' ? '男' : person.gender == '2' ? '女' : '未知' }}</p>
-          <p v-if="person.userType.indexOf('8') !== -1">班级：{{ person.gradeName }} {{ person.className }}</p>
+          <p v-if="person.userType.indexOf('8') !== -1">班级：{{ (schoolType === '8' || schoolType === '9') ? `${person.schoolYearId}级-${person.gradeName}-${person.className}` : `${person.gradeName}-${person.className}` }}</p>
           <p v-if="person.userType.indexOf('4') !== -1">工号：{{ person.studentNo }}</p>
           <p v-if="person.userType.indexOf('4') !== -1">身份：教职工</p>
         </div>
@@ -80,7 +80,9 @@ export default {
     }
   },
   data() {
-    return {}
+    return {
+      schoolType: JSON.parse(window.sessionStorage.getItem('loginInfo')).schoolType
+    }
   },
   filters: {
     getParentType(type) {

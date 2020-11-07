@@ -1,6 +1,7 @@
 <template>
   <div class="page-layout qui-fx">
-    <grade-tree @select="select"></grade-tree>
+    <major-tree v-if="userInfo.schoolType === '8' || userInfo.schoolType === '9'" @select="select"></major-tree>
+    <grade-tree v-else @select="select"></grade-tree>
     <div class="qui-fx-f1 qui-fx-ver">
       <search-form is-reset @search-form="searchForm" :search-label="searchLabel"></search-form>
       <table-list :page-list="pageList" :columns="columns" :table-list="userList">
@@ -15,12 +16,7 @@
           </a-tooltip>
         </template>
         <template v-slot:other4="action">
-          <div>{{ action.record.gradeName}}{{ action.record.className}}</div>
-        </template>
-           <template v-slot:actions="action">
-          <a-tooltip placement="topLeft" title="查看健康档案">
-            <a-button size="small" class="detail-action-btn" icon="ellipsis" @click="detail(action.record)"></a-button>
-          </a-tooltip>
+          <div>{{ (userInfo.schoolType === '8' || userInfo.schoolType === '9') ? action.record.schoolYearId + '级' : '' }} {{ action.record.gradeName + action.record.className }}</div>
         </template>
       </table-list>
       <page-num v-model="pageList" :total="total" @change-page="showList"></page-num>
@@ -35,6 +31,7 @@ import PageNum from '@c/PageNum'
 import SearchForm from '@c/SearchForm'
 import GradeTree from '@c/GradeTree'
 import Tools from '@u/tools'
+import MajorTree from '@c/MajorTree'
 
 const searchLabel = [
   {
@@ -136,7 +133,8 @@ export default {
     TableList,
     SearchForm,
     PageNum,
-    GradeTree
+    GradeTree,
+    MajorTree
   },
   data() {
     return {
@@ -180,7 +178,7 @@ export default {
       }
       this.showList(searchObj)
     },
-     detail(record) {
+    detail(record) {
       this.$router.push({
         path: '/component/detail',
         query: {
@@ -192,9 +190,9 @@ export default {
     select(item) {
       this.pageList.page = 1
       this.pageList.size = 20
-      this.searchList.gradeCode = item.gradeCode
+      this.searchList.schoolYearId = (this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') ? item.gradeName : item.schoolYearId
+      this.searchList.gradeCode = (this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') ? item.subjectCode : item.gradeCode
       this.searchList.classCode = item.classCode
-      this.searchList.schoolYearId = item.schoolYearId
       this.showList()
     }
   }
