@@ -25,7 +25,7 @@
     </no-data>
     <div class="qui-fx qui-fx-jsb" style="width:100%" v-else>
       <div class="left">
-        <grade-tree @select="select"></grade-tree>
+        <grade-tree @select="select" :key="index"></grade-tree>
       </div>
       <div class="right qui-fx-ver qui-fx-f1" style="padding-right: 10px">
         <search-form is-reset @search-form="searchForm" :search-label="searchLabel">
@@ -322,7 +322,8 @@ export default {
       placeName: '',
       record: null,
       userTag: false,
-      schoolYear: ''
+      schoolYear: '',
+      index: 0
     }
   },
   computed: {
@@ -423,10 +424,12 @@ export default {
           gradeName: this.gradeName
         }
         console.log(req)
+        console.log(123455)
         this.addNewClass(req)
           .then(res => {
             this.$message.success('添加成功')
             this.$tools.goNext(() => {
+              this.index++
               const data = {
                 ...this.pageList,
                 ...this.userInfo,
@@ -457,6 +460,7 @@ export default {
           .then(res => {
             this.$message.success('编辑成功')
             this.$tools.goNext(() => {
+              this.index++
               const data = {
                 ...this.pageList,
                 ...this.userInfo,
@@ -485,6 +489,7 @@ export default {
           .then(res => {
             this.$message.success('添加成功')
             this.$tools.goNext(() => {
+              this.index++
               const data = {
                 ...this.pageList,
                 ...this.userInfo,
@@ -642,6 +647,7 @@ export default {
         await this.deleteTheClass(ids)
         this.$message.success('删除成功')
         this.$tools.goNext(() => {
+          this.index++
           const data = {
             ...this.pageList,
             ...this.userInfo,
@@ -661,6 +667,7 @@ export default {
           this.deleteTheClass(ids).then(res => {
             this.$message.success('删除成功')
             this.$tools.goNext(() => {
+              this.index++
               const data = {
                 ...this.pageList,
                 ...this.userInfo,

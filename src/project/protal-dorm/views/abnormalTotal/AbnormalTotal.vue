@@ -176,7 +176,8 @@ export default {
         roomCode: this.searchForm.roomCode, // 房间编码
         schoolCode: this.searchForm.schoolCode, // 学校编码 必填
         stageCode: this.searchForm.stageCode, // 学阶编码
-        wdate: date // 哪一天的详情数据 必填
+        wdate: date, // 哪一天的详情数据 必填
+        schoolYearId: this.searchForm.schoolYearId ? this.searchForm.schoolYearId : ''
       }).then(res => {
         this.excTableDetail = res.data
         this.dialogTitle = title

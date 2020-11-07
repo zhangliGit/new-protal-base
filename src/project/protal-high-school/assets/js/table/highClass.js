@@ -10,7 +10,10 @@ const highClass = {
     {
       title: '年级',
       dataIndex: 'gradeName',
-      width: '12%'
+      width: '12%',
+      customRender: text => {
+        return text + '级'
+      }
     },
     {
       title: '专业',
@@ -166,7 +169,7 @@ const highClass = {
       value: 'placeName',
       initValue: [],
       type: 'siteChoose',
-      label: '教室班级',
+      label: '班级教室',
       placeholder: '请选择'
     }
   ]

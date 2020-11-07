@@ -1,6 +1,6 @@
 <template>
   <div class="page-layout qui-fx">
-    <major-tree v-if="userInfo.schoolType === '8'" @select="select"></major-tree>
+    <major-tree v-if="userInfo.schoolType === '8' || userInfo.schoolType === '9'" @select="select"></major-tree>
     <grade-tree v-else @select="select"></grade-tree>
     <div class="qui-fx-f1 qui-fx-ver">
       <search-form isReset @search-form="searchForm" :search-label="searchLabel">
@@ -96,8 +96,15 @@ export default {
     ])
   },
   async mounted() {
-    if (this.userInfo.schoolType === '8') {
-      this.columns[3].dataIndex = 'schoolYearId'
+    if ((this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') && this.columns[4].dataIndex !== 'gradeName') {
+      this.columns[3] = {
+        title: '年级',
+        dataIndex: 'schoolYearId',
+        width: '10%',
+        customRender: text => {
+          return text + '级'
+        }
+      }
       this.columns.splice(4, 0,
         {
           title: '专业',
@@ -129,8 +136,8 @@ export default {
     select(item) {
       this.pageList.page = 1
       this.pageList.size = 20
-      this.searchList.schoolYearId = this.userInfo.schoolType === '8' ? item.gradeName : item.schoolYearId
-      this.searchList.gradeCode = this.userInfo.schoolType === '8' ? item.subjectCode : item.gradeCode
+      this.searchList.schoolYearId = (this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') ? item.gradeName : item.schoolYearId
+      this.searchList.gradeCode = (this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') ? item.subjectCode : item.gradeCode
       this.searchList.classCode = item.classCode
       this.showList()
     },

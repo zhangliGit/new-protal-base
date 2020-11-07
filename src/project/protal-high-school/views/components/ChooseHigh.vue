@@ -25,6 +25,11 @@
           <a-select-option value="0">走读</a-select-option>
         </a-select>
         <a-button type="primary" @click="getStudentList(chooseType !== '')">查询</a-button>
+        <a-button
+          style="background:#e8e8e8;color:#999"
+          type="default"
+          class="u-mar-l10"
+          @click="replace(chooseType !== '')">重置</a-button>
       </a-col>
       <a-col style="margin-left: 45px; line-height: 35px">
         <span>
@@ -302,6 +307,12 @@ export default {
     },
     newStudent() {
       this.$emit('toAdd', true)
+    },
+    replace() {
+      this.userName = ''
+      this.workNo = ''
+      this.hasDorm = ''
+      this.getStudentList()
     }
   }
 }

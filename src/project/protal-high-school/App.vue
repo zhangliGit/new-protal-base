@@ -22,7 +22,7 @@ export default {
     }
   },
   mounted() {
-    this.initializeSchoolYear()
+    // this.initializeSchoolYear()
   },
   methods: {
     ...mapActions('home', ['getSchoolYear', 'addSchoolYear']),

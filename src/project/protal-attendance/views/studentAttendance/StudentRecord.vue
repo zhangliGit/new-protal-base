@@ -1,6 +1,6 @@
 <template>
   <div class="page-layout qui-fx">
-    <major-tree v-if="userInfo.schoolType === '8'" @select="select"></major-tree>
+    <major-tree v-if="schoolType === '8' || schoolType === '9'" @select="select"></major-tree>
     <grade-tree v-else @select="select"></grade-tree>
     <div class="qui-fx-f1 qui-fx-ver">
       <search-form
@@ -22,6 +22,9 @@
         </template>
         <template v-slot:other2="record">
           <a-tag :color="$tools.color(record.record.offState)" >{{ record.record.offState | onState }}</a-tag>
+        </template>
+        <template v-slot:other3="record">
+          <div>{{ (schoolType === '8' || schoolType === '9') ? record.record.schoolYearId + '级' : '' }} {{ record.record.gradeName + record.record.className }}</div>
         </template>
         <template v-slot:actions="action">
           <a-tag
@@ -153,7 +156,8 @@ export default {
       total: 0,
       columns,
       recordList: [],
-      schoolYearId: ''
+      schoolYearId: '',
+      schoolType: ''
     }
   },
   computed: {
@@ -162,15 +166,7 @@ export default {
     ])
   },
   mounted () {
-    if (this.userInfo.schoolType === '8') {
-      this.columns[2].dataIndex = 'schoolYearId'
-      this.columns.splice(3, 0,
-        {
-          title: '专业',
-          dataIndex: 'gradeName',
-          width: '8%'
-        })
-    }
+    this.schoolType = this.userInfo.schoolType
     if (this.$route.query.type) {
       this.searchLabel[1].initValue = [moment(this.$route.query.date).format('YYYY-MM-DD'), moment(this.$route.query.date).format('YYYY-MM-DD')]
       this.searchList.startDay = moment(this.$route.query.date).format('YYYY-MM-DD')
@@ -219,10 +215,10 @@ export default {
     select (item) {
       this.pageList.page = 1
       this.pageList.size = 20
-      this.searchList.schoolYearId = this.userInfo.schoolType === '8' ? item.gradeName : item.schoolYearId
-      this.searchList.gradeCode = this.userInfo.schoolType === '8' ? item.subjectCode : item.gradeCode
+      this.searchList.schoolYearId = (this.schoolType === '8' || this.schoolType === '9') ? item.gradeName : item.schoolYearId
+      this.searchList.gradeCode = (this.schoolType === '8' || this.schoolType === '9') ? item.subjectCode : item.gradeCode
       this.searchList.classCode = item.classCode
-      this.schoolYearId = this.userInfo.schoolType === '8' ? item.gradeName : item.schoolYearId
+      this.schoolYearId = (this.schoolType === '8' || this.schoolType === '9') ? item.gradeName : item.schoolYearId
       this.showList()
     },
     searchForm (values) {

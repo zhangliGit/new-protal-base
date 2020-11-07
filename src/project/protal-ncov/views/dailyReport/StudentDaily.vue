@@ -1,7 +1,7 @@
 <template>
   <div class="page-layout qui-fx">
     <div class="page-left">
-      <major-tree v-if="userInfo.schoolType === '8'" @select="select"></major-tree>
+      <major-tree v-if="schoolType === '8' || schoolType === '9'" @select="select"></major-tree>
       <grade-tree v-else @select="select"></grade-tree>
     </div>
     <div class="qui-fx-f1 qui-fx-ver">
@@ -42,6 +42,9 @@
           :table-list="userList"
           :rowKey="(record, index) => index"
         >
+          <template slot="other1" slot-scope="text">
+            <div>{{ (schoolType === '8' || schoolType === '9') ? text.record.schoolYearId + '级' : '' }} {{ text.record.gradeName + text.record.className }}</div>
+          </template>
           <template slot="other5" slot-scope="text">
             <div :class="text.record.enableFever ? 'temp-color' : ''">{{ text.record.temperature }}</div>
           </template>
@@ -99,8 +102,8 @@ const columns1 = [
     title: '班级',
     dataIndex: 'className',
     width: '10%',
-    customRender: (text, record) => {
-      return record.gradeName + record.className
+    scopedSlots: {
+      customRender: 'other1'
     }
   },
   {
@@ -226,21 +229,15 @@ export default {
       timeType: '1',
       statusType: '1',
       tempList: [],
-      thermometryDate: this.$tools.getDate(new Date(), 1)
+      thermometryDate: this.$tools.getDate(new Date(), 1),
+      schoolType: ''
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
   mounted() {
-    if (this.userInfo.schoolType === '8') {
-      this.columns1.splice(4, 0,
-        {
-          title: '专业',
-          dataIndex: 'gradeName',
-          width: '10%'
-        })
-    }
+    this.schoolType = this.userInfo.schoolType
     this.searchList.schoolCode = this.userInfo.schoolCode
     this.planListGet()
   },
@@ -267,8 +264,8 @@ export default {
     select(value) {
       this.pageList.page = 1
       this.pageList.size = 20
-      this.searchList.schoolYearId = this.userInfo.schoolType === '8' ? value.gradeName : value.schoolYearId
-      this.searchList.gradeCode = this.userInfo.schoolType === '8' ? value.subjectCode : value.gradeCode
+      this.searchList.schoolYearId = (this.schoolType === '8' || this.schoolType === '9') ? value.gradeName : value.schoolYearId
+      this.searchList.gradeCode = (this.schoolType === '8' || this.schoolType === '9') ? value.subjectCode : value.gradeCode
       this.searchList.classCode = value.classCode
       if (this.tempList.length > 0) {
         this.showList()

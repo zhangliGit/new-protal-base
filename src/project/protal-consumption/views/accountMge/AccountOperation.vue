@@ -62,7 +62,7 @@ const columns = [
   },
   {
     title: '操作时间',
-    dataIndex: 'updateTime',
+    dataIndex: 'createTime',
     width: '20%',
     customRender: text => {
       return Tools.getDate(text)
@@ -132,8 +132,10 @@ export default {
   computed: {
     ...mapState('home', ['userInfo'])
   },
-  mounted() {
+  created() {
     this._getDictList('account_oper_type', 'operType')
+  },
+  mounted() {
     this.searchList.userName = this.$route.query.userName
     this._getAccountRecord()
   },

@@ -16,12 +16,18 @@ export default {
     data: {
       type: Array,
       default: function() {
-        return []
+        return [
+          // {
+          //   name: '',
+          //   value: ''
+          // }
+        ]
       }
     },
     legendData: {
       type: Array,
       default: function() {
+        // ['巡检任务总数','已巡查人数','已巡查任务数']
         return []
       }
     },
@@ -44,6 +50,9 @@ export default {
   created() {
   },
   watch: {
+    data(val) {
+      this.initPieData(this.data, this.legendData, this.radius)
+    }
   },
   methods: {
     fomartData(val) {
@@ -54,7 +63,7 @@ export default {
       // 对饼状图dom，初始化echarts实例
       var myChart1 = echarts.init(this.$refs.chart, 'shine')
       myChart1.setOption({
-        color: ['#FF9593FF', '#71A6EEFF', '#FFE18FFF', '#BFB1FEFF', '#71CBA6FF'],
+        color: [ '#71A6EEFF', '#FFE18FFF', '#BFB1FEFF', '#71CBA6FF', '#FF9593FF' ],
         // 图表标题
         title: {
           text: '某站点用户访问来源', // 标题内容

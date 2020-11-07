@@ -1,7 +1,7 @@
 <template>
   <div class="page-layout qui-fx">
     <div class="page-left">
-      <major-tree v-if="userInfo.schoolType === '8'" @select="select"></major-tree>
+      <major-tree v-if="userInfo.schoolType === '8' || userInfo.schoolType === '9'" @select="select"></major-tree>
       <grade-tree v-else @select="select"></grade-tree>
     </div>
     <div class="qui-fx-f1 qui-fx-ver">
@@ -18,7 +18,7 @@
           </a-tooltip>
         </template>
         <template v-slot:other4="action">
-          <div>{{ action.record.gradeName }}{{ action.record.className }}</div>
+          <div>{{ (userInfo.schoolType === '8' || userInfo.schoolType === '9') ? action.record.schoolYearId + '级' : '' }} {{ action.record.gradeName + action.record.className }}</div>
         </template>
         <template v-slot:other5="action">
           <div v-if="action.record.enableFever === false">{{ action.record.enableFever ? '发热' : '未发热' }}</div>
@@ -191,16 +191,6 @@ export default {
   computed: {
     ...mapState('home', ['userInfo'])
   },
-  mounted() {
-    if (this.userInfo.schoolType === '8') {
-      this.columns.splice(3, 0,
-        {
-          title: '专业',
-          dataIndex: 'gradeName',
-          width: '8%'
-        })
-    }
-  },
   methods: {
     ...mapActions('home', ['getReportInfoList', 'addReport']),
     addApp() {
@@ -213,9 +203,8 @@ export default {
     select(item) {
       this.pageList.page = 1
       this.pageList.size = 20
-      this.searchList.schoolYearId = this.userInfo.schoolType === '8' ? item.gradeName : item.schoolYearId
-      this.searchList.gradeCode = this.userInfo.schoolType === '8' ? item.subjectCode : item.gradeCode
-      this.searchList.schoolYearId = item.schoolYearId
+      this.searchList.schoolYearId = (this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') ? item.gradeName : item.schoolYearId
+      this.searchList.gradeCode = (this.userInfo.schoolType === '8' || this.userInfo.schoolType === '9') ? item.subjectCode : item.gradeCode
       this.showList()
     },
     async showList(searchObj = {}) {

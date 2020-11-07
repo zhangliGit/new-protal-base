@@ -144,7 +144,6 @@
                     v-decorator="['time-picker', {
                       rules: [{ type: 'object', required: true}],
                     }]"
-                    value-format="HH:mm:ss"
                     placeholder="">
                   </a-time-picker>
                 </a-form-item>
@@ -331,33 +330,33 @@ export default {
       })
     },
     planSave(type) {
+      const noonEndTime = this.$tools.getDate(new Date(), 1) + ' ' + moment(this.planForm.noonEndTime).format('HH:mm:ss')
+      const nightEndTime = this.$tools.getDate(new Date(), 1) + ' ' + moment(this.planForm.nightEndTime).format('HH:mm:ss')
+      const noonStartTime = this.$tools.getDate(new Date(), 1) + ' ' + moment(this.planForm.noonStartTime).format('HH:mm:ss')
+      const nightStartTime = this.$tools.getDate(new Date(), 1) + ' ' + moment(this.planForm.nightStartTime).format('HH:mm:ss')
+      const noonStat = !!this.planForm.noonStat
+      const nightStat = !!this.planForm.nightStat
       if (type === 1) {
         // valid noon time
-        if (new Date(this.planForm.noonStartTime).getTime() >= new Date(this.planForm.noonEndTime).getTime()) {
+        if (noonStartTime >= noonEndTime) {
           this.$message.warning('午休签到结束时间必须大于开始时间')
           return
         }
-        if (new Date(this.planForm.noonEndTime).getTime() >= new Date(this.planForm.nightStartTime).getTime()) {
+        if (noonEndTime >= nightStartTime) {
           this.$message.warning('午休签到结束时间必须小于晚间签到开始时间')
           return
         }
       } else {
         // valid night time
-        if (new Date(this.planForm.nightStartTime).getTime() < new Date(this.planForm.noonEndTime).getTime()) {
+        if (nightStartTime < noonEndTime) {
           this.$message.warning('晚间签到开始时间必须大于午休结束时间')
           return
         }
-        if (new Date(this.planForm.nightStartTime).getTime() >= new Date(this.planForm.nightEndTime).getTime()) {
+        if (nightStartTime >= nightEndTime) {
           this.$message.warning('晚间签到结束时间必须大于开始时间')
           return
         }
       }
-      const noonEndTime = new Date(this.$tools.getDate(new Date(), 1) + ' ' + this.planForm.noonEndTime)
-      const nightEndTime = new Date(this.$tools.getDate(new Date(), 1) + ' ' + this.planForm.nightEndTime)
-      const noonStartTime = new Date(this.$tools.getDate(new Date(), 1) + ' ' + this.planForm.noonStartTime)
-      const nightStartTime = new Date(this.$tools.getDate(new Date(), 1) + ' ' + this.planForm.nightStartTime)
-      const noonStat = new Date(this.$tools.getDate(new Date(), 1) + ' ' + this.planForm.noonStat)
-      const nightStat = new Date(this.$tools.getDate(new Date(), 1) + ' ' + this.planForm.nightStat)
       const req = {
         endTime: type === 1 ? noonEndTime : nightEndTime,
         schoolCode: sessionStorage.getItem('schoolScheme'),
@@ -373,17 +372,15 @@ export default {
     },
     warningSave() {
       // 次日不生效，校验结束时间大于开始时间
-      const warnStartDate = new Date(this.warningForm.warnStartDate).getTime()
-      const warnEndDate = new Date(this.warningForm.warnEndDate).getTime()
+      const warnStartDate = this.$tools.getDate(new Date(), 1) + ' ' + moment(this.warningForm.warnStartDate).format('HH:mm:ss')
+      const warnEndDate = this.$tools.getDate(new Date(), 1) + ' ' + moment(this.warningForm.warnEndDate).format('HH:mm:ss')
       if (!this.warningForm.hasNextDay && warnStartDate >= warnEndDate) {
         this.$message.warning('预警结束时间必须大于开始时间！')
         return false
       }
-      const startDate = new Date(this.$tools.getDate(new Date(), 1) + ' ' + this.warningForm.warnStartDate)
-      const endDate = new Date(this.$tools.getDate(new Date(), 1) + ' ' + this.warningForm.warnEndDate)
       const date = {
-        warnStartDate: startDate,
-        warnEndDate: endDate
+        warnStartDate: warnStartDate,
+        warnEndDate: warnEndDate
       }
       const req = Object.assign({}, this.warningForm, date, {
         schoolCode: sessionStorage.getItem('schoolScheme')
@@ -393,11 +390,11 @@ export default {
       })
     },
     periodSave () {
-      const currentDayVal = new Date(this.$tools.getDate(new Date(), 1) + ' ' + this.periodForm.currentDayVal)
+      const currentDayVal = this.$tools.getDate(new Date(), 1) + ' ' + moment(this.periodForm.currentDayVal).format('HH:mm:ss')
       const req = {
-        'startTime': currentDayVal,
-        'endTime': currentDayVal,
-        'schoolCode': sessionStorage.getItem('schoolScheme')
+        startTime: currentDayVal,
+        endTime: currentDayVal,
+        schoolCode: sessionStorage.getItem('schoolScheme')
       }
       this.updateStatCycle(req).then(res => {
         this.$message.success('保存成功!')

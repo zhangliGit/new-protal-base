@@ -498,7 +498,6 @@ export default {
       this._getTeacherList()
     },
     change(record) {
-      console.log(record)
       this.detailInfo.responsibilityUserName = record.split('=')[1].split('+')[0]
       this.detailInfo.responsibilityUserCode = record.split('=')[0]
       this.detailInfo.telephone = record.split('=')[1].split('+')[1]
@@ -513,6 +512,11 @@ export default {
           }
         })
       }
+      this.responsibilityDept = res.data.responsibilityDept
+      this.responsibilityDept = res.data.responsibilityDept
+      this.riskInfo = res.data.riskIndex
+      this.remainInfo = res.data.remainingRiskIndex
+      this._getTeacherList()
     },
     add () {
       this.signTag = true
@@ -525,11 +529,7 @@ export default {
       this.$router.go(-1)
     },
     areaChange(e, record) {
-      console.log('vewq', e.target.value)
       this.detailInfo[record.key] = e.target.value
-    },
-    assessChange() {
-
     },
     submitOk(e) {
       e.preventDefault()
@@ -543,10 +543,13 @@ export default {
                   warnings.push(el.url)
                 })
               }
-              // values.responsibilityUserName = this.detailInfo.responsibilityUserName
-              // values.responsibilityUserCode = this.detailInfo.responsibilityUserCode
+              values.responsibilityUserName = this.detailInfo.responsibilityUserName
               values.warnings = warnings
               values.id = this.detailId
+              if (this.methodCode === '2') {
+                values.lValue = values.lslValue
+                val.remainingLValue = val.remainingLslValue
+              }
               this.isLoad = true
               this.riskAssess({
                 ...this.detailInfo,

@@ -25,7 +25,18 @@
       :form-data="highDetail.formData"
     ></sub-form>
     <detail-show :col="8" :detail-info="detailInfo" :title="infoTitle"></detail-show>
-    <a-tabs>
+    <div class="u-bd-b qui-fx-ac qui-fx-jsb u-padd-r20">
+      <div class="title">班级学生</div>
+      <search-form isReset @search-form="searchForm" :search-label="highDetail.searchLabel" style="padding: 0">
+        <div slot="right">
+          <a-button icon="plus" class="add-btn mar-l10" @click="addStudent">添加学生</a-button>
+          <a-button icon="export" class="export-all-btn" @click.stop="goAdd">批量导入</a-button>
+          <a-button icon="export" class="export-btn" @click.stop="moveClass(0)">批量转班</a-button>
+          <a-button icon="delete" class="power-action-btn" @click.stop="dels">批量移出</a-button>
+        </div>
+      </search-form>
+    </div>
+    <!-- <a-tabs>
       <a-tab-pane tab="班级学生" key="1"> </a-tab-pane>
       <div slot="tabBarExtraContent" class="qui-fx-ac mar-r10">
         <search-form isReset @search-form="searchForm" :search-label="highDetail.searchLabel" style="padding: 0">
@@ -37,7 +48,7 @@
           </div>
         </search-form>
       </div>
-    </a-tabs>
+    </a-tabs> -->
     <div class="content qui-fx-ver qui-fx-f1">
       <div class="table qui-fx-ver qui-fx-f1">
         <table-list
@@ -159,13 +170,15 @@ export default {
       highSubTerm: [],
       highClass: [],
       classDetail: {},
-      type: 0
+      type: 0,
+      gradeName: ''
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
   created() {
+    this.highDetail.formData[0].firstChange = this.firstChange
     this.highDetail.formData[0].secondChange = this.secondChange
     this.searchList.subjectCode = this.$route.query.subjectCode
     this.searchList.gradeCode = this.$route.query.gradeCode
@@ -175,50 +188,60 @@ export default {
     this._getHighStu()
     this.showClassDetail()
     this.getGrade()
-    this._getSubjectList()
   },
   methods: {
     ...mapActions('home', [
-      'highClassDetail', 'getHighStu', 'getHighClass', 'getHighSub', 'getHighTerm', 'highStuRemove',
-      'highStusRemove', 'highStusChange', 'highStuChange', 'highStuJoin', 'getClassTeacherList'
+      'highClassDetail', 'getHighStu', 'getHighClass', 'getHighGradeSub', 'getHighTerm', 'highStuRemove',
+      'highStusRemove', 'highStusChange', 'highStuChange', 'highStuJoin', 'getClassTeacherList', 'getHighGrade'
     ]),
     // 获取年级
     async getGrade() {
       this.highDetail.formData[0].firstList = []
-      const req = {
-        schoolCode: this.userInfo.schoolCode,
-        page: 1,
-        size: 99999
-      }
-      const res = await this.getHighGrade(req)
-      if (res.data.records.length === 0) {
+      const res = await this.getHighGrade({ schoolCode: this.userInfo.schoolCode })
+      this.highSubTerm = res.data
+      if (res.data.length === 0) {
+        this.highDetail.formData[0].initValue1 = []
+        this.highDetail.formData[0].initValue2 = []
+        this.highDetail.formData[0].initValue3 = []
         return
       }
-      this.highSubTerm = res.data.records
-      res.data.records.forEach(ele => {
-        this.highDetail.formData[0].firstList.push({ key: ele.schoolYearCode, val: `${ele.schoolYearName.split('-')[0]}级` })
+      res.data.forEach(ele => {
+        this.highDetail.formData[0].firstList.push({ key: ele.gradeCode, val: `${ele.gradeName}级` })
       })
+      this.gradeName = res.data[0].gradeName
+      this._getSubjectList()
+    },
+    firstChange(value) {
+      if (value || value === 0) {
+        this.gradeName = this.highSubTerm[value].gradeName
+        this._getSubjectList()
+      }
     },
     // 获取专业
     async _getSubjectList() {
       this.highDetail.formData[0].secondList = []
       const req = {
-        page: 1,
-        size: 99999,
+        gradeName: this.gradeName,
         schoolCode: this.userInfo.schoolCode
       }
-      const res = await this.getHighSub(req)
-      if (res.data.records.length === 0) {
+      const res = await this.getHighGradeSub(req)
+      this.highSubList = res.data
+      if (res.data.length === 0) {
+        this.highDetail.formData[0].initValue2 = []
+        this.highDetail.formData[0].initValue3 = []
         return
       }
-      this.highSubList = res.data.records
-      res.data.records.forEach(ele => {
+      res.data.forEach(ele => {
         this.highDetail.formData[0].secondList.push({ key: ele.subjectCode, val: ele.subjectName })
       })
+      this.highDetail.formData[0].initValue2 = [0]
+      this._getHighClass(this.highSubList[0].subjectCode)
     },
     // 点击专业获取班级
     secondChange(value) {
-      this._getHighClass(this.highSubList[value].subjectCode)
+      if (value || value === 0) {
+        this._getHighClass(this.highSubList[value].subjectCode)
+      }
     },
     // 查询班级列表
     async _getHighClass(subjectCode) {
@@ -227,15 +250,19 @@ export default {
         schoolCode: this.userInfo.schoolCode,
         page: 1,
         size: 99999,
-        subjectCode: subjectCode
+        subjectCode: subjectCode,
+        gradeName: this.gradeName
       }
       const res = await this.getHighClass(req)
       this.highClass = res.data.records
-      if (res.data.records.length > 0) {
-        res.data.records.forEach(ele => {
-          this.highDetail.formData[0].threeList.push({ key: ele.id, val: ele.className })
-        })
+      if (res.data.records.length === 0) {
+        this.highDetail.formData[0].initValue3 = []
+        return
       }
+      res.data.records.forEach(ele => {
+        this.highDetail.formData[0].threeList.push({ key: ele.id, val: ele.className })
+      })
+      this.highDetail.formData[0].initValue3 = [0]
     },
     toAdd(val) {
       this.$refs.newStudent.formStatus = val
@@ -353,7 +380,7 @@ export default {
     // 提交转班
     submitForm(values) {
       const req = {}
-      req.grade = this.highSubTerm[values.gradeCode].schoolYearName.split('-')[0]
+      req.grade = this.highSubTerm[values.gradeCode].gradeName
       req.className = this.highClass[values.class].className
       req.classCode = this.highClass[values.class].classCode
       req.subjectName = this.highSubList[values.subject].subjectName
@@ -451,5 +478,12 @@ export default {
       margin: 10px 0;
     }
   }
+}
+.title {
+  width: 80px;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  border-bottom: 1px solid #2979ff;
 }
 </style>

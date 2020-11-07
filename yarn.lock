@@ -10321,6 +10321,13 @@ shellwords@^0.1.1:
   resolved "https://registry.yarnpkg.com/shellwords/-/shellwords-0.1.1.tgz#d6b9181c1a48d397324c84871efbcfc73fc0654b"
   integrity sha512-vFwSUfQvqybiICwZY5+DAWIPLKsWO31Q91JSKl3UYv+K5c2QRPzn0qzec6QPu1Qc9eHYItiP3NdJqNVqetYAww==
 
+shifty@^2.0.2:
+  version "2.13.0"
+  resolved "https://registry.yarnpkg.com/shifty/-/shifty-2.13.0.tgz#29163e817d29d4e8034ef5576f182ad3e07488d3"
+  integrity sha512-d0rfJoKknn9SxLCxU1Gm4jfoe6m5Z/NBLL1DHXQOb5fWWw7YQWx+FZVhDdNfhKHGFZmWHYZqYr47WhO1CKvwsg==
+  dependencies:
+    object-assign "^4.1.1"
+
 shvl@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/shvl/-/shvl-2.0.0.tgz#55fd550b6e81bf7574f2f576b8b5c1ffae74e10f"
@@ -11544,6 +11551,13 @@ voc@:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/voc/-/voc-1.2.0.tgz#c459024531d71067c09e2c0c2bda6c2b13af32d8"
   integrity sha512-BOuDjFFYvJdZO6e/N65AlaDItXo2TgyLjeyRYcqgAPkXpp5yTJcvkL2n+syO1r9Qc5g96tfBD2tuiMhYDmaGcA==
+
+vue-animate-number@^0.4.2:
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/vue-animate-number/-/vue-animate-number-0.4.2.tgz#fa8901de4c758fa844a0442ff72dbe329decc471"
+  integrity sha1-+okB3kx1j6hEoEQv9y2+Mp3sxHE=
+  dependencies:
+    shifty "^2.0.2"
 
 vue-awesome-swiper@^4.1.1:
   version "4.1.1"

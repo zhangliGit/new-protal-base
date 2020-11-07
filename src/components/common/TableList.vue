@@ -32,8 +32,8 @@
                   record.validDate && record.validDate - new Date().getTime() < 0
                     ? 'red'
                     : record.validDate && record.validDate - new Date().getTime() - 1000 * 60 * 60 * 24 * 30 < 0
-                    ? 'orange'
-                    : 'black'
+                      ? 'orange'
+                      : 'black'
               }
             ]"
           >

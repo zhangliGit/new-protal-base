@@ -100,6 +100,7 @@ export default {
       this.userTag = true
     },
     async chooseUser(values) {
+      console.log('**',values)
       this.$refs.chooseUser.reset()
       this.userName = values[0].userName
       this.workNo = values[0].workNo
