@@ -170,13 +170,15 @@ export default {
       highSubTerm: [],
       highClass: [],
       classDetail: {},
-      type: 0
+      type: 0,
+      gradeName: ''
     }
   },
   computed: {
     ...mapState('home', ['userInfo'])
   },
   created() {
+    this.highDetail.formData[0].firstChange = this.firstChange
     this.highDetail.formData[0].secondChange = this.secondChange
     this.searchList.subjectCode = this.$route.query.subjectCode
     this.searchList.gradeCode = this.$route.query.gradeCode
@@ -186,45 +188,60 @@ export default {
     this._getHighStu()
     this.showClassDetail()
     this.getGrade()
-    this._getSubjectList()
   },
   methods: {
     ...mapActions('home', [
-      'highClassDetail', 'getHighStu', 'getHighClass', 'getHighSub', 'getHighTerm', 'highStuRemove',
+      'highClassDetail', 'getHighStu', 'getHighClass', 'getHighGradeSub', 'getHighTerm', 'highStuRemove',
       'highStusRemove', 'highStusChange', 'highStuChange', 'highStuJoin', 'getClassTeacherList', 'getHighGrade'
     ]),
     // 获取年级
     async getGrade() {
       this.highDetail.formData[0].firstList = []
       const res = await this.getHighGrade({ schoolCode: this.userInfo.schoolCode })
-      if (res.data.records.length === 0) {
+      this.highSubTerm = res.data
+      if (res.data.length === 0) {
+        this.highDetail.formData[0].initValue1 = []
+        this.highDetail.formData[0].initValue2 = []
+        this.highDetail.formData[0].initValue3 = []
         return
       }
-      this.highSubTerm = res.data.records
-      res.data.records.forEach(ele => {
+      res.data.forEach(ele => {
         this.highDetail.formData[0].firstList.push({ key: ele.gradeCode, val: `${ele.gradeName}级` })
       })
+      this.gradeName = res.data[0].gradeName
+      this._getSubjectList()
+    },
+    firstChange(value) {
+      if (value || value === 0) {
+        this.gradeName = this.highSubTerm[value].gradeName
+        this._getSubjectList()
+      }
     },
     // 获取专业
     async _getSubjectList() {
       this.highDetail.formData[0].secondList = []
       const req = {
-        page: 1,
-        size: 99999,
+        gradeName: this.gradeName,
         schoolCode: this.userInfo.schoolCode
       }
-      const res = await this.getHighSub(req)
-      if (res.data.records.length === 0) {
+      const res = await this.getHighGradeSub(req)
+      this.highSubList = res.data
+      if (res.data.length === 0) {
+        this.highDetail.formData[0].initValue2 = []
+        this.highDetail.formData[0].initValue3 = []
         return
       }
-      this.highSubList = res.data.records
-      res.data.records.forEach(ele => {
+      res.data.forEach(ele => {
         this.highDetail.formData[0].secondList.push({ key: ele.subjectCode, val: ele.subjectName })
       })
+      this.highDetail.formData[0].initValue2 = [0]
+      this._getHighClass(this.highSubList[0].subjectCode)
     },
     // 点击专业获取班级
     secondChange(value) {
-      this._getHighClass(this.highSubList[value].subjectCode)
+      if (value || value === 0) {
+        this._getHighClass(this.highSubList[value].subjectCode)
+      }
     },
     // 查询班级列表
     async _getHighClass(subjectCode) {
@@ -233,15 +250,19 @@ export default {
         schoolCode: this.userInfo.schoolCode,
         page: 1,
         size: 99999,
-        subjectCode: subjectCode
+        subjectCode: subjectCode,
+        gradeName: this.gradeName
       }
       const res = await this.getHighClass(req)
       this.highClass = res.data.records
-      if (res.data.records.length > 0) {
-        res.data.records.forEach(ele => {
-          this.highDetail.formData[0].threeList.push({ key: ele.id, val: ele.className })
-        })
+      if (res.data.records.length === 0) {
+        this.highDetail.formData[0].initValue3 = []
+        return
       }
+      res.data.records.forEach(ele => {
+        this.highDetail.formData[0].threeList.push({ key: ele.id, val: ele.className })
+      })
+      this.highDetail.formData[0].initValue3 = [0]
     },
     toAdd(val) {
       this.$refs.newStudent.formStatus = val
@@ -359,7 +380,7 @@ export default {
     // 提交转班
     submitForm(values) {
       const req = {}
-      req.grade = this.highSubTerm[values.gradeCode].schoolYearName.split('-')[0]
+      req.grade = this.highSubTerm[values.gradeCode].gradeName
       req.className = this.highClass[values.class].className
       req.classCode = this.highClass[values.class].classCode
       req.subjectName = this.highSubList[values.subject].subjectName

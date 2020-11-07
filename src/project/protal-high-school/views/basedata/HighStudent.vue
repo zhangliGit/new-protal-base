@@ -138,18 +138,6 @@ export default {
       'getHighTerm', 'getHighGradeSub', 'getHighClass', 'addHighStu',
       'getHighStu', 'updateHighStu', 'getHighGrade'
     ]),
-    // 获取年级
-    async getGrade() {
-      this.highStudent.formData[6].firstList = []
-      const res = await this.getHighGrade({ schoolCode: this.userInfo.schoolCode })
-      if (res.data.length === 0) {
-        return
-      }
-      this.highSubTerm = res.data
-      res.data.forEach(ele => {
-        this.highStudent.formData[6].firstList.push({ key: ele.gradeCode, val: `${ele.gradeName}级` })
-      })
-    },
     // 获取列表
     async showList() {
       this.searchList.schoolCode = this.userInfo.schoolCode
@@ -171,6 +159,23 @@ export default {
       this.searchList.classCode = item.classCode || ''
       this.showList()
     },
+    // 获取年级
+    async getGrade() {
+      this.highStudent.formData[6].firstList = []
+      const res = await this.getHighGrade({ schoolCode: this.userInfo.schoolCode })
+      this.highSubTerm = res.data
+      if (res.data.length === 0) {
+        this.highStudent.formData[6].initValue1 = []
+        this.highStudent.formData[6].initValue2 = []
+        this.highStudent.formData[6].initValue3 = []
+        return
+      }
+      res.data.forEach(ele => {
+        this.highStudent.formData[6].firstList.push({ key: ele.gradeCode, val: `${ele.gradeName}级` })
+      })
+      this.gradeName = res.data[0].gradeName
+      this._getSubjectList()
+    },
     firstChange(value) {
       if (value || value === 0) {
         this.gradeName = this.highSubTerm[value].gradeName
@@ -185,13 +190,17 @@ export default {
         schoolCode: this.userInfo.schoolCode
       }
       const res = await this.getHighGradeSub(req)
+      this.highSubList = res.data
       if (res.data.length === 0) {
+        this.highStudent.formData[6].initValue2 = []
+        this.highStudent.formData[6].initValue3 = []
         return
       }
-      this.highSubList = res.data
       res.data.forEach(ele => {
         this.highStudent.formData[6].secondList.push({ key: ele.subjectCode, val: ele.subjectName })
       })
+      this.highStudent.formData[6].initValue2 = [0]
+      this._getHighClass(this.highSubList[0].subjectCode)
     },
     // 点击专业获取班级
     secondChange(value) {
@@ -211,11 +220,14 @@ export default {
       }
       const res = await this.getHighClass(req)
       this.highClass = res.data.records
-      if (res.data.records.length > 0) {
-        res.data.records.forEach(ele => {
-          this.highStudent.formData[6].threeList.push({ key: ele.id, val: ele.className })
-        })
+      if (res.data.records.length === 0) {
+        this.highStudent.formData[6].initValue3 = []
+        return
       }
+      res.data.records.forEach(ele => {
+        this.highStudent.formData[6].threeList.push({ key: ele.id, val: ele.className })
+      })
+      this.highStudent.formData[6].initValue3 = [0]
     },
     // 搜索
     searchForm(values) {

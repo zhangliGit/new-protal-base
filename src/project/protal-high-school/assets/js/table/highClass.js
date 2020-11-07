@@ -166,7 +166,7 @@ const highClass = {
       value: 'placeName',
       initValue: [],
       type: 'siteChoose',
-      label: '教室班级',
+      label: '班级教室',
       placeholder: '请选择'
     }
   ]

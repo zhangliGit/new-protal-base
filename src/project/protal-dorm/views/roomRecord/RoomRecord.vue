@@ -92,8 +92,15 @@ export default {
     ...mapState('home', 'userInfo')
   },
   mounted() {
-    this.columns[3].dataIndex = 'schoolYearId'
     if ((this.schoolType === '8' || this.schoolType === '9') && this.columns[4].dataIndex !== 'gradeName') {
+      this.columns[3] = {
+        title: '年级',
+        dataIndex: 'schoolYearId',
+        width: '8%',
+        customRender: text => {
+          return text + '级'
+        }
+      }
       this.columns.splice(4, 0,
         {
           title: '专业',

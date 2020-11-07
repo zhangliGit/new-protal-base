@@ -266,33 +266,16 @@ export default {
         window.location.href = `${hostEnv.lz_user_center}/userinfo/teacher/user/download/teacher/template`
       }
     },
-    // 获取专业
-    async _getSubjectList() {
-      this.secondList = []
-      const req = {
-        gradeName: this.gradeName,
-        schoolCode: this.userInfo.schoolCode
-      }
-      const res = await this.getHighGradeSub(req)
-      if (res.data.length === 0) {
-        return
-      }
-      this.highSubList = res.data
-      res.data.forEach(ele => {
-        this.secondList.push({ key: ele.subjectCode, val: ele.subjectName })
-      })
-      this.selectSubject = 0
-      this.subjectCode = this.secondList[0].key
-      this._getHighClass(res.data[0].subjectCode)
-    },
     // 获取年级
     async getGrade() {
       this.firstList = []
       const res = await this.getHighGrade({ schoolCode: this.userInfo.schoolCode })
+      this.highSubTerm = res.data
       if (res.data.length === 0) {
+        this.selectSubject = []
+        this.selectClass = []
         return
       }
-      this.highSubTerm = res.data
       res.data.forEach(ele => {
         this.firstList.push({ key: ele.gradeCode, val: `${ele.gradeName}级` })
       })
@@ -307,6 +290,27 @@ export default {
         this._getSubjectList()
       }
     },
+    // 获取专业
+    async _getSubjectList() {
+      this.secondList = []
+      const req = {
+        gradeName: this.gradeName,
+        schoolCode: this.userInfo.schoolCode
+      }
+      const res = await this.getHighGradeSub(req)
+      this.highSubList = res.data
+      if (res.data.length === 0) {
+        this.selectSubject = []
+        this.selectClass = []
+        return
+      }
+      res.data.forEach(ele => {
+        this.secondList.push({ key: ele.subjectCode, val: ele.subjectName })
+      })
+      this.selectSubject = 0
+      this.subjectCode = this.secondList[0].key
+      this._getHighClass(res.data[0].subjectCode)
+    },
     // 点击专业获取班级
     secondChange(value) {
       if (value || value === 0) {
@@ -320,20 +324,20 @@ export default {
         schoolCode: this.userInfo.schoolCode,
         page: 1,
         size: 99999,
-        subjectCode: subjectCode
+        subjectCode: subjectCode,
+        gradeName: this.gradeName
       }
       const res = await this.getHighClass(req)
       this.highClass = res.data.records
-      if (res.data.records.length > 0) {
-        res.data.records.forEach(ele => {
-          this.threeList.push({ key: ele.id, val: ele.className })
-        })
-        this.selectClass = 0
-        this.classCode = this.threeList[0].key
-      } else {
-        this.selectClass = ''
-        this.classCode = ''
+      if (res.data.records.length === 0) {
+        this.selectClass = []
+        return
       }
+      res.data.records.forEach(ele => {
+        this.threeList.push({ key: ele.id, val: ele.className })
+      })
+      this.selectClass = 0
+      this.classCode = this.threeList[0].key
     }
   }
 }
