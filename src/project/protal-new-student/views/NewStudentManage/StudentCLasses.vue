@@ -36,7 +36,7 @@
 import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
-import GradeTree from '@c/GradeTree'
+import GradeTree from '@c/HighGradeTree'
 import AssignStudent from '../../component/AssignStudent.vue'
 
 const columns = [
@@ -50,31 +50,31 @@ const columns = [
   {
     title: '年级',
     width: '8%',
-    dataIndex: 'grade'
+    dataIndex: 'gradeName'
   },
   {
     title: '专业',
-    dataIndex: 'project',
+    dataIndex: 'subjectName',
     width: '10%'
   },
   {
     title: '班级',
-    dataIndex: 'class',
+    dataIndex: 'className',
     width: '10%'
   },
   {
     title: '辅导员',
-    dataIndex: 'teacher',
+    dataIndex: 'teacherName',
     width: '10%'
   },
   {
     title: '教室',
-    dataIndex: 'classRoom',
+    dataIndex: 'placeName',
     width: '15%'
   },
   {
     title: '班级学生',
-    dataIndex: 'studentCount',
+    dataIndex: 'count',
     width: '10%'
   },
   {
@@ -111,7 +111,10 @@ export default {
       userList: [],
       chooseList: [],
       totalList: [],
-      detailList: {}
+      detailList: {},
+      grade: '',
+      majorCode: '',
+      majorName: ''
     }
   },
   computed: {
@@ -119,37 +122,18 @@ export default {
   },
   mounted() {
     // this.showList()
-    this.userList = [
-      {
-        id: '1',
-        name: '张学良',
-        grade: '2020',
-        project: '软件工程',
-        class: '1班',
-        teacher: '李老师',
-        classRoom: '教学楼1楼101',
-        studentCount: 45
-      },
-      {
-        id: '2',
-        name: '张学良',
-        grade: '2020',
-        project: '软件工程',
-        class: '1班',
-        teacher: '李老师',
-        classRoom: '教学楼1楼101',
-        studentCount: 45
-      }
-    ]
   },
   methods: {
-    ...mapActions('home', ['getPageList', 'recordDetail', 'downRecord']),
+    ...mapActions('home', ['getHighClass', 'recordDetail', 'downRecord']),
     async showList(searchObj = {}) {
       this.searchList.schoolCode = this.userInfo.schoolCode
       this.searchList = Object.assign(this.searchList, this.pageList, searchObj)
-      const res = await this.getPageList(this.searchList)
-      this.userList = res.data.list
-      this.total = res.data.total
+      this.searchList.gradeName = this.grade
+      this.searchList.subjectCode = this.majorCode
+      const res = await this.getHighClass(this.searchList)
+      console.log(res)
+      this.userList = res.data || []
+      this.total = res.data.length
     },
     searchForm(values) {
       this.pageList.page = 1
@@ -171,16 +155,16 @@ export default {
     },
     // 选择树形列表
     select(item) {
+      console.log(item)
       this.pageList.page = 1
       this.pageList.size = 20
-      // if (typeof item.materialTypeId === 'number') {
-      //   this.searchList.materialTypeId = item.materialTypeId
-      //   this.searchList.materialId = ''
-      // } else {
-      //   this.searchList.materialId = item.materialTypeId.split('^')[1]
-      //   this.searchList.materialTypeId = ''
-      // }
-      // this.showList()
+      const { gradeCode, title, schoolYearName } = item
+      this.majorCode = gradeCode
+      this.majorName = title
+      this.grade = Number(schoolYearName)
+      this.$nextTick(() => {
+        this.showList()
+      })
     },
     submitForm() {
       if (this.totalList.length === 0) {

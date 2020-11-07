@@ -12,10 +12,7 @@ const baseData1Api = {
   getGrade: '/class/manage/query/grade#get', // 年级列表
 
   // 班级管理
-  highClassDetail: '/class/manage/detail#get', // 详情
-  getHighClass: '/class/manage/list#post', // 列表查询
-  getHighNode: '/class/manage/node#get', // 班级节点查询
-  getHighGrade: '/class/manage/query/grade#get' // 查询年级
+  getHighClass: '/class/manage/query/class/by/subject#get' // 查询年级专业下班级列表
 }
 
 const baseData2Api = {

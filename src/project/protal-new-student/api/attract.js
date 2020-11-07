@@ -24,13 +24,28 @@ const sqApi = {
   singleCheck: '/recruitStudentInfo/audit#post', // 单个操作-通过/拒绝
   batchCheck: '/recruitStudentInfo/audit/batch#post' // 批量操作-通过/拒绝
 }
+
+const glApi = {
+  // 新生管理
+  getGlList: '/recruitStudentInfo/student/list#getUrl', // 查询班级下已有学生
+  assignClass: '/recruitStudentInfo/student/to/class#post', // 分班
+
+  // 设备管理
+  getDeviceList: '/deviceManage/page#post', // 设备列表
+  bindDevices: '/deviceManage/bind/device#post', // 绑定设备
+  unbindDevices: '/deviceManage/unbind/device#getUrl' // 解绑设备
+}
 for (const val in zsApi) {
   zsApi[val] = `${hostEnv.wq_school}${zsApi[val]}`
 }
 for (const val in sqApi) {
   sqApi[val] = `${hostEnv.wq_school}${sqApi[val]}`
 }
+for (const val in glApi) {
+  glApi[val] = `${hostEnv.wq_school}${glApi[val]}`
+}
 export default {
   ...zsApi,
-  ...sqApi
+  ...sqApi,
+  ...glApi
 }

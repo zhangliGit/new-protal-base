@@ -30,7 +30,7 @@
         <a-button icon="plus" class="add-btn" @click.stop="bindDevClick">绑定设备</a-button>
       </div>
     </search-form>
-    <table-list isZoom :page-list="pageList" :columns="columns" :table-list="taskList">
+    <table-list isZoom :page-list="pageList" :columns="columns" :table-list="deviceList">
       <template v-slot:other1="other1">
         <span>{{ other1.record.id }}</span>
         <a-button
@@ -131,7 +131,7 @@ const searchLabel = [
   {
     list: [
       {
-        key: '1',
+        key: '面板机',
         val: '面板机'
       }
     ],
@@ -166,7 +166,7 @@ export default {
         size: 20
       },
       total: 0,
-      taskList: [],
+      deviceList: [],
       signTag: false,
       searchObj: {},
       deviceId: ''
@@ -179,39 +179,23 @@ export default {
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getReserveList', 'delReserve']),
+    ...mapActions('home', ['getDeviceList', 'bindDevices', 'unbindDevices']),
     async showList() {
-      // const req = {
-      //   ...this.searchObj,
-      //   ...this.pageList,
-      //   schoolCode: this.userInfo.schoolCode,
-      //   type: '1'
-      // }
-      // const res = await this.getReserveList(req)
-      // console.log(res)
-      this.taskList = [
-        {
-          id: '1',
-          deviceName: '面板机1',
-          bindStudent: 2222,
-          deviceType: '面板机',
-          snCode: '6231300',
-          address: '学校南门-左'
-        }
-      ]
-      // this.taskList = res.data.list
-      // this.taskList.map(el => {
-      //   el.placeName = el.placeName.replace(/,/g, '-')
-      // })
-      // this.total = res.data.total
+      const req = {
+        ...this.searchObj,
+        ...this.pageList,
+        schoolCode: this.userInfo.schoolCode
+      }
+      const res = await this.getDeviceList(req)
+      console.log(res)
+      this.deviceList = res.data.records
+      this.total = res.data.total
     },
     searchForm(values) {
-      console.log(values)
       this.searchObj = {
-        startDate: values.rangeTime ? values.rangeTime[0] : undefined,
-        endDate: values.rangeTime ? values.rangeTime[1] : undefined,
-        status: values.status,
-        description: values.description
+        deviceName: values.deviceName || '',
+        deviceType: values.deviceType || '',
+        snCode: values.snCode
       }
       this.showList()
     },
@@ -224,7 +208,7 @@ export default {
     },
     // 解绑设备
     async deleteDevice(record) {
-      await this.delReserve(record.id)
+      await this.unbindDevices(record.id)
       this.$message.success('删除成功')
       this.$tools.goNext(() => {
         this.showList()

@@ -46,7 +46,7 @@ import { mapState, mapActions } from 'vuex'
 import TableList from '@c/TableList'
 import PageNum from '@c/PageNum'
 import SearchForm from '@c/SearchForm'
-import GradeTree from '@c/GradeTree'
+import GradeTree from '../../component/HighGradeTree'
 import UploadMulti from '@c/UploadFace'
 const searchLabel = [
   {

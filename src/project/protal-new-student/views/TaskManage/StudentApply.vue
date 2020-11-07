@@ -600,6 +600,7 @@ export default {
         studentName: '',
         studentSource: ''
       }
+      console.log(req)
     },
     // 批量审核通过、拒绝按钮
     checkClick(val) {
