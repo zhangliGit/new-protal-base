@@ -21,8 +21,8 @@ const sqApi = {
   getStudentList: '/recruitStudentInfo/page#post', // 学生列表
   addStudent: '/recruitStudentInfo/add#post', // 新增学生
   studentDetail: '/recruitStudentInfo/info#getUrl', // ID查详情
-  singleCheck: '/material/name/delete#del', // 单个操作-通过/拒绝
-  batchCheck: '/material/name/delete#del' // 批量操作-通过/拒绝
+  singleCheck: '/recruitStudentInfo/audit#post', // 单个操作-通过/拒绝
+  batchCheck: '/recruitStudentInfo/audit/batch#post' // 批量操作-通过/拒绝
 }
 for (const val in zsApi) {
   zsApi[val] = `${hostEnv.wq_school}${zsApi[val]}`

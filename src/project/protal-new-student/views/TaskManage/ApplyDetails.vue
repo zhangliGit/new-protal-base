@@ -11,8 +11,8 @@
         <div class="check-title">审核结果：</div>
         <div class="check-area">
           <a-radio-group name="radioGroup" v-model="checkData.result">
-            <a-radio value="1"> 通过(录取) </a-radio>
-            <a-radio value="2"> 不通过(不录取) </a-radio>
+            <a-radio :value="true"> 通过(录取) </a-radio>
+            <a-radio :value="false"> 不通过(不录取) </a-radio>
           </a-radio-group>
         </div>
       </div>
@@ -588,7 +588,7 @@ export default {
     this.showList(this.$route.query.id)
   },
   methods: {
-    ...mapActions('home', ['studentDetail']),
+    ...mapActions('home', ['studentDetail', 'singleCheck']),
     async showList(id) {
       const res = await this.studentDetail(id)
       if (res && res.code === 200) {
@@ -685,12 +685,29 @@ export default {
       this.checkVisible = true
     },
     // 审核提交
-    handleCheckOk() {
+    async handleCheckOk() {
       if (!this.checkData.result) {
         this.$message.error('请选择审核结果')
         return
       }
-      this.checkVisible = false
+      const req = {
+        auditOpinion: this.checkData.text,
+        auditResult: this.checkData.result,
+        auditor: this.userInfo.userName,
+        id: this.applyId
+      }
+      const res = await this.singleCheck(req)
+      console.log(res)
+      if (res && res.code === 200) {
+        this.$message.success('审核成功')
+        this.checkVisible = false
+        this.$router.push({
+          path: '/studentApply'
+        })
+      } else {
+        this.$message.error('审核失败')
+      }
+      // this.checkVisible = false
     },
     // 取消审核
     handleCheckCancel() {

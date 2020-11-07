@@ -484,7 +484,7 @@ export default {
     this.showList()
   },
   methods: {
-    ...mapActions('home', ['getStudentList', 'getStudentList']),
+    ...mapActions('home', ['getStudentList', 'getStudentList', 'batchCheck']),
     async showList(searchObj = {}) {
       this.searchList = Object.assign(this.searchList, this.pageList, searchObj)
       const req = {
@@ -603,14 +603,26 @@ export default {
     },
     // 批量审核通过、拒绝按钮
     checkClick(val) {
+      if (this.chooseList.length === 0) {
+        this.$message.warning('请选择学生')
+        return
+      }
       this.$confirm({
         title: val ? '审核通过' : '审核拒绝',
         content: val ? '确定通过新生入学申请吗？（录取）' : '确定拒绝新生入学申请吗？（不录取）',
-        onOk: () => {
+        onOk: async () => {
           console.log(this.chooseList) // 返回选择的id
-          return new Promise((resolve, reject) => {
-            setTimeout(Math.random() > 0.5 ? resolve : reject, 2000)
-          }).catch(() => console.log('Oops errors!'))
+          const req = {
+            auditResult: val,
+            auditor: this.userInfo.userName,
+            ids: [...this.chooseList]
+          }
+          const res = await this.batchCheck(req)
+          if (res && res.code === 200) {
+            this.showList()
+          } else {
+            this.$message.error('审核失败')
+          }
         }
       })
     }
