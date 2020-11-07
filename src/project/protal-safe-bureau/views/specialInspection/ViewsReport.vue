@@ -88,7 +88,7 @@
           隐患数量排名
         </div>
         <div class="list-cont set-td-heigth  u-fx-wp u-mar-t20">
-          <table border="0" class="u-bd-1px" width="100%" cellspacing:="0">
+          <table border="0" class="u-bd-1px" width="100%" cellspacing="0">
             <tr class=" u-type-primary-light-bg">
               <td class="u-bd-l u-bd-b " align="center" valign="middle" width="25%" >排行</td>
               <td class="u-bd-l u-bd-b " align="center" valign="middle" >学校</td>

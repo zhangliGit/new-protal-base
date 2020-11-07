@@ -128,6 +128,10 @@ export default {
         {
           name: '安全台账-校端',
           url: 'protal-parameter-school'
+        },
+        {
+          name: '安全台账-局端',
+          url: 'protal-parameter-bureau'
         }
       ]
     }
