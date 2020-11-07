@@ -10,7 +10,10 @@ const highClass = {
     {
       title: '年级',
       dataIndex: 'gradeName',
-      width: '12%'
+      width: '12%',
+      customRender: text => {
+        return text + '级'
+      }
     },
     {
       title: '专业',
