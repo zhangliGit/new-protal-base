@@ -66,7 +66,7 @@ const columns = [
   },
   {
     title: '操作时间',
-    dataIndex: 'updateTime',
+    dataIndex: 'createTime',
     width: '20%'
   },
   {
