@@ -69,12 +69,7 @@ module.exports = {
       }
       // 压缩代码 电子班牌特殊处理
       const buildModule = process.argv[process.argv.length - 1]
-      if (
-        buildModule !== 'protal-class' &&
-        buildModule !== 'protal-oa' &&
-        buildModule !== 'protal-safe-bureau' &&
-        buildModule !== 'protal-common'
-      ) {
+      if (buildModule !== 'protal-class' && buildModule !== 'protal-oa') {
         config.optimization = {
           minimizer: [
             new UglifyJsPlugin({
@@ -118,8 +113,8 @@ module.exports = {
         }
       },
       '/ljj_user_center': {
-        target: 'http://192.168.2.242:11002/', // 柳继杰-局端基础数据
-        // target: 'http://192.168.2.242:11002/', // 柳继杰-
+        // target: 'http://192.168.1.125:11002/', // 柳继杰-局端基础数据
+        target: 'http://192.168.2.242:11002/', // 柳继杰-
         changeOrigin: true,
         pathRewrite: {
           '^/ljj_user_center': ''
@@ -242,7 +237,7 @@ module.exports = {
       },
       // 电子班牌
       '/zq_news': {
-        // target: 'http://192.168.2.241:11005/', // 张琦-信息发布
+        // target: 'http://192.168.1.241:11005/', // 张琦-信息发布
         target: 'http://192.168.2.242:11011/',
         changeOrigin: true,
         pathRewrite: {
@@ -250,8 +245,8 @@ module.exports = {
         }
       },
       '/zk_news': {
-        // target: 'http://192.168.2.242:11011/', // 张坤-信息发布
-        target: 'http://192.168.2.242:11011/',
+        target: 'http://192.168.2.242:11011/', // 张坤-信息发布
+        // target: 'http://192.168.1.23:11011/',
         changeOrigin: true,
         pathRewrite: {
           '^/zk_news': ''
@@ -274,23 +269,23 @@ module.exports = {
         }
       },
       '/zq_class': {
-        // target: 'http://192.168.2.242:11009/', // 张琦-班牌管理
-        target: 'http://192.168.2.242:11009/',
+        target: 'http://192.168.2.242:11009/', // 张琦-班牌管理
+        // target: 'http://192.168.1.23:11009/',
         changeOrigin: true,
         pathRewrite: {
           '^/zq_class': ''
         }
       },
       '/zk_class': {
-        // target: 'http://192.168.2.242:11009/', // 张坤-班牌管理
-        target: 'http://192.168.2.242:11009/',
+        target: 'http://192.168.2.242:11009/', // 张琦-班牌管理
+        // target: 'http://192.168.1.23:11009/',
         changeOrigin: true,
         pathRewrite: {
           '^/zk_class': ''
         }
       },
       '/zk_examplan': {
-        target: 'http://192.168.1.193:11013/', // 张坤-考试计划
+        target: 'http://192.168.1.23:11013/', // 张坤-考试计划
         // target: 'http://192.168.2.242:11013/',
         changeOrigin: true,
         pathRewrite: {
@@ -298,7 +293,6 @@ module.exports = {
         }
       },
       '/ljj_admin': {
-        // target: 'http://192.168.2.242:10050/', // 柳继杰-局端模块
         target: 'http://192.168.2.242:10050/', // 柳继杰-局端模块
         changeOrigin: true,
         pathRewrite: {
@@ -330,7 +324,7 @@ module.exports = {
         }
       },
       '/zx_center': {
-        target: 'http://192.168.2.242:11002/', // 王选章-平台人员统计
+        target: 'http://192.168.2.147:11002/', // 王选章-平台人员统计
         changeOrigin: true,
         pathRewrite: {
           '^/zx_center': ''
@@ -351,7 +345,6 @@ module.exports = {
         }
       },
       '/zk_oa': {
-        // target: 'http://192.168.1.23:11014/', // 张坤-报修
         target: 'http://192.168.2.242:11014/', // 张坤-报修
         changeOrigin: true,
         pathRewrite: {
@@ -359,34 +352,11 @@ module.exports = {
         }
       },
       '/lz_safe': {
-        // target: 'http://192.168.1.76:8091/', // ljj-安防
+        // target: 'http://192.168.1.46:8091/', // 吕卓-安防
         target: 'http://192.168.2.242:8091/', // 吕卓-安防
-        // target: 'http://39.97.164.4:8091/', // 吕卓-安防
         changeOrigin: true,
         pathRewrite: {
           '^/lz_safe': ''
-        }
-      },
-      '/ljj_people': {
-        target: 'http://192.168.1.76:11002/', // 刘继杰-局端安全任务根据选中的学校职务查人
-        // target: 'http://192.168.2.242:11002/',
-        changeOrigin: true,
-        pathRewrite: {
-          '^/ljj_people': ''
-        }
-      },
-      '/wxz_pay': {
-        target: 'http://192.168.1.123:10097/', // 王选章-缴费系统
-        changeOrigin: true,
-        pathRewrite: {
-          '^/wxz_pay': ''
-        }
-      },
-      '/img_download': {
-        target: 'http://canpoint-file.oss-cn-beijing.aliyuncs.com/', // 图片代理
-        changeOrigin: true,
-        pathRewrite: {
-          '^/img_download': ''
         }
       },
       '/hzz_ecard': {
@@ -394,35 +364,6 @@ module.exports = {
         changeOrigin: true,
         pathRewrite: {
           '^/hzz_ecard': ''
-        }
-      },
-      '/hzz_deal': {
-        target: 'http://192.168.2.242:11025/', // 胡周志-交易管理系统
-        changeOrigin: true,
-        pathRewrite: {
-          '^/hzz_deal': ''
-        }
-      },
-      '/hzz_tooken': {
-        target: 'http://192.168.2.242:11022/', // 胡周志-tooken
-        changeOrigin: true,
-        pathRewrite: {
-          '^/hzz_tooken': ''
-        }
-      },
-      '/wxz_notice': {
-        target: 'http://192.168.1.123:18090/', // 王选章-通知公告
-        changeOrigin: true,
-        pathRewrite: {
-          '^/wxz_notice': ''
-        }
-      },
-      '/ljj_high': {
-        // target: 'http://192.168.2.242:8092/', // 柳继杰-高校
-        target: 'http://192.168.1.76:8092/', // 柳继杰-高校
-        changeOrigin: true,
-        pathRewrite: {
-          '^/ljj_high': ''
         }
       }
     }
