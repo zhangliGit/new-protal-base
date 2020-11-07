@@ -550,6 +550,19 @@ const Tools = {
       return '6'
     }
   },
+  // 获取年级名称
+  getGradeName(id, gradeList) {
+    if (!id || !gradeList || gradeList.length === 0) {
+      return ''
+    }
+    const list = gradeList.filter((item) => {
+      return item.id === id
+    })
+    if (list.length > 0) {
+      return list[0].gradeName
+    }
+    return ''
+  },
   ...baseData
 }
 

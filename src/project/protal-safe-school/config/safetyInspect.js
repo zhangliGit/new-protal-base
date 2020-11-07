@@ -1,14 +1,14 @@
 import { RouteView } from '../layouts'
-const InspectArea = resolve => require(['../views/safetyInspect/InspectArea.vue'], resolve)
-const InspectDaily = resolve => require(['../views/safetyInspect/InspectDaily.vue'], resolve)
-const AreaAdd = resolve => require(['../views/safetyInspect/AreaAdd.vue'], resolve)
-const InspectAdd = resolve => require(['../views/safetyInspect/InspectAdd.vue'], resolve)
-const InspectDetail = resolve => require(['../views/safetyInspect/InspectDetail.vue'], resolve)
-const InspectEquip = resolve => require(['../views/safetyInspect/InspectEquip.vue'], resolve)
-const InspectSafe = resolve => require(['../views/safetyInspect/InspectSafe.vue'], resolve)
-const AvoidingTime = resolve => require(['../views/safetyInspect/AvoidingTime.vue'], resolve)
-const InspectDuty = resolve => require(['../views/safetyInspect/InspectDuty.vue'], resolve)
-const DutyDetail = resolve => require(['../views/safetyInspect/DutyDetail.vue'], resolve)
+const InspectArea = resolve => require(['../views/SafetyInspect/InspectArea.vue'], resolve)
+const InspectDaily = resolve => require(['../views/SafetyInspect/InspectDaily.vue'], resolve)
+const AreaAdd = resolve => require(['../views/SafetyInspect/AreaAdd.vue'], resolve)
+const InspectAdd = resolve => require(['../views/SafetyInspect/InspectAdd.vue'], resolve)
+const InspectDetail = resolve => require(['../views/SafetyInspect/InspectDetail.vue'], resolve)
+const InspectEquip = resolve => require(['../views/SafetyInspect/InspectEquip.vue'], resolve)
+const InspectSafe = resolve => require(['../views/SafetyInspect/InspectSafe.vue'], resolve)
+const AvoidingTime = resolve => require(['../views/SafetyInspect/AvoidingTime.vue'], resolve)
+const InspectDuty = resolve => require(['../views/SafetyInspect/InspectDuty.vue'], resolve)
+const DutyDetail = resolve => require(['../views/SafetyInspect/DutyDetail.vue'], resolve)
 
 const safetyInspect = {
   path: '/inspect',

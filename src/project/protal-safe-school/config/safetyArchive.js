@@ -1,10 +1,10 @@
 import { RouteView } from '../layouts'
-const FireArchive = resolve => require(['../views/safetyArchive/FireArchive.vue'], resolve)
-const SchBusArchive = resolve => require(['../views/safetyArchive/SchBusArchive.vue'], resolve)
-const InstrumentArchive = resolve => require(['../views/safetyArchive/InstrumentArchive.vue'], resolve)
-const FireAdd = resolve => require(['../views/safetyArchive/FireAdd.vue'], resolve)
-const SchoolAdd = resolve => require(['../views/safetyArchive/SchoolAdd.vue'], resolve)
-const InstrumentAdd = resolve => require(['../views/safetyArchive/InstrumentAdd.vue'], resolve)
+const FireArchive = resolve => require(['../views/SafetyArchive/FireArchive.vue'], resolve)
+const SchBusArchive = resolve => require(['../views/SafetyArchive/SchBusArchive.vue'], resolve)
+const InstrumentArchive = resolve => require(['../views/SafetyArchive/InstrumentArchive.vue'], resolve)
+const FireAdd = resolve => require(['../views/SafetyArchive/FireAdd.vue'], resolve)
+const SchoolAdd = resolve => require(['../views/SafetyArchive/SchoolAdd.vue'], resolve)
+const InstrumentAdd = resolve => require(['../views/SafetyArchive/InstrumentAdd.vue'], resolve)
 const safetyArchive = {
   path: '/archive',
   name: 'archive',
