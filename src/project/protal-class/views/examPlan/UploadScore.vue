@@ -2,6 +2,8 @@
   <a-modal
     width="1000px"
     title="录入成绩"
+    @ok="handleOk"
+    @cancel="status = false"
     v-model="status"
     :maskClosable="false"
     :destroyOnClose="true"
